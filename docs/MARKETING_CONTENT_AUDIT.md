@@ -1,7 +1,7 @@
 # Auditoria de conteúdo marketing — Família C
 
 Data: 2026-10-06
-Escopo: 106 URLs de marketing auditadas. Após o lote 9, 19 ainda
+Escopo: 106 URLs de marketing auditadas. Após o lote 10, 4 ainda
 permanecem pendentes no Astro. A página `/emissao-laudos` foi excluída porque
 já é a representante existente da mesma família.
 
@@ -13,6 +13,11 @@ O lote 9 migrou outras 15 páginas, com 46 referências de imagens: 42 foram
 deduplicadas e reutilizaram assets já versionados; somente 4 arquivos novos
 foram portados. Não foram encontradas âncoras internas, shortcodes, iframes,
 scripts legados, PDFs, DOCs ou outros anexos órfãos.
+
+O lote 10 migrou 15 páginas, com 45 referências de imagens: 37 foram
+deduplicadas e reutilizaram assets já versionados; somente 8 arquivos novos
+foram portados. Todos os paths finais usam a raiz pública `/images/`, sem
+ocorrências de `/public/`.
 
 ## Resultado executivo
 

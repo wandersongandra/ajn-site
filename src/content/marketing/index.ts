@@ -9,6 +9,21 @@ import { elaboracaoPgrPcmso } from './elaboracao-pgr-pcmso';
 import { laudosSegurancaDoTrabalho } from './laudos-seguranca-do-trabalho';
 import { laudoLtcatInsalubridade } from './laudo-ltcat-insalubridade';
 import { validateMarketingContent } from '../../content.config';
+import { empresaProjetoEletrico } from './empresa-projeto-eletrico';
+import { manutencaoElevadoresBeloHorizonte } from './manutencao-elevadores-belo-horizonte';
+import { empresaPcmso } from './empresa-pcmso';
+import { projetoEletricoResidencial } from './projeto-eletrico-residencial';
+import { inspecaoSegurancaSaudeNoAmbienteTrabalho } from './inspecao-seguranca-saude-no-ambiente-trabalho';
+import { servicosPcmso } from './servicos-pcmso';
+import { plataformaAcessibilidadeBh } from './plataforma-acessibilidade-bh';
+import { manutencaoElevadoresBh } from './manutencao-elevadores-bh';
+import { empresaPlataformaElevatoria } from './empresa-plataforma-elevatoria';
+import { laudosSaudeSegurancaDoTrabalho } from './laudos-saude-seguranca-do-trabalho';
+import { orcamentoPcmso } from './orcamento-pcmso';
+import { plataformaElevatoriaBh } from './plataforma-elevatoria-bh';
+import { precoPcmso } from './preco-pcmso';
+import { projetoInstalacoesEletricas } from './projeto-instalacoes-eletricas';
+import { laudoPgr } from './laudo-pgr';
 import { pcmsoProgramaControleMedicoSaudeOcupacional } from './pcmso-programa-controle-medico-saude-ocupacional';
 import { ltcatOrcamento } from './ltcat-orcamento';
 import { empresaElevador } from './empresa-elevador';
@@ -93,6 +108,21 @@ export const marketingPages = [
 	validateMarketingContent(projetoSegurancaIncendioPanico),
 	validateMarketingContent(laudosSegurancaDoTrabalho),
 	validateMarketingContent(sistemasIncendioBh),
+	validateMarketingContent(empresaProjetoEletrico),
+	validateMarketingContent(manutencaoElevadoresBeloHorizonte),
+	validateMarketingContent(empresaPcmso),
+	validateMarketingContent(projetoEletricoResidencial),
+	validateMarketingContent(inspecaoSegurancaSaudeNoAmbienteTrabalho),
+	validateMarketingContent(servicosPcmso),
+	validateMarketingContent(plataformaAcessibilidadeBh),
+	validateMarketingContent(manutencaoElevadoresBh),
+	validateMarketingContent(empresaPlataformaElevatoria),
+	validateMarketingContent(laudosSaudeSegurancaDoTrabalho),
+	validateMarketingContent(orcamentoPcmso),
+	validateMarketingContent(plataformaElevatoriaBh),
+	validateMarketingContent(precoPcmso),
+	validateMarketingContent(projetoInstalacoesEletricas),
+	validateMarketingContent(laudoPgr),
 	validateMarketingContent(pcmsoProgramaControleMedicoSaudeOcupacional),
 	validateMarketingContent(ltcatOrcamento),
 	validateMarketingContent(empresaElevador),
