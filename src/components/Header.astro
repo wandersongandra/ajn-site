@@ -1,38 +1,44 @@
 ---
 import { navigation, site } from '../data/home';
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const normalizeInternalPath = (href: string) => href === '/' ? '/' : href.replace(/\/+$/, '');
+const isExact = (href: string) => !href.startsWith('http') && currentPath === normalizeInternalPath(href);
+const isSectionActive = (href: string) => {
+	if (href === '/' || href.startsWith('http')) return false;
+	const normalized = normalizeInternalPath(href);
+	return currentPath.startsWith(`${normalized}/`);
+};
 ---
 
 <header class="site-header" id="site-header">
 	<div class="topbar">
 		<div class="site-shell topbar__inner">
-			<span class="topbar__address">{site.address}</span>
+			<span class="topbar__address">{site.addressShort}</span>
 			<div class="topbar__contacts">
 				<a href={site.phoneHref} rel="nofollow" target="_blank">{site.phone}</a>
 				<a href={`mailto:${site.email}`}>{site.email}</a>
 			</div>
 		</div>
 	</div>
-
 	<div class="site-shell header-main">
-		<a class="brand" href="/" aria-label="Voltar para a página inicial">
+		<a class="brand" href="/" aria-label="Voltar para a página inicial" aria-current={isExact('/') ? 'page' : undefined}>
 			<img src="/images/branding/logo.png" alt={site.name} width="200" height="80" />
 		</a>
 		<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
-			<span class="sr-only">Abrir menu</span>
-			<span></span><span></span><span></span>
+			<span class="sr-only">Abrir menu</span><span></span><span></span><span></span>
 		</button>
 		<nav id="primary-navigation" class="primary-navigation" aria-label="Navegação principal">
 			<ul>
-				{navigation.map((item) => (
-					<li class={item.children ? 'has-submenu' : undefined}>
-						<a href={item.href}>{item.label}</a>
-						{item.children && (
-							<ul class="submenu">
-								{item.children.map((child) => <li><a href={child.href}>{child.label}</a></li>)}
-							</ul>
-						)}
-					</li>
-				))}
+				{navigation.map((item) => {
+					const active = isExact(item.href) || isSectionActive(item.href);
+					return (
+						<li class:list={[item.children && 'has-submenu', active && 'is-current']}>
+							<a href={item.href} aria-current={isExact(item.href) ? 'page' : undefined}>{item.label}</a>
+							{item.children && <ul class="submenu">{item.children.map((child) => <li class:list={[isExact(child.href) && 'is-current']}><a href={child.href} aria-current={isExact(child.href) ? 'page' : undefined}>{child.label}</a></li>)}</ul>}
+						</li>
+					);
+				})}
 				<li><a class="training-link" href={site.trainingUrl} target="_blank" rel="noopener noreferrer">Treinamentos online</a></li>
 			</ul>
 		</nav>
@@ -42,10 +48,19 @@ import { navigation, site } from '../data/home';
 <script>
 	const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
 	const navigation = document.querySelector<HTMLElement>('.primary-navigation');
-
+	const toggleLabel = toggle?.querySelector<HTMLElement>('.sr-only');
+	const closeMenu = () => {
+		if (!toggle || !navigation) return;
+		toggle.setAttribute('aria-expanded', 'false');
+		navigation.classList.remove('is-open');
+		if (toggleLabel) toggleLabel.textContent = 'Abrir menu';
+	};
 	toggle?.addEventListener('click', () => {
 		const open = toggle.getAttribute('aria-expanded') === 'true';
 		toggle.setAttribute('aria-expanded', String(!open));
 		navigation?.classList.toggle('is-open', !open);
+		if (toggleLabel) toggleLabel.textContent = open ? 'Abrir menu' : 'Fechar menu';
 	});
+	navigation?.addEventListener('click', (event) => { if ((event.target as HTMLElement).closest('a')) closeMenu(); });
+	document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { closeMenu(); toggle?.focus(); } });
 </script>

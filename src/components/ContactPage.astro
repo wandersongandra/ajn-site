@@ -1,13 +1,47 @@
 ---
 import PageShell from './PageShell.astro';
 import { site } from '../data/home';
+const discoveryOptions = ['Busca no Google','Indicação','Redes sociais','Já sou cliente','Outro'] as const;
 ---
-
 <PageShell heading="Contato">
-	<section class="contact-page">
-		<h2>Fale conosco!</h2>
-		<p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
-		<p><a href={`mailto:${site.email}`}>{site.email}</a></p>
-		<p>O formulário e o destino operacional do contato permanecem pendentes de confirmação da integração legada.</p>
-	</section>
+	<div class="contact-layout">
+		<section class="contact-page" aria-labelledby="contact-direct-title">
+			<h2 id="contact-direct-title">Fale conosco!</h2>
+			<p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
+			<p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+			<p>{site.address}<br />{site.postalCode}</p>
+			<p class="contact-page__note">O envio online ainda não está habilitado neste preview. WhatsApp e e-mail continuam disponíveis.</p>
+		</section>
+		<section class="contact-form-panel" aria-labelledby="contact-form-title">
+			<h2 id="contact-form-title">Envie sua mensagem</h2>
+			<p>Os campos abaixo preservam o contrato público do formulário legado. Nesta fase, nenhuma informação é transmitida ou armazenada.</p>
+			<form class="contact-form" data-contact-form novalidate enctype="multipart/form-data">
+				<div class="contact-form__field"><label for="contact-name">Nome completo <span aria-hidden="true">*</span></label><input id="contact-name" name="nome" type="text" autocomplete="name" required /></div>
+				<div class="contact-form__field"><label for="contact-email">E-mail <span aria-hidden="true">*</span></label><input id="contact-email" name="email" type="email" autocomplete="email" required /></div>
+				<div class="contact-form__field"><label for="contact-phone">Telefone <span aria-hidden="true">*</span></label><input id="contact-phone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required /></div>
+				<div class="contact-form__field"><label for="contact-source">Como nos conheceu?</label><select id="contact-source" name="como_nos_conheceu"><option value="">Selecione</option>{discoveryOptions.map((option) => <option value={option}>{option}</option>)}</select></div>
+				<div class="contact-form__field"><label for="contact-attachment">Anexo opcional</label><input id="contact-attachment" name="anexo" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" aria-describedby="contact-attachment-help" /><small id="contact-attachment-help">PDF, DOC, DOCX, JPG ou PNG, até 10 MB. O arquivo não é enviado enquanto a integração estiver desabilitada.</small></div>
+				<div class="contact-form__field"><label for="contact-message">Mensagem <span aria-hidden="true">*</span></label><textarea id="contact-message" name="mensagem" rows="7" required></textarea></div>
+				<button class="button" type="submit">Validar mensagem</button>
+				<p class="contact-form__status" data-contact-status role="status" aria-live="polite"></p>
+			</form>
+		</section>
+	</div>
 </PageShell>
+<script>
+	const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+	const status = document.querySelector<HTMLElement>('[data-contact-status]');
+	const attachment = document.querySelector<HTMLInputElement>('#contact-attachment');
+	const maxAttachmentSize = 10 * 1024 * 1024;
+	const allowedTypes = new Set(['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','image/jpeg','image/png']);
+	form?.addEventListener('submit', (event) => {
+		event.preventDefault();
+		if (!status) return;
+		status.dataset.state = '';
+		if (!form.checkValidity()) { form.reportValidity(); status.dataset.state = 'error'; status.textContent = 'Revise os campos obrigatórios antes de continuar.'; return; }
+		const file = attachment?.files?.[0];
+		if (file && (file.size > maxAttachmentSize || !allowedTypes.has(file.type))) { status.dataset.state = 'error'; status.textContent = 'O anexo deve ser PDF, DOC, DOCX, JPG ou PNG e ter no máximo 10 MB.'; attachment?.focus(); return; }
+		status.dataset.state = 'info';
+		status.textContent = 'Campos validados. O envio online ainda não está configurado; nenhum dado foi transmitido. Use o WhatsApp ou o e-mail da AJN por enquanto.';
+	});
+</script>

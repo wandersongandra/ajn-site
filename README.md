@@ -47,4 +47,14 @@ Não existem credenciais reais neste projeto. Use `.env.example` caso uma futura
 integração exija configuração. Banco legado, dumps, backups, logs e arquivos
 privados estão protegidos pelo `.gitignore`.
 
-Nenhum commit, push ou deploy foi realizado durante esta fase.
+O repositório remoto é a fonte versionada do novo site. Produção permanece no WordPress até o corte autorizado.
+
+### QA e CI
+
+```bash
+npm run check
+npm run build
+npm run audit:site
+```
+
+Use `AUDIT_STRICT_LINKS=1 npm run audit:site` somente quando todas as rotas KEEP estiverem migradas. O workflow de CI gera `dist/` como artefato, sem deploy em produção.

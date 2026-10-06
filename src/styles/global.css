@@ -260,3 +260,27 @@ h1, h2, h3, p { margin-top: 0; }
 @media (prefers-reduced-motion: reduce) {
 	*, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* QA, accessibility and contact hardening */
+.skip-link { position: fixed; top: .75rem; left: .75rem; z-index: 100; transform: translateY(-160%); padding: .65rem .9rem; border-radius: .25rem; color: var(--white); background: var(--dark); font-weight: 600; }
+.skip-link:focus { transform: translateY(0); }
+.primary-navigation li.is-current > a:not(.training-link) { color: var(--primary); font-weight: 600; }
+.submenu li.is-current > a { color: var(--primary); background: var(--white); }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+.contact-layout { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); gap: 2rem; align-items: start; }
+.contact-page, .contact-form-panel { padding: 2rem; border-top: 4px solid var(--primary); background: #fafafa; }
+.contact-page { max-width: none; }
+.contact-page__note { margin-top: 1.5rem; font-size: .875rem; }
+.contact-form { display: grid; gap: 1rem; }
+.contact-form__field { display: grid; gap: .4rem; }
+.contact-form label { color: var(--dark); font-weight: 600; }
+.contact-form input, .contact-form select, .contact-form textarea { width: 100%; padding: .75rem .85rem; border: 1px solid #b8bec4; border-radius: .25rem; color: var(--dark); background: var(--white); font: inherit; }
+.contact-form textarea { resize: vertical; }
+.contact-form small { color: var(--grey); line-height: 1.4; }
+.contact-form .button { width: fit-content; cursor: pointer; }
+.contact-form__status { min-height: 1.5rem; margin: 0; font-size: .9rem; }
+.contact-form__status[data-state='error'] { color: #9f1239; }
+.contact-form__status[data-state='info'] { color: var(--dark); }
+@media (max-width: 768px) { .contact-layout { grid-template-columns: 1fr; } }
+@media (max-width: 576px) { .contact-page, .contact-form-panel { padding: 1.25rem; } }
+

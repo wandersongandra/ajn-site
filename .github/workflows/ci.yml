@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+    branches: [main, "work/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PUBLIC_SITE_ORIGIN: https://www.ajnengenharia.com.br
+      PUBLIC_SITE_NOINDEX: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - run: npm run audit:site
+      - run: npm audit --omit=dev --audit-level=high
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ajn-site-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 7

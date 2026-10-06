@@ -10,6 +10,7 @@ interface Props {
 	canonicalPath?: string;
 	ogType?: 'website' | 'article';
 	ogImage?: string;
+	forceNoindex?: boolean;
 }
 
 const {
@@ -18,10 +19,17 @@ const {
 	canonicalPath = '/',
 	ogType = 'website',
 	ogImage,
+	forceNoindex = false,
 } = Astro.props;
 
-const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br';
-const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath}`;
+const configuredOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br';
+const siteOrigin = new URL(configuredOrigin).origin;
+const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}`;
+const canonicalUrl = new URL(normalizedPath, `${siteOrigin}/`).href;
+const ogImageUrl = ogImage ? new URL(ogImage, `${siteOrigin}/`).href : undefined;
+const environmentNoindex = import.meta.env.PUBLIC_SITE_NOINDEX === 'true';
+const shouldNoindex = forceNoindex || environmentNoindex;
+const robotsContent = shouldNoindex ? 'noindex, nofollow' : 'index, follow';
 ---
 
 <!doctype html>
@@ -30,15 +38,19 @@ const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="description" content={description} />
+		<meta name="robots" content={robotsContent} />
 		<link rel="canonical" href={canonicalUrl} />
+		<meta property="og:site_name" content="AJN Consultoria e Engenharia" />
+		<meta property="og:locale" content="pt_BR" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content={ogType} />
 		<meta property="og:url" content={canonicalUrl} />
-		{ogImage ? <meta property="og:image" content={`${siteOrigin}${ogImage}`} /> : null}
+		{ogImageUrl ? <meta property="og:image" content={ogImageUrl} /> : null}
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
+		{ogImageUrl ? <meta name="twitter:image" content={ogImageUrl} /> : null}
 		<link rel="icon" type="image/webp" href="/images/icons/logo-icon.webp" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
@@ -46,8 +58,9 @@ const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath
 		<title>{title}</title>
 	</head>
 	<body>
+		<a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 		<Header />
-		<main><slot /></main>
+		<main id="main-content"><slot /></main>
 		<Footer />
 		<PromoDialog />
 	</body>
