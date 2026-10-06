@@ -1,13 +1,18 @@
 # Auditoria de conteúdo marketing — Família C
 
 Data: 2026-10-06
-Escopo: 106 URLs de marketing auditadas. Após o lote 8, 34 ainda
+Escopo: 106 URLs de marketing auditadas. Após o lote 9, 19 ainda
 permanecem pendentes no Astro. A página `/emissao-laudos` foi excluída porque
 já é a representante existente da mesma família.
 
 O lote 8 migrou 15 páginas da fila final `KEEP`, com 45 imagens principais
 portadas. A auditoria dos fragmentos não encontrou shortcode, iframe, script
 legado, PDF, DOC ou outro anexo órfão.
+
+O lote 9 migrou outras 15 páginas, com 46 referências de imagens: 42 foram
+deduplicadas e reutilizaram assets já versionados; somente 4 arquivos novos
+foram portados. Não foram encontradas âncoras internas, shortcodes, iframes,
+scripts legados, PDFs, DOCs ou outros anexos órfãos.
 
 ## Resultado executivo
 

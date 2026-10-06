@@ -9,6 +9,21 @@ import { elaboracaoPgrPcmso } from './elaboracao-pgr-pcmso';
 import { laudosSegurancaDoTrabalho } from './laudos-seguranca-do-trabalho';
 import { laudoLtcatInsalubridade } from './laudo-ltcat-insalubridade';
 import { validateMarketingContent } from '../../content.config';
+import { pcmsoProgramaControleMedicoSaudeOcupacional } from './pcmso-programa-controle-medico-saude-ocupacional';
+import { ltcatOrcamento } from './ltcat-orcamento';
+import { empresaElevador } from './empresa-elevador';
+import { projetoCombateIncendioPanico } from './projeto-combate-incendio-panico';
+import { projetoEletricoBh } from './projeto-eletrico-bh';
+import { orcamentoLtcat } from './orcamento-ltcat';
+import { projetoIncendio } from './projeto-incendio';
+import { consultoriaSegurancaDoTrabalho } from './consultoria-seguranca-do-trabalho';
+import { elaboracaoProjetoCombateIncendio } from './elaboracao-projeto-combate-incendio';
+import { projetoEletricoBeloHorizonte } from './projeto-eletrico-belo-horizonte';
+import { projetoProtecaoIncendio } from './projeto-protecao-incendio';
+import { elaboracaoPcmso } from './elaboracao-pcmso';
+import { empresaQueFazPcmso } from './empresa-que-faz-pcmso';
+import { laudosSegurancaDoTrabalhoEsocial } from './laudos-seguranca-do-trabalho-esocial';
+import { projetoProtecaoIncendioPanico } from './projeto-protecao-incendio-panico';
 import { projetoSegurancaIncendio } from './projeto-seguranca-incendio';
 import { empresaLtcat } from './empresa-ltcat';
 import { projetoEletricoIndustrialBeloHorizonte } from './projeto-eletrico-industrial-belo-horizonte';
@@ -78,6 +93,21 @@ export const marketingPages = [
 	validateMarketingContent(projetoSegurancaIncendioPanico),
 	validateMarketingContent(laudosSegurancaDoTrabalho),
 	validateMarketingContent(sistemasIncendioBh),
+	validateMarketingContent(pcmsoProgramaControleMedicoSaudeOcupacional),
+	validateMarketingContent(ltcatOrcamento),
+	validateMarketingContent(empresaElevador),
+	validateMarketingContent(projetoCombateIncendioPanico),
+	validateMarketingContent(projetoEletricoBh),
+	validateMarketingContent(orcamentoLtcat),
+	validateMarketingContent(projetoIncendio),
+	validateMarketingContent(consultoriaSegurancaDoTrabalho),
+	validateMarketingContent(elaboracaoProjetoCombateIncendio),
+	validateMarketingContent(projetoEletricoBeloHorizonte),
+	validateMarketingContent(projetoProtecaoIncendio),
+	validateMarketingContent(elaboracaoPcmso),
+	validateMarketingContent(empresaQueFazPcmso),
+	validateMarketingContent(laudosSegurancaDoTrabalhoEsocial),
+	validateMarketingContent(projetoProtecaoIncendioPanico),
 	validateMarketingContent(projetoSegurancaIncendio),
 	validateMarketingContent(empresaLtcat),
 	validateMarketingContent(projetoEletricoIndustrialBeloHorizonte),
