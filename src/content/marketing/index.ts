@@ -6,6 +6,9 @@ import { laudosSegurancaDoTrabalho } from './laudos-seguranca-do-trabalho';
 import { validateMarketingContent } from '../../content.config';
 import { marketingDetailPage } from './emissao-laudos';
 import { periciasInsalubridadePericulosidade } from './pericias-insalubridade-periculosidade';
+import { instalacaoPredialEletrica } from './instalacao-predial-eletrica';
+import { projetoEletricoResidencialBeloHorizonte } from './projeto-eletrico-residencial-belo-horizonte';
+import { projetoInstalacaoEletricaResidencial } from './projeto-instalacao-eletrica-residencial';
 import { projetoSegurancaIncendioPanico } from './projeto-seguranca-incendio-panico';
 import { projetoEletricoIndustrialPreco } from './projeto-eletrico-industrial-preco';
 import { sistemasIncendioBh } from './sistemas-incendio-bh';
@@ -21,4 +24,7 @@ export const marketingPages = [
 	validateMarketingContent(elaboracaoPgrPcmso),
 	validateMarketingContent(periciasInsalubridadePericulosidade),
 	validateMarketingContent(empresaQueElaboraPgr),
+	validateMarketingContent(projetoInstalacaoEletricaResidencial),
+	validateMarketingContent(instalacaoPredialEletrica),
+	validateMarketingContent(projetoEletricoResidencialBeloHorizonte),
 ] as const;
