@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ServiceDetailPage from '../../components/ServiceDetailPage.astro';
+import { servicePages } from '../../content/services';
+import type { ServiceContent } from '../../content/types';
+
+interface Props {
+	page: ServiceContent;
+}
+
+export const getStaticPaths: GetStaticPaths = () =>
+	servicePages.map((page) => ({
+		params: { slug: page.slug },
+		props: { page },
+	}));
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title={page.title} description={page.description} canonicalPath={page.path}>
+	<ServiceDetailPage page={page} />
+</BaseLayout>

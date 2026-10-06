@@ -1,12 +1,18 @@
 ---
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
-import { qualityServicePage } from '../data/representatives';
+import type { ServiceContent } from '../content/types';
+
+interface Props {
+	page: ServiceContent;
+}
+
+const { page } = Astro.props;
 ---
 
-<PageShell heading={qualityServicePage.heading}>
+<PageShell heading={page.heading}>
 	<div class="service-detail__hero">
-		<img src={qualityServicePage.image} alt={qualityServicePage.imageAlt} width="1200" height="800" loading="eager" />
+		<img src={page.image} alt={page.imageAlt} width="1200" height="800" loading="eager" />
 	</div>
-	<ContentSections sections={[qualityServicePage.section]} />
+	<ContentSections sections={page.sections} />
 </PageShell>

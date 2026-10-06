@@ -1,16 +1,29 @@
 ---
-import type { ContentSection } from '../data/representatives';
+import type { ContentParagraph, ContentSection } from '../content/types';
 
 interface Props {
 	sections: readonly ContentSection[];
 }
 
 const { sections } = Astro.props;
+
+const isRichParagraph = (paragraph: string | ContentParagraph): paragraph is ContentParagraph =>
+	typeof paragraph !== 'string';
 ---
 
 {sections.map((section) => (
 	<section class="content-section">
 		{section.heading ? <h2>{section.heading}</h2> : null}
-		{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+		{section.paragraphs.map((paragraph) => (
+			<p>
+				{isRichParagraph(paragraph)
+					? paragraph.segments.map((segment) =>
+						typeof segment === 'string' ? segment : (
+							<a href={segment.href} target="_blank" rel="noreferrer">{segment.text}</a>
+						)
+					)
+					: paragraph}
+			</p>
+		))}
 	</section>
 ))}

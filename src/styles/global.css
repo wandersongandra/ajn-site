@@ -159,6 +159,11 @@ h1, h2, h3, p { margin-top: 0; }
 .contact-page { max-width: 640px; padding: 2rem; border-top: 4px solid var(--primary); background: #fafafa; }
 .contact-page h2 { margin-top: 0; }
 .contact-page__phone { color: var(--primary); font-size: 1.5rem; }
+.index-intro { margin-bottom: 2rem; font-size: 1.1rem; }
+.link-index-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+.link-index-item { display: flex; flex-direction: column; gap: .35rem; min-height: 74px; padding: .9rem 1rem; border-left: 3px solid var(--primary); background: #fafafa; }
+.link-index-item span { color: var(--primary); font-weight: 500; }
+.link-index-item small { color: var(--grey); font-size: .75rem; overflow-wrap: anywhere; }
 
 /* Footer */
 .site-footer { color: var(--white); background: var(--primary); }
@@ -217,7 +222,7 @@ h1, h2, h3, p { margin-top: 0; }
 	.portfolio__item--1, .portfolio__item--2, .portfolio__item--3, .portfolio__item--4, .portfolio__item--5, .portfolio__item--6, .portfolio__item--7 { grid-area: auto; }
 	.differentials article { text-align: left; }
 	.inner-page { padding-top: 1.5rem; }
-	.institutional-intro, .values-grid, .service-index-grid, .blog-grid { grid-template-columns: 1fr 1fr; }
+	.institutional-intro, .values-grid, .service-index-grid, .blog-grid, .link-index-grid { grid-template-columns: 1fr 1fr; }
 	.institutional-gallery { grid-template-columns: 1fr 1fr; }
 	.institutional-gallery img:first-child { grid-column: 1 / -1; }
 	.content-gallery { grid-template-columns: 1fr 1fr; }
@@ -243,7 +248,7 @@ h1, h2, h3, p { margin-top: 0; }
 	.portfolio__item { width: 100%; height: 250px; }
 	.differentials__icon { width: 110px; }
 	.page-title { margin-bottom: 2rem; }
-	.institutional-intro, .values-grid, .service-index-grid, .blog-grid, .content-gallery, .institutional-gallery { grid-template-columns: 1fr; }
+	.institutional-intro, .values-grid, .service-index-grid, .blog-grid, .content-gallery, .institutional-gallery, .link-index-grid { grid-template-columns: 1fr; }
 	.institutional-gallery img:first-child { grid-column: auto; }
 	.institutional-intro__image img { height: 300px; }
 	.contact-page { padding: 1.25rem; }

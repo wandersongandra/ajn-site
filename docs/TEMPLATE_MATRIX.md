@@ -1,25 +1,26 @@
-# Matriz de templates — Fase 2
+# Matriz de templates — Fase 3
 
 Data: 2026-10-06
-Fonte: inventário das 143 URLs públicas recuperadas do sitemap e conteúdo local
-sanitizado. A Home já existia antes desta fase.
+Fonte: auditoria das 143 URLs públicas e conteúdo local recuperado.
 
-| Template | Quantidade de URLs | Rotas | Estrutura | Componentes compartilhados | Diferenças específicas |
-|---|---:|---|---|---|---|
-| HOME | 1 | `/` | Hero, apresentação, clientes, missão/visão/valores, soluções, portfólio, diferenciais, destaques, popup e footer | `BaseLayout`, `Header`, `Footer`, `PromoDialog` | Ordem e composição exclusiva da Home |
-| INSTITUTIONAL | 3 | `/sobre-nos`, `/informacoes`, `/mapa-site` | Breadcrumb, título, conteúdo institucional ou índice | `BaseLayout`, `PageShell`, `Header`, `Footer` | `sobre-nos` possui galeria e valores; índices possuem listas de links |
-| MARKETING_DETAIL | 107 | Páginas de LTCAT, PCMSO, projetos, elevadores, incêndio e engenharia | Breadcrumb, título, galeria ou hero, seções editoriais e CTA | `PageShell`, `ContentSections`, `BaseLayout` | Texto, imagens, headings e links variam por slug |
-| SERVICE_DETAIL | 9 | `/servicos/*` | Título, imagem de serviço, informações e conteúdo técnico | `ServiceDetailPage`, `ContentSections`, `PageShell` | Conteúdo e imagem de cada serviço |
-| SERVICES_INDEX | 1 | `/servicos` | Título e catálogo em cards com descrição e link | `PageShell`, cards de serviço | Lista de dez itens do catálogo |
-| BLOG_INDEX | 1 | `/blog` | Últimas postagens, arquivo visual e títulos clicáveis | `BlogIndexPage`, `PageShell` | Ordenação e quantidade de posts |
-| BLOG_ARTICLE | 20 | `/blog/*` | Título, imagem editorial, autor/data, seções H2 e parágrafos | `BlogArticlePage`, `ContentSections`, `PageShell` | Conteúdo, imagem, autor, data e tags |
-| CONTACT | 1 | `/contato` | Título, contato direto e possível formulário legado | `ContactPage`, `PageShell` | Campos e destino operacional ainda não comprovados |
+| Template | URLs no legado | Implementadas no Astro | Restantes | Estrutura |
+|---|---:|---:|---:|---|
+| HOME | 1 | 1 | 0 | Hero, apresentação, clientes, missão/visão/valores, soluções, portfólio, diferenciais, destaques, popup e footer |
+| INSTITUTIONAL | 3 | 3 | 0 | Sobre nós, informações e mapa do site |
+| MARKETING_DETAIL | 107 | 1 | 106 | Galeria/hero, seções editoriais, conteúdo técnico e CTA |
+| SERVICE_DETAIL | 9 | 9 | 0 | Template único com imagem, informações e conteúdo técnico por arquivo |
+| SERVICES_INDEX | 1 | 1 | 0 | Catálogo dos dez serviços com título, resumo e link |
+| BLOG_INDEX | 1 | 1 | 0 | Últimas postagens, arquivo visual e links |
+| BLOG_ARTICLE | 20 | 1 | 19 | Template editorial com imagem, autoria/data e seções |
+| CONTACT | 1 | 1 | 0 | Contato público recuperado; contrato funcional do formulário ainda pendente |
 
 ## Totais
 
-- URLs públicas inventariadas: **143**.
-- URLs restantes após a Home: **142**.
-- Famílias reais: **8**, contando a Home.
-- A classificação SEO permanece a da auditoria de rotas: Home incluída no
-  total `KEEP`; entre as 142 restantes, 141 estão `KEEP` e `/contato` está
-  `REVIEW` por conteúdo recuperado curto e contrato de formulário não comprovado.
+- URLs públicas auditadas: 143.
+- Rotas Astro implementadas: 18.
+- Rotas ainda não implementadas: 125.
+- Famílias de layout: 8.
+- Decisão de rota da auditoria: 141 KEEP, 0 REDIRECT, 0 REMOVE, 2 REVIEW.
+- /contato está implementada visualmente, mas permanece functional_status=NEEDS_USER_DECISION.
+- /mapa-site está implementada como índice de links, mas permanece REVIEW para confirmação SEO/UX.
+- O conteúdo anteriormente concentrado em src/data/representatives.ts foi separado em src/content/marketing, src/content/blog e src/content/services. O arquivo legado de representação foi removido do app Astro.

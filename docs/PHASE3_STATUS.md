@@ -1,0 +1,24 @@
+# Status da Fase 3
+
+Data: 2026-10-06
+
+| Lote | Escopo | Status | Evidência |
+|---|---|---|---|
+| Reauditoria | 143 URLs, duplicidades, anexos e páginas técnicas | PASS | docs/ROUTES_AUDIT.md |
+| Segurança Git | Worktree e checkpoint local | PASS | docs/GIT_SAFETY_AUDIT.md; checkpoint 9f66c2c |
+| A — Institucional | 3 rotas | PASS | check, build, browser em 3 viewports |
+| B — Serviços | índice + 9 detalhes | PASS | check, build, HTTP e amostra visual |
+| Assets do lote B | 9 imagens de serviço copiadas sob demanda | WARN | 0 referências quebradas; 1 duplicata física não removida por bloqueio do mecanismo local |
+| Estrutura de conteúdo | conteúdo representativo separado por domínio | PASS | src/content/institutional, marketing, services, blog |
+| C — Marketing | 106 URLs restantes | NOT STARTED | Próxima família |
+| D — Informacional | URLs informacionais restantes | NOT STARTED | Após C |
+| E — Blog | 19 artigos restantes | NOT STARTED | Após D |
+| F — Contato/especiais | formulário e rotas especiais | WARN | Contrato de envio não autorizado/configurado |
+
+## Gate da etapa
+
+- npm run check: PASS, 0 erros, 0 warnings, 54 arquivos analisados.
+- npm run build: PASS, 18 páginas estáticas geradas.
+- Nenhum commit adicional foi feito após o checkpoint autorizado.
+- Nenhuma ação foi feita no WordPress, banco legado, DNS ou produção.
+

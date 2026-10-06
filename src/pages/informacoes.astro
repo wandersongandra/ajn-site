@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LinkIndexPage from '../components/LinkIndexPage.astro';
+import { informationPage } from '../content/institutional/informacoes';
+---
+
+<BaseLayout title={informationPage.title} description={informationPage.description} canonicalPath="/informacoes">
+	<LinkIndexPage heading={informationPage.heading} intro={informationPage.intro} links={informationPage.links} />
+</BaseLayout>

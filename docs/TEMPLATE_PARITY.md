@@ -1,43 +1,28 @@
-# Paridade por template — Fase 2
+# Paridade por template — Fase 3
 
 Data: 2026-10-06
-Escopo: oito rotas representativas, comparadas contra o conteúdo recuperado e
-a estrutura pública atual. A validação de viewport foi feita em 1440, 768 e
-390 pixels.
+Escopo: Home, família institucional e família de serviços expandidas com dados estruturados. O legado WordPress continua somente como fonte de referência.
 
 | Template | Elemento | Legado | Astro | Status |
 |---|---|---|---|---|
-| HOME | Shell | Header, footer e popup globais | Reutiliza os componentes da Fase 1 | PASS |
-| INSTITUTIONAL | Conteúdo | Texto, imagens, valores e compromisso | Dados tipados em `representatives.ts` | PASS |
-| INSTITUTIONAL | Responsividade | Colunas e galeria adaptáveis | CSS responsivo sem overflow observado | PASS |
-| MARKETING_DETAIL | Conteúdo | Galeria, H2, parágrafos e CTA | `MarketingDetailPage` + `ContentSections` | PASS |
-| MARKETING_DETAIL | Imagens | Três imagens de emissão de laudos | Assets locais selecionados | PASS |
-| SERVICE_DETAIL | Conteúdo | Imagem, seção Informações e seis parágrafos | `ServiceDetailPage` + dados estruturados | PASS |
-| SERVICES_INDEX | Catálogo | Dez itens com título, resumo e link | `ServicesIndexPage` com dados tipados | PASS |
-| BLOG_INDEX | Arquivo | Últimas postagens e lista visual de artigos | `BlogIndexPage` com 12 imagens recuperadas | PASS |
-| BLOG_ARTICLE | Conteúdo editorial | Imagem, autor/data, H1, H2 e parágrafos | `BlogArticlePage` sem HTML bruto | PASS |
-| BLOG_ARTICLE | SEO | Title e description específicos | Metadata específica, canonical e Open Graph | PASS |
-| CONTACT | Conteúdo | H1, Fale conosco e links de contato | `ContactPage` reproduz conteúdo público recuperado | PASS |
-| CONTACT | Formulário | Campos/destino não comprovados no artefato recuperado | Não implementado até decisão operacional | WARN |
-| TODOS | Header/footer | Shell global do site atual | Componentes compartilhados | PASS |
-| TODOS | 1440/768/390 | Layout responsivo | Sem overflow horizontal observado | PASS |
-| TODOS | Pixel-perfect | Requer comparação visual dedicada por rota | Paridade estrutural validada; diff formal não executado | WARN |
+| HOME | Shell e composição | Header, footer, popup e seções da Home | Componentes Astro reutilizáveis e tokens preservados | PASS |
+| INSTITUTIONAL | Conteúdo | Texto institucional, imagens, valores e índices | src/content/institutional + templates compartilhados | PASS |
+| SERVICE_DETAIL | Conteúdo | 9 imagens e seções técnicas dos serviços | 9 arquivos em src/content/services + [slug].astro | PASS |
+| SERVICE_DETAIL | Links oficiais | Links de NRs presentes no legado | Segmentos estruturados com links externos seguros | PASS |
+| SERVICES_INDEX | Catálogo | Dez itens com título, resumo e link | src/content/services/catalog.ts | PASS |
+| MARKETING_DETAIL | Representante | Emissão de laudos com galeria e seções | src/content/marketing/emissao-laudos.ts | PASS |
+| BLOG_ARTICLE | Representante | Artigo com imagem, autoria/data e seções | Arquivo dedicado em src/content/blog | PASS |
+| TODOS | Estática | Sem dependência de runtime para as páginas implementadas | Build Astro output: static | PASS |
+| TODOS | 1440/768/390 | Layout responsivo sem overflow | Amostra de serviços sem overflow observado | PASS |
+| TODOS | Imagens | Assets locais | Amostra visual sem imagens quebradas após scroll | PASS |
+| TODOS | Console | Sem erros de execução no preview | Console final: 0 erros e 0 warnings | PASS |
+| CONTACT | Formulário | Campos, destino e anti-spam não comprovados integralmente | Não configurado; aguarda decisão operacional | WARN |
+| ROTAS NÃO IMPLEMENTADAS | Conteúdo | 125 URLs permanecem no inventário | Não copiadas aleatoriamente nesta fase | WARN |
+| TODOS | Pixel-perfect | Diff formal para todas as 143 URLs ainda não executado | QA agrupado por template | WARN |
 
-## Divergências restantes
+## Evidência de navegador desta fase
 
-- `/contato`: o envio não foi implementado. O inventário legado indica campos e
-  integrações que precisam de confirmação antes de criar um contrato novo.
-- Links para as demais 135 URLs ainda apontam para rotas que serão implementadas
-  nas próximas fases.
-- O diff visual automatizado por screenshot ainda não foi usado; a validação
-  desta fase é estrutural, de conteúdo, geometria e console.
-
-## Evidência de browser
-
-- 8 rotas representativas × 3 viewports = 24 navegações verificadas.
-- Em 1440, 768 e 390 pixels, `scrollWidth` foi igual à largura do viewport em
-  todas as rotas.
-- Todas as rotas entregaram exatamente um H1.
-- Console final do preview: 0 erros e 0 warnings.
-- Home em 390 pixels: popup aberto automaticamente, menu abriu com
-  `aria-expanded="true"` e não houve overflow.
+- Família institucional: 3 rotas × 1440/768/390, sem overflow, um H1 por rota e console limpo.
+- Família de serviços: 3 páginas representativas (gestao-da-qualidade, PPCIP e Treinamento de NRs) × 1440/768/390.
+- Nas 9 navegações da família de serviços: scrollWidth igual ao viewport, exatamente um H1 e nenhuma imagem quebrada depois da rolagem completa.
+- HTTP local confirmado para as 9 URLs de serviço: status 200, um H1 e imagem principal presente.

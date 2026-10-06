@@ -20,7 +20,7 @@ const {
 	ogImage,
 } = Astro.props;
 
-const siteOrigin = 'https://www.ajnengenharia.com.br';
+const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br';
 const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath}`;
 ---
 

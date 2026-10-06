@@ -6,6 +6,22 @@ Data da auditoria: 2026-10-06
 
 Foram analisadas as **429 imagens baixadas do conteúdo público** em public/assets/ajn-live/content. O inventário também registra os assets auxiliares já existentes em public/assets.
 
+## Working set do Astro — Fase 3
+
+O novo projeto Astro não copia o lote legado inteiro. No estado atual há 67
+arquivos em public/images, totalizando aproximadamente 6,00 MiB. O build
+referencia 53 imagens distintas e a varredura do dist não encontrou imagem
+local inexistente.
+
+Foi confirmada uma duplicata por hash SHA-256 da capa de Gestão da Qualidade:
+
+- public/images/content/services/gestao-da-qualidade.webp
+- public/images/content/servicos/cover-gestao-da-qualidade.webp
+
+A segunda cópia não possui referências no código. A remoção física foi tentada
+somente na cópia Astro, mas o mecanismo local de execução bloqueou a operação
+destrutiva; ela permanece WARN e não afeta o build. O legado não foi alterado.
+
 ## Resultado
 
 | Classificação | Quantidade |
