@@ -8,7 +8,7 @@ Escopo: 106 URLs de marketing ainda não implementadas no Astro. A página `/emi
 | Medição | Resultado | Evidência |
 |---|---:|---|
 | URLs auditadas | 106 | `src/content/route-catalog.ts` + arquivos `new-site-next-archive/public/live-content` |
-| KEEP | 106 | Resultado final após triagem editorial/SEO das 44 alertas de similaridade |
+| KEEP | 106 | Resultado final após triagem editorial/SEO dos 44 alertas de similaridade |
 | REVIEW | 0 | Nenhuma página permaneceu sem decisão nesta triagem |
 | REDIRECT | 0 | Não há evidência de destino canônico, tráfego ou equivalência editorial suficiente |
 | REMOVE | 0 | Não há autorização nem prova de página descartável |
