@@ -41,6 +41,21 @@ import { orcamentoProjetoEletrico } from './orcamento-projeto-eletrico';
 import { empresaCombateIncendio } from './empresa-combate-incendio';
 import { empresaQueFazPgr } from './empresa-que-faz-pgr';
 import { segurancaDoTrabalhoLtcat } from './seguranca-do-trabalho-ltcat';
+import { projetoEletricoIndustrial } from './projeto-eletrico-industrial';
+import { elevacaoVertical } from './elevacao-vertical';
+import { projetosEletricosPrediais } from './projetos-eletricos-prediais';
+import { precoProjetosEletricos } from './preco-projetos-eletricos';
+import { projetoEletricoPreco } from './projeto-eletrico-preco';
+import { valorElaboracaoPgr } from './valor-elaboracao-pgr';
+import { plataformaElevatoriaBeloHorizonte } from './plataforma-elevatoria-belo-horizonte';
+import { segurancaDoTrabalhoPcmso } from './seguranca-do-trabalho-pcmso';
+import { elevadorBh } from './elevador-bh';
+import { elaboracaoPgr } from './elaboracao-pgr';
+import { valorProjetoCombateIncendio } from './valor-projeto-combate-incendio';
+import { projetoDeteccaoIncendio } from './projeto-deteccao-incendio';
+import { mobilizacaoPessoalEquipamentos } from './mobilizacao-pessoal-equipamentos';
+import { plataformaElevatoriaPreco } from './plataforma-elevatoria-preco';
+import { valorFazerLtcat } from './valor-fazer-ltcat';
 import { sistemasIncendioBh } from './sistemas-incendio-bh';
 
 export const marketingPages = [
@@ -87,4 +102,19 @@ export const marketingPages = [
 	validateMarketingContent(empresaCombateIncendio),
 	validateMarketingContent(empresaQueFazPgr),
 	validateMarketingContent(segurancaDoTrabalhoLtcat),
+	validateMarketingContent(projetoEletricoIndustrial),
+	validateMarketingContent(elevacaoVertical),
+	validateMarketingContent(projetosEletricosPrediais),
+	validateMarketingContent(precoProjetosEletricos),
+	validateMarketingContent(projetoEletricoPreco),
+	validateMarketingContent(valorElaboracaoPgr),
+	validateMarketingContent(plataformaElevatoriaBeloHorizonte),
+	validateMarketingContent(segurancaDoTrabalhoPcmso),
+	validateMarketingContent(elevadorBh),
+	validateMarketingContent(elaboracaoPgr),
+	validateMarketingContent(valorProjetoCombateIncendio),
+	validateMarketingContent(projetoDeteccaoIncendio),
+	validateMarketingContent(mobilizacaoPessoalEquipamentos),
+	validateMarketingContent(plataformaElevatoriaPreco),
+	validateMarketingContent(valorFazerLtcat),
 ] as const;

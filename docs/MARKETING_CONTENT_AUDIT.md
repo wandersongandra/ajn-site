@@ -1,7 +1,7 @@
 # Auditoria de conteúdo marketing — Família C
 
 Data: 2026-10-06
-Escopo: 106 URLs de marketing auditadas. Após os lotes já concluídos, 64 ainda
+Escopo: 106 URLs de marketing auditadas. Após os lotes já concluídos, 49 ainda
 permanecem pendentes no Astro. A página `/emissao-laudos` foi excluída porque
 já é a representante existente da mesma família.
 
