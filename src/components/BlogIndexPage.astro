@@ -1,0 +1,30 @@
+---
+import PageShell from './PageShell.astro';
+import { blogPosts } from '../data/representatives';
+---
+
+<PageShell heading="Blog">
+	<section class="blog-latest">
+		<h2>Últimas postagens</h2>
+		<div class="blog-grid">
+			{blogPosts.slice(0, 4).map((post) => (
+				<article class="blog-card">
+					<a href={post.href}><img src={post.image} alt={post.alt} width="900" height="600" loading="lazy" /></a>
+					<h3><a href={post.href}>{post.title}</a></h3>
+				</article>
+			))}
+		</div>
+	</section>
+
+	<section class="blog-index-list">
+		<h2>Blog</h2>
+		<div class="blog-grid blog-grid--archive">
+			{blogPosts.map((post) => (
+				<article class="blog-card">
+					<a href={post.href}><img src={post.image} alt={post.alt} width="900" height="600" loading="lazy" /></a>
+					<h3><a href={post.href}>{post.title}</a></h3>
+				</article>
+			))}
+		</div>
+	</section>
+</PageShell>

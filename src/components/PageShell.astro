@@ -1,0 +1,22 @@
+---
+interface Props {
+	heading: string;
+}
+
+const { heading } = Astro.props;
+---
+
+<section class="inner-page">
+	<div class="site-shell">
+		<nav class="breadcrumb" aria-label="Breadcrumb">
+			<a href="/">Home</a>
+			<span aria-hidden="true">/</span>
+			<span>{heading}</span>
+		</nav>
+		<p class="page-kicker">AJN Consultoria e Engenharia</p>
+		<h1 class="page-title">{heading}</h1>
+		<div class="inner-page__content">
+			<slot />
+		</div>
+	</div>
+</section>

@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogArticlePage from '../../components/BlogArticlePage.astro';
+import { blogArticle } from '../../data/representatives';
+---
+
+<BaseLayout title={blogArticle.title} description={blogArticle.description} canonicalPath="/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional" ogType="article" ogImage={blogArticle.image}>
+	<BlogArticlePage />
+</BaseLayout>

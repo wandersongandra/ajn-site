@@ -1,0 +1,36 @@
+---
+import PageShell from './PageShell.astro';
+import { institutionalPage } from '../data/representatives';
+---
+
+<PageShell heading={institutionalPage.heading}>
+	<div class="institutional-intro">
+		<div class="institutional-intro__image">
+			<img src={institutionalPage.images[0].src} alt={institutionalPage.images[0].alt} width="900" height="600" loading="eager" />
+		</div>
+		<div>
+			<h2>{institutionalPage.introTitle}</h2>
+			{institutionalPage.intro.map((paragraph) => <p>{paragraph}</p>)}
+		</div>
+	</div>
+
+	<div class="institutional-gallery">
+		<img src={institutionalPage.images[1].src} alt={institutionalPage.images[1].alt} width="220" height="220" loading="lazy" />
+		<img src={institutionalPage.images[2].src} alt={institutionalPage.images[2].alt} width="900" height="600" loading="lazy" />
+		<img src={institutionalPage.images[3].src} alt={institutionalPage.images[3].alt} width="900" height="600" loading="lazy" />
+	</div>
+
+	<div class="values-grid">
+		{institutionalPage.values.map((value) => (
+			<section>
+				<h2>{value.heading}</h2>
+				<p>{value.text}</p>
+			</section>
+		))}
+	</div>
+
+	<section class="content-section">
+		<h2>{institutionalPage.quality.heading}</h2>
+		<p>{institutionalPage.quality.text}</p>
+	</section>
+</PageShell>

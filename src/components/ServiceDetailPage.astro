@@ -1,0 +1,12 @@
+---
+import ContentSections from './ContentSections.astro';
+import PageShell from './PageShell.astro';
+import { qualityServicePage } from '../data/representatives';
+---
+
+<PageShell heading={qualityServicePage.heading}>
+	<div class="service-detail__hero">
+		<img src={qualityServicePage.image} alt={qualityServicePage.imageAlt} width="1200" height="800" loading="eager" />
+	</div>
+	<ContentSections sections={[qualityServicePage.section]} />
+</PageShell>

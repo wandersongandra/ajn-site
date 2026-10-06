@@ -1,0 +1,13 @@
+---
+import { hero } from '../data/home';
+---
+
+<section class="hero" style={`--hero-image: url('${hero.image}')`} aria-label="Apresentação AJN Consultoria e Engenharia">
+	<div class="site-shell hero__content">
+		<p>{hero.text}</p>
+		<div class="hero__actions">
+			<a class="button button--outline" href="/sobre-nos">Conheça mais sobre a AJN</a>
+			<a class="button" href="/consultoria-da-qualidade">Confira as nossas soluções</a>
+		</div>
+	</div>
+</section>

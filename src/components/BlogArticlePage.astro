@@ -1,0 +1,13 @@
+---
+import ContentSections from './ContentSections.astro';
+import PageShell from './PageShell.astro';
+import { blogArticle } from '../data/representatives';
+---
+
+<PageShell heading={blogArticle.heading}>
+	<article class="blog-article">
+		<img class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width="1200" height="800" loading="eager" />
+		<p class="blog-article__meta">Por: {blogArticle.author} - {blogArticle.date}</p>
+		<ContentSections sections={blogArticle.sections} />
+	</article>
+</PageShell>

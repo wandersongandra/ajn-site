@@ -1,0 +1,16 @@
+---
+import PageShell from './PageShell.astro';
+import { serviceIndexItems } from '../data/representatives';
+---
+
+<PageShell heading="Serviços">
+	<div class="service-index-grid">
+		{serviceIndexItems.map((service) => (
+			<article class="service-index-card">
+				<h2>{service.title}</h2>
+				<p>{service.description}</p>
+				<a href={service.href}>Saiba mais</a>
+			</article>
+		))}
+	</div>
+</PageShell>

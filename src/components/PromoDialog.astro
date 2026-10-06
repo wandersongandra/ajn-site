@@ -1,0 +1,15 @@
+<dialog class="promo-dialog" aria-labelledby="promo-title">
+	<div class="promo-dialog__content">
+		<button class="promo-dialog__close" type="button" aria-label="Fechar aviso">×</button>
+		<a href="https://web.whatsapp.com/send?phone=5531984734644&text=Ol%C3%A1%21%20Gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20as%20ofertas%20da%20AJN%20Consultoria%20e%20Engenharia" target="_blank" rel="nofollow noopener noreferrer">
+			<img src="/images/popup.jpg" alt="Aviso sobre eventos de Saúde e Segurança do Trabalho" width="722" height="722" />
+		</a>
+		<h2 id="promo-title" class="sr-only">Aviso AJN Consultoria e Engenharia</h2>
+	</div>
+</dialog>
+
+<script>
+	const dialog = document.querySelector<HTMLDialogElement>('.promo-dialog');
+	if (dialog && !dialog.open) dialog.showModal();
+	document.querySelector<HTMLButtonElement>('.promo-dialog__close')?.addEventListener('click', () => dialog?.close());
+</script>

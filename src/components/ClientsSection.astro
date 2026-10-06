@@ -1,0 +1,12 @@
+---
+import { clients } from '../data/home';
+---
+
+<section class="section clients" aria-labelledby="clients-title">
+	<div class="site-shell">
+		<h2 id="clients-title" class="section-title">Clientes que confiaram no nosso trabalho</h2>
+		<div class="clients__grid">
+			{clients.map((client) => <img src={client.src} alt={client.alt} width="180" height="100" loading="lazy" />)}
+		</div>
+	</div>
+</section>

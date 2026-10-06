@@ -1,0 +1,14 @@
+---
+import { missionVisionValues } from '../data/home';
+---
+
+<section class="section mission" aria-label="Missão, visão e valores">
+	<div class="site-shell mission__grid">
+		{missionVisionValues.map((item) => (
+			<article>
+				<h2>{item.title}</h2>
+				<p>{item.text}</p>
+			</article>
+		))}
+	</div>
+</section>

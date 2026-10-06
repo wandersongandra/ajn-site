@@ -1,0 +1,19 @@
+---
+import { differentials } from '../data/home';
+---
+
+<section class="differentials section" aria-labelledby="differentials-title">
+	<img class="differentials__icon differentials__icon--left" src="/images/icons/icon-left.png" alt="" width="190" height="190" loading="lazy" />
+	<img class="differentials__icon differentials__icon--right" src="/images/icons/icon-right.png" alt="" width="190" height="190" loading="lazy" />
+	<div class="site-shell">
+		<h2 id="differentials-title" class="section-title section-title--light">Nossos Diferenciais</h2>
+		<div class="differentials__grid">
+			{differentials.map((item) => (
+				<article>
+					<h3>{item.title}</h3>
+					<ul>{item.items.map((point) => <li>{point}</li>)}</ul>
+				</article>
+			))}
+		</div>
+	</div>
+</section>

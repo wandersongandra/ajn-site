@@ -1,0 +1,16 @@
+---
+import type { ContentSection } from '../data/representatives';
+
+interface Props {
+	sections: readonly ContentSection[];
+}
+
+const { sections } = Astro.props;
+---
+
+{sections.map((section) => (
+	<section class="content-section">
+		{section.heading ? <h2>{section.heading}</h2> : null}
+		{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+	</section>
+))}

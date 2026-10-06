@@ -1,0 +1,17 @@
+---
+import { highlights } from '../data/home';
+---
+
+<section class="section highlights" aria-labelledby="highlights-title">
+	<div class="site-shell">
+		<h2 id="highlights-title" class="section-title">Serviços em <span>Destaque</span></h2>
+		<div class="highlights__grid">
+			{highlights.map((highlight) => (
+				<a class="highlight-card" href={highlight.href} rel="nofollow">
+					<img src={highlight.image} alt={`Imagem ilustrativa de ${highlight.title}`} width="600" height="360" loading="lazy" />
+					<h3>{highlight.title}</h3>
+				</a>
+			))}
+		</div>
+	</div>
+</section>

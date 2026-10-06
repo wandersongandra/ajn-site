@@ -1,0 +1,13 @@
+---
+import PageShell from './PageShell.astro';
+import { site } from '../data/home';
+---
+
+<PageShell heading="Contato">
+	<section class="contact-page">
+		<h2>Fale conosco!</h2>
+		<p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
+		<p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+		<p>O formulário e o destino operacional do contato permanecem pendentes de confirmação da integração legada.</p>
+	</section>
+</PageShell>
