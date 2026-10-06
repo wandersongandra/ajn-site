@@ -1,9 +1,10 @@
 # Auditoria de conteúdo marketing — Família C
 
 Data: 2026-10-06
-Escopo: 106 URLs de marketing auditadas. Após o lote 10, 4 ainda
-permanecem pendentes no Astro. A página `/emissao-laudos` foi excluída porque
-já é a representante existente da mesma família.
+Escopo: 106 URLs de marketing auditadas. Após o lote final, todas as 106
+estão implementadas no Astro. A página `/emissao-laudos` foi excluída da
+auditoria de conteúdo porque já é a representante existente da mesma família;
+ao incluí-la, a família totaliza 107 páginas Astro.
 
 O lote 8 migrou 15 páginas da fila final `KEEP`, com 45 imagens principais
 portadas. A auditoria dos fragmentos não encontrou shortcode, iframe, script
@@ -18,6 +19,12 @@ O lote 10 migrou 15 páginas, com 45 referências de imagens: 37 foram
 deduplicadas e reutilizaram assets já versionados; somente 8 arquivos novos
 foram portados. Todos os paths finais usam a raiz pública `/images/`, sem
 ocorrências de `/public/`.
+
+O lote final migrou 4 páginas, com 12 referências de imagens: 10 foram
+deduplicadas e reutilizaram assets já versionados; 2 arquivos novos foram
+portados. Não foram encontrados shortcodes, iframes, scripts inline, PDFs,
+DOCs, outros anexos órfãos ou âncoras internas. Todos os paths finais usam a
+raiz pública `/images/`.
 
 ## Resultado executivo
 
@@ -242,8 +249,7 @@ arquivos de origem referenciados pelo legado.
 
 ## Representantes escolhidos
 
-As três páginas abaixo cobrem a maior variação observada e serão as únicas
-implementadas nesta etapa:
+As três páginas abaixo cobriram a maior variação observada no início da etapa:
 
 1. `/projeto-seguranca-incendio-panico`: 6 imagens, 3 listas, CTA e conteúdo
    comercial/técnico de incêndio.
@@ -252,8 +258,10 @@ implementadas nesta etapa:
 3. `/sistemas-incendio-bh`: 4 imagens, 754 palavras, integração entre incêndio,
    PMOC, equipamentos, treinamentos e CTA.
 
-A expansão das outras 103 páginas fica bloqueada até essas três passarem por
-check, build e comparação visual em 1440, 768 e 390 px.
+A expansão foi concluída após os lotes seguintes. As 106 URLs auditadas e a
+representante `/emissao-laudos` agora usam a collection/template de Marketing;
+as validações finais de check e build estão registradas em
+`docs/PHASE3_STATUS.md`.
 
 ## Limites de evidência
 

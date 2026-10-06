@@ -9,6 +9,10 @@ import { elaboracaoPgrPcmso } from './elaboracao-pgr-pcmso';
 import { laudosSegurancaDoTrabalho } from './laudos-seguranca-do-trabalho';
 import { laudoLtcatInsalubridade } from './laudo-ltcat-insalubridade';
 import { validateMarketingContent } from '../../content.config';
+import { laudosSst } from './laudos-sst';
+import { plataformaAcessibilidadePreco } from './plataforma-acessibilidade-preco';
+import { emissaoLtcat } from './emissao-ltcat';
+import { escadaRolanteBh } from './escada-rolante-bh';
 import { empresaProjetoEletrico } from './empresa-projeto-eletrico';
 import { manutencaoElevadoresBeloHorizonte } from './manutencao-elevadores-belo-horizonte';
 import { empresaPcmso } from './empresa-pcmso';
@@ -108,6 +112,10 @@ export const marketingPages = [
 	validateMarketingContent(projetoSegurancaIncendioPanico),
 	validateMarketingContent(laudosSegurancaDoTrabalho),
 	validateMarketingContent(sistemasIncendioBh),
+	validateMarketingContent(laudosSst),
+	validateMarketingContent(plataformaAcessibilidadePreco),
+	validateMarketingContent(emissaoLtcat),
+	validateMarketingContent(escadaRolanteBh),
 	validateMarketingContent(empresaProjetoEletrico),
 	validateMarketingContent(manutencaoElevadoresBeloHorizonte),
 	validateMarketingContent(empresaPcmso),

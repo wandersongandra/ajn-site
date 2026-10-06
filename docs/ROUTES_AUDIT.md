@@ -12,13 +12,14 @@ técnicas e necessidade de decisão humana.
 
 | Status final | Quantidade |
 |---|---:|
-| KEEP | 141 |
+| KEEP | 142 |
 | REDIRECT | 0 |
 | REMOVE | 0 |
-| REVIEW | 2 |
+| REVIEW | 1 |
 
-As 142 URLs restantes após a Home correspondem a 140 `KEEP` e 2 `REVIEW`
-(`/contato` e `/mapa-site`). A Home permanece `KEEP`.
+As 142 URLs restantes após a Home correspondem a 141 `KEEP` e 1 `REVIEW`
+(`/mapa-site`). A Home permanece `KEEP` e `/contato` permanece `KEEP`, com
+status funcional separado (`NEEDS_USER_DECISION`).
 
 ## Critérios e evidências da reauditoria
 
@@ -46,10 +47,10 @@ As 142 URLs restantes após a Home correspondem a 140 `KEEP` e 2 `REVIEW`
 
 | Status | Quantidade |
 |---|---:|
-| KEEP | 141 |
+| KEEP | 142 |
 | REDIRECT | 0 |
 | REMOVE | 0 |
-| REVIEW | 2 |
+| REVIEW | 1 |
 
 ### Achados objetivos
 
