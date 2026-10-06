@@ -6,7 +6,8 @@ As famílias foram expandidas somente depois da validação da arquitetura. A se
 |---|---|---|
 | HOME | / | Implementada e validada na Fase 1 |
 | INSTITUTIONAL | /sobre-nos, /informacoes, /mapa-site | Família completa implementada |
-| MARKETING_DETAIL | /emissao-laudos | Representante implementado; 106 URLs aguardam a família C |
+| MARKETING_GALLERY_STANDARD | /emissao-laudos, /laudos-seguranca-do-trabalho | Representantes implementados; 99 URLs standard aguardam expansão |
+| MARKETING_GALLERY_RICH | /projeto-seguranca-incendio-panico, /sistemas-incendio-bh | 2 representantes implementados; 5 URLs rich aguardam expansão |
 | SERVICE_DETAIL | Todas as 9 rotas /servicos/* | Família completa implementada por [slug].astro + src/content/services/*.ts |
 | SERVICES_INDEX | /servicos | Implementada com os dez itens do catálogo |
 | BLOG_INDEX | /blog | Representante implementado |

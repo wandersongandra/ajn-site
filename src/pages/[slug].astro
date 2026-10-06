@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MarketingDetailPage from '../components/MarketingDetailPage.astro';
+import { marketingPages } from '../content/marketing';
+
+export function getStaticPaths() {
+	return marketingPages.map((page) => ({
+		params: { slug: page.slug },
+		props: { page },
+	}));
+}
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title={page.title} description={page.description} canonicalPath={page.path} ogImage={page.images[0]?.src}>
+	<MarketingDetailPage page={page} />
+</BaseLayout>

@@ -125,9 +125,12 @@ h1, h2, h3, p { margin-top: 0; }
 .page-title { max-width: 900px; margin-bottom: 2.5rem; font-size: clamp(2rem, 4vw, 3rem); font-weight: 500; }
 .inner-page__content { max-width: 980px; }
 .inner-page__content h2 { margin: 2.75rem 0 1rem; font-size: clamp(1.35rem, 2.5vw, 2rem); font-weight: 500; }
+.inner-page__content h3 { margin: 1.75rem 0 .75rem; color: var(--dark); font-size: 1.15rem; font-weight: 600; }
 .inner-page__content p { max-width: 78ch; margin-bottom: 1rem; }
 .content-section { margin-bottom: 2.5rem; }
 .content-section:first-child h2 { margin-top: 0; }
+.content-list { max-width: 78ch; margin: 0 0 1.25rem 1.25rem; padding-left: 1.25rem; }
+.content-list li { margin-bottom: .55rem; padding-left: .35rem; }
 .institutional-intro { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: center; gap: 3rem; }
 .institutional-intro__image img { width: 100%; height: 390px; border-radius: var(--radius); object-fit: cover; }
 .institutional-gallery { display: grid; grid-template-columns: .55fr 1fr 1fr; align-items: center; gap: 1.25rem; margin: 3rem 0; }

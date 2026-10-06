@@ -1,0 +1,21 @@
+---
+import ContentInline from './ContentInline.astro';
+import type { ContentList, ContentParagraph } from '../content/types';
+
+interface Props {
+	list: ContentList;
+}
+
+const { list } = Astro.props;
+const isRichParagraph = (value: string | ContentParagraph): value is ContentParagraph => typeof value !== 'string';
+---
+
+{list.ordered ? (
+	<ol class="content-list">
+		{list.items.map((item) => <li>{isRichParagraph(item) ? <ContentInline segments={item.segments} /> : item}</li>)}
+	</ol>
+) : (
+	<ul class="content-list">
+		{list.items.map((item) => <li>{isRichParagraph(item) ? <ContentInline segments={item.segments} /> : item}</li>)}
+	</ul>
+)}

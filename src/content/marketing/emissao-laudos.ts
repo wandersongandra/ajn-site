@@ -1,4 +1,8 @@
+import type { MarketingContent } from '../types';
+
 export const marketingDetailPage = {
+	slug: 'emissao-laudos',
+	path: '/emissao-laudos',
 	title: 'Emissão de laudos - AJN Consultoria e Engenharia',
 	description: 'Emissão de laudos técnicos para conformidade, segurança e saúde dos colaboradores.',
 	heading: 'Emissão de laudos',
@@ -36,4 +40,4 @@ export const marketingDetailPage = {
 			'Entre em contato conosco e saiba como podemos ajudar a sua empresa a alcançar a excelência em segurança e saúde ocupacional!',
 		] },
 	],
-} as const;
+} as const satisfies MarketingContent;

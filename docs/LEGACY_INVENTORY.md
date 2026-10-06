@@ -44,6 +44,21 @@ Assets da home estão em `new-site/public/assets/ajn-live/`. O legado não foi m
 
 O inventário completo das 143 URLs está em [LIVE_URL_INVENTORY.md](./LIVE_URL_INVENTORY.md). Todas foram representadas em `new-site/src/data/live-pages.ts` com `path`, `title`, `description` e heading coletados da publicação. O conteúdo detalhado de cada artigo ainda precisa de uma etapa própria de extração e comparação visual.
 
+### URLs internas fora do catálogo de 143
+
+A auditoria da Família C confirmou 12 links internos fora do catálogo. Todos
+respondem HTTP 200 no domínio público em 2026-10-06, mas nenhum possui conteúdo
+correspondente no arquivo local `new-site-next-archive/public/live-content`.
+Foram classificados como `LEGACY_URL` em [LINK_AUDIT.md](./LINK_AUDIT.md) e
+ficam pendentes de extração de conteúdo/SEO antes de qualquer implementação ou
+redirect.
+
+| Grupo | Quantidade | Situação |
+|---|---:|---|
+| Artigos `/blog/` fora do catálogo | 11 | `LEGACY_URL`, HTTP 200, conteúdo local não recuperado |
+| Serviço `/servicos/` fora do catálogo | 1 | `LEGACY_URL`, HTTP 200, conteúdo local não recuperado |
+| Total | 12 | Não implementado e não redirecionado |
+
 ## Formulários e dados pessoais
 
 Não foram copiados leads. O cache WPForms local foi apenas identificado, não aberto nem migrado. Campos, destino, consentimento, integrações e retenção permanecem `NÃO VERIFICADO`.

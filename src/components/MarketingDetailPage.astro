@@ -1,14 +1,20 @@
 ---
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
-import { marketingDetailPage } from '../content/marketing/emissao-laudos';
+import type { MarketingContent } from '../content/types';
+
+interface Props {
+	page: MarketingContent;
+}
+
+const { page } = Astro.props;
 ---
 
-<PageShell heading={marketingDetailPage.heading}>
+<PageShell heading={page.heading}>
 	<div class="content-gallery">
-		{marketingDetailPage.images.map((image) => <a href={image.src}><img src={image.src} alt={image.alt} width="900" height="600" loading="lazy" /></a>)}
+		{page.images.map((image) => <a href={image.src}><img src={image.src} alt={image.alt} width="900" height="600" loading="lazy" /></a>)}
 	</div>
 	<p class="gallery-note">Clique nas imagens para ampliar</p>
-	<ContentSections sections={marketingDetailPage.sections} />
+	<ContentSections sections={page.sections} />
 	<p class="page-cta"><a class="button" href="/contato">Entre em contato</a></p>
 </PageShell>

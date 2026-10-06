@@ -8,10 +8,14 @@ Foram analisadas as **429 imagens baixadas do conteúdo público** em public/ass
 
 ## Working set do Astro — Fase 3
 
-O novo projeto Astro não copia o lote legado inteiro. No estado atual há 67
-arquivos em public/images, totalizando aproximadamente 6,00 MiB. O build
-referencia 53 imagens distintas e a varredura do dist não encontrou imagem
+O novo projeto Astro não copia o lote legado inteiro. No estado atual há 81
+arquivos em public/images, totalizando aproximadamente 6,59 MiB. O build
+referencia 67 imagens distintas e a varredura do dist não encontrou imagem
 local inexistente.
+
+Na Família C foram adicionados 14 assets locais para os três representantes.
+Eles permanecem separados por origem/página para facilitar auditoria e manter a
+correspondência com os caminhos recuperados do legado.
 
 Foi confirmada uma duplicata por hash SHA-256 da capa de Gestão da Qualidade:
 
@@ -21,6 +25,20 @@ Foi confirmada uma duplicata por hash SHA-256 da capa de Gestão da Qualidade:
 A segunda cópia não possui referências no código. A remoção física foi tentada
 somente na cópia Astro, mas o mecanismo local de execução bloqueou a operação
 destrutiva; ela permanece WARN e não afeta o build. O legado não foi alterado.
+
+Também foram observados cinco grupos de duplicatas exatas no working set atual,
+além da duplicata já registrada acima. Elas não foram consolidadas porque a
+expansão ainda está em andamento e cada caminho representa uma origem editorial
+do legado. Remover ou trocar essas referências agora poderia quebrar a paridade
+de uma página futura; status `WARN` para revisão posterior.
+
+Grupos observados na Família C:
+
+- `laudos-seguranca-do-trabalho-04.webp` = `projeto-seguranca-incendio-panico-02.webp` = `portfolio-06.webp`;
+- `sistemas-incendio-bh-01.webp` = `featured/combate-incendio-belo-horizonte-01.webp`;
+- `laudos-seguranca-do-trabalho-01.webp` = `featured/emissao-laudos-01.webp`;
+- `projeto-seguranca-incendio-panico-04.webp` = `portfolio-08.webp`;
+- `projeto-seguranca-incendio-panico-01.webp` = `portfolio-05.webp`.
 
 ## Resultado
 

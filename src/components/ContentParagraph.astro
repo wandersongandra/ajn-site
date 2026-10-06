@@ -1,0 +1,15 @@
+---
+import ContentInline from './ContentInline.astro';
+import type { ContentParagraph, ContentParagraphValue } from '../content/types';
+
+interface Props {
+	paragraph: ContentParagraphValue;
+}
+
+const { paragraph } = Astro.props;
+const isRichParagraph = (value: ContentParagraphValue): value is ContentParagraph => typeof value !== 'string';
+---
+
+<p>
+	{isRichParagraph(paragraph) ? <ContentInline segments={paragraph.segments} /> : paragraph}
+</p>

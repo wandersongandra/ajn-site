@@ -1,5 +1,7 @@
 ---
-import type { ContentParagraph, ContentSection } from '../content/types';
+import type { ContentSection } from '../content/types';
+import ContentList from './ContentList.astro';
+import ContentParagraphView from './ContentParagraph.astro';
 
 interface Props {
 	sections: readonly ContentSection[];
@@ -7,23 +9,19 @@ interface Props {
 
 const { sections } = Astro.props;
 
-const isRichParagraph = (paragraph: string | ContentParagraph): paragraph is ContentParagraph =>
-	typeof paragraph !== 'string';
 ---
 
 {sections.map((section) => (
 	<section class="content-section">
 		{section.heading ? <h2>{section.heading}</h2> : null}
-		{section.paragraphs.map((paragraph) => (
-			<p>
-				{isRichParagraph(paragraph)
-					? paragraph.segments.map((segment) =>
-						typeof segment === 'string' ? segment : (
-							<a href={segment.href} target="_blank" rel="noreferrer">{segment.text}</a>
-						)
-					)
-					: paragraph}
-			</p>
+		{section.paragraphs.map((paragraph) => <ContentParagraphView paragraph={paragraph} />)}
+		{section.lists?.map((list) => <ContentList list={list} />)}
+		{section.subsections?.map((subsection) => (
+			<div class="content-subsection">
+				<h3>{subsection.heading}</h3>
+				{subsection.paragraphs.map((paragraph) => <ContentParagraphView paragraph={paragraph} />)}
+				{subsection.lists?.map((list) => <ContentList list={list} />)}
+			</div>
 		))}
 	</section>
 ))}
