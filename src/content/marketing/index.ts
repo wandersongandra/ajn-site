@@ -26,6 +26,21 @@ import { empresasElevadoresBh } from './empresas-elevadores-bh';
 import { projetosEngenhariaEletrica } from './projetos-engenharia-eletrica';
 import { instalacoesEletricasProjeto } from './instalacoes-eletricas-projeto';
 import { inspecoesSegurancaDoTrabalho } from './inspecoes-seguranca-do-trabalho';
+import { projetosEletricosOrcamento } from './projetos-eletricos-orcamento';
+import { escadaRolanteBeloHorizonte } from './escada-rolante-belo-horizonte';
+import { valorProjetoIncendio } from './valor-projeto-incendio';
+import { plataformaElevatoria } from './plataforma-elevatoria';
+import { projetosInstalacoesEletricasPrediais } from './projetos-instalacoes-eletricas-prediais';
+import { ltcatPreco } from './ltcat-preco';
+import { empresaCombateIncendioBh } from './empresa-combate-incendio-bh';
+import { servicoProjetoEletrico } from './servico-projeto-eletrico';
+import { orcamentoPgr } from './orcamento-pgr';
+import { ltcatRenovacao } from './ltcat-renovacao';
+import { empresasManutencaoElevadoresBh } from './empresas-manutencao-elevadores-bh';
+import { orcamentoProjetoEletrico } from './orcamento-projeto-eletrico';
+import { empresaCombateIncendio } from './empresa-combate-incendio';
+import { empresaQueFazPgr } from './empresa-que-faz-pgr';
+import { segurancaDoTrabalhoLtcat } from './seguranca-do-trabalho-ltcat';
 import { sistemasIncendioBh } from './sistemas-incendio-bh';
 
 export const marketingPages = [
@@ -57,4 +72,19 @@ export const marketingPages = [
 	validateMarketingContent(projetosEngenhariaEletrica),
 	validateMarketingContent(instalacoesEletricasProjeto),
 	validateMarketingContent(escadaRolante),
+	validateMarketingContent(projetosEletricosOrcamento),
+	validateMarketingContent(escadaRolanteBeloHorizonte),
+	validateMarketingContent(valorProjetoIncendio),
+	validateMarketingContent(plataformaElevatoria),
+	validateMarketingContent(projetosInstalacoesEletricasPrediais),
+	validateMarketingContent(ltcatPreco),
+	validateMarketingContent(empresaCombateIncendioBh),
+	validateMarketingContent(servicoProjetoEletrico),
+	validateMarketingContent(orcamentoPgr),
+	validateMarketingContent(ltcatRenovacao),
+	validateMarketingContent(empresasManutencaoElevadoresBh),
+	validateMarketingContent(orcamentoProjetoEletrico),
+	validateMarketingContent(empresaCombateIncendio),
+	validateMarketingContent(empresaQueFazPgr),
+	validateMarketingContent(segurancaDoTrabalhoLtcat),
 ] as const;
