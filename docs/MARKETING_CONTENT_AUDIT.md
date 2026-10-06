@@ -8,8 +8,8 @@ Escopo: 106 URLs de marketing ainda não implementadas no Astro. A página `/emi
 | Medição | Resultado | Evidência |
 |---|---:|---|
 | URLs auditadas | 106 | `src/content/route-catalog.ts` + arquivos `new-site-next-archive/public/live-content` |
-| KEEP | 62 | Conteúdo recuperado e sem similaridade lexical >= 0,80 com outra página |
-| REVIEW | 44 | Similaridade lexical >= 0,80 com outra URL; não é prova de equivalência |
+| KEEP | 106 | Resultado final após triagem editorial/SEO das 44 alertas de similaridade |
+| REVIEW | 0 | Nenhuma página permaneceu sem decisão nesta triagem |
 | REDIRECT | 0 | Não há evidência de destino canônico, tráfego ou equivalência editorial suficiente |
 | REMOVE | 0 | Não há autorização nem prova de página descartável |
 | Datas encontradas no conteúdo | 0 | Nenhuma data explícita nos fragmentos recuperados |
@@ -21,14 +21,34 @@ Escopo: 106 URLs de marketing ainda não implementadas no Astro. A página `/emi
 | Canonical/robots no fragmento | NÃO VERIFICADO | Os arquivos recuperados são corpo/editorial, sem `<head>` |
 | Indexabilidade | INFERRED | URL presente no catálogo/sitemap legado; não substitui validação de headers |
 
-A classificação é independente da matriz anterior. As páginas REVIEW permanecem no
-inventário e não foram redirecionadas ou removidas.
+A classificação final desta auditoria substitui o alerta lexical inicial: as 44
+páginas inicialmente marcadas como REVIEW foram reclassificadas como KEEP.
+Nenhuma foi redirecionada ou removida.
+
+## Triagem final das 44 páginas inicialmente REVIEW
+
+Data da decisão: 2026-10-06.
+
+Foi feita comparação local dos 44 fragmentos HTML recuperados, incluindo texto
+normalizado, headings, quantidade de palavras e conjuntos de imagens. Não foi
+encontrado par com conteúdo idêntico, conjunto de imagens idêntico, indicação
+explícita de evento vencido ou evidência local suficiente de uma URL canônica
+substituta. As maiores aproximações foram sobreposições de palavras-chave de
+serviços relacionados, não equivalência editorial comprovada.
+
+Decisão: `44 REVIEW -> 44 KEEP`. As páginas têm valor potencial de intenção de
+busca e permanecem com suas URLs legadas até a migração individual. Como não
+houve `REMOVE`, não foi criado redirect 301 em `docs/REDIRECTS.md`.
+
+Os rótulos `REVIEW` nas linhas históricas da matriz abaixo representam o alerta
+lexical original; a decisão final vigente é a seção acima.
 
 ## Critério
 
 - `KEEP`: não encontrei evidência local suficiente para remover ou redirecionar.
-- `REVIEW`: similaridade lexical de cosseno >= 0,80 com pelo menos outra página.
-  A métrica é um alerta de conteúdo parecido, não uma decisão SEO final.
+- `REVIEW` (alerta inicial): similaridade lexical de cosseno >= 0,80 com pelo
+  menos outra página. A métrica é um alerta de conteúdo parecido, não uma
+  decisão SEO final.
 - `REDIRECT` e `REMOVE`: não aplicados sem canonicalidade, dados de tráfego,
   backlinks, intenção editorial e validação no site em produção.
 - Nenhum fragmento tinha H1; o H1 deve ser fornecido pelo template Astro. Os H2/H3
