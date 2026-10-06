@@ -2,6 +2,7 @@
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { MarketingContent } from '../content/types';
+import { Image } from 'astro:assets';
 
 interface Props {
 	page: MarketingContent;
@@ -12,7 +13,7 @@ const { page } = Astro.props;
 
 <PageShell heading={page.heading}>
 	<div class="content-gallery">
-		{page.images.map((image) => <a href={image.src}><img src={image.src} alt={image.alt} width="900" height="600" loading="lazy" /></a>)}
+		{page.images.map((image) => <a href={image.src}><Image src={image.src} alt={image.alt} width={900} height={600} loading="lazy" /></a>)}
 	</div>
 	<p class="gallery-note">Clique nas imagens para ampliar</p>
 	<ContentSections sections={page.sections} />
