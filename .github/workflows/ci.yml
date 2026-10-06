@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'feat/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_SITE_ORIGIN: https://www.ajnengenharia.com.br
+      PUBLIC_ALLOW_INDEXING: 'false'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Astro check
+        run: npm run check
+
+      - name: Static build
+        run: npm run build
+
+      - name: SEO audit
+        run: npm run audit:seo
+
+      - name: Dependency audit
+        run: npm audit --omit=dev --audit-level=high

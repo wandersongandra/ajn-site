@@ -4,10 +4,136 @@ import { site } from '../data/home';
 ---
 
 <PageShell heading="Contato">
-	<section class="contact-page">
-		<h2>Fale conosco!</h2>
-		<p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
-		<p><a href={`mailto:${site.email}`}>{site.email}</a></p>
-		<p>O formulário e o destino operacional do contato permanecem pendentes de confirmação da integração legada.</p>
-	</section>
+  <section class="contact-page">
+    <h2>Fale conosco!</h2>
+    <p>Preencha os dados abaixo para preparar uma mensagem. O site não armazena as informações e não possui banco de leads.</p>
+
+    <form class="contact-form" data-contact-form>
+      <div class="contact-form__field">
+        <label for="contact-name">Nome</label>
+        <input id="contact-name" name="nome" autocomplete="name" required />
+      </div>
+
+      <div class="contact-form__field">
+        <label for="contact-email">E-mail</label>
+        <input id="contact-email" name="email" type="email" autocomplete="email" required />
+      </div>
+
+      <div class="contact-form__field">
+        <label for="contact-phone">Telefone</label>
+        <input id="contact-phone" name="telefone" type="tel" autocomplete="tel" required />
+      </div>
+
+      <div class="contact-form__field">
+        <label for="contact-source">Como nos conheceu?</label>
+        <select id="contact-source" name="como_nos_conheceu">
+          <option value="">Selecione</option>
+          <option>Google</option>
+          <option>Indicação</option>
+          <option>Instagram</option>
+          <option>LinkedIn</option>
+          <option>Outro</option>
+        </select>
+      </div>
+
+      <div class="contact-form__field">
+        <label for="contact-message">Mensagem</label>
+        <textarea id="contact-message" name="mensagem" rows="6" required></textarea>
+      </div>
+
+      <p class="contact-form__privacy" id="contact-delivery-note">
+        Nenhum dado é enviado para um servidor da AJN nesta versão. Ao continuar, seu aplicativo de e-mail ou WhatsApp será aberto. Para anexos, utilize o e-mail da AJN diretamente.
+      </p>
+
+      <div class="contact-form__actions">
+        <button class="button" type="submit">Preparar e-mail</button>
+        <button class="button contact-form__whatsapp" type="button" data-contact-whatsapp>Preparar WhatsApp</button>
+      </div>
+
+      <p class="contact-form__status" role="status" aria-live="polite" data-contact-status></p>
+    </form>
+
+    <div class="contact-page__direct">
+      <h2>Contato direto</h2>
+      <p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
+      <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+    </div>
+  </section>
 </PageShell>
+
+<script define:vars={{ contactEmail: site.email }}>
+  const form = document.querySelector('[data-contact-form]');
+  const whatsappButton = document.querySelector('[data-contact-whatsapp]');
+  const status = document.querySelector('[data-contact-status]');
+
+  const collect = () => {
+    if (!(form instanceof HTMLFormElement)) return null;
+    const data = new FormData(form);
+    return {
+      nome: String(data.get('nome') ?? '').trim(),
+      email: String(data.get('email') ?? '').trim(),
+      telefone: String(data.get('telefone') ?? '').trim(),
+      origem: String(data.get('como_nos_conheceu') ?? '').trim(),
+      mensagem: String(data.get('mensagem') ?? '').trim(),
+    };
+  };
+
+  const messageBody = (values) => [
+    `Nome: ${values.nome}`,
+    `E-mail: ${values.email}`,
+    `Telefone: ${values.telefone}`,
+    `Como nos conheceu: ${values.origem || 'Não informado'}`,
+    '',
+    values.mensagem,
+  ].join('\n');
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!(form instanceof HTMLFormElement) || !form.reportValidity()) return;
+    const values = collect();
+    if (!values) return;
+    const subject = `Contato pelo site — ${values.nome}`;
+    const href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody(values))}`;
+    if (status) status.textContent = 'Abrindo seu aplicativo de e-mail. Nenhuma informação foi armazenada pelo site.';
+    window.location.href = href;
+  });
+
+  whatsappButton?.addEventListener('click', () => {
+    if (!(form instanceof HTMLFormElement) || !form.reportValidity()) return;
+    const values = collect();
+    if (!values) return;
+    const text = `Olá! Meu nome é ${values.nome}.\nTelefone: ${values.telefone}\nE-mail: ${values.email}\nOrigem: ${values.origem || 'Não informado'}\n\n${values.mensagem}`;
+    if (status) status.textContent = 'Abrindo o WhatsApp. Nenhuma informação foi armazenada pelo site.';
+    window.open(`https://wa.me/5531984734644?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+  });
+</script>
+
+<style>
+  .contact-page { max-width: 760px; }
+  .contact-form { display: grid; gap: 1rem; margin: 2rem 0 2.5rem; }
+  .contact-form__field { display: grid; gap: .4rem; }
+  .contact-form label { color: var(--dark); font-weight: 600; }
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    width: 100%;
+    padding: .8rem .9rem;
+    border: 1px solid var(--border);
+    border-radius: .35rem;
+    color: var(--dark);
+    background: var(--white);
+    font: inherit;
+  }
+  .contact-form textarea { resize: vertical; }
+  .contact-form input:focus-visible,
+  .contact-form select:focus-visible,
+  .contact-form textarea:focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+  }
+  .contact-form__privacy { margin: .25rem 0; font-size: .85rem; }
+  .contact-form__actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .contact-form__whatsapp { cursor: pointer; }
+  .contact-form__status { min-height: 1.5em; margin: 0; font-weight: 600; }
+  .contact-page__direct { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+</style>

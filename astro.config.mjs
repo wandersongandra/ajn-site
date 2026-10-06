@@ -1,5 +1,9 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// https://astro.build/config
-export default defineConfig({});
+const site = (process.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
+
+export default defineConfig({
+  output: 'static',
+  site,
+});

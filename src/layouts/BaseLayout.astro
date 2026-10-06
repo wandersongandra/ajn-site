@@ -3,52 +3,88 @@ import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PromoDialog from '../components/PromoDialog.astro';
+import { site } from '../data/home';
 
 interface Props {
-	title?: string;
-	description?: string;
-	canonicalPath?: string;
-	ogType?: 'website' | 'article';
-	ogImage?: string;
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: 'website' | 'article';
+  ogImage?: string;
+  noindex?: boolean;
 }
 
 const {
-	title = 'Serviços de Engenharia de Segurança do Trabalho - AJN Consultoria e Engenharia',
-	description = 'A AJN Consultoria e Engenharia oferece soluções em qualidade, saúde, segurança, meio ambiente e engenharia.',
-	canonicalPath = '/',
-	ogType = 'website',
-	ogImage,
+  title = 'Serviços de Engenharia de Segurança do Trabalho - AJN Consultoria e Engenharia',
+  description = 'A AJN Consultoria e Engenharia oferece soluções em qualidade, saúde, segurança, meio ambiente e engenharia.',
+  canonicalPath = '/',
+  ogType = 'website',
+  ogImage = '/images/branding/logo.png',
+  noindex = false,
 } = Astro.props;
 
-const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br';
-const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath}`;
+const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
+const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}`;
+const canonicalUrl = `${siteOrigin}${normalizedPath}`;
+const imageUrl = ogImage.startsWith('http') ? ogImage : `${siteOrigin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
+const buildAllowsIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING !== 'false';
+const robots = noindex || !buildAllowsIndexing
+  ? 'noindex,nofollow,noarchive'
+  : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: siteOrigin,
+  email: site.email,
+  telephone: site.phone,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Rua Alberto Cintra, 35, sala 601',
+    addressLocality: 'Belo Horizonte',
+    addressRegion: 'MG',
+    addressCountry: 'BR',
+  },
+  sameAs: [site.instagram, site.linkedin],
+};
 ---
 
 <!doctype html>
 <html lang="pt-BR">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="description" content={description} />
-		<link rel="canonical" href={canonicalUrl} />
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:type" content={ogType} />
-		<meta property="og:url" content={canonicalUrl} />
-		{ogImage ? <meta property="og:image" content={`${siteOrigin}${ogImage}`} /> : null}
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content={title} />
-		<meta name="twitter:description" content={description} />
-		<link rel="icon" type="image/webp" href="/images/icons/logo-icon.webp" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet" />
-		<title>{title}</title>
-	</head>
-	<body>
-		<Header />
-		<main><slot /></main>
-		<Footer />
-		<PromoDialog />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#576b43" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="pt_BR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+
+    <link rel="icon" type="image/webp" href="/images/icons/logo-icon.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header />
+    <main><slot /></main>
+    <Footer />
+    <PromoDialog />
+  </body>
 </html>
