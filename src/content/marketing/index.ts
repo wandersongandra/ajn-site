@@ -9,6 +9,21 @@ import { elaboracaoPgrPcmso } from './elaboracao-pgr-pcmso';
 import { laudosSegurancaDoTrabalho } from './laudos-seguranca-do-trabalho';
 import { laudoLtcatInsalubridade } from './laudo-ltcat-insalubridade';
 import { validateMarketingContent } from '../../content.config';
+import { projetoSegurancaIncendio } from './projeto-seguranca-incendio';
+import { empresaLtcat } from './empresa-ltcat';
+import { projetoEletricoIndustrialBeloHorizonte } from './projeto-eletrico-industrial-belo-horizonte';
+import { plataformaAcessibilidade } from './plataforma-acessibilidade';
+import { projetoCombateIncendioPreco } from './projeto-combate-incendio-preco';
+import { projetoPrevencaoIncendioPanico } from './projeto-prevencao-incendio-panico';
+import { projetoEletricoResidencialCompleto } from './projeto-eletrico-residencial-completo';
+import { empresaProjetoEletricoBh } from './empresa-projeto-eletrico-bh';
+import { empresaQueFazLtcat } from './empresa-que-faz-ltcat';
+import { projetoEletrico } from './projeto-eletrico';
+import { orcamentoProjetoCombateIncendio } from './orcamento-projeto-combate-incendio';
+import { ltcatEventoEsocial } from './ltcat-evento-esocial';
+import { projetoPrevencaoCombateIncendio } from './projeto-prevencao-combate-incendio';
+import { elaboracaoDoPgrPcmso } from './elaboracao-do-pgr-pcmso';
+import { consultoriaSegurancaSaudeNoTrabalho } from './consultoria-seguranca-saude-no-trabalho';
 import { marketingDetailPage } from './emissao-laudos';
 import { periciasInsalubridadePericulosidade } from './pericias-insalubridade-periculosidade';
 import { pcmsoPreco } from './pcmso-preco';
@@ -63,6 +78,21 @@ export const marketingPages = [
 	validateMarketingContent(projetoSegurancaIncendioPanico),
 	validateMarketingContent(laudosSegurancaDoTrabalho),
 	validateMarketingContent(sistemasIncendioBh),
+	validateMarketingContent(projetoSegurancaIncendio),
+	validateMarketingContent(empresaLtcat),
+	validateMarketingContent(projetoEletricoIndustrialBeloHorizonte),
+	validateMarketingContent(plataformaAcessibilidade),
+	validateMarketingContent(projetoCombateIncendioPreco),
+	validateMarketingContent(projetoPrevencaoIncendioPanico),
+	validateMarketingContent(projetoEletricoResidencialCompleto),
+	validateMarketingContent(empresaProjetoEletricoBh),
+	validateMarketingContent(empresaQueFazLtcat),
+	validateMarketingContent(projetoEletrico),
+	validateMarketingContent(orcamentoProjetoCombateIncendio),
+	validateMarketingContent(ltcatEventoEsocial),
+	validateMarketingContent(projetoPrevencaoCombateIncendio),
+	validateMarketingContent(elaboracaoDoPgrPcmso),
+	validateMarketingContent(consultoriaSegurancaSaudeNoTrabalho),
 	validateMarketingContent(empresaElevadorBeloHorizonte),
 	validateMarketingContent(projetoEletricoIndustrialPreco),
 	validateMarketingContent(consultoriaDaQualidade),
