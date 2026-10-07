@@ -1,10 +1,10 @@
 ---
 import '../styles/global.css';
+import '../styles/design-refresh.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PromoDialog from '../components/PromoDialog.astro';
 import SocialFloat from '../components/SocialFloat.astro';
-import CookieBanner from '../components/CookieBanner.astro';
 
 interface Props {
 	title?: string;
@@ -57,7 +57,6 @@ const robotsDirective = allowIndexing
 		<main><slot /></main>
 		<Footer />
 		<SocialFloat />
-		<CookieBanner />
 		{Astro.url.pathname === '/' ? <PromoDialog /> : null}
 	</body>
 </html>

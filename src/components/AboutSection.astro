@@ -9,12 +9,10 @@ import { about } from '../data/home';
 			<img class="about__mark" src="/images/icons/logo-icon.webp" alt="" width="180" height="180" loading="lazy" />
 		</div>
 		<div class="about__copy">
-			<h1 id="about-title">{about.title}</h1>
+			<p class="eyebrow">Sobre a empresa</p>
+			<h2 id="about-title">{about.title}</h2>
 			{about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
-			<a class="button" href="/sobre-nos">Saiba mais</a>
+			<a class="button" href="/sobre-nos">Conheça nossa história</a>
 		</div>
-	</div>
-	<div class="site-shell about__secondary">
-		<img src={about.secondaryImage} alt="Equipamentos e segurança do trabalho" width="400" height="400" loading="lazy" />
 	</div>
 </section>
