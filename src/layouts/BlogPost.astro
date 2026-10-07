@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import ContentSections from '../components/ContentSections.astro';
+import BlogSidebar from '../components/BlogSidebar.astro';
 import type { BlogContentData } from '../content.config';
 
 interface Props {
@@ -26,7 +27,9 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 			<span>{post.heading}</span>
 		</nav>
 
-		<article class="blog-article">
+		<div class="blog-article-layout">
+			<BlogSidebar />
+			<article class="blog-article">
 			<header class="blog-article__header">
 				<p class="page-kicker">AJN Consultoria e Engenharia · Blog</p>
 				<h1 class="page-title">{post.heading}</h1>
@@ -59,6 +62,7 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 					{post.tags.map((tag) => <li>{tag}</li>)}
 				</ul>
 			</footer>
-		</article>
+			</article>
+		</div>
 	</div>
 </section>

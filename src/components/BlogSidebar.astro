@@ -1,0 +1,37 @@
+---
+import { blogPages } from '../content/blog';
+import { blogPosts } from '../content/blog/catalog';
+
+const tags = [...new Set(blogPages.flatMap((post) => post.tags))].slice(0, 8);
+---
+
+<aside class="blog-sidebar" aria-label="Navegação do Blog">
+	<label class="blog-sidebar__search">
+		<span class="sr-only">Buscar no Blog</span>
+		<input type="search" data-blog-search placeholder="Buscar por ..." />
+	</label>
+	<section>
+		<h2>Últimas postagens</h2>
+		<ul>
+			{blogPosts.slice(0, 6).map((post) => <li><a href={post.href}>{post.title}</a></li>)}
+		</ul>
+	</section>
+	<section>
+		<h2>Tags</h2>
+		<div class="blog-sidebar__tags">
+			{tags.map((tag) => <a href={`/blog/?tag=${encodeURIComponent(tag)}`}>{tag}</a>)}
+		</div>
+	</section>
+</aside>
+
+<script>
+	const search = document.querySelector<HTMLInputElement>('[data-blog-search]');
+	const cards = [...document.querySelectorAll<HTMLElement>('[data-blog-card]')];
+
+	search?.addEventListener('input', () => {
+		const query = search.value.trim().toLocaleLowerCase('pt-BR');
+		cards.forEach((card) => {
+			card.hidden = query.length > 0 && !(card.dataset.blogTitle ?? '').includes(query);
+		});
+	});
+</script>

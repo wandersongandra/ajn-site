@@ -1,0 +1,18 @@
+<aside class="cookie-banner" data-cookie-banner hidden>
+	<p>Utilizamos cookies para melhorar sua experiência online. Ao continuar, você estará ciente do uso de cookies e aceitando a nossa Política de Cookies.</p>
+	<button type="button" data-cookie-dismiss>Continuar</button>
+</aside>
+
+<script>
+	const banner = document.querySelector<HTMLElement>('[data-cookie-banner]');
+	const dismiss = document.querySelector<HTMLButtonElement>('[data-cookie-dismiss]');
+
+	if (banner && window.localStorage.getItem('ajn-cookie-notice-dismissed') !== '1') {
+		banner.hidden = false;
+	}
+
+	dismiss?.addEventListener('click', () => {
+		window.localStorage.setItem('ajn-cookie-notice-dismissed', '1');
+		if (banner) banner.hidden = true;
+	});
+</script>

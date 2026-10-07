@@ -1,16 +1,53 @@
 ---
 import PageShell from './PageShell.astro';
 import { serviceIndexItems } from '../content/services/catalog';
+import { services } from '../data/home';
+
+const serviceImages: Record<string, string> = {
+	'Assessoria e consultoria em saúde ocupacional': services[0].image,
+	'Gestão Ambiental': services[2].image,
+	'Gestão da Qualidade': services[3].image,
+	'Gestão do E-Social': services[1].image,
+	'PCMSO e ASOs': services[4].image,
+	'Perícias em Periculosidade e Insalubridade': services[5].image,
+	'Projetos de Combate a Incêndio e Pânico - PPCIP': services[6].image,
+	'Projetos Elétricos Residenciais, Comerciais e Prediais com Foco em Qualidade, Prazo e Economia': '/images/featured/orcamento-projeto-eletrico-01.webp',
+	'Regularização de imóveis junto ao corpo de bombeiros': services[7].image,
+	'Treinamento de NRs': services[8].image,
+};
 ---
 
 <PageShell heading="Serviços">
-	<div class="service-index-grid">
+	<div class="service-index-toolbar" aria-label="Filtros de serviços">
+		<label>
+			<span class="sr-only">Pesquisar serviços</span>
+			<input type="search" data-service-search placeholder="Pesquisar..." />
+		</label>
+		<span>{serviceIndexItems.length} serviços disponíveis</span>
+	</div>
+	<div class="service-index-grid" data-service-grid>
 		{serviceIndexItems.map((service) => (
-			<article class="service-index-card">
-				<h2>{service.title}</h2>
-				<p>{service.description}</p>
-				<a href={service.href}>Saiba mais</a>
+			<article class="service-index-card" data-service-card data-service-title={service.title.toLocaleLowerCase('pt-BR')}>
+				<img class="service-index-card__image" src={serviceImages[service.title] ?? '/images/services/treinamentos-nrs.png'} alt="" width="600" height="800" loading="lazy" />
+				<div class="service-index-card__overlay"></div>
+				<div class="service-index-card__content">
+					<h2>{service.title}</h2>
+					<p>{service.description}</p>
+					<a href={service.href}>Saiba mais</a>
+				</div>
 			</article>
 		))}
 	</div>
 </PageShell>
+
+<script>
+	const search = document.querySelector<HTMLInputElement>('[data-service-search]');
+	const cards = [...document.querySelectorAll<HTMLElement>('[data-service-card]')];
+
+	search?.addEventListener('input', () => {
+		const query = search.value.trim().toLocaleLowerCase('pt-BR');
+		cards.forEach((card) => {
+			card.hidden = query.length > 0 && !(card.dataset.serviceTitle ?? '').includes(query);
+		});
+	});
+</script>

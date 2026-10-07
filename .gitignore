@@ -33,6 +33,9 @@ private/
 .playwright-cli/
 output/
 
+# Phase 2 visual QA screenshots
+tests/visual/screenshots/
+
 # macOS-specific files
 .DS_Store
 

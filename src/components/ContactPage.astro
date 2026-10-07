@@ -4,10 +4,55 @@ import { site } from '../data/home';
 ---
 
 <PageShell heading="Contato">
-	<section class="contact-page">
-		<h2>Fale conosco!</h2>
-		<p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
-		<p><a href={`mailto:${site.email}`}>{site.email}</a></p>
-		<p>O formulário e o destino operacional do contato permanecem pendentes de confirmação da integração legada.</p>
-	</section>
+	<div class="contact-layout">
+		<section class="contact-page contact-page--info">
+			<h2>Fale conosco!</h2>
+			<h3>Endereço</h3>
+			<p>{site.address}</p>
+			<h3>Telefone</h3>
+			<p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
+			<h3>E-mail</h3>
+			<p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+			<h3>SIGA-NOS!</h3>
+			<div class="contact-page__social">
+				<a href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
+				<a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+			</div>
+		</section>
+		<section class="contact-page contact-page--form">
+			<h2>Envie sua Mensagem</h2>
+			<form class="contact-form" data-contact-form>
+				<div class="contact-form__row">
+					<label>Nome<input name="nome" type="text" placeholder="Nome" required /></label>
+					<label>E-mail<input name="email" type="email" placeholder="E-mail" required /></label>
+				</div>
+				<div class="contact-form__row">
+					<label>Telefone<input name="telefone" type="tel" placeholder="Telefone" required /></label>
+					<label>Como nos conheceu
+						<select name="como_nos_conheceu" required>
+							<option value="">Selecione</option>
+							<option>Busca do Google</option>
+							<option>Outros Buscadores</option>
+							<option>Indicação</option>
+							<option>Outros</option>
+						</select>
+					</label>
+				</div>
+				<label>Anexo<input name="anexo" type="file" /></label>
+				<label>Mensagem<textarea name="mensagem" placeholder="Mensagem" rows="6" required></textarea></label>
+				<button class="button" type="submit">ENVIAR MENSAGEM</button>
+				<p class="contact-form__status" data-contact-status role="status">O envio online depende da configuração do serviço de contato da produção.</p>
+			</form>
+		</section>
+	</div>
 </PageShell>
+
+<script>
+	const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+	const status = document.querySelector<HTMLElement>('[data-contact-status]');
+
+	form?.addEventListener('submit', (event) => {
+		event.preventDefault();
+		if (status) status.textContent = 'O formulário está pronto, mas o destino de envio ainda precisa ser configurado antes da publicação.';
+	});
+</script>

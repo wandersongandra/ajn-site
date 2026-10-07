@@ -11,13 +11,23 @@ import { navigation, site } from '../data/home';
 		</div>
 		<div class="footer__menu">
 			<h2>NAVEGAÇÃO</h2>
-			<ul>{navigation.slice(0, 6).map((item) => <li><a href={item.href}>{item.label}</a></li>)}</ul>
+			<ul>
+				{navigation.slice(0, 6).map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+				<li><a href="/mapa-site">Mapa do site</a></li>
+			</ul>
 		</div>
 		<div class="footer__contact">
 			<h2>CONTATO</h2>
 			<a href={site.phoneHref} rel="nofollow" target="_blank">{site.phone}</a>
 			<a href={`mailto:${site.email}`}>{site.email}</a>
 			<p>{site.address}</p>
+			<div class="footer__actions">
+				<a class="footer__button" href="/contato">Envie sua mensagem!</a>
+				<a class="footer__button" href="/contato">Trabalhe Conosco</a>
+			</div>
+		</div>
+		<div class="footer__social-column">
+			<h2>SIGA-NOS!</h2>
 			<div class="footer__social">
 				<a href={site.instagram} target="_blank" rel="nofollow noopener noreferrer"><img src="/images/icons/instagram.png" alt="Instagram" width="38" height="38" /></a>
 				<a href={site.linkedin} target="_blank" rel="nofollow noopener noreferrer"><img src="/images/icons/linkedin.png" alt="LinkedIn" width="38" height="38" /></a>
