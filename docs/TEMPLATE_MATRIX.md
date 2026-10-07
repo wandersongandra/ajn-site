@@ -13,15 +13,15 @@ Fonte: auditoria das 143 URLs públicas, arquivos locais recuperados e
 | SERVICE_DETAIL | 9 | 9 | 0 | Template único com imagem, informações e conteúdo técnico por arquivo |
 | SERVICES_INDEX | 1 | 1 | 0 | Catálogo dos serviços com título, resumo e link |
 | BLOG_INDEX | 1 | 1 | 0 | Últimas postagens, arquivo visual e links |
-| BLOG_ARTICLE | 20 | 16 | 4 | Template editorial com imagem, autoria/data, tags e seções |
+| BLOG_ARTICLE | 20 | 20 | 0 | Template editorial com imagem, autoria/data, tags e seções |
 | CONTACT | 1 | 1 | 0 | Contato público recuperado; contrato funcional do formulário ainda pendente |
-| **Total** | **143** | **139** | **4** | — |
+| **Total** | **143** | **143** | **0** | — |
 
 ## Totais e decisões
 
 - URLs públicas auditadas: 143.
 - Rotas Astro implementadas antes da Família C: 18.
-- Rotas ainda não implementadas: 4, todas da família BLOG_ARTICLE.
+- Rotas ainda não implementadas: 0.
 - A Família C auditou 106 páginas de marketing restantes; `/emissao-laudos` já
   é a primeira representante da família standard.
 - A auditoria de conteúdo classificou inicialmente 62 páginas como KEEP e 44
