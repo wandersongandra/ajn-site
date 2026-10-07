@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import { blogPages } from '../content/blog';
+
+const posts = blogPages.slice(0, 3);
+const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
+	day: '2-digit',
+	month: 'short',
+	year: 'numeric',
+	timeZone: 'UTC',
+});
+---
+
+<section class="section home-blog" aria-labelledby="home-blog-title">
+	<div class="site-shell">
+		<div class="home-blog__heading">
+			<div>
+				<p class="eyebrow eyebrow--left">Conteúdo técnico</p>
+				<h2 id="home-blog-title">Atualizações para apoiar decisões mais seguras</h2>
+			</div>
+			<a class="home-blog__all" href="/blog">Ver todos os artigos <span aria-hidden="true">→</span></a>
+		</div>
+		<div class="home-blog__grid">
+			{posts.map((post) => (
+				<article class="home-blog__card">
+					<a class="home-blog__image" href={post.path}>
+						<Image src={post.image.src} alt={post.image.alt} width={900} format="webp" loading="lazy" />
+					</a>
+					<div class="home-blog__body">
+						<p class="home-blog__meta"><time datetime={post.pubDate.toISOString()}>{formatDate(post.pubDate)}</time></p>
+						<h3><a href={post.path}>{post.heading}</a></h3>
+						<p>{post.description}</p>
+						<a class="home-blog__link" href={post.path}>Ler artigo <span aria-hidden="true">→</span></a>
+					</div>
+				</article>
+			))}
+		</div>
+	</div>
+</section>
