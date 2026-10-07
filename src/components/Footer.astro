@@ -6,8 +6,9 @@ import { navigation, site } from '../data/home';
 	<div class="site-shell footer__grid">
 		<div class="footer__brand">
 			<img class="footer__logo" src="/images/branding/logo.png" alt={site.name} width="200" height="80" />
-			<p>Consultoria e engenharia aplicada à qualidade, saúde, segurança e meio ambiente.</p>
-			<p class="footer__legal">CNPJ: 50.970.588/0001-84</p>
+			<p><strong>Razão Social:</strong> AJN Consultoria e Engenharia</p>
+			<p>CNPJ: 50.970.588/0001-84</p>
+			<p>A empresa se destaca na prestação de serviços de segurança do trabalho para setores complexos, com atendimento personalizado e atuação preventiva.</p>
 		</div>
 
 		<div class="footer__menu">
@@ -19,21 +20,29 @@ import { navigation, site } from '../data/home';
 		</div>
 
 		<div class="footer__contact">
-			<h2>Fale com a AJN</h2>
+			<h2>Contato</h2>
+			<p>{site.address}</p>
 			<a href={site.phoneHref} rel="nofollow noopener noreferrer" target="_blank">{site.phone}</a>
 			<a href={`mailto:${site.email}`}>{site.email}</a>
-			<p>{site.address}</p>
-			<a class="footer__button" href="/contato">Enviar mensagem</a>
+			<div class="footer__actions">
+				<a class="footer__button" href="/contato">Envie sua mensagem!</a>
+				<a class="footer__button footer__button--secondary" href="/contato">Trabalhe Conosco</a>
+			</div>
+		</div>
+
+		<div class="footer__social-column">
+			<h2>Siga-nos!</h2>
 			<div class="footer__social">
-				<a href={site.instagram} target="_blank" rel="nofollow noopener noreferrer" aria-label="Instagram"><img src="/images/icons/instagram.png" alt="" width="38" height="38" /></a>
 				<a href={site.linkedin} target="_blank" rel="nofollow noopener noreferrer" aria-label="LinkedIn"><img src="/images/icons/linkedin.png" alt="" width="38" height="38" /></a>
+				<a href={site.instagram} target="_blank" rel="nofollow noopener noreferrer" aria-label="Instagram"><img src="/images/icons/instagram.png" alt="" width="38" height="38" /></a>
+				<a href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer" aria-label="WhatsApp"><img src="/images/icons/whatsapp-icon.svg" alt="" width="38" height="38" /></a>
 			</div>
 		</div>
 	</div>
+
 	<div class="copyright-footer">
 		<div class="site-shell copyright-footer__inner">
-			<span>© AJN Consultoria e Engenharia. Todos os direitos reservados.</span>
-			<img src="/images/icons/logo-icon.webp" alt="" width="42" height="42" />
+			<span>Copyright © AJN Consultoria e Engenharia. (Lei 9610 de 19/02/1998)</span>
 		</div>
 	</div>
 </footer>
