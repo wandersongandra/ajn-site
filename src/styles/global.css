@@ -467,3 +467,17 @@ button { cursor: pointer; }
 	from { opacity: 0; transform: translateY(-6px) scale(.985); }
 	to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+
+/* Rendering budget for long pages */
+.portfolio,
+.differentials,
+.highlights,
+.blog-index-list {
+	content-visibility: auto;
+	contain-intrinsic-size: 800px;
+}
+
+img[loading="lazy"] {
+	content-visibility: auto;
+}
