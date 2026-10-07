@@ -2,32 +2,22 @@
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { ServiceContent } from '../content/types';
-import { serviceIndexItems } from '../content/services/catalog';
 
 interface Props {
 	page: ServiceContent;
 }
 
 const { page } = Astro.props;
-const related = serviceIndexItems.filter((service) => service.href !== page.path).slice(0, 5);
 ---
 
 <PageShell heading={page.heading}>
-	<div class="detail-layout">
-		<div class="detail-layout__main reading-surface">
-			<div class="service-detail__hero">
-				<img src={page.image} alt={page.imageAlt} width="1200" height="800" loading="eager" />
-			</div>
-			<ContentSections sections={page.sections} />
+	<div class="service-detail-wp">
+		<div class="service-detail-wp__image">
+			<img src={page.image} alt={page.imageAlt} width="1000" height="720" loading="eager" />
 		</div>
-		<aside class="detail-sidebar" aria-label="Outros serviços">
-			<p class="detail-sidebar__eyebrow">Precisa de apoio técnico?</p>
-			<a class="detail-sidebar__cta" href="/contato">Solicite um orçamento</a>
-			<h2>Outros serviços</h2>
-			<ul>
-				{related.map((service) => <li><a href={service.href}>{service.title}</a></li>)}
-			</ul>
-			<a class="detail-sidebar__all" href="/servicos">Ver todos os serviços →</a>
-		</aside>
+		<div class="service-detail-wp__content">
+			<ContentSections sections={page.sections} />
+			<p class="page-cta"><a class="button" href="/contato">Entre em contato</a></p>
+		</div>
 	</div>
 </PageShell>

@@ -1,16 +1,28 @@
 ---
 import { blogPages } from '../content/blog';
+import { blogPosts } from '../content/blog/catalog';
 
-const tags = [...new Set(blogPages.flatMap((post) => post.tags))].slice(0, 8);
+const tags = [...new Set(blogPages.flatMap((post) => post.tags))].slice(0, 10);
 ---
 
-<aside class="blog-sidebar" aria-label="Filtros do Blog">
+<aside class="blog-sidebar" aria-label="Navegação do Blog">
 	<form class="blog-sidebar__search" action="/blog/" method="get" role="search">
-		<label for="blog-search" class="sr-only">Buscar no Blog</label>
-		<input id="blog-search" name="q" type="search" data-blog-search placeholder="Buscar artigos" />
+		<label for="blog-search">Buscar por...</label>
+		<div class="blog-sidebar__search-row">
+			<input id="blog-search" name="q" type="search" data-blog-search />
+			<button type="submit">Buscar</button>
+		</div>
 	</form>
+
 	<section>
-		<h2>Tópicos</h2>
+		<h2>Últimas postagens</h2>
+		<ul>
+			{blogPosts.slice(0, 3).map((post) => <li><a href={post.href}>{post.title}</a></li>)}
+		</ul>
+	</section>
+
+	<section>
+		<h2>Tags</h2>
 		<div class="blog-sidebar__tags">
 			{tags.map((tag) => <a href={`/blog/?tag=${encodeURIComponent(tag)}`}>{tag}</a>)}
 		</div>
@@ -40,6 +52,5 @@ const tags = [...new Set(blogPages.flatMap((post) => post.tags))].slice(0, 8);
 		search.value = requestedQuery;
 		search.addEventListener('input', applyFilters);
 	}
-
 	applyFilters();
 </script>

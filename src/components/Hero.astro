@@ -1,27 +1,18 @@
 ---
-import { hero, portfolio } from '../data/home';
+import { hero } from '../data/home';
 ---
 
 <section class="hero" style={`--hero-image: url('${hero.image}')`} aria-label="Apresentação AJN Consultoria e Engenharia">
-	<div class="site-shell hero__layout">
-		<div class="hero__content">
-			<p class="hero__eyebrow">Engenharia · QSSMA · Segurança do Trabalho</p>
-			<h1>AJN Consultoria e Engenharia</h1>
-			<p class="hero__lead">{hero.text}</p>
-			<div class="hero__actions">
-				<a class="button" href="/servicos">Conheça nossas soluções</a>
-				<a class="button button--outline" href="/sobre-nos">Conheça a AJN</a>
-			</div>
-			<ul class="hero__areas" aria-label="Áreas de atuação">
-				<li>Qualidade</li>
-				<li>Saúde e Segurança</li>
-				<li>Meio Ambiente</li>
-			</ul>
+	<div class="site-shell hero__content">
+		<h1>AJN Consultoria e Engenharia</h1>
+		<p class="hero__lead">{hero.text}</p>
+		<div class="hero__actions">
+			<a class="button button--outline" href="/sobre-nos">Conheça mais sobre a AJN</a>
+			<a class="button" href="/servicos">Confira as nossas soluções</a>
 		</div>
-
-		<div class="hero__visual" aria-hidden="true">
-			<img class="hero__visual-main" src={portfolio[0].src} alt="" width="720" height="560" loading="eager" />
-			<img class="hero__visual-secondary" src={portfolio[2].src} alt="" width="420" height="320" loading="eager" />
-		</div>
+	</div>
+	<div class="hero__controls" aria-hidden="true">
+		<span>‹</span>
+		<span>›</span>
 	</div>
 </section>

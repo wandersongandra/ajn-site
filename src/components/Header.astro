@@ -10,10 +10,10 @@ const isCurrent = (href: string) => href === '/'
 <header class="site-header" id="site-header">
 	<div class="topbar">
 		<div class="site-shell topbar__inner">
-			<span class="topbar__address">{site.address}</span>
+			<span class="topbar__address"><span aria-hidden="true">●</span> {site.address}</span>
 			<div class="topbar__contacts">
-				<span class="topbar__label">Atendimento</span>
-				<a href={site.phoneHref} rel="nofollow noopener noreferrer" target="_blank">{site.phone}</a>
+				<a href={site.phoneHref} rel="nofollow noopener noreferrer" target="_blank"><span aria-hidden="true">☎</span> {site.phone}</a>
+				<a href={`mailto:${site.email}`}><span aria-hidden="true">✉</span> {site.email}</a>
 			</div>
 		</div>
 	</div>
@@ -22,10 +22,12 @@ const isCurrent = (href: string) => href === '/'
 		<a class="brand" href="/" aria-label="Voltar para a página inicial">
 			<img src="/images/branding/logo.png" alt={site.name} width="200" height="80" />
 		</a>
+
 		<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
 			<span class="sr-only">Abrir menu</span>
 			<span></span><span></span><span></span>
 		</button>
+
 		<nav id="primary-navigation" class="primary-navigation" aria-label="Navegação principal">
 			<ul>
 				{navigation.map((item) => (
@@ -49,20 +51,16 @@ const isCurrent = (href: string) => href === '/'
 <script>
 	const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
 	const navigation = document.querySelector<HTMLElement>('.primary-navigation');
-
 	const setOpen = (open: boolean) => {
 		toggle?.setAttribute('aria-expanded', String(open));
 		navigation?.classList.toggle('is-open', open);
 		const label = toggle?.querySelector<HTMLElement>('.sr-only');
 		if (label) label.textContent = open ? 'Fechar menu' : 'Abrir menu';
 	};
-
 	toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
-
 	navigation?.addEventListener('click', (event) => {
 		if (event.target instanceof HTMLAnchorElement && window.matchMedia('(max-width: 992px)').matches) setOpen(false);
 	});
-
 	document.addEventListener('keydown', (event) => {
 		if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
 			setOpen(false);

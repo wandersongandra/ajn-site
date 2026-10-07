@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import PromoDialog from '../components/PromoDialog.astro';
 import SocialFloat from '../components/SocialFloat.astro';
 import { site } from '../data/home';
 
@@ -70,7 +69,7 @@ const websiteSchema = {
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
 		<meta name="robots" content={robotsDirective} />
-		<meta name="theme-color" content="#31452f" />
+		<meta name="theme-color" content="#4CAF50" />
 		<meta name="author" content={site.name} />
 		<link rel="canonical" href={canonicalUrl} />
 
@@ -91,7 +90,7 @@ const websiteSchema = {
 		{normalizedPath === '/' ? <link rel="preload" as="image" href="/images/hero/banner.webp" fetchpriority="high" /> : null}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-		<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
 		<script type="application/ld+json" set:html={JSON.stringify([organizationSchema, websiteSchema])} />
 		<title>{title}</title>
@@ -102,6 +101,5 @@ const websiteSchema = {
 		<main id="conteudo-principal"><slot /></main>
 		<Footer />
 		<SocialFloat />
-		{Astro.url.pathname === '/' ? <PromoDialog /> : null}
 	</body>
 </html>
