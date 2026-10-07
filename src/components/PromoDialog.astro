@@ -1,7 +1,7 @@
 <aside class="promo-toast" data-promo-toast hidden aria-label="Aviso AJN">
 	<button class="promo-toast__close" type="button" aria-label="Fechar aviso">×</button>
 	<a class="promo-toast__media" href="https://web.whatsapp.com/send?phone=5531984734644&text=Ol%C3%A1%21%20Gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20as%20ofertas%20da%20AJN%20Consultoria%20e%20Engenharia" target="_blank" rel="nofollow noopener noreferrer">
-		<img src="/images/popup.jpg" alt="Aviso sobre eventos de Saúde e Segurança do Trabalho" width="722" height="722" />
+		<img src="/images/popup.jpg" alt="Aviso sobre eventos de Saúde e Segurança do Trabalho" width="722" height="722" loading="lazy" decoding="async" />
 	</a>
 	<div class="promo-toast__copy">
 		<strong>Atualização AJN</strong>
@@ -14,10 +14,28 @@
 	const close = promo?.querySelector<HTMLButtonElement>('.promo-toast__close');
 	const dismissed = window.sessionStorage.getItem('ajn-promo-dismissed') === '1';
 
-	if (promo && !dismissed) promo.hidden = false;
+	if (promo && !dismissed) {
+		window.setTimeout(() => {
+			promo.hidden = false;
+			requestAnimationFrame(() => promo.classList.add('is-visible'));
+		}, 1800);
+	}
+
+	const dismiss = () => {
+		if (!promo) return;
+		promo.classList.remove('is-visible');
+		window.setTimeout(() => {
+			promo.hidden = true;
+		}, 220);
+	};
+
+	const autoDismiss = window.setTimeout(() => {
+		if (promo && !promo.hidden) dismiss();
+	}, 10000);
 
 	close?.addEventListener('click', () => {
+		window.clearTimeout(autoDismiss);
 		window.sessionStorage.setItem('ajn-promo-dismissed', '1');
-		if (promo) promo.hidden = true;
+		dismiss();
 	});
 </script>
