@@ -22,8 +22,12 @@ const {
 	ogImage,
 } = Astro.props;
 
-const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br';
+const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath}`;
+const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';
+const robotsDirective = allowIndexing
+	? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'
+	: 'noindex,nofollow,noarchive';
 ---
 
 <!doctype html>
@@ -32,6 +36,7 @@ const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="description" content={description} />
+		<meta name="robots" content={robotsDirective} />
 		<link rel="canonical" href={canonicalUrl} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
