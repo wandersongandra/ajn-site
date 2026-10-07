@@ -1,5 +1,10 @@
 ---
 import { navigation, site } from '../data/home';
+
+const currentPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, '');
+const isCurrent = (href: string) => href === '/'
+	? currentPath === '/'
+	: currentPath === href || currentPath.startsWith(`${href}/`);
 ---
 
 <header class="site-header" id="site-header">
@@ -7,7 +12,7 @@ import { navigation, site } from '../data/home';
 		<div class="site-shell topbar__inner">
 			<span class="topbar__address">{site.address}</span>
 			<div class="topbar__contacts">
-				<a href={site.phoneHref} rel="nofollow" target="_blank">{site.phone}</a>
+				<a href={site.phoneHref} rel="nofollow noopener noreferrer" target="_blank">{site.phone}</a>
 				<a href={`mailto:${site.email}`}>{site.email}</a>
 			</div>
 		</div>
@@ -25,10 +30,12 @@ import { navigation, site } from '../data/home';
 			<ul>
 				{navigation.map((item) => (
 					<li class={item.children ? 'has-submenu' : undefined}>
-						<a href={item.href}>{item.label}</a>
+						<a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
 						{item.children && (
 							<ul class="submenu">
-								{item.children.map((child) => <li><a href={child.href}>{child.label}</a></li>)}
+								{item.children.map((child) => (
+									<li><a href={child.href} aria-current={currentPath === child.href ? 'page' : undefined}>{child.label}</a></li>
+								))}
 							</ul>
 						)}
 					</li>
@@ -43,9 +50,23 @@ import { navigation, site } from '../data/home';
 	const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
 	const navigation = document.querySelector<HTMLElement>('.primary-navigation');
 
-	toggle?.addEventListener('click', () => {
-		const open = toggle.getAttribute('aria-expanded') === 'true';
-		toggle.setAttribute('aria-expanded', String(!open));
-		navigation?.classList.toggle('is-open', !open);
+	const setOpen = (open: boolean) => {
+		toggle?.setAttribute('aria-expanded', String(open));
+		navigation?.classList.toggle('is-open', open);
+		const label = toggle?.querySelector<HTMLElement>('.sr-only');
+		if (label) label.textContent = open ? 'Fechar menu' : 'Abrir menu';
+	};
+
+	toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+
+	navigation?.addEventListener('click', (event) => {
+		if (event.target instanceof HTMLAnchorElement && window.matchMedia('(max-width: 992px)').matches) setOpen(false);
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+			setOpen(false);
+			toggle.focus();
+		}
 	});
 </script>

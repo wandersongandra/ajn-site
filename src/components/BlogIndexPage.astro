@@ -8,14 +8,20 @@ import { blogPosts } from '../content/blog/catalog';
 	<div class="blog-index-layout">
 		<BlogSidebar />
 		<section class="blog-index-list">
-			<h2>Últimas postagens</h2>
+			<div class="archive-heading">
+				<p class="eyebrow eyebrow--left">Conteúdo técnico</p>
+				<h2>Últimas postagens</h2>
+			</div>
 			<div class="blog-grid blog-grid--archive">
-			{blogPosts.map((post) => (
-				<article class="blog-card" data-blog-card data-blog-title={post.title.toLocaleLowerCase('pt-BR')}>
-					<a href={post.href}><img src={post.image} alt={post.alt} width="900" height="600" loading="lazy" /></a>
-					<h3><a href={post.href}>{post.title}</a></h3>
-				</article>
-			))}
+				{blogPosts.map((post) => (
+					<article class="blog-card" data-blog-card data-blog-title={post.title.toLocaleLowerCase('pt-BR')}>
+						<a class="blog-card__image" href={post.href}><img src={post.image} alt={post.alt} width="900" height="600" loading="lazy" /></a>
+						<div class="blog-card__body">
+							<h3><a href={post.href}>{post.title}</a></h3>
+							<a class="blog-card__link" href={post.href}>Ler artigo <span aria-hidden="true">→</span></a>
+						</div>
+					</article>
+				))}
 			</div>
 		</section>
 	</div>

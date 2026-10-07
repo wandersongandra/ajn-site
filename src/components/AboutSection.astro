@@ -6,15 +6,14 @@ import { about } from '../data/home';
 	<div class="site-shell about__grid">
 		<div class="about__image-wrap">
 			<img class="about__image" src={about.image} alt="Fachada da AJN Consultoria e Engenharia" width="800" height="465" loading="lazy" />
-			<img class="about__mark" src="/images/icons/logo-icon.webp" alt="" width="180" height="180" loading="lazy" />
+			<img class="about__secondary-image" src={about.secondaryImage} alt="Equipamentos e segurança do trabalho" width="400" height="400" loading="lazy" />
+			<img class="about__mark" src="/images/icons/logo-icon.webp" alt="" width="120" height="120" loading="lazy" />
 		</div>
 		<div class="about__copy">
-			<h1 id="about-title">{about.title}</h1>
+			<p class="eyebrow eyebrow--left">Quem somos</p>
+			<h2 id="about-title">{about.title}</h2>
 			{about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
-			<a class="button" href="/sobre-nos">Saiba mais</a>
+			<a class="button" href="/sobre-nos">Conheça nossa trajetória</a>
 		</div>
-	</div>
-	<div class="site-shell about__secondary">
-		<img src={about.secondaryImage} alt="Equipamentos e segurança do trabalho" width="400" height="400" loading="lazy" />
 	</div>
 </section>

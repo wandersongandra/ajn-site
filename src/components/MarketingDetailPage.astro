@@ -3,7 +3,6 @@ import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { MarketingContent } from '../content/types';
 import { Image } from 'astro:assets';
-import { routeCatalog } from '../content/route-catalog';
 
 interface Props {
 	page: MarketingContent;
@@ -20,15 +19,19 @@ const { page } = Astro.props;
 			</div>
 			<p class="gallery-note">Clique nas imagens para ampliar</p>
 			<ContentSections sections={page.sections} />
-			<p class="page-cta"><a class="button" href="/contato">Entre em contato</a></p>
+			<p class="page-cta"><a class="button" href="/contato">Falar com a AJN</a></p>
 		</div>
-		<aside class="detail-sidebar" aria-label="Informações relacionadas">
+		<aside class="detail-sidebar" aria-label="Navegação relacionada">
+			<p class="detail-sidebar__eyebrow">AJN Consultoria e Engenharia</p>
 			<a class="detail-sidebar__cta" href="/contato">Solicite um orçamento</a>
-			<h2>Informações</h2>
+			<h2>Explore</h2>
 			<ul>
-				{routeCatalog.slice(0, 8).map((route) => <li><a href={route.path}>{route.title.replace(' - AJN Consultoria e Engenharia', '')}</a></li>)}
+				<li><a href="/servicos">Nossos serviços</a></li>
+				<li><a href="/sobre-nos">Sobre a AJN</a></li>
+				<li><a href="/blog">Conteúdo técnico</a></li>
+				<li><a href="/informacoes">Informações</a></li>
 			</ul>
-			<a class="detail-sidebar__cta" href="/contato">Entre em contato</a>
+			<a class="detail-sidebar__all" href="/contato">Entrar em contato →</a>
 		</aside>
 	</div>
 </PageShell>
