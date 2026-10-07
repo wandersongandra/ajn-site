@@ -63,6 +63,7 @@ export const routeCatalog: readonly RouteCatalogEntry[] = [
 	{ path: "/servicos/gestao-ambiental", title: "Gestão Ambiental - AJN Consultoria e Engenharia" },
 	{ path: "/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional", title: "A Importância do LTCAT para a Segurança do Trabalho e a Proteção do Ambiente Profissional - AJN Consultoria e Engenharia" },
 	{ path: "/servicos/projetos-de-combate-a-incendio-e-panico-ppcip", title: "Projetos de Combate a Incêndio e Pânico - PPCIP - AJN Consultoria e Engenharia" },
+	{ path: "/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia", title: "Projetos Elétricos Residenciais, Comerciais e Prediais com Foco em Qualidade, Prazo e Economia - AJN Consultoria e Engenharia" },
 	{ path: "/consultoria-seguranca-saude-no-trabalho", title: "Consultoria segurança e saude no trabalho - AJN Consultoria e Engenharia" },
 	{ path: "/servico-projeto-eletrico", title: "Serviço de projeto elétrico - AJN Consultoria e Engenharia" },
 	{ path: "/servicos/assessoria-e-consultoria-em-saude-ocupacional", title: "Assessoria e consultoria em saúde ocupacional - AJN Consultoria e Engenharia" },
