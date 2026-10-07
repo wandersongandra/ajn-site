@@ -10,7 +10,9 @@
     "build": "astro build",
     "check": "astro check",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "audit:seo": "node scripts/audit-seo.mjs",
+    "validate": "npm run check && npm run build && npm run audit:seo"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
