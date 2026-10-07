@@ -113,9 +113,10 @@ button { cursor: pointer; }
 .about__copy p { margin-bottom: .85rem; }
 .about__copy .button { margin-top: .75rem; }
 
-.clients { background: var(--canvas); }
+.clients { padding-top: 3.75rem; padding-bottom: 3.75rem; border-block: 1px solid var(--border); background: var(--canvas); }
 .clients__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; align-items: stretch; }
-.clients__grid img { width: 100%; height: 112px; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); object-fit: contain; background: var(--surface); filter: grayscale(.12); }
+.clients__grid img { width: 100%; height: 112px; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); object-fit: contain; background: var(--surface); filter: grayscale(.22); transition: filter var(--transition), transform var(--transition), box-shadow var(--transition); }
+.clients__grid img:hover { filter: grayscale(0); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 
 .mission { padding: clamp(4rem, 7vw, 6rem) 0; background: var(--primary-deep); }
 .mission__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
@@ -139,7 +140,8 @@ button { cursor: pointer; }
 
 .portfolio { background: var(--canvas); }
 .portfolio__grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(7, 1fr); gap: .75rem; min-height: 600px; }
-.portfolio__item { width: 100%; height: 100%; min-height: 0; object-fit: cover; border-radius: var(--radius); }
+.portfolio__item { width: 100%; height: 100%; min-height: 0; object-fit: cover; border-radius: var(--radius); transition: transform .32s ease, filter .32s ease; }
+.portfolio__item:hover { transform: scale(1.012); filter: saturate(1.06) contrast(1.02); }
 .portfolio__item--1 { grid-area: 1 / 1 / 5 / 4; }
 .portfolio__item--2 { grid-area: 1 / 4 / 3 / 8; }
 .portfolio__item--3 { grid-area: 3 / 4 / 5 / 6; }
