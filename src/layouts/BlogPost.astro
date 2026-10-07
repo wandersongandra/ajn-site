@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import ContentSections from '../components/ContentSections.astro';
+import type { BlogContentData } from '../content.config';
+
+interface Props {
+	post: BlogContentData;
+}
+
+const { post } = Astro.props;
+const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
+	day: '2-digit',
+	month: 'long',
+	year: 'numeric',
+	timeZone: 'UTC',
+});
+---
+
+<section class="inner-page">
+	<div class="site-shell">
+		<nav class="breadcrumb" aria-label="Breadcrumb">
+			<a href="/">Home</a>
+			<span aria-hidden="true">/</span>
+			<a href="/blog/">Blog</a>
+			<span aria-hidden="true">/</span>
+			<span>{post.heading}</span>
+		</nav>
+
+		<article class="blog-article">
+			<header class="blog-article__header">
+				<p class="page-kicker">AJN Consultoria e Engenharia · Blog</p>
+				<h1 class="page-title">{post.heading}</h1>
+				<p class="blog-article__meta">
+					Por: {post.author} · <time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
+				</p>
+			</header>
+
+			<Image
+				class="blog-article__image"
+				src={post.image.src}
+				alt={post.image.alt}
+				width={1200}
+				loading="eager"
+			/>
+
+			<ContentSections sections={post.sections} />
+
+			{post.gallery.length > 0 ? (
+				<div class="blog-article__gallery" aria-label="Imagens relacionadas ao artigo">
+					{post.gallery.map((image) => (
+						<Image src={image.src} alt={image.alt} width={900} loading="lazy" />
+					))}
+				</div>
+			) : null}
+
+			<footer class="blog-article__footer">
+				<p class="blog-article__label">Tags</p>
+				<ul class="blog-article__tags">
+					{post.tags.map((tag) => <li>{tag}</li>)}
+				</ul>
+			</footer>
+		</article>
+	</div>
+</section>

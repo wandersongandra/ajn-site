@@ -157,8 +157,15 @@ h1, h2, h3, p { margin-top: 0; }
 .blog-card h3 { padding: 1rem 1.1rem 1.25rem; }
 .blog-card h3 a { color: var(--primary); }
 .blog-article { max-width: 880px; }
+.blog-article__header { margin-bottom: 1.5rem; }
 .blog-article__image { width: min(100%, 900px); max-height: 520px; margin-bottom: 1rem; border-radius: .25rem; object-fit: cover; }
 .blog-article__meta { margin-bottom: 2rem; }
+.blog-article__gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+.blog-article__gallery img { width: 100%; height: 180px; object-fit: cover; border-radius: .25rem; }
+.blog-article__footer { margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+.blog-article__label { margin-bottom: .5rem; font-weight: 600; }
+.blog-article__tags { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; list-style: none; color: var(--grey); }
+.blog-article__tags li { border: 1px solid var(--border); padding: .25rem .5rem; }
 .contact-page { max-width: 640px; padding: 2rem; border-top: 4px solid var(--primary); background: #fafafa; }
 .contact-page h2 { margin-top: 0; }
 .contact-page__phone { color: var(--primary); font-size: 1.5rem; }

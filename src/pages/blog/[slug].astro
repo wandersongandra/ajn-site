@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogPost from '../../layouts/BlogPost.astro';
+import { blogPages } from '../../content/blog';
+import type { BlogContentData } from '../../content.config';
+
+export function getStaticPaths() {
+	return blogPages.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
+	}));
+}
+
+interface Props {
+	post: BlogContentData;
+}
+
+const { post } = Astro.props;
+---
+
+<BaseLayout
+	title={post.title}
+	description={post.description}
+	canonicalPath={post.path}
+	ogType="article"
+	ogImage={post.image.src.src}
+>
+	<BlogPost post={post} />
+</BaseLayout>
