@@ -12,6 +12,7 @@ interface Props {
 	canonicalPath?: string;
 	ogType?: 'website' | 'article';
 	ogImage?: string;
+	noindex?: boolean;
 }
 
 const {
@@ -20,6 +21,7 @@ const {
 	canonicalPath = '/',
 	ogType = 'website',
 	ogImage = '/images/hero/banner.webp',
+	noindex = false,
 } = Astro.props;
 
 const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
@@ -27,7 +29,7 @@ const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/
 const canonicalUrl = `${siteOrigin}${normalizedPath}`;
 const imageUrl = ogImage.startsWith('http') ? ogImage : `${siteOrigin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
 const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';
-const robotsDirective = allowIndexing
+const robotsDirective = allowIndexing && !noindex
 	? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'
 	: 'noindex,nofollow,noarchive';
 
