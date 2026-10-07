@@ -13,7 +13,7 @@ import { services } from '../data/home';
 					<div class="service-card__content">
 						<h3>{service.title}</h3>
 						<p>{service.description}</p>
-						<a class="service-card__link" href="/servicos">Ver serviço <span aria-hidden="true">→</span></a>
+						<a class="service-card__link" href={service.href}>Ver serviço <span aria-hidden="true">→</span></a>
 					</div>
 				</article>
 			))}
