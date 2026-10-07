@@ -15,6 +15,30 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 	year: 'numeric',
 	timeZone: 'UTC',
 });
+
+const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
+const articleSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Article',
+	headline: post.heading,
+	description: post.description,
+	datePublished: post.pubDate.toISOString(),
+	author: {
+		'@type': 'Person',
+		name: post.author,
+	},
+	publisher: {
+		'@type': 'Organization',
+		name: 'AJN Consultoria e Engenharia',
+		logo: {
+			'@type': 'ImageObject',
+			url: `${siteOrigin}/images/branding/logo.png`,
+		},
+	},
+	mainEntityOfPage: `${siteOrigin}${post.path}`,
+	image: [`${siteOrigin}/images/og/${post.slug}.jpg`],
+	inLanguage: 'pt-BR',
+};
 ---
 
 <section class="inner-page">
@@ -24,46 +48,47 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 			<span aria-hidden="true">/</span>
 			<a href="/blog/">Blog</a>
 			<span aria-hidden="true">/</span>
-			<span>{post.heading}</span>
+			<span aria-current="page">{post.heading}</span>
 		</nav>
 
 		<div class="blog-article-layout">
 			<BlogSidebar />
 			<article class="blog-article reading-surface">
-			<header class="blog-article__header">
-				<p class="page-kicker">AJN Consultoria e Engenharia · Blog</p>
-				<h1 class="page-title">{post.heading}</h1>
-				<p class="blog-article__meta">
-					Por: {post.author} · <time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
-				</p>
-			</header>
+				<header class="blog-article__header">
+					<p class="page-kicker">AJN Consultoria e Engenharia · Blog</p>
+					<h1 class="page-title">{post.heading}</h1>
+					<p class="blog-article__meta">
+						Por: {post.author} · <time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
+					</p>
+				</header>
 
-			<Image
-				class="blog-article__image"
-				src={post.image.src}
-				alt={post.image.alt}
-				width={1200}
-				format="webp"
-				loading="eager"
-			/>
+				<Image
+					class="blog-article__image"
+					src={post.image.src}
+					alt={post.image.alt}
+					width={1200}
+					format="webp"
+					loading="eager"
+				/>
 
-			<ContentSections sections={post.sections} />
+				<ContentSections sections={post.sections} />
 
-			{post.gallery.length > 0 ? (
-				<div class="blog-article__gallery" aria-label="Imagens relacionadas ao artigo">
-					{post.gallery.map((image) => (
-						<Image src={image.src} alt={image.alt} width={900} format="webp" loading="lazy" />
-					))}
-				</div>
-			) : null}
+				{post.gallery.length > 0 ? (
+					<div class="blog-article__gallery" aria-label="Imagens relacionadas ao artigo">
+						{post.gallery.map((image) => (
+							<Image src={image.src} alt={image.alt} width={900} format="webp" loading="lazy" />
+						))}
+					</div>
+				) : null}
 
-			<footer class="blog-article__footer">
-				<p class="blog-article__label">Tags</p>
-				<ul class="blog-article__tags">
-					{post.tags.map((tag) => <li>{tag}</li>)}
-				</ul>
-			</footer>
+				<footer class="blog-article__footer">
+					<p class="blog-article__label">Tags</p>
+					<ul class="blog-article__tags">
+						{post.tags.map((tag) => <li>{tag}</li>)}
+					</ul>
+				</footer>
 			</article>
 		</div>
 	</div>
+	<script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
 </section>
