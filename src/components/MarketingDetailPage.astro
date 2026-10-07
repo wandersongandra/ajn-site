@@ -13,7 +13,7 @@ const { page } = Astro.props;
 
 <PageShell heading={page.heading}>
 	<div class="detail-layout">
-		<div class="detail-layout__main">
+		<div class="detail-layout__main reading-surface">
 			<div class="content-gallery">
 				{page.images.map((image) => <a href={image.src}><Image src={image.src} alt={image.alt} width={900} height={600} format="webp" loading="lazy" /></a>)}
 			</div>
