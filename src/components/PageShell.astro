@@ -11,10 +11,12 @@ const { heading } = Astro.props;
 		<nav class="breadcrumb" aria-label="Breadcrumb">
 			<a href="/">Home</a>
 			<span aria-hidden="true">/</span>
-			<span>{heading}</span>
+			<span aria-current="page">{heading}</span>
 		</nav>
-		<p class="page-kicker">AJN Consultoria e Engenharia</p>
-		<h1 class="page-title">{heading}</h1>
+		<header class="page-heading">
+			<p class="page-kicker">AJN Consultoria e Engenharia</p>
+			<h1 class="page-title">{heading}</h1>
+		</header>
 		<div class="inner-page__content">
 			<slot />
 		</div>
