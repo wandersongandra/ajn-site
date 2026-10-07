@@ -20,12 +20,12 @@ Branch de deploy do staging: `main`
 | Hora | Fase | Escopo principal | Status |
 |---|---|---|---|
 | 1 | Design system e tipografia | Fonte, escala tipográfica, rendering, ritmo, tokens, movimento-base e quality gate | DONE |
-| 2 | Home e conversão | Hero, ordem das seções, densidade, clientes, soluções, portfólio, diferenciais e CTAs | TODO |
-| 3 | Páginas internas | Legibilidade, largura de leitura, headings, galerias, sidebars, serviços e marketing | TODO |
-| 4 | Motion e microinterações | Entradas sutis, hover/focus, menus, cards, feedback e redução de movimento | TODO |
-| 5 | SEO técnico | Titles, descriptions, canonicals, robots, sitemap, schema, breadcrumbs, 404 e redirects | TODO |
-| 6 | Performance e mídia | Imagens, carregamento, formatos, fontes, CSS/JS, cache e desperdícios | TODO |
-| 7 | Acessibilidade e mobile | Teclado, foco, contraste, labels, touch targets, 360/390/768/1024 | TODO |
+| 2 | Home e conversão | Hero, ordem das seções, densidade, clientes, soluções, portfólio, diferenciais e CTAs | DONE |
+| 3 | Páginas internas | Legibilidade, largura de leitura, headings, galerias, sidebars, serviços e marketing | DONE |
+| 4 | Motion e microinterações | Entradas sutis, hover/focus, menus, cards, feedback e redução de movimento | DONE |
+| 5 | SEO técnico | Titles, descriptions, canonicals, robots, sitemap, schema, breadcrumbs, 404 e redirects | DONE |
+| 6 | Performance e mídia | Imagens, carregamento, formatos, fontes, CSS/JS, cache e desperdícios | DONE |
+| 7 | Acessibilidade e mobile | Teclado, foco, contraste, labels, touch targets, 360/390/768/1024 | DONE |
 | 8 | QA final e polimento | Staging completo, consistência visual, links, imagens, regressões e relatório final | TODO |
 
 ## Fase 1 — resultado
@@ -46,3 +46,44 @@ Critério de continuidade:
 - manter o site totalmente estático;
 - não adicionar bibliotecas de animação sem necessidade;
 - priorizar percepção de qualidade, legibilidade e performance.
+
+
+## Fases 2–7 — resultado consolidado
+
+### Fase 2 — Home e conversão
+- reorganização do fluxo da Home para priorizar confiança, apresentação e serviços;
+- metadata da Home mais específica;
+- logos e portfólio com menor ruído e feedback visual consistente.
+
+### Fase 3 — Páginas internas
+- cabeçalhos internos com hierarquia mais clara;
+- superfícies de leitura para artigos, serviços e páginas de marketing;
+- largura de texto reduzida para leitura confortável;
+- sidebars e conteúdo longo com separação visual mais consistente.
+
+### Fase 4 — Motion e microinterações
+- animações progressivas em CSS sem biblioteca de runtime;
+- entradas discretas, hover e feedback de clique;
+- respeito integral a `prefers-reduced-motion`.
+
+### Fase 5 — SEO técnico
+- Open Graph e Twitter metadata completos;
+- schema `Organization`, `WebSite`, `BreadcrumbList` e `Article`;
+- 404 próprio com `noindex`;
+- audit automatizado de title, description, canonical, robots, H1 e links internos;
+- quality gate passou a executar `npm run audit:seo`.
+
+### Fase 6 — Performance e mídia
+- preload do hero somente na Home;
+- `content-visibility` em blocos longos abaixo da dobra;
+- manutenção de lazy loading e build totalmente estático;
+- nenhuma biblioteca de animação adicionada.
+
+### Fase 7 — Acessibilidade e mobile
+- skip link para conteúdo principal;
+- alvos de navegação com altura mínima;
+- formulário de contato com labels explícitos, autocomplete, inputmode e `aria-live`;
+- foco visível e ergonomia mobile reforçados;
+- staging permanece `noindex`.
+
+A Fase 8 depende do deploy do HEAD atual no staging e da auditoria final renderizada.
