@@ -5,4 +5,4 @@ export const blogPosts = blogPages.map((post) => ({
 	href: post.path,
 	image: post.image.src,
 	alt: post.image.alt,
-})) as const;
+}));
