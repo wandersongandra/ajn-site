@@ -485,3 +485,42 @@ button { cursor: pointer; }
 img[loading="lazy"] {
 	content-visibility: auto;
 }
+
+
+/* Error page */
+.error-page {
+	min-height: 62vh;
+	display: grid;
+	place-items: center;
+	padding: clamp(5rem, 10vw, 9rem) 0;
+	background:
+		radial-gradient(circle at 80% 20%, rgb(120 144 102 / 18%), transparent 34%),
+		linear-gradient(180deg, var(--surface), var(--canvas));
+}
+.error-page__inner {
+	max-width: 760px;
+	text-align: center;
+}
+.error-page h1 {
+	margin-bottom: 1rem;
+	color: var(--primary-deep);
+}
+.error-page p:not(.page-kicker) {
+	max-width: 55ch;
+	margin-inline: auto;
+}
+.error-page__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: .75rem;
+	margin-top: 1.75rem;
+}
+.error-page__secondary {
+	color: var(--primary-strong);
+	background: transparent;
+	box-shadow: none;
+}
+.error-page__secondary:hover {
+	color: var(--white);
+}
