@@ -26,7 +26,7 @@ Branch de deploy do staging: `main`
 | 5 | SEO técnico | Titles, descriptions, canonicals, robots, sitemap, schema, breadcrumbs, 404 e redirects | DONE |
 | 6 | Performance e mídia | Imagens, carregamento, formatos, fontes, CSS/JS, cache e desperdícios | DONE |
 | 7 | Acessibilidade e mobile | Teclado, foco, contraste, labels, touch targets, 360/390/768/1024 | DONE |
-| 8 | QA final e polimento | Staging completo, consistência visual, links, imagens, regressões e relatório final | TODO |
+| 8 | QA final e polimento | Staging completo, consistência visual, links, imagens, regressões e relatório final | DONE WITH WARN |
 
 ## Fase 1 — resultado
 
@@ -86,4 +86,29 @@ Critério de continuidade:
 - foco visível e ergonomia mobile reforçados;
 - staging permanece `noindex`.
 
-A Fase 8 depende do deploy do HEAD atual no staging e da auditoria final renderizada.
+## Fase 8 — QA final e polimento
+
+Validado no staging publicado:
+
+- Home, Serviços, Contato, Mapa do site e páginas representativas carregando com metadata do domínio de staging;
+- rota recuperada de Projetos Elétricos gerada e acessível;
+- artigos implementados do Blog retornando conteúdo real, após eliminar links do catálogo antigo para posts não migrados;
+- `robots` meta confirmado como `noindex,nofollow,noarchive` no staging;
+- canonical, Open Graph e Twitter metadata confirmados no domínio temporário;
+- Manrope, hierarquia visual, cards, sidebars, footer e WhatsApp consistentes nas páginas inspecionadas;
+- Quality Gate: PASS — 0 erros, 0 warnings do Astro, 145 páginas geradas, audit SEO PASS e 0 vulnerabilidades.
+
+Correções descobertas pelo próprio gate/QA:
+
+- uma URL de serviço elétrico existente no WordPress estava fora do catálogo original; foi recuperada e incluída no Astro;
+- o catálogo visual do Blog apontava para posts não implementados; agora é derivado de `blogPages`, impedindo novos links órfãos;
+- 404 próprio, acessível e com identidade visual foi adicionado.
+
+WARNs remanescentes:
+
+- o endpoint `robots.txt` do domínio temporário é parcialmente controlado pela Hostinger e apresenta regra própria para crawlers; as páginas, porém, estão protegidas por meta `noindex`. Revalidar o `robots.txt` no cutover;
+- testes automatizados intensivos receberam HTTP 429 da Hostinger; isso foi tratado como limitação de staging/bot protection, não como erro funcional do site;
+- envio real do formulário permanece bloqueado até escolha/configuração explícita de provider;
+- o comportamento do 404 em URL inexistente deve ser revalidado na configuração final do host, pois provedores podem interceptar a resposta antes do arquivo Astro.
+
+Status: melhorias 1–8 implementadas; staging aprovado com WARNs operacionais acima. Produção WordPress e DNS permanecem intactos.
