@@ -19,15 +19,19 @@ const serviceImages: Record<string, string> = {
 
 <PageShell heading="Serviços">
 	<div class="service-index-toolbar" aria-label="Filtros de serviços">
-		<div>
-			<strong>{serviceIndexItems.length} soluções especializadas</strong>
-			<span>Encontre rapidamente o serviço que sua empresa precisa.</span>
-		</div>
-		<label>
+		<label class="service-search">
 			<span class="sr-only">Pesquisar serviços</span>
-			<input type="search" data-service-search placeholder="Buscar serviço" />
+			<input type="search" data-service-search placeholder="Pesquisar..." />
+		</label>
+		<label class="service-page-size">
+			<span>Exibir</span>
+			<select aria-label="Quantidade por página">
+				<option selected>{serviceIndexItems.length}</option>
+			</select>
+			<span>Por página</span>
 		</label>
 	</div>
+
 	<div class="service-index-grid" data-service-grid>
 		{serviceIndexItems.map((service) => (
 			<article class="service-index-card" data-service-card data-service-title={service.title.toLocaleLowerCase('pt-BR')}>
@@ -36,7 +40,7 @@ const serviceImages: Record<string, string> = {
 				<div class="service-index-card__content">
 					<h2>{service.title}</h2>
 					<p>{service.description}</p>
-					<a href={service.href}>Conhecer serviço <span aria-hidden="true">→</span></a>
+					<a href={service.href}>Saiba mais</a>
 				</div>
 			</article>
 		))}
