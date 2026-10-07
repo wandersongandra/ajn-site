@@ -14,6 +14,10 @@ import { blogSegurancaDoTrabalhoELtcatConformidadeEProtecaoPrevidenciaria } from
 import { blogLtcatGuiaEssencialParaGarantirSegurancaDoTrabalhoEficaz } from './ltcat-guia-essencial-para-garantir-seguranca-do-trabalho-eficaz';
 import { blogUmPoucoSobreNos } from './um-pouco-sobre-nos';
 import { blogPerfilProfissiograficoPrevidenciarioPpp } from './perfil-profissiografico-previdenciario-ppp';
+import { blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho } from './elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho';
+import { blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe } from './ltcat-essencial-para-a-seguranca-do-trabalho-e-protecao-da-sua-equipe';
+import { blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosParaSuaEquipe } from './ltcat-na-seguranca-do-trabalho-garantindo-protecao-e-reducao-de-riscos-para-sua-equipe';
+import { blogNr35TrabalhoEmAlturaESeguranca } from './nr-35-trabalho-em-altura-e-seguranca';
 
 export const blogPages = [
 	validateBlogContent(blogLaudoTecnicoDasCondicoesAmbientaisDeTrabalhoLtcat),
@@ -31,4 +35,8 @@ export const blogPages = [
 	validateBlogContent(blogLtcatGuiaEssencialParaGarantirSegurancaDoTrabalhoEficaz),
 	validateBlogContent(blogUmPoucoSobreNos),
 	validateBlogContent(blogPerfilProfissiograficoPrevidenciarioPpp),
+	validateBlogContent(blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho),
+	validateBlogContent(blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe),
+	validateBlogContent(blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosParaSuaEquipe),
+	validateBlogContent(blogNr35TrabalhoEmAlturaESeguranca),
 ] as const;

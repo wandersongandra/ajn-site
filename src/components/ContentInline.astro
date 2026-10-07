@@ -6,10 +6,19 @@ interface Props {
 }
 
 const { segments } = Astro.props;
+const segmentText = (segment: ContentSegment): string => typeof segment === 'string' ? segment : segment.text;
+const needsBoundarySpace = (current: ContentSegment, next: ContentSegment): boolean => {
+	const left = segmentText(current);
+	const right = segmentText(next);
+	return /[\p{L}\p{N}]$/u.test(left) && /^[\p{L}\p{N}]/u.test(right);
+};
 ---
 
-{segments.map((segment) =>
-	typeof segment === 'string' ? segment : 'href' in segment ? (
-		<a href={segment.href}>{segment.text}</a>
-	) : 'bold' in segment ? <strong>{segment.text}</strong> : null
-)}
+{segments.map((segment, index) => (
+	<>
+		{index > 0 && needsBoundarySpace(segments[index - 1], segment) ? ' ' : null}
+		{typeof segment === 'string' ? segment : 'href' in segment ? (
+			<a href={segment.href}>{segment.text}</a>
+		) : 'bold' in segment ? <strong>{segment.text}</strong> : null}
+	</>
+))}
