@@ -1,6 +1,8 @@
 ---
 import PageShell from './PageShell.astro';
 import { site } from '../data/home';
+
+const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT?.trim() ?? '';
 ---
 
 <PageShell heading="Contato">
@@ -21,7 +23,14 @@ import { site } from '../data/home';
 		</section>
 		<section class="contact-page contact-page--form">
 			<h2>Envie sua Mensagem</h2>
-			<form class="contact-form" data-contact-form>
+			<form
+				class="contact-form"
+				data-contact-form
+				action={contactEndpoint || undefined}
+				method="post"
+				enctype="multipart/form-data"
+				data-contact-endpoint={contactEndpoint || undefined}
+			>
 				<div class="contact-form__row">
 					<label>Nome<input name="nome" type="text" placeholder="Nome" required /></label>
 					<label>E-mail<input name="email" type="email" placeholder="E-mail" required /></label>
@@ -50,8 +59,10 @@ import { site } from '../data/home';
 <script>
 	const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
 	const status = document.querySelector<HTMLElement>('[data-contact-status]');
+	const contactEndpoint = form?.dataset.contactEndpoint?.trim() ?? '';
 
 	form?.addEventListener('submit', (event) => {
+		if (contactEndpoint) return;
 		event.preventDefault();
 		if (status) status.textContent = 'O formulário está pronto, mas o destino de envio ainda precisa ser configurado antes da publicação.';
 	});
