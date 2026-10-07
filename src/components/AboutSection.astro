@@ -1,24 +1,17 @@
 ---
 import { about } from '../data/home';
-
-const [intro, ...highlights] = about.paragraphs;
 ---
 
 <section class="about section" aria-labelledby="about-title">
 	<div class="site-shell about__grid">
 		<div class="about__image-wrap">
-			<img class="about__image" src={about.image} alt="Fachada da AJN Consultoria e Engenharia" width="800" height="465" loading="lazy" decoding="async" />
-			<img class="about__secondary-image" src={about.secondaryImage} alt="Equipamentos e segurança do trabalho" width="400" height="400" loading="lazy" decoding="async" />
-			<img class="about__mark" src="/images/icons/logo-icon.webp" alt="" width="120" height="120" loading="lazy" decoding="async" />
+			<img class="about__image" src={about.image} alt="AJN Consultoria e Engenharia" width="800" height="520" loading="lazy" decoding="async" />
+			<img class="about__secondary-image" src={about.secondaryImage} alt="Estrutura da AJN Consultoria e Engenharia" width="360" height="280" loading="lazy" decoding="async" />
 		</div>
 		<div class="about__copy">
-			<p class="eyebrow eyebrow--left">Quem somos</p>
 			<h2 id="about-title">{about.title}</h2>
-			<p class="about__intro">{intro}</p>
-			<ul class="about__highlights">
-				{highlights.map((item) => <li>{item}</li>)}
-			</ul>
-			<a class="button" href="/sobre-nos">Conheça nossa trajetória</a>
+			{about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+			<a class="button" href="/sobre-nos">Saiba mais</a>
 		</div>
 	</div>
 </section>
