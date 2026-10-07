@@ -38,5 +38,8 @@ jobs:
       - name: Static build
         run: npm run build
 
+      - name: SEO and link audit
+        run: npm run audit:seo
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
