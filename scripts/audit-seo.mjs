@@ -27,7 +27,10 @@ function normalizeInternalHref(href) {
 	if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return null;
 	if (/^https?:\/\//i.test(href)) return null;
 	const clean = href.split('#')[0].split('?')[0];
-	return clean || '/';
+	if (!clean) return '/';
+	if (clean.startsWith('/images/') || clean.startsWith('/assets/') || clean.startsWith('/favicon')) return null;
+	if (/\.[a-z0-9]{2,5}$/i.test(clean)) return null;
+	return clean;
 }
 
 async function routeExists(href) {
