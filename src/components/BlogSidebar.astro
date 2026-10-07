@@ -1,23 +1,16 @@
 ---
 import { blogPages } from '../content/blog';
-import { blogPosts } from '../content/blog/catalog';
 
 const tags = [...new Set(blogPages.flatMap((post) => post.tags))].slice(0, 8);
 ---
 
-<aside class="blog-sidebar" aria-label="Navegação do Blog">
-	<label class="blog-sidebar__search">
-		<span class="sr-only">Buscar no Blog</span>
-		<input type="search" data-blog-search placeholder="Buscar por ..." />
-	</label>
+<aside class="blog-sidebar" aria-label="Filtros do Blog">
+	<form class="blog-sidebar__search" action="/blog/" method="get" role="search">
+		<label for="blog-search" class="sr-only">Buscar no Blog</label>
+		<input id="blog-search" name="q" type="search" data-blog-search placeholder="Buscar artigos" />
+	</form>
 	<section>
-		<h2>Últimas postagens</h2>
-		<ul>
-			{blogPosts.slice(0, 6).map((post) => <li><a href={post.href}>{post.title}</a></li>)}
-		</ul>
-	</section>
-	<section>
-		<h2>Tags</h2>
+		<h2>Tópicos</h2>
 		<div class="blog-sidebar__tags">
 			{tags.map((tag) => <a href={`/blog/?tag=${encodeURIComponent(tag)}`}>{tag}</a>)}
 		</div>
@@ -27,11 +20,26 @@ const tags = [...new Set(blogPages.flatMap((post) => post.tags))].slice(0, 8);
 <script>
 	const search = document.querySelector<HTMLInputElement>('[data-blog-search]');
 	const cards = [...document.querySelectorAll<HTMLElement>('[data-blog-card]')];
+	const params = new URLSearchParams(window.location.search);
+	const requestedTag = params.get('tag')?.trim().toLocaleLowerCase('pt-BR') ?? '';
+	const requestedQuery = params.get('q')?.trim().toLocaleLowerCase('pt-BR') ?? '';
 
-	search?.addEventListener('input', () => {
-		const query = search.value.trim().toLocaleLowerCase('pt-BR');
+	const applyFilters = () => {
+		if (cards.length === 0) return;
+		const query = search?.value.trim().toLocaleLowerCase('pt-BR') ?? '';
 		cards.forEach((card) => {
-			card.hidden = query.length > 0 && !(card.dataset.blogTitle ?? '').includes(query);
+			const title = card.dataset.blogTitle ?? '';
+			const tags = card.dataset.blogTags ?? '';
+			const matchesQuery = !query || title.includes(query) || tags.includes(query);
+			const matchesTag = !requestedTag || tags.includes(requestedTag);
+			card.hidden = !(matchesQuery && matchesTag);
 		});
-	});
+	};
+
+	if (search) {
+		search.value = requestedQuery;
+		search.addEventListener('input', applyFilters);
+	}
+
+	applyFilters();
 </script>

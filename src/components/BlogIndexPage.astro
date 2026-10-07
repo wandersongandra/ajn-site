@@ -15,7 +15,7 @@ import { blogPosts } from '../content/blog/catalog';
 			</div>
 			<div class="blog-grid blog-grid--archive">
 				{blogPosts.map((post) => (
-					<article class="blog-card" data-blog-card data-blog-title={post.title.toLocaleLowerCase('pt-BR')}>
+					<article class="blog-card" data-blog-card data-blog-title={post.title.toLocaleLowerCase('pt-BR')} data-blog-tags={post.tags.join(' ').toLocaleLowerCase('pt-BR')}>
 						<a class="blog-card__image" href={post.href}><Image src={post.image} alt={post.alt} width={900} format="webp" loading="lazy" /></a>
 						<div class="blog-card__body">
 							<h3><a href={post.href}>{post.title}</a></h3>
