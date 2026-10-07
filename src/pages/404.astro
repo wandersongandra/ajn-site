@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title="Página não encontrada | AJN Consultoria e Engenharia"
+	description="A página solicitada não foi encontrada."
+	canonicalPath="/404"
+>
+	<section class="error-page">
+		<div class="site-shell error-page__inner">
+			<p class="page-kicker">Erro 404</p>
+			<h1>Página não encontrada</h1>
+			<p>O endereço pode ter mudado ou não estar mais disponível.</p>
+			<div class="error-page__actions">
+				<a class="button" href="/">Voltar para a Home</a>
+				<a class="button error-page__secondary" href="/servicos">Ver serviços</a>
+			</div>
+		</div>
+	</section>
+</BaseLayout>
