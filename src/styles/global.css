@@ -428,3 +428,42 @@ button { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
 	*, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* Progressive motion — no runtime dependency */
+@keyframes reveal-up {
+	from { opacity: 0; transform: translateY(18px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	@supports (animation-timeline: view()) {
+		.section > .site-shell,
+		.page-heading,
+		.reading-surface,
+		.detail-sidebar,
+		.service-index-card,
+		.blog-card,
+		.values-grid > section {
+			animation: reveal-up .65s cubic-bezier(.2,.7,.2,1) both;
+			animation-timeline: view();
+			animation-range: entry 8% cover 24%;
+		}
+	}
+
+	.submenu {
+		transform-origin: top left;
+		animation: menu-in .16s ease-out both;
+	}
+
+	.button:active,
+	.footer__button:active,
+	.social-float a:active {
+		transform: translateY(1px) scale(.99);
+	}
+}
+
+@keyframes menu-in {
+	from { opacity: 0; transform: translateY(-6px) scale(.985); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
