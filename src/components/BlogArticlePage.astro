@@ -1,12 +1,13 @@
 ---
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
+import { Image } from 'astro:assets';
 import { blogArticle } from '../content/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
 ---
 
 <PageShell heading={blogArticle.heading}>
 	<article class="blog-article">
-		<img class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width="1200" height="800" loading="eager" />
+		<Image class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width={1200} format="webp" loading="eager" />
 		<p class="blog-article__meta">Por: {blogArticle.author} - {blogArticle.date}</p>
 		<ContentSections sections={blogArticle.sections} />
 	</article>

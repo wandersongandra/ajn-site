@@ -43,6 +43,7 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 				src={post.image.src}
 				alt={post.image.alt}
 				width={1200}
+				format="webp"
 				loading="eager"
 			/>
 
@@ -51,7 +52,7 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 			{post.gallery.length > 0 ? (
 				<div class="blog-article__gallery" aria-label="Imagens relacionadas ao artigo">
 					{post.gallery.map((image) => (
-						<Image src={image.src} alt={image.alt} width={900} loading="lazy" />
+						<Image src={image.src} alt={image.alt} width={900} format="webp" loading="lazy" />
 					))}
 				</div>
 			) : null}

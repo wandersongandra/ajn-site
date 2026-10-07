@@ -23,7 +23,7 @@ const { post } = Astro.props;
 	description={post.description}
 	canonicalPath={post.path}
 	ogType="article"
-	ogImage={post.image.src.src}
+	ogImage={`/images/og/${post.slug}.jpg`}
 >
 	<BlogPost post={post} />
 </BaseLayout>

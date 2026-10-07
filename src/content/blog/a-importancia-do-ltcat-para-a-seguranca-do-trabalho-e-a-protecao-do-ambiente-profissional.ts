@@ -1,10 +1,10 @@
-const blogImage = (filename: string) => `/images/blog/${filename}`;
+import image0 from '../../assets/blog/blog-a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional-5b7fade9f1.webp';
 
 export const blogArticle = {
 	title: 'A Importância do LTCAT para a Segurança do Trabalho e a Proteção do Ambiente Profissional - AJN Consultoria e Engenharia',
 	description: 'A importância do LTCAT para identificar riscos, apoiar a conformidade legal e proteger a saúde dos colaboradores.',
 	heading: 'A Importância do LTCAT para a Segurança do Trabalho e a Proteção do Ambiente Profissional',
-	image: blogImage('blog-a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional-5b7fade9f1.png'),
+	image: image0,
 	imageAlt: 'A Importância do LTCAT para a Segurança do Trabalho e a Proteção do Ambiente Profissional',
 	date: '23 de Janeiro de 2026',
 	author: 'AJN Consultoria e Engenharia',
