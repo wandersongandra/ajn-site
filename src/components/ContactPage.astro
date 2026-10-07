@@ -8,9 +8,9 @@ const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT?.trim() ?? '';
 <PageShell heading="Contato">
 	<div class="contact-layout">
 		<section class="contact-page contact-page--info" aria-labelledby="contact-info-title">
-			<h2 id="contact-info-title">Fale conosco</h2>
+			<h2 id="contact-info-title">Fale conosco!</h2>
 			<h3>Endereço</h3>
-			<p>{site.address}</p>
+			<p>{site.fullAddress}</p>
 			<h3>Telefone</h3>
 			<p><a class="contact-page__phone" href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer">{site.phone}</a></p>
 			<h3>E-mail</h3>
@@ -23,7 +23,7 @@ const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT?.trim() ?? '';
 		</section>
 
 		<section class="contact-page contact-page--form" aria-labelledby="contact-form-title">
-			<h2 id="contact-form-title">Envie sua mensagem</h2>
+			<h2 id="contact-form-title">Envie sua Mensagem</h2>
 			<form
 				class="contact-form"
 				data-contact-form
