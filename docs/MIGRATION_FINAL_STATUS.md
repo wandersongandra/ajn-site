@@ -19,16 +19,20 @@ documentação externa, DNS ou produção foi alterado.
 | Métrica | Quantidade | Evidência |
 |---|---:|---|
 | URLs do sitemap auditadas | 143 | docs/LEGACY_INVENTORY.md e docs/ROUTES_AUDIT.md |
-| Rotas estáticas Astro geradas | 143 | contagem de dist/**/index.html |
-| URLs KEEP | 142 | docs/ROUTES_AUDIT.md |
+| Rotas públicas de conteúdo Astro | 144 | 143 URLs do inventário original + 1 LEGACY_URL recuperada |
+| URLs KEEP do inventário original | 142 | docs/ROUTES_AUDIT.md |
 | URLs KEEP pendentes | 0 | cruzamento KEEP × dist |
 | URLs REDIRECT | 0 | docs/ROUTES_AUDIT.md |
 | URLs REMOVE | 0 | docs/ROUTES_AUDIT.md |
 | URLs REVIEW | 1 | /mapa-site, implementada e gerada |
 
-O total de 143 rotas é composto por 142 URLs KEEP implementadas e a rota
-/mapa-site, que permanece REVIEW por decisão de SEO/UX. Não há URL KEEP sem
-correspondente estático.
+O inventário original continha 143 URLs: 142 KEEP e /mapa-site em REVIEW.
+Durante o Quality Gate posterior foi confirmada uma URL pública adicional,
+anteriormente registrada como LEGACY_URL fora do catálogo:
+`/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia`.
+Ela foi recuperada do legado e implementada. O universo público de conteúdo passa,
+portanto, a 144 rotas. A build atual gera 145 páginas ao incluir também a página
+técnica /404.
 
 ### Famílias
 
@@ -36,8 +40,8 @@ correspondente estático.
 |---|---:|---:|---:|
 | Marketing | 107 | 107 | 0 |
 | Blog | 20 | 20 | 0 |
-| Institucional, serviços, contato e especiais | 16 | 16 | 0 |
-| **Total** | **143** | **143** | **0** |
+| Institucional, serviços, contato e especiais | 17 | 17 | 0 |
+| **Total público de conteúdo** | **144** | **144** | **0** |
 
 ## Métricas de assets
 
@@ -70,11 +74,14 @@ conforme o requisito de preservação da origem.
 ## Status da CI local
 
 - npm run check: PASS — 0 erros, 0 warnings, 0 hints; 187 arquivos.
-- npm run build: PASS — 143 páginas estáticas geradas em dist/.
+- npm run build: PASS — 145 páginas estáticas geradas (144 rotas públicas de conteúdo + /404).
 - git diff --check: PASS.
 - npm audit --omit=dev --audit-level=high: PASS — 0 vulnerabilidades.
-- Verificação adicional de conteúdo: PASS — as quatro rotas finais têm um H1,
-  canonical, og:type=article, time e assets resolvidos.
+- Quality Gate remoto: PASS — 0 erros e 0 warnings do Astro.
+- npm run audit:seo: PASS — 145 páginas auditadas, incluindo verificação de links internos.
+- npm audit --omit=dev --audit-level=high: PASS — 0 vulnerabilidades.
+- A rota elétrica recuperada e os artigos efetivamente implementados do Blog foram
+  validados no staging público.
 
 ## Commits da entrega
 
