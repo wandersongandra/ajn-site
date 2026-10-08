@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-ltcat-papel-fundamental-na-seguranca-
 export const blogLtcatPapelFundamentalNaSegurancaDoTrabalhoENoBemEstarDosColaboradores = {
 	 slug: "ltcat-papel-fundamental-na-seguranca-do-trabalho-e-no-bem-estar-dos-colaboradores", path: "/blog/ltcat-papel-fundamental-na-seguranca-do-trabalho-e-no-bem-estar-dos-colaboradores",
 	 title: "LTCAT: Papel Fundamental na Segurança do Trabalho e no Bem-Estar dos Colaboradores",
-	 description: "O LTCAT, ou Laudo Técnico de Condições Ambientais do Trabalho, desempenha um papel crucial na promoção da saúde e da segurança do trabalhador. Este documento…",
+	 description: "Conheça a relação entre LTCAT, avaliação de agentes nocivos e informações sobre as condições ambientais de trabalho.",
 	 heading: "LTCAT: Papel Fundamental na Segurança do Trabalho e no Bem-Estar dos Colaboradores",
 	 pubDate: "2026-01-23",
 	 author: "AJN Consultoria e Engenharia",
