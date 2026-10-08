@@ -1,24 +1,49 @@
+import type { ServiceContent } from '../types';
+
 export const servicePage = {
-	"slug": "pcmso-e-asos",
-	"path": "/servicos/pcmso-e-asos",
-	"title": "PCMSO e ASOs - AJN Consultoria e Engenharia",
-	"description": "PCMSO e ASOs - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de trabalho, bem como projetos de seguran...Saiba mais.",
-	"heading": "PCMSO e ASOs",
-	"image": "/images/content/services/pcmso-e-asos.jpg",
-	"imageAlt": "PCMSO e ASOs",
-	"sections": [
-		{
-			"heading": "Informações",
-			"paragraphs": [
-				"1 - Manter Atualizado o PCMSO Conforme Riscos do PGR: O PCMSO deve ser constantemente revisado e atualizado com base nos riscos identificados no Programa de Gerenciamento de Riscos (PGR). Isso garante que todas as medidas preventivas e de monitoramento estejam alinhadas com os riscos reais aos quais os trabalhadores estão expostos.",
-				"2 - Gerir o Cronograma de Ações do PCMSO: É essencial ter um cronograma bem definido para todas as ações do PCMSO, incluindo a realização de exames médicos periódicos, treinamentos e outras atividades preventivas. A gestão eficiente desse cronograma ajuda a garantir que todas as ações sejam realizadas no tempo certo e de forma organizada.",
-				"3 - Enviar Funcionários para Realizar ASO: Os Atestados de Saúde Ocupacional (ASOs) são documentos emitidos após a realização de exames médicos ocupacionais, que atestam a aptidão do trabalhador para desempenhar suas funções. É importante garantir que todos os funcionários realizem esses exames nos prazos estabelecidos, seja na admissão, periodicamente, no retorno ao trabalho, na mudança de função ou na demissão.",
-				"4 - Gerir Vencimento de ASOs e Repassar para Empresas: A gestão dos vencimentos dos ASOs é crucial para garantir que todos os trabalhadores estejam sempre com seus exames em dia. Isso envolve monitorar as datas de validade dos ASOs e agendar novos exames conforme necessário. Além disso, é importante repassar essas informações para as empresas contratantes, garantindo a conformidade com as normas de saúde ocupacional.",
-				"5 - Monitoramento de Saúde Ocupacional: Além dos exames periódicos, é importante realizar monitoramentos contínuos da saúde dos trabalhadores, especialmente aqueles expostos a riscos ocupacionais específicos. Isso pode incluir exames complementares e avaliações clínicas adicionais conforme necessário.",
-				"6 - Gestão de Documentação: Manter uma gestão eficiente da documentação relacionada ao PCMSO e aos ASOs é crucial. Isso inclui arquivar corretamente todos os atestados, laudos médicos e relatórios de exames, garantindo a confidencialidade e a acessibilidade das informações.",
-				"7 - Acompanhamento de Afastamentos e Retornos ao Trabalho: Gerenciar os afastamentos por motivos de saúde e os retornos ao trabalho é uma parte importante do PCMSO. Isso envolve garantir que os trabalhadores afastados recebam o suporte necessário e que sejam avaliados adequadamente antes de retornar às suas atividades.",
-				"8 - Avaliação e Melhoria Contínua: A gestão do PCMSO deve incluir a avaliação contínua dos resultados e a implementação de melhorias. Isso pode ser feito por meio de auditorias internas, feedback dos trabalhadores e análise de indicadores de saúde ocupacional"
-			]
-		}
-	]
-} as const;
+  slug: 'pcmso-e-asos',
+  path: '/servicos/pcmso-e-asos',
+  title: 'PCMSO e ASO: Saúde Ocupacional | AJN',
+  description: 'Gestão de PCMSO e ASOs: organização de exames ocupacionais, acompanhamento de vencimentos e documentação de saúde do trabalho.',
+  heading: 'PCMSO e ASOs',
+  image: '/images/content/services/pcmso-e-asos.jpg',
+  imageAlt: 'Documentação de PCMSO e saúde ocupacional',
+  sections: [
+    {
+      heading: 'PCMSO e relação com os riscos da atividade',
+      paragraphs: [
+        'O Programa de Controle Médico de Saúde Ocupacional (PCMSO), previsto na NR-7, orienta o acompanhamento da saúde dos trabalhadores a partir dos riscos ocupacionais e dos critérios médicos aplicáveis.',
+        'As informações sobre perigos e riscos identificados no PGR devem ser consideradas na organização das ações de saúde ocupacional. O planejamento médico e a definição dos exames cabem aos profissionais legalmente habilitados.',
+      ],
+    },
+    {
+      heading: 'Organização de exames e ASOs',
+      paragraphs: [
+        'O Atestado de Saúde Ocupacional (ASO) é emitido conforme a avaliação médica ocupacional aplicável. A gestão documental deve acompanhar os prazos e organizar o encaminhamento dos trabalhadores aos exames previstos.',
+      ],
+      lists: [{ items: [
+        'Acompanhamento dos exames admissionais, periódicos, de retorno ao trabalho, de mudança de riscos ocupacionais e demissionais, conforme a NR-7.',
+        'Controle documental de ASOs e identificação de pendências para programação dos atendimentos.',
+        'Organização das informações necessárias à comunicação com a empresa contratante e à gestão do serviço.',
+      ] }],
+    },
+    {
+      heading: 'Sigilo e documentação',
+      paragraphs: [
+        'Dados de saúde ocupacional exigem tratamento cuidadoso. Os registros médicos devem permanecer sob a responsabilidade dos profissionais habilitados e com acesso restrito, conforme as obrigações aplicáveis.',
+        'A gestão administrativa pode acompanhar a existência, a situação e os prazos dos documentos sem expor informações clínicas desnecessárias.',
+      ],
+    },
+    {
+      heading: 'Peça uma avaliação do serviço',
+      paragraphs: [
+        'Para solicitar atendimento à AJN, informe o ramo de atividade, a cidade, o número de trabalhadores e a situação atual do PCMSO e dos ASOs.',
+        { segments: [
+          'Acesse a ',
+          { text: 'página de contato', href: '/contato' },
+          ' para apresentar a demanda.',
+        ] },
+      ],
+    },
+  ],
+} as const satisfies ServiceContent;
