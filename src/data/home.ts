@@ -50,6 +50,7 @@ export const hero = {
 
 export const about = {
 	title: 'AJN Consultoria e Engenharia',
+	areas: ['Segurança do Trabalho', 'Engenharia', 'Saúde Ocupacional', 'Treinamentos'],
 	paragraphs: [
 		'A AJN Consultoria e Engenharia é uma empresa especializada em serviços de qualidade, saúde, segurança e meio ambiente (QSSMA). Nosso objetivo é oferecer soluções completas, como treinamentos, gestão de contratos, fornecimento de equipes qualificadas, acompanhamento técnico, além de mobilização de pessoas, máquinas e equipamentos. Também realizamos perícias relacionadas à insalubridade e periculosidade, sempre com excelência e compromisso.',
 		'Destacamo-nos na gestão de equipe e contratos de Segurança do Trabalho.',
@@ -62,7 +63,7 @@ export const about = {
 } as const;
 
 export const clients = Array.from({ length: 10 }, (_, index) => ({
-	src: `/images/clients/cliente-${String(index + 1).padStart(2, '0')}.jpg`,
+	src: `/images/clients/cliente-${String(index + 1).padStart(2, '0')}.png`,
 	alt: 'Cliente AJN Consultoria e Engenharia',
 }));
 
@@ -101,10 +102,31 @@ export const portfolio = [
 	}))),
 ];
 
-export const differentials = [
-	{ title: 'Experiência Técnica:', items: ['Equipe formada por profissionais altamente qualificados.', 'Experiência curricular comprovada em diversos setores.'] },
-	{ title: 'Comprometimento Ambiental:', items: ['Práticas sustentáveis integradas aos serviços.', 'Incentivo a clientes para adoção de medidas ambientalmente responsáveis.'] },
-	{ title: 'Inovação e Tecnologia:', items: ['Utilização de tecnologias avançadas nos processos.', 'Acompanhamento constante das tendências do setor.'] },
+export const workflowSteps = [
+	{
+		number: '01',
+		icon: 'diagnostic',
+		title: 'Diagnóstico',
+		text: 'Visitamos sua empresa, avaliamos os riscos e mapeamos as obrigações legais aplicáveis.',
+	},
+	{
+		number: '02',
+		icon: 'proposal',
+		title: 'Proposta',
+		text: 'Apresentamos um plano sob medida, com escopo, prazos e valores claros — sem surpresas.',
+	},
+	{
+		number: '03',
+		icon: 'execution',
+		title: 'Execução',
+		text: 'Implementamos programas, laudos, projetos e treinamentos com equipe técnica habilitada.',
+	},
+	{
+		number: '04',
+		icon: 'follow-up',
+		title: 'Acompanhamento',
+		text: 'Monitoramos prazos, atualizamos documentos e damos suporte contínuo à sua equipe.',
+	},
 ] as const;
 
 export const highlights = [
