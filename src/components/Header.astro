@@ -1,60 +1,147 @@
 ---
+import '../styles/header.css';
 import { navigation, site } from '../data/home';
 
 const currentPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, '');
 const isCurrent = (href: string) => href === '/'
 	? currentPath === '/'
-	: currentPath === href || currentPath.startsWith(`${href}/`);
+	: currentPath === href || currentPath.startsWith(href + '/');
 ---
 
 <header class="site-header" id="site-header">
 	<div class="site-shell header-main">
-		<a class="brand" href="/" aria-label="Voltar para a página inicial">
-			<img src="/images/branding/logo.png" alt={site.name} width="200" height="80" />
+		<a class="brand" href="/" aria-label="AJN Consultoria e Engenharia — página inicial">
+			<img src="/images/branding/logo.png" alt="AJN Consultoria e Engenharia" width="200" height="80" decoding="async" />
 		</a>
 
-		<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
+		<button
+			class="menu-toggle"
+			type="button"
+			aria-label="Abrir menu de navegação"
+			aria-expanded="false"
+			aria-controls="primary-navigation"
+			data-menu-toggle
+		>
 			<span class="sr-only">Abrir menu</span>
-			<span></span><span></span><span></span>
+			<span aria-hidden="true"></span>
+			<span aria-hidden="true"></span>
+			<span aria-hidden="true"></span>
 		</button>
 
 		<nav id="primary-navigation" class="primary-navigation" aria-label="Navegação principal">
-			<ul>
+			<ul class="navigation-list">
 				{navigation.map((item) => (
 					<li class={item.children ? 'has-submenu' : undefined}>
-						<a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
-						{item.children && (
-							<ul class="submenu">
-								{item.children.map((child) => (
-									<li><a href={child.href} aria-current={currentPath === child.href ? 'page' : undefined}>{child.label}</a></li>
-								))}
-							</ul>
+						{item.children ? (
+							<>
+								<div class="navigation-item__group">
+									<a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+										{item.label}
+									</a>
+									<button
+										class="submenu-toggle"
+										type="button"
+										aria-expanded="false"
+										aria-haspopup="true"
+										aria-controls={'submenu-' + item.href.slice(1)}
+										aria-label={'Expandir opções de ' + item.label}
+										data-submenu-toggle
+									>
+										<span class="submenu-toggle__chevron" aria-hidden="true"></span>
+									</button>
+								</div>
+								<ul id={'submenu-' + item.href.slice(1)} class="submenu" aria-label={'Opções de ' + item.label}>
+									{item.children.map((child) => (
+										<li><a href={child.href} aria-current={currentPath === child.href ? 'page' : undefined}>{child.label}</a></li>
+									))}
+								</ul>
+							</>
+						) : (
+							<a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
 						)}
 					</li>
 				))}
-				<li><a class="training-link" href={site.trainingUrl} target="_blank" rel="noopener noreferrer">Treinamentos online</a></li>
+				<li class="navigation-list__action">
+					<a class="training-link" href={site.trainingUrl} target="_blank" rel="noopener noreferrer">
+						Treinamentos online
+						<span class="sr-only"> (abre em uma nova aba)</span>
+					</a>
+				</li>
 			</ul>
 		</nav>
 	</div>
 </header>
 
 <script>
-	const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
-	const navigation = document.querySelector<HTMLElement>('.primary-navigation');
-	const setOpen = (open: boolean) => {
-		toggle?.setAttribute('aria-expanded', String(open));
-		navigation?.classList.toggle('is-open', open);
-		const label = toggle?.querySelector<HTMLElement>('.sr-only');
-		if (label) label.textContent = open ? 'Fechar menu' : 'Abrir menu';
-	};
-	toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
-	navigation?.addEventListener('click', (event) => {
-		if (event.target instanceof HTMLAnchorElement && window.matchMedia('(max-width: 992px)').matches) setOpen(false);
+	const header = document.querySelector<HTMLElement>('#site-header');
+	const menuToggle = header?.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+	const nav = header?.querySelector<HTMLElement>('#primary-navigation');
+	const submenuGroups = Array.from(header?.querySelectorAll<HTMLElement>('.has-submenu') ?? []);
+	const compactNav = window.matchMedia('(max-width: 1100px)');
+
+	function setSubmenu(group: HTMLElement, open: boolean) {
+		group.classList.toggle('is-expanded', open);
+		const button = group.querySelector<HTMLButtonElement>('[data-submenu-toggle]');
+		if (button) {
+			button.setAttribute('aria-expanded', String(open));
+			button.setAttribute('aria-label', (open ? 'Recolher' : 'Expandir') + ' opções de Serviços');
+		}
+	}
+	function closeSubmenus(except?: HTMLElement) {
+		for (const group of submenuGroups) {
+			if (group !== except) setSubmenu(group, false);
+		}
+	}
+	function setMenu(open: boolean) {
+		menuToggle?.setAttribute('aria-expanded', String(open));
+		menuToggle?.setAttribute('aria-label', open ? 'Fechar menu de navegação' : 'Abrir menu de navegação');
+		nav?.classList.toggle('is-open', open);
+		const accessibleText = menuToggle?.querySelector<HTMLElement>('.sr-only');
+		if (accessibleText) accessibleText.textContent = open ? 'Fechar menu' : 'Abrir menu';
+		if (!open) closeSubmenus();
+	}
+
+	menuToggle?.addEventListener('click', () => setMenu(menuToggle.getAttribute('aria-expanded') !== 'true'));
+	for (const group of submenuGroups) {
+		const subToggle = group.querySelector<HTMLButtonElement>('[data-submenu-toggle]');
+		subToggle?.addEventListener('click', () => {
+			const next = subToggle.getAttribute('aria-expanded') !== 'true';
+			closeSubmenus(group);
+			setSubmenu(group, next);
+		});
+		group.addEventListener('pointerenter', (event) => {
+			if (event.pointerType === 'mouse' && !compactNav.matches) setSubmenu(group, true);
+		});
+		group.addEventListener('pointerleave', (event) => {
+			if (event.pointerType === 'mouse' && !compactNav.matches) setSubmenu(group, false);
+		});
+	}
+	nav?.addEventListener('click', (event) => {
+		const target = event.target;
+		if (target instanceof Element && target.closest('a[href]') && compactNav.matches) setMenu(false);
+	});
+	document.addEventListener('pointerdown', (event) => {
+		const target = event.target;
+		if (target instanceof Node && header && !header.contains(target)) {
+			closeSubmenus();
+			if (compactNav.matches) setMenu(false);
+		}
 	});
 	document.addEventListener('keydown', (event) => {
-		if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
-			setOpen(false);
-			toggle.focus();
+		if (event.key !== 'Escape') return;
+		const anySubmenuOpen = submenuGroups.some((group) => group.classList.contains('is-expanded'));
+		const menuOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
+		if (anySubmenuOpen) {
+			const activeGroup = submenuGroups.find((group) => group.classList.contains('is-expanded'));
+			closeSubmenus();
+			activeGroup?.querySelector<HTMLButtonElement>('[data-submenu-toggle]')?.focus();
+		} else if (menuOpen) {
+			setMenu(false);
+			menuToggle?.focus();
 		}
+	});
+	compactNav.addEventListener('change', () => {
+		setMenu(false);
+		closeSubmenus();
 	});
 </script>
