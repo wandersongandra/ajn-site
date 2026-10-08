@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises';
 const html = await readFile('dist/index.html', 'utf8');
 const motionJs = await readFile('src/scripts/home-motion.ts', 'utf8');
 const motionCss = await readFile('src/styles/home-motion.css', 'utf8');
+const clientsCss = await readFile('src/styles/clients-carousel.css', 'utf8');
+const clientsJs = await readFile('src/scripts/clients-carousel.ts', 'utf8');
 const issues = [];
 const check = (condition, message) => {
 	if (!condition) issues.push(message);
@@ -27,17 +29,23 @@ for (const [name, needle] of sections) {
 const homeHtml = html.slice(html.indexOf('class="home-page"'));
 const serviceCards = (homeHtml.match(/<article class="service-card"/g) ?? []).length;
 const clientLogos = (homeHtml.match(/class="home-client-logo"/g) ?? []).length;
+const duplicateLogos = (homeHtml.match(/class="home-client-logo home-client-logo--duplicate"/g) ?? []).length;
 const sectorCards = (homeHtml.match(/class="home-sector-card"/g) ?? []).length;
 const h1Count = (html.match(/<h1\b/g) ?? []).length;
 check(h1Count === 1, 'Expected one H1, found ' + h1Count);
 check(serviceCards === 6, 'Expected six service cards, found ' + serviceCards);
-check(clientLogos === 10, 'Expected ten client logos, found ' + clientLogos);
+check(clientLogos === 10, 'Expected ten original client logos, found ' + clientLogos);
+check(duplicateLogos === 10, 'Expected ten decorative carousel duplicates, found ' + duplicateLogos);
 check(sectorCards === 4, 'Expected four sector cards, found ' + sectorCards);
 check(!homeHtml.includes('class="section mission"'), 'Mission/Vision/Values unexpectedly returned');
 check(!homeHtml.includes('class="about section"'), 'About AJN section unexpectedly returned');
 check(!homeHtml.includes('class="section highlights"'), 'Duplicate services highlights unexpectedly returned');
-check(!homeHtml.includes('solutions-carousel') && !homeHtml.includes('clients-carousel'),
-	'Infinite services or client carousel unexpectedly returned');
+check(!homeHtml.includes('solutions-carousel'), 'Unexpected services carousel returned');
+check(homeHtml.includes('data-clients-carousel') && homeHtml.includes('data-clients-viewport'),
+	'Client carousel and scrollable fallback must exist');
+check(homeHtml.includes('aria-hidden="true" inert'), 'Duplicate logos must be ignored by assistive technology');
+check(homeHtml.includes('data-clients-pause') && homeHtml.includes('aria-pressed="false"'),
+	'The carousel needs an accessible pause control');
 check(!homeHtml.includes('class="hero__controls"'), 'Decorative hero arrows unexpectedly returned');
 const heroStart = html.indexOf('class="hero"');
 const heroEnd = html.indexOf('</section>', heroStart);
@@ -61,13 +69,21 @@ check(motionJs.includes('prefers-reduced-motion') && motionJs.includes('saveData
 check(motionJs.includes("home.classList.add('motion-ready')") &&
 	motionCss.includes('.home-page.motion-ready [data-reveal]'),
 	'No-JS content must remain visible; CSS must depend on script-enabled class');
-check(!/addEventListener\(['"]scroll['"]/.test(motionJs),
+check(!/addEventListener\(['"]scroll['"]/.test(motionJs + clientsJs),
 	'Per-frame scroll listener unexpectedly introduced');
+check(clientsJs.includes('IntersectionObserver') && clientsJs.includes('visibilitychange'),
+	'Carousel must pause when out of view or when the tab is hidden');
+check(clientsJs.includes('prefers-reduced-motion') && clientsJs.includes('saveData'),
+	'Carousel must respect reduced motion and data-saving mode');
+check(clientsCss.includes('prefers-reduced-motion: reduce') && clientsCss.includes('animation-play-state: paused'),
+	'Carousel needs a CSS no-motion fallback and a controllable animation state');
+check(clientsCss.includes('background: transparent') && clientsCss.includes('border: 0'),
+	'Logos must no longer be inside framed cards');
 
 
 if (issues.length) {
 	for (const issue of issues) console.error('[home][FAIL] ' + issue);
 	process.exitCode = 1;
 } else {
-	console.log('[home] PASS: 6 sections, 1 H1, 6 services, 4 sectors, 10 logos, natural copy and accessible lightweight motion.');
+	console.log('[home] PASS: 6 sections, 1 H1, 6 services, 4 sectors, 10 client logos, accessible carousel and lightweight motion.');
 }
