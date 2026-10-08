@@ -1,12 +1,24 @@
 /* Motion enhancement exclusive to the AJN home.
    The default experience remains completely visible without JavaScript. */
 @media (prefers-reduced-motion: no-preference) {
+	/* Keep the first headline fast; scroll effects belong below the fold. */
+	.home-page .hero__eyebrow,
+	.home-page .hero__content h1,
+	.home-page .hero__lead,
+	.home-page .hero__actions {
+		animation-duration: 490ms;
+		animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+	}
+	.home-page .hero__content h1 { animation-delay: 40ms; }
+	.home-page .hero__lead { animation-delay: 75ms; }
+	.home-page .hero__actions { animation-delay: 110ms; }
+
 	@supports (translate: 0 1px) {
 		.home-page.motion-ready [data-reveal] {
-			transition-property: opacity, translate;
-			transition-duration: 480ms, 560ms;
-			transition-timing-function: ease-out, cubic-bezier(.22, 1, .36, 1);
-			transition-delay: var(--reveal-delay, 0ms);
+			transition-property: opacity, translate, transform, border-color;
+			transition-duration: 480ms, 560ms, 200ms, 200ms;
+			transition-timing-function: ease-out, cubic-bezier(.22, 1, .36, 1), ease, ease;
+			transition-delay: var(--reveal-delay, 0ms), var(--reveal-delay, 0ms), 0ms, 0ms;
 		}
 		.home-page.motion-ready [data-reveal]:not(.is-visible):not(:focus-within) {
 			opacity: 0;
