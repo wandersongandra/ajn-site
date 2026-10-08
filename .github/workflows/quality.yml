@@ -50,6 +50,9 @@ jobs:
       - name: Audit regression fixtures
         run: npm run test:audits
 
+      - name: Contact delivery fallback audit
+        run: npm run audit:contact
+
       - name: Blog content and image audit
         run: node scripts/audit-blog.mjs
 
