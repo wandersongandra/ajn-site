@@ -44,6 +44,13 @@ for (const file of htmlFiles) {
 	}
 
 	report.articles++;
+	// Os artigos possuem data de revisão e referências identificáveis.
+	if (!/["']dateModified["']\s*:/.test(html)) {
+		failures.push(route + ': data de revisão ausente no BlogPosting');
+	}
+	if (!route.includes('um-pouco-sobre-nos') && !/href=["']https:\/\/(?:www\.)?(?:gov\.br|planalto\.gov\.br)/.test(html)) {
+		failures.push(route + ': fontes oficiais não encontradas no corpo do artigo');
+	}
 	if (h1Count !== 1) failures.push(route + ': esperado um H1, encontrado ' + h1Count);
 	if (!title) failures.push(route + ': título ausente');
 	if (!description || description.length < 75 || description.length > 180) {
