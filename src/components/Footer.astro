@@ -1,14 +1,19 @@
 ---
 import { navigation, site } from '../data/home';
+
+const copyrightYear = new Date().getFullYear();
 ---
 
 <footer class="site-footer" aria-label="Rodapé AJN Consultoria e Engenharia">
 	<div class="site-shell footer__grid">
 		<div class="footer__brand">
-			<img class="footer__logo" src="/images/branding/ajn-logo-hd.webp" alt={site.name} width="180" height="180" />
-			<p><strong>Razão Social:</strong> AJN Consultoria e Engenharia</p>
-			<p>CNPJ: 50.970.588/0001-84</p>
-			<p>A empresa se destaca na prestação de serviços de segurança do trabalho para setores complexos, com atendimento personalizado e atuação preventiva.</p>
+			<a class="footer__brand-link" href="/" aria-label="AJN Consultoria e Engenharia — início">
+				<img class="footer__logo" src="/images/branding/ajn-logo-hd.webp" alt="" width="180" height="180" loading="lazy" decoding="async" />
+			</a>
+			<div class="footer__company">
+				<p class="footer__company-name"><span>Razão social</span><strong>AJN Consultoria e Engenharia</strong></p>
+				<p class="footer__registration"><span>CNPJ</span> 50.970.588/0001-84</p>
+			</div>
 		</div>
 
 		<nav class="footer__menu" aria-label="Navegação do rodapé">
@@ -25,23 +30,23 @@ import { navigation, site } from '../data/home';
 			<a href={site.phoneHref} rel="nofollow noopener noreferrer" target="_blank">{site.phone}</a>
 			<a href={`mailto:${site.email}`}>{site.email}</a>
 			<div class="footer__actions">
-				<a class="footer__button" href="/contato">Solicitar atendimento</a>
+				<a class="footer__button" href="/contato">Solicitar atendimento <span aria-hidden="true">↗</span></a>
 			</div>
 		</div>
 
 		<div class="footer__social-column">
-			<h2>Siga-nos!</h2>
+			<h2>Redes sociais</h2>
 			<div class="footer__social">
-				<a href={site.linkedin} target="_blank" rel="nofollow noopener noreferrer" aria-label="LinkedIn"><img src="/images/icons/linkedin.png" alt="" width="38" height="38" /></a>
-				<a href={site.instagram} target="_blank" rel="nofollow noopener noreferrer" aria-label="Instagram"><img src="/images/icons/instagram.png" alt="" width="38" height="38" /></a>
-				<a href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer" aria-label="WhatsApp"><img src="/images/icons/whatsapp-icon.svg" alt="" width="38" height="38" /></a>
+				<a href={site.linkedin} target="_blank" rel="nofollow noopener noreferrer" aria-label="LinkedIn da AJN"><img src="/images/icons/linkedin.png" alt="" width="38" height="38" loading="lazy" decoding="async" /></a>
+				<a href={site.instagram} target="_blank" rel="nofollow noopener noreferrer" aria-label="Instagram da AJN"><img src="/images/icons/instagram.png" alt="" width="38" height="38" loading="lazy" decoding="async" /></a>
+				<a href={site.phoneHref} target="_blank" rel="nofollow noopener noreferrer" aria-label="WhatsApp da AJN"><img src="/images/icons/whatsapp-icon.svg" alt="" width="38" height="38" loading="lazy" decoding="async" /></a>
 			</div>
 		</div>
 	</div>
 
 	<div class="copyright-footer">
 		<div class="site-shell copyright-footer__inner">
-			<span>Copyright © AJN Consultoria e Engenharia. (Lei 9610 de 19/02/1998)</span>
+			<small>© {copyrightYear} AJN Consultoria e Engenharia. Todos os direitos reservados.</small>
 		</div>
 	</div>
 </footer>
