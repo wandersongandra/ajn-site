@@ -7,10 +7,28 @@ const obsoleteClasses = new Set([
   'highlight-card', 'highlights', 'highlights-carousel', 'highlights__track',
   'about__grid', 'about__visual', 'about__copy',
   'portfolio__grid', 'portfolio__item',
+  'clients__track', 'clients__viewport', 'clients__group', 'client-logo',
+  'solutions__track', 'solutions__group', 'highlights__track',
+  'carousel-button', 'mission__grid',
 ]);
 
 const errors = [];
+// A faixa moderna usa home-clients-*, sem os seletores legados abaixo.
+const removedCssTokens = [
+  '.clients__track', '.client-logo', '.carousel-button', '.highlights__track',
+  '/* Clients legacy carousel */', '/* Mission / Vision / Values */',
+  '/* Continuous client marquee — no manual horizontal scrolling or frames */',
+];
+
 const css = await readFile('src/styles/global.css', 'utf8');
+for (const token of removedCssTokens) {
+  if (css.includes(token)) errors.push('CSS legado reapareceu: ' + token);
+}
+const activeClientsCss = await readFile('src/styles/clients-carousel.css', 'utf8');
+if (!activeClientsCss.includes('.home-clients-rail')) {
+  errors.push('Carrossel moderno precisa continuar em clients-carousel.css');
+}
+
 for (const marker of [
   '/* Featured services */',
   '/* Continuous featured-services marquee',
@@ -44,7 +62,7 @@ for (const file of pages) {
 }
 const home = await readFile('dist/index.html', 'utf8');
 const about = await readFile('dist/sobre-nos/index.html', 'utf8');
-for (const present of ['id="solucoes"', 'id="solutions-title"', 'data-clients-carousel', 'class="workflow__steps"']) {
+for (const present of ['id="solucoes"', 'id="solutions-title"', 'data-clients-carousel', 'class="home-clients-rail"', 'class="workflow__steps"']) {
   if (!home.includes(present)) errors.push('Home: estrutura ativa removida: ' + present);
 }
 if (!about.includes('class="about-page"') || !about.includes('data-about-page')) {
