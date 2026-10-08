@@ -6,7 +6,7 @@ import BlogSidebar from './BlogSidebar.astro';
 import { Image } from 'astro:assets';
 import { blogArticle } from '../content/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
 import { getRelatedBlogPosts } from '../content/blog/catalog';
-import { absoluteSiteUrl, serializeJsonLd } from '../utils/site';
+import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
 
 const canonicalPath = '/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
 const toc = blogArticle.sections.map((section, index) => ({ title: section.heading.trim(), id: 'blog-secao-' + (index + 1) })).filter((entry) => entry.title);
@@ -18,9 +18,9 @@ const articleSchema = {
 	description: blogArticle.description,
 	datePublished: '2026-01-23',
 	dateModified: blogArticle.updatedAt,
-	author: { '@type': 'Organization', name: blogArticle.author },
-	publisher: { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' },
-	mainEntityOfPage: absoluteSiteUrl(canonicalPath),
+	author: { '@type': 'Organization', '@id': `${siteOrigin}/#organization`, name: blogArticle.author, logo: { '@type': 'ImageObject', url: absoluteSiteUrl('/images/branding/logo.png') } },
+	publisher: { '@type': 'Organization', '@id': `${siteOrigin}/#organization`, name: 'AJN Consultoria e Engenharia', logo: { '@type': 'ImageObject', url: absoluteSiteUrl('/images/branding/logo.png') } },
+	mainEntityOfPage: absoluteSiteUrl(`${canonicalPath}/`),
 	image: [absoluteSiteUrl('/images/og/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional.jpg')],
 	inLanguage: 'pt-BR',
 };
