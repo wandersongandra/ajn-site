@@ -120,6 +120,7 @@
 	.about-page__principles-media:hover img { scale: 1.025; }
 }
 .about-page__intro {
+	scroll-margin-top: 100px;
 	padding-block: clamp(70px, 7.2vw, 104px);
 }
 .about-page__intro-grid {
