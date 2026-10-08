@@ -80,6 +80,7 @@ export interface BlogContentData {
 	description: string;
 	heading: string;
 	pubDate: string;
+	updatedAt?: string;
 	author: string;
 	image: BlogImage;
 	categories: readonly string[];
