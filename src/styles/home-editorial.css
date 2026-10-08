@@ -485,8 +485,9 @@
 }
 
 @media (max-width: 1024px) {
-	.home-page .hero__content { grid-template-columns: minmax(0, 1fr) minmax(260px, .72fr); gap: 22px; }
-	.home-page .hero__content h1 { font-size: clamp(38px, 4.5vw, 53px); }
+	.home-page .hero__content { grid-template-columns: minmax(0, 1fr) minmax(254px, .72fr); gap: 30px; }
+	.home-page .hero__content h1 { font-size: clamp(38px, 4.4vw, 53px); }
+	.home-page .hero__panel { padding: 25px; }
 	.home-page .home-sectors__layout { grid-template-columns: 1fr; }
 	.home-page .home-sectors__heading h2 { max-width: 22ch; font-size: clamp(38px, 4.5vw, 51px); }
 	.home-page .home-sectors__heading > p:not(.home-section-heading__eyebrow) { max-width: 65ch; }
@@ -501,9 +502,14 @@
 }
 @media (max-width: 768px) {
 	.home-page .section { padding-block: 64px; }
-	.home-page .hero { min-height: auto; }
-	.home-page .hero__content { display: block; padding-block: 86px 79px; }
-	.home-page .hero__content h1 { max-width: 16ch; font-size: clamp(35px, 6.8vw, 48px); }
+	.home-page .hero {
+		min-height: auto;
+		background-image: linear-gradient(100deg, rgb(9 30 20 / 93%), rgb(12 37 24 / 80%)), var(--hero-image);
+		background-position: 58% center;
+	}
+	.home-page .hero__content { display: block; padding-block: 90px 85px; }
+	.home-page .hero__content h1 { max-width: 18ch; font-size: clamp(37px, 6.8vw, 48px); }
+	.home-page .hero__lead { max-width: 55ch; }
 	.home-page .hero__panel { display: none; }
 	.home-page .home-sectors__grid { gap: 12px; }
 	.home-page .home-sector-card { min-height: 178px; }
@@ -512,9 +518,11 @@
 @media (max-width: 576px) {
 	.home-page .section { padding-block: 54px; }
 	.home-page .section-title { font-size: clamp(27px, 8vw, 36px); }
-	.home-page .hero__content { width: min(100% - 32px, var(--shell)); padding-block: 76px 64px; }
-	.home-page .hero__content h1 { font-size: clamp(34px, 9vw, 43px); }
-	.home-page .hero__lead { font-size: 15px; }
+	.home-page .hero__content { width: min(100% - 32px, var(--shell)); padding-block: 75px 70px; }
+	.home-page .hero__eyebrow { margin-bottom: 18px; font-size: 11px; }
+	.home-page .hero__content h1 { max-width: 17ch; font-size: clamp(34px, 9vw, 42px); line-height: 1.13; }
+	.home-page .hero__lead { font-size: 15.5px; line-height: 1.67; }
+	.home-page .hero__actions > .button { min-height: 54px; }
 	.home-page .hero__areas { gap: 7px; }
 	.home-page .hero__areas li { font-size: 10px; padding: 6px 9px; }
 	.home-page .home-service-card__link > img { height: auto; max-height: none; aspect-ratio: 16 / 9; }
