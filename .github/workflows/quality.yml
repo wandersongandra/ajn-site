@@ -47,6 +47,9 @@ jobs:
       - name: SST landing pages and Blog service link audit
         run: npm run audit:sst-seo
 
+      - name: Services catalog image weight and search behavior
+        run: npm run audit:services-catalog
+
       - name: Internal anchor audit
         run: npm run audit:fragments
 
