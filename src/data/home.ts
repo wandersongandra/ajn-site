@@ -114,27 +114,23 @@ export const portfolio = [
 export const workflowSteps = [
 	{
 		number: '01',
-		icon: 'diagnostic',
-		title: 'Diagnóstico',
-		text: 'Você apresenta a demanda e nós verificamos as atividades e os documentos envolvidos.',
+		title: 'Levantamento inicial',
+		text: 'Você apresenta a demanda. Verificamos as atividades e os documentos que precisam ser considerados.',
 	},
 	{
 		number: '02',
-		icon: 'proposal',
-		title: 'Proposta',
-		text: 'Apresentamos o que será feito, os prazos e as condições antes de iniciar.',
+		title: 'Proposta e escopo',
+		text: 'Detalhamos o serviço, os prazos e as condições para sua análise antes do início.',
 	},
 	{
 		number: '03',
-		icon: 'execution',
-		title: 'Execução',
-		text: 'Realizamos os levantamentos, inspeções, laudos ou projetos previstos no escopo.',
+		title: 'Execução técnica',
+		text: 'Realizamos as inspeções, os levantamentos, os laudos ou os projetos previstos no escopo.',
 	},
 	{
 		number: '04',
-		icon: 'follow-up',
 		title: 'Entrega e orientação',
-		text: 'Entregamos o serviço contratado e esclarecemos os encaminhamentos previstos.',
+		text: 'Entregamos o serviço contratado e explicamos os encaminhamentos previstos.',
 	},
 ] as const;
 
