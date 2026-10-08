@@ -23,6 +23,16 @@ check(section.includes('Consultoria em SST, saúde ocupacional, perícias'), 'De
 const cards = [...section.matchAll(/<article\b[^>]*class="service-card"[^>]*>[\s\S]*?<\/article>/g)].map(m => m[0]);
 check(cards.length === 6, `Esperados seis cards de serviço, encontrados ${cards.length}.`);
 const hrefs = new Set();
+const originalPngs = [
+	'assessoria-e-consultoria-em-seguranca-do-trabalho.png',
+	'gestao-de-PCMSO-e-ASOs.png',
+	'gestao-de-esocial.png',
+	'pericia-em-insalubridade-e-periculosidade.png',
+	'projetos-de-combate-a-incendio.png',
+	'treinamentos-nrs.png',
+];
+let optimizedBytes = 0;
+let originalBytes = 0;
 for (const [index, card] of cards.entries()) {
 	const link = card.match(/<a\b[^>]*class="home-service-card__link"[^>]*href="([^"]+)"[^>]*>/)?.[1];
 	check(Boolean(link) && link.startsWith('/servicos/'), `Card ${index + 1}: link de serviço inexistente.`);
@@ -34,18 +44,36 @@ for (const [index, card] of cards.entries()) {
 	check(/<h3\b[^>]*>[^<]+<\/h3>/.test(card), `Card ${index + 1}: H3 ausente.`);
 	check(/<p\b[^>]*>[^<]+<\/p>/.test(card), `Card ${index + 1}: descrição ausente.`);
 	const img = card.match(/<img\b[^>]*>/)?.[0] ?? '';
-	const src = img.match(/src="([^"]+)"/)?.[1];
-	check(Boolean(src) && src.startsWith('/images/services/'), `Card ${index + 1}: imagem não corresponde ao catálogo.`);
-	check(/alt=""/.test(img) && /loading="lazy"/.test(img) && /decoding="async"/.test(img),
-		`Card ${index + 1}: foto decorativa deve carregar de forma otimizada.`);
-	check(/width="600"/.test(img) && /height="375"/.test(img),
-		`Card ${index + 1}: dimensões de imagem para reservar espaço ausentes.`);
+	const src = img.match(/\ssrc="([^"]+)"/)?.[1];
+	const srcset = img.match(/\ssrcset="([^"]+)"/)?.[1] ?? '';
+	const variants = [...srcset.matchAll(/(\/_astro\/[^\s,]+\.webp)\s+([0-9]+)w/g)];
+	check(Boolean(src) && src.startsWith('/_astro/') && src.endsWith('.webp'),
+		`Card ${index + 1}: a imagem precisa ser WebP otimizada pelo Astro.`);
+	check(/\srole="presentation"/.test(img), `Card ${index + 1}: imagem decorativa precisa ser ignorada por leitores de tela.`);
+	check(/\sloading="lazy"/.test(img), `Card ${index + 1}: imagem precisa de loading lazy.`);
+	check(/\sdecoding="async"/.test(img), `Card ${index + 1}: imagem precisa de decoding async.`);
+	check(/\swidth="[0-9]+"/.test(img) && /\sheight="[0-9]+"/.test(img),
+		`Card ${index + 1}: faltam dimensões intrínsecas.`);
+	check(/\ssizes="[^"]+"/.test(img) && variants.length >= 2,
+		`Card ${index + 1}: ausência de srcset responsivo com múltiplos tamanhos.`);
 	check(/data-reveal/.test(card), `Card ${index + 1}: entrada progressiva ausente.`);
 	check(card.includes('Ver serviço'), `Card ${index + 1}: ação não está clara.`);
 	if (src) {
-		try { check((await stat('dist' + src)).isFile(), `Card ${index + 1}: arquivo da imagem ausente: ${src}`); }
-		catch { issues.push(`Card ${index + 1}: imagem ausente: ${src}`); }
+		try { optimizedBytes += (await stat('dist' + src)).size; }
+		catch { issues.push(`Card ${index + 1}: recurso WebP principal ausente`); }
 	}
+	try { originalBytes += (await stat('dist/images/services/' + originalPngs[index])).size; }
+	catch { issues.push(`Card ${index + 1}: PNG de referência ausente`); }
+	for (const imagePath of new Set([src, ...variants.map(v => v[1])])) {
+		if (!imagePath) continue;
+		try { check((await stat('dist' + imagePath)).isFile(), `Card ${index + 1}: recurso ausente: ${imagePath}`); }
+		catch { issues.push(`Card ${index + 1}: imagem ausente: ${imagePath}`); }
+	}
+}
+check(optimizedBytes > 0 && originalBytes > 0 && optimizedBytes < originalBytes,
+	`Imagens responsivas precisam reduzir o peso padrão: PNG ${originalBytes} B, WebP ${optimizedBytes} B.`);
+if (optimizedBytes && originalBytes) {
+	console.log(`[home-services] Fotos do catálogo: PNG original ${Math.round(originalBytes / 1024)} KiB; WebP padrão ${Math.round(optimizedBytes / 1024)} KiB; economia ${Math.round((1 - optimizedBytes / originalBytes) * 100)}%.`);
 }
 check(section.includes('href="/servicos"') && section.includes('Consultar todos os serviços'),
 	'Link para catálogo integral ausente.');

@@ -1,14 +1,21 @@
 ---
+import { Image } from 'astro:assets';
+import assessoria from '../assets/home-services/assessoria.png';
+import pcmsoAsos from '../assets/home-services/pcmso-asos.png';
+import esocial from '../assets/home-services/esocial.png';
+import pericias from '../assets/home-services/pericias.png';
+import incendio from '../assets/home-services/incendio.png';
+import treinamentos from '../assets/home-services/treinamentos.png';
 import { services } from '../data/home';
 
 // Serviços publicados no catálogo; títulos e destinos mantêm correspondência.
 const featuredServices = [
-	{ ...services[0], summary: 'Inspeções, avaliação de riscos e orientação sobre medidas de prevenção.' },
-	{ ...services[4], summary: 'Acompanhamento do PCMSO, exames ocupacionais e organização dos ASOs.' },
-	{ ...services[1], summary: 'Organização dos registros de Segurança e Saúde do Trabalho enviados ao eSocial.' },
-	{ ...services[5], summary: 'Avaliações de insalubridade e periculosidade para elaboração de laudos técnicos.' },
-	{ ...services[6], summary: 'Projetos de prevenção e combate a incêndio para diferentes tipos de edificação.' },
-	{ ...services[8], summary: 'Cursos sobre Normas Regulamentadoras, presenciais ou pela plataforma de treinamentos.' },
+	{ ...services[0], image: assessoria, summary: 'Inspeções, avaliação de riscos e orientação sobre medidas de prevenção.' },
+	{ ...services[4], image: pcmsoAsos, summary: 'Acompanhamento do PCMSO, exames ocupacionais e organização dos ASOs.' },
+	{ ...services[1], image: esocial, summary: 'Organização dos registros de Segurança e Saúde do Trabalho enviados ao eSocial.' },
+	{ ...services[5], image: pericias, summary: 'Avaliações de insalubridade e periculosidade para elaboração de laudos técnicos.' },
+	{ ...services[6], image: incendio, summary: 'Projetos de prevenção e combate a incêndio para diferentes tipos de edificação.' },
+	{ ...services[8], image: treinamentos, summary: 'Cursos sobre Normas Regulamentadoras, presenciais ou pela plataforma de treinamentos.' },
 ];
 ---
 
@@ -25,7 +32,17 @@ const featuredServices = [
 			{featuredServices.map((service, index) => (
 				<article class="service-card" data-reveal style={`--reveal-delay: ${(index % 3) * 75}ms`}>
 					<a class="home-service-card__link" href={service.href} aria-label={`Ver detalhes: ${service.title}`}>
-						<img src={service.image} alt="" width="600" height="375" loading="lazy" decoding="async" />
+						<Image
+							src={service.image}
+							alt=""
+							role="presentation"
+							format="webp"
+							quality={82}
+							widths={[320, 480, 640, 800]}
+							sizes="(max-width: 576px) calc(100vw - 32px), (max-width: 1024px) 47vw, 31vw"
+							loading="lazy"
+							decoding="async"
+						/>
 						<div class="service-card__content">
 							<h3>{service.title}</h3>
 							<p>{service.summary}</p>
