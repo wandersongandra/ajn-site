@@ -21,12 +21,60 @@ export const blogLaudoTecnicoDasCondicoesAmbientaisDeTrabalhoLtcat = {
 	 description: "Entenda a finalidade do LTCAT, as avaliações de agentes nocivos e as situações que exigem atualização das condições ambientais registradas.",
 	 heading: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)",
 	 pubDate: "2025-04-15",
+	updatedAt: "2026-10-07",
 	 author: "Admin",
 	 image: { src: image0, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" },
 	 categories: ['Blog'],
 	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
 	 gallery: [{ src: image1, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image0, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image2, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image3, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image4, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image5, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image6, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image7, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image8, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image9, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image10, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image11, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image12, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image13, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, { src: image14, alt: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }],
-	 sections: [{ heading: "", paragraphs: [{ segments: ["O", { bold: true, text: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)" }, "é um documento obrigatório para empresas que possuem funcionários expostos a agentes nocivos (químicos, físicos e biológicos). Ele tem como objetivo identificar a existência desses agentes no ambiente de trabalho e auxiliar na implementação de medidas preventivas."] }, "Algumas informações são necessárias para o preenchimento desse documento, sendo:"], lists: [{ ordered: false, items: ["A atividade exercida pelo trabalhador;", "Os agentes nocivos a que o trabalhador está exposto;", "A intensidade e concentração dos agentes nocivos;", "Dados sobre exames médicos clínicos;", "Outras informações relevantes sobre a organização do trabalho."] }], subsections: [] },
-		{ heading: "Vigência do LTCAT", paragraphs: ["O LTCAT não tem prazo de validade definido. Ele deve ser atualizado sempre que houver alterações no ambiente de trabalho que possam afetar a saúde ou a integridade física dos trabalhadores. Isso garante que as informações contidas no documento estejam sempre atualizadas e condizentes com a realidade do ambiente de trabalho."], lists: [], subsections: [] },
-		{ heading: "Normas que o LTCAT atende:", paragraphs: [{ segments: ["O LTCAT deve seguir as normas estabelecidas pela", { bold: true, text: "Instrução Normativa PRES/INSS nº 128/2022" }, ". Algumas das principais normas incluem:"] }, "Com isso, é possível dizer que o LTCAT é um documento essencial para a segurança e saúde dos trabalhadores expostos a agentes nocivos. Ele não apenas cumpre uma exigência legal, mas também desempenha um papel importante na prevenção de doenças ocupacionais e na garantia de um ambiente de trabalho seguro. Com base na avaliação dos riscos presentes, a empresa pode implementar medidas de controle efetivas para minimizar a exposição dos trabalhadores a esses agentes. Além disso, o LTCAT é um componente vital para a elaboração do Perfil Profissiográfico Previdenciário (PPP), que descreve as atividades desenvolvidas pelo trabalhador e as condições ambientais de trabalho a que ele foi exposto ao longo de sua vida laboral."], lists: [{ ordered: true, items: ["Identificação da empresa e do setor.", "Descrição da atividade e dos agentes prejudiciais à saúde.", "Localização das possíveis fontes geradoras dos agentes nocivos.", "Via e periodicidade de exposição ao agente prejudicial.", "Metodologia e procedimentos de avaliação dos agentes prejudiciais.", "Descrição das medidas de controle existentes.", "Conclusão do LTCAT.", "Assinatura e identificação do médico do trabalho ou engenheiro de segurança do trabalho.", "Data da realização da avaliação ambiental."] }], subsections: [] }],
+	 sections: [
+  {
+    "heading": "Para que serve o LTCAT",
+    "paragraphs": [
+      "O Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) é um documento de finalidade previdenciária. Ele fundamenta a análise de exposição a agentes nocivos relevante para o reconhecimento de tempo especial, conforme o art. 58 da Lei nº 8.213/1991. Não é sinônimo de PGR, PCMSO, laudo de insalubridade ou laudo de periculosidade.",
+      "A elaboração deve refletir ambientes, atividades, agentes e condições reais de exposição. Informações sobre medidas de proteção e sua efetividade precisam ter base técnica documentada."
+    ]
+  },
+  {
+    "heading": "Quem pode elaborar e assinar?",
+    "paragraphs": [
+      "O art. 58, § 1º, da Lei nº 8.213/1991 prevê laudo expedido por médico do trabalho ou engenheiro de segurança do trabalho, observadas as responsabilidades profissionais aplicáveis. A assinatura, a identificação do responsável e a fundamentação das avaliações são elementos essenciais.",
+      "Um técnico em segurança do trabalho pode contribuir com levantamentos e gestão documental dentro de suas atribuições, mas isso não substitui a habilitação legal exigida para a responsabilidade técnica pelo LTCAT."
+    ]
+  },
+  {
+    "heading": "O LTCAT tem validade de um ano?",
+    "paragraphs": [
+      "Não existe um prazo de vencimento universal de 12 meses fixado no art. 58. O laudo deve permanecer atualizado em relação às condições de trabalho e aos agentes nocivos. Mudanças de processo, instalações, medidas de controle ou exposições devem provocar nova avaliação e eventual atualização.",
+      "Isso não elimina obrigações de outras normas nem prazos específicos de contratos ou sistemas de gestão. É importante diferenciar a atualização necessária do laudo dos prazos de exames clínicos, programas de SST e documentos de terceiros."
+    ]
+  },
+  {
+    "heading": "Como o LTCAT se relaciona com o PPP?",
+    "paragraphs": [
+      "Os dados técnicos que documentam exposições ajudam a embasar as informações do PPP. Desde 2023, o PPP eletrônico utiliza dados do eSocial; inconsistências entre avaliações e declarações podem exigir retificação. O laudo por si só não concede benefício previdenciário."
+    ]
+  },
+  {
+    "heading": "Fontes oficiais",
+    "paragraphs": [
+      {
+        "segments": [
+          {
+            "text": "Lei nº 8.213/1991 — art. 58",
+            "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
+          }
+        ]
+      },
+      {
+        "segments": [
+          {
+            "text": "eSocial — PPP eletrônico",
+            "href": "https://www.gov.br/esocial/pt-br/noticias/disponibilizacao-do-perfil-profissiografico-previdenciario-ppp-eletronico/"
+          }
+        ]
+      }
+    ]
+  }
+],
 } as const satisfies BlogContentData;
