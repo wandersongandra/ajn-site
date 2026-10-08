@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "gestao-do-e-social",
 	"path": "/servicos/gestao-do-e-social",
 	"title": "Gestão do E-Social - AJN Consultoria e Engenharia",
-	"description": "Gestão do E-Social - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de trabalho, bem como projetos de s...Saiba mais.",
+	"description": "Gestão de informações para o eSocial, com organização de dados de empregados, programas de SST e acompanhamento das obrigações cadastrais.",
 	"heading": "Gestão do E-Social",
 	"image": "/images/content/services/gestao-do-e-social.webp",
 	"imageAlt": "Gestão do E-Social",
