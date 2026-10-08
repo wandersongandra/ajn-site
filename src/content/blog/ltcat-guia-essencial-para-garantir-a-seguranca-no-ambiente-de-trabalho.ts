@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-ltcat-guia-essencial-para-garantir-a-
 export const blogLtcatGuiaEssencialParaGarantirASegurancaNoAmbienteDeTrabalho = {
 	 slug: "ltcat-guia-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho", path: "/blog/ltcat-guia-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho",
 	 title: "LTCAT: Guia Essencial para Garantir a Segurança no Ambiente de Trabalho",
-	 description: "A segurança no ambiente de trabalho é um aspecto fundamental para o bem-estar e a saúde dos colaboradores. Com a crescente preocupação sobre as condições lab…",
+	 description: "Saiba quais desafios surgem na elaboração do LTCAT e como organizar avaliações ambientais e informações técnicas da empresa.",
 	 heading: "LTCAT: Guia Essencial para Garantir a Segurança no Ambiente de Trabalho",
 	 pubDate: "2026-01-23",
 	 author: "AJN Consultoria e Engenharia",

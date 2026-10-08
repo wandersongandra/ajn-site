@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-ltcat-e-seguranca-do-trabalho-como-pr
 export const blogLtcatESegurancaDoTrabalhoComoProtegerSuaEmpresaComEficiencia = {
 	 slug: "ltcat-e-seguranca-do-trabalho-como-proteger-sua-empresa-com-eficiencia", path: "/blog/ltcat-e-seguranca-do-trabalho-como-proteger-sua-empresa-com-eficiencia",
 	 title: "LTCAT e Segurança do Trabalho: Como Proteger Sua Empresa com Eficiência",
-	 description: "A segurança do trabalho é um aspecto fundamental para qualquer empresa que deseje não apenas atender a legislação, mas também garantir um ambiente saudável e…",
+	 description: "Veja como a elaboração do LTCAT se relaciona com a gestão de segurança, consultoria especializada e registros das condições de trabalho.",
 	 heading: "LTCAT e Segurança do Trabalho: Como Proteger Sua Empresa com Eficiência",
 	 pubDate: "2026-01-23",
 	 author: "AJN Consultoria e Engenharia",

@@ -6,7 +6,7 @@ export const blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe = {
 	slug: "ltcat-essencial-para-a-seguranca-do-trabalho-e-protecao-da-sua-equipe",
 	path: "/blog/ltcat-essencial-para-a-seguranca-do-trabalho-e-protecao-da-sua-equipe",
 	title: "LTCAT: Essencial para a Segurança do Trabalho e Proteção da Sua Equipe",
-	description: "O LTCAT, ou Laudo Técnico de Condições Ambientais do Trabalho, é um documento essencial para a segurança do trabalho. Sua elaboração é crucial para a identificação e avaliação d...",
+	description: "Entenda como o LTCAT registra a avaliação de agentes nocivos no ambiente de trabalho e apoia o acompanhamento das exposições.",
 	heading: "LTCAT: Essencial para a Segurança do Trabalho e Proteção da Sua Equipe",
 	pubDate: "2026-01-23",
 	author: "AJN Consultoria e Engenharia",

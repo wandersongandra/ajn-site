@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-seguranca-do-trabalho-e-ltcat-conform
 export const blogSegurancaDoTrabalhoELtcatConformidadeEProtecaoPrevidenciaria = {
 	 slug: "seguranca-do-trabalho-e-ltcat-conformidade-e-protecao-previdenciaria", path: "/blog/seguranca-do-trabalho-e-ltcat-conformidade-e-protecao-previdenciaria",
 	 title: "Segurança do Trabalho e LTCAT: Conformidade e Proteção Previdenciária",
-	 description: "A segurança do trabalho é um aspecto essencial para qualquer organização que prioriza o bem-estar de seus colaboradores e a continuidade de suas operações. E…",
+	 description: "Veja como o LTCAT documenta agentes nocivos e contribui com informações técnicas relacionadas ao histórico previdenciário.",
 	 heading: "Segurança do Trabalho e LTCAT: Conformidade e Proteção Previdenciária",
 	 pubDate: "2025-10-02",
 	 author: "Kaique",

@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-ltcat-guia-essencial-para-garantir-se
 export const blogLtcatGuiaEssencialParaGarantirSegurancaDoTrabalhoEficaz = {
 	 slug: "ltcat-guia-essencial-para-garantir-seguranca-do-trabalho-eficaz", path: "/blog/ltcat-guia-essencial-para-garantir-seguranca-do-trabalho-eficaz",
 	 title: "LTCAT: Guia Essencial para Garantir Segurança do Trabalho Eficaz",
-	 description: "A segurança no trabalho é um tema cada vez mais relevante no Brasil, especialmente considerando o aumento das demandas por ambientes laborais saudáveis e seg…",
+	 description: "Conheça a participação da consultoria técnica na elaboração do LTCAT e os cuidados para manter registros ambientais coerentes.",
 	 heading: "LTCAT: Guia Essencial para Garantir Segurança do Trabalho Eficaz",
 	 pubDate: "2026-01-23",
 	 author: "AJN Consultoria e Engenharia",

@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-um-pouco-sobre-nos-8c632fd360.webp';
 export const blogUmPoucoSobreNos = {
 	 slug: "um-pouco-sobre-nos", path: "/blog/um-pouco-sobre-nos",
 	 title: "Um pouco sobre nós",
-	 description: "A AJN Consultoria e Engenharia é uma empresa especialista em serviços nas áreas de qualidade, saúde, segurança e meio ambiente (ǪSSMA), destinada a realizar…",
+	 description: "Conheça as áreas de atuação da AJN: consultoria em QSSMA, treinamentos, laudos, gestão de contratos e projetos de prevenção contra incêndio.",
 	 heading: "Um pouco sobre nós",
 	 pubDate: "2024-11-19",
 	 author: "AJN Consultoria e Engenharia",

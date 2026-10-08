@@ -41,5 +41,8 @@ jobs:
       - name: SEO and link audit
         run: npm run audit:seo
 
+      - name: Blog content and image audit
+        run: node scripts/audit-blog.mjs
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high

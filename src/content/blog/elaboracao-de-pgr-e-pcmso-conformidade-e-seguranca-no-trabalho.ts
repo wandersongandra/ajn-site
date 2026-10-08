@@ -6,7 +6,7 @@ export const blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho = {
 	slug: "elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho",
 	path: "/blog/elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho",
 	title: "Elaboração de PGR e PCMSO: Conformidade e Segurança no Trabalho",
-	description: "A necessidade de promover um ambiente de trabalho seguro e saudável é uma prioridade para qualquer organização. Nesse contexto, a elaboração de PGR e PCMSO surge como uma ferram...",
+	description: "Entenda a relação entre PGR e PCMSO na gestão de riscos ocupacionais e no acompanhamento da saúde dos trabalhadores.",
 	heading: "Elaboração de PGR e PCMSO: Conformidade e Segurança no Trabalho",
 	pubDate: "2025-10-02",
 	author: "Kaique",

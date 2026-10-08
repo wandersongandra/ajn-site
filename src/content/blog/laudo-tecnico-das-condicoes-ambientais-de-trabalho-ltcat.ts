@@ -18,7 +18,7 @@ import image14 from '../../assets/blog/blog-laudo-tecnico-das-condicoes-ambienta
 export const blogLaudoTecnicoDasCondicoesAmbientaisDeTrabalhoLtcat = {
 	 slug: "laudo-tecnico-das-condicoes-ambientais-de-trabalho-ltcat", path: "/blog/laudo-tecnico-das-condicoes-ambientais-de-trabalho-ltcat",
 	 title: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)",
-	 description: "O Laudo Técnico das Condições Ambientais de Trabalho (LTCAT) é um documento obrigatório para empresas que possuem funcionários expostos a agentes nocivos (qu…",
+	 description: "Entenda a finalidade do LTCAT, as avaliações de agentes nocivos e as situações que exigem atualização das condições ambientais registradas.",
 	 heading: "Laudo Técnico das Condições Ambientais de Trabalho (LTCAT)",
 	 pubDate: "2025-04-15",
 	 author: "Admin",
