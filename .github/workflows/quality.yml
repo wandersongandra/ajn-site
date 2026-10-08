@@ -88,3 +88,13 @@ jobs:
 
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
+
+      # Valida separadamente a build pública: não publicar prévia com noindex.
+      - name: Production SEO indexing smoke test
+        env:
+          PUBLIC_SITE_ORIGIN: https://ajnengenharia.com.br
+          PUBLIC_ALLOW_INDEXING: 'true'
+        run: |
+          npm run build
+          npm run audit:deploy
+          npm run audit:seo
