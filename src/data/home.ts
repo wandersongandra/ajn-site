@@ -43,8 +43,8 @@ export const navigation: NavigationItem[] = [
 export const hero = {
 	image: '/images/hero/banner.webp',
 	eyebrow: 'AJN Consultoria e Engenharia',
-	title: 'Segurança do trabalho, laudos e engenharia.',
-	description: 'PGR, PCMSO, ASOs, eSocial, treinamentos e projetos técnicos. Conte com a AJN para avaliar a demanda e definir o serviço necessário.',
+	title: 'Segurança do trabalho, laudos e projetos de engenharia.',
+	description: 'PGR, PCMSO, ASOs, eSocial, inspeções e projetos técnicos. Conte o que sua empresa precisa para avaliarmos o serviço e o escopo.',
 	areas: ['Segurança do Trabalho', 'Engenharia', 'Saúde Ocupacional', 'Treinamentos'],
 } as const;
 
