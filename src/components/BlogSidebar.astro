@@ -3,8 +3,10 @@ import { blogPosts, blogTopics } from '../content/blog/catalog';
 
 interface Props {
 	context?: 'archive' | 'article';
+	currentPath?: string;
 }
-const { context = 'archive' } = Astro.props;
+const { context = 'archive', currentPath } = Astro.props;
+const recentPosts = blogPosts.filter((post) => post.href !== currentPath).slice(0, 4);
 const usedTopics = blogTopics.filter((topic) => blogPosts.some((post) => post.topic === topic));
 ---
 
@@ -12,7 +14,7 @@ const usedTopics = blogTopics.filter((topic) => blogPosts.some((post) => post.to
 	<form class="blog-sidebar__search" action="/blog" method="get" role="search" data-blog-form>
 		<label for="blog-search">Pesquisar artigos</label>
 		<div class="blog-sidebar__search-row">
-			<input id="blog-search" name="q" type="search" placeholder="Ex.: LTCAT, PGR, NR-35" autocomplete="off" data-blog-search />
+			<input id="blog-search" name="q" type="search" placeholder="Ex.: LTCAT, PGR, NR-35" autocomplete="off" data-blog-search aria-controls={context === "archive" ? "blog-archive-grid" : undefined} />
 			<button type="submit" aria-label="Pesquisar artigos">Buscar</button>
 		</div>
 	</form>
@@ -35,7 +37,7 @@ const usedTopics = blogTopics.filter((topic) => blogPosts.some((post) => post.to
 		<section class="blog-sidebar__recent" aria-labelledby="blog-recent-title">
 			<h2 id="blog-recent-title">Outras leituras</h2>
 			<ul>
-				{blogPosts.slice(0, 4).map((post) => <li><a href={post.href}>{post.title}</a></li>)}
+				{recentPosts.map((post) => <li><a href={post.href}>{post.title}</a></li>)}
 			</ul>
 		</section>
 	)}

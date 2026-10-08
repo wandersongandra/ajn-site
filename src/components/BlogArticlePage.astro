@@ -5,8 +5,11 @@ import PageShell from './PageShell.astro';
 import BlogSidebar from './BlogSidebar.astro';
 import { Image } from 'astro:assets';
 import { blogArticle } from '../content/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
+import { getRelatedBlogPosts } from '../content/blog/catalog';
 
 const canonicalPath = '/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
+const toc = blogArticle.sections.map((section, index) => ({ title: section.heading.trim(), id: 'blog-secao-' + (index + 1) })).filter((entry) => entry.title);
+const related = getRelatedBlogPosts(canonicalPath);
 const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 const articleSchema = {
 	'@context': 'https://schema.org',
@@ -27,15 +30,51 @@ const articleSchema = {
 	<PageShell heading={blogArticle.heading}>
 		<div class="blog-article-layout">
 			<article class="blog-article reading-surface">
+				<p class="blog-article__description">{blogArticle.description}</p>
 				<p class="blog-article__meta">
-					Publicado em <time datetime="2026-01-23">{blogArticle.date}</time> · {blogArticle.author} · Conteúdo atualizado em <time datetime={blogArticle.updatedAt}>07 de outubro de 2026</time>
+					Publicado em <time datetime="2026-01-23">{blogArticle.date}</time> · {blogArticle.author} · Atualizado em <time datetime={blogArticle.updatedAt}>07 de outubro de 2026</time>
 				</p>
 				<Image class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width={880} widths={[480, 720, 880, 1100]} sizes="(max-width: 800px) calc(100vw - 32px), (max-width: 1100px) 70vw, 760px" format="webp" loading="eager" decoding="async" fetchpriority="high" />
-				<ContentSections sections={blogArticle.sections} />
-				<a href="/blog" class="blog-legacy__back">← Voltar para o blog</a>
+				{toc.length > 1 && (
+					<nav class="blog-article__toc" aria-label="Neste artigo">
+						<h2>Neste artigo</h2>
+						<ol>{toc.map((entry) => <li><a href={'#' + entry.id}>{entry.title}</a></li>)}</ol>
+					</nav>
+				)}
+				<div class="blog-article__content">
+					{blogArticle.sections.map((section, index) => (
+						<div class="blog-article__section" id={'blog-secao-' + (index + 1)}>
+							<ContentSections sections={[section]} />
+						</div>
+					))}
+				</div>
+				<footer class="blog-article__footer">
+					<div class="blog-article__actions">
+						<a href="/blog">← Voltar para o blog</a>
+						<a href="/contato">Falar com a AJN →</a>
+					</div>
+				</footer>
 			</article>
-			<BlogSidebar context="article" />
+			<BlogSidebar context="article" currentPath={canonicalPath} />
 		</div>
+		{related.length > 0 && (
+			<section class="blog-related" aria-labelledby="blog-related-heading">
+				<div class="blog-related__heading">
+					<div><p>Continue a leitura</p><h2 id="blog-related-heading">Artigos do mesmo assunto</h2></div>
+					<a href="/blog">Ver blog completo →</a>
+				</div>
+				<div class="blog-related__grid">
+					{related.map((item) => (
+						<article class="blog-related__card">
+							<a class="blog-related__media" href={item.href} aria-label={'Ler: ' + item.title}>
+								<Image src={item.image} alt={item.alt} width={440} widths={[240, 360, 440, 640]} sizes="(max-width: 620px) calc(100vw - 32px), (max-width: 900px) 45vw, 300px" format="webp" loading="lazy" decoding="async" />
+							</a>
+							<div><p>{item.topic}</p><h3><a href={item.href}>{item.title}</a></h3></div>
+						</article>
+					))}
+				</div>
+			</section>
+		)}
 	</PageShell>
 	<script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
 </div>

@@ -3,7 +3,7 @@ import '../styles/blog.css';
 import { Image } from 'astro:assets';
 import ContentSections from '../components/ContentSections.astro';
 import BlogSidebar from '../components/BlogSidebar.astro';
-import { blogPosts } from '../content/blog/catalog';
+import { blogPosts, getRelatedBlogPosts } from '../content/blog/catalog';
 import type { BlogContentData } from '../content.config';
 
 interface Props {
@@ -27,7 +27,7 @@ const articleSchema = {
 	description: post.description,
 	datePublished: post.pubDate.toISOString(),
 	dateModified: (post.updatedAt ?? post.pubDate).toISOString(),
-	author: post.author === 'Admin'
+	author: post.author === 'Admin' || post.author === 'AJN Consultoria e Engenharia'
 		? { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' }
 		: { '@type': 'Person', name: post.author },
 	publisher: {
@@ -45,9 +45,7 @@ const toc = post.sections.map((section, index) => ({
 	id: 'blog-secao-' + (index + 1),
 })).filter((entry) => entry.title.length > 0);
 const self = blogPosts.find((item) => item.href === post.path);
-const related = blogPosts
-	.filter((item) => item.href !== post.path && item.topic === self?.topic)
-	.slice(0, 3);
+const related = getRelatedBlogPosts(post.path);
 
 // Exibe fotos complementares sem repetir a capa ou a mesma foto mais de uma vez.
 const galleryImages = post.gallery.filter((image, index, images) =>
@@ -143,7 +141,7 @@ const galleryRemaining = galleryImages.slice(3);
 					</div>
 				</footer>
 			</article>
-			<BlogSidebar context="article" />
+			<BlogSidebar context="article" currentPath={post.path} />
 		</div>
 
 		{related.length > 0 && (

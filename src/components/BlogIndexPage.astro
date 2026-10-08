@@ -30,9 +30,9 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 					</div>
 					<p class="blog-archive__count" aria-live="polite" data-blog-results>{blogPosts.length} artigos</p>
 				</div>
-				<div class="blog-grid blog-grid--archive" data-blog-grid>
+				<div class="blog-grid blog-grid--archive" id="blog-archive-grid" data-blog-grid>
 					{blogPosts.map((post) => (
-						<article class="blog-card" data-blog-card data-blog-searchable={[post.title, post.description, post.topic].join(' ')} data-blog-category={post.topic}>
+						<article class="blog-card" data-blog-card data-blog-searchable={[post.title, post.description, post.topic, ...post.tags].join(' ')} data-blog-category={post.topic}>
 							<a class="blog-card__image" href={post.href} aria-label={'Ler: ' + post.title}>
 								<Image src={post.image} alt={post.alt} width={640} widths={[320, 480, 640, 800]} sizes="(max-width: 620px) calc(100vw - 32px), (max-width: 1100px) 45vw, 380px" format="webp" loading="lazy" decoding="async" />
 							</a>
@@ -77,7 +77,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 		.replace(/[\u0300-\u036f]/g, '')
 		.toLocaleLowerCase('pt-BR').trim();
 
-	function syncUrl() {
+	function syncUrl(mode: 'replace' | 'push' = 'replace') {
 		const url = new URL(window.location.href);
 		const query = search?.value.trim() ?? '';
 		if (query) url.searchParams.set('q', query);
@@ -86,7 +86,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 		else url.searchParams.delete('tema');
 		url.searchParams.delete('tag');
 		url.searchParams.delete('page');
-		window.history.replaceState(null, '', url.pathname + url.search);
+		window.history[mode === 'push' ? 'pushState' : 'replaceState'](null, '', url.pathname + url.search);
 	}
 
 	function render() {
@@ -113,7 +113,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 
 	if (search) {
 		search.value = new URLSearchParams(window.location.search).get('q') ?? '';
-		search.addEventListener('input', () => { visibleLimit = pageSize; render(); });
+		search.addEventListener('input', () => { visibleLimit = pageSize; syncUrl(); render(); });
 	}
 	for (const link of topicLinks) {
 		link.addEventListener('click', (event) => {
@@ -121,14 +121,14 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 			event.preventDefault();
 			selectedTopic = link.dataset.blogTopic ?? '';
 			visibleLimit = pageSize;
-			syncUrl();
+			syncUrl('push');
 			render();
 		});
 	}
 	form?.addEventListener('submit', (event) => {
 		event.preventDefault();
 		visibleLimit = pageSize;
-		syncUrl();
+		syncUrl('push');
 		render();
 	});
 	more?.addEventListener('click', () => { visibleLimit += pageSize; render(); });
@@ -136,7 +136,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 		if (search) search.value = '';
 		selectedTopic = '';
 		visibleLimit = pageSize;
-		syncUrl();
+		syncUrl('push');
 		render();
 		search?.focus();
 	});
