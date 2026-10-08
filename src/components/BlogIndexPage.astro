@@ -37,7 +37,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 						<p class="blog-archive__overline">Publicações</p>
 						<h2 id="blog-archive-title">Artigos e orientações</h2>
 					</div>
-					<p class="blog-archive__count" aria-live="polite" data-blog-results>{blogPosts.length} artigos</p>
+					<p class="blog-archive__count" role="status" aria-live="polite" aria-atomic="true" data-blog-results>{blogPosts.length} artigos</p>
 				</div>
 				<div class="blog-grid blog-grid--archive" id="blog-archive-grid" data-blog-grid>
 					{blogPosts.map((post) => (
@@ -61,7 +61,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 					<button type="button" class="blog-empty__reset" data-blog-reset>Limpar filtros</button>
 				</div>
 				<div class="blog-archive__more" data-blog-more-wrap hidden>
-					<button type="button" class="blog-archive__more-button" data-blog-more>Mostrar mais artigos</button>
+					<button type="button" class="blog-archive__more-button" data-blog-more aria-controls="blog-archive-grid">Mostrar mais artigos</button>
 				</div>
 			</section>
 		</div>
