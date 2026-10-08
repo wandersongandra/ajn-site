@@ -28,7 +28,7 @@ const serviceImages: Record<string, string> = {
 
 	<div class="service-index-grid" data-service-grid>
 		{serviceIndexItems.map((service) => (
-			<article class="service-index-card" data-service-card data-service-title={service.title.toLocaleLowerCase('pt-BR')}>
+			<article class="service-index-card" data-service-card data-service-title={service.title}>
 				<img class="service-index-card__image" src={serviceImages[service.title] ?? '/images/services/treinamentos-nrs.png'} alt="" width="600" height="800" loading="lazy" />
 				<div class="service-index-card__overlay"></div>
 				<div class="service-index-card__content">
@@ -48,12 +48,18 @@ const serviceImages: Record<string, string> = {
 	const search = document.querySelector<HTMLInputElement>('[data-service-search]');
 	const cards = [...document.querySelectorAll<HTMLElement>('[data-service-card]')];
 	const empty = document.querySelector<HTMLElement>('[data-service-empty]');
+	// Uma pessoa pode buscar "eletrico" e encontrar "Elétricos".
+	const normalize = (value: string) => value
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLocaleLowerCase('pt-BR')
+		.trim();
 
 	search?.addEventListener('input', () => {
-		const query = search.value.trim().toLocaleLowerCase('pt-BR');
+		const query = normalize(search.value);
 		let visible = 0;
 		cards.forEach((card) => {
-			card.hidden = query.length > 0 && !(card.dataset.serviceTitle ?? '').includes(query);
+			card.hidden = query.length > 0 && !normalize(card.dataset.serviceTitle ?? '').includes(query);
 			if (!card.hidden) visible++;
 		});
 		if (empty) empty.hidden = visible > 0;
