@@ -15,7 +15,7 @@ export const blogPppFacilOUeEComoConsultarESuaImportancia = {
 	 author: "Admin",
 	 image: { src: image0, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" },
 	 categories: ['Blog'],
-	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
+	 tags: ["PPP eletrônico","Meu INSS","eSocial"],
 	 gallery: [{ src: image0, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image1, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image2, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image3, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image4, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }],
 	 sections: [
   {
