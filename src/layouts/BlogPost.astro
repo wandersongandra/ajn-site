@@ -5,7 +5,7 @@ import ContentSections from '../components/ContentSections.astro';
 import BlogSidebar from '../components/BlogSidebar.astro';
 import { blogPosts, getRelatedBlogPosts } from '../content/blog/catalog';
 import type { BlogContentData } from '../content.config';
-import { absoluteSiteUrl, serializeJsonLd } from '../utils/site';
+import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
 
 interface Props {
 	post: BlogContentData;
@@ -28,14 +28,15 @@ const articleSchema = {
 	datePublished: post.pubDate.toISOString(),
 	dateModified: (post.updatedAt ?? post.pubDate).toISOString(),
 	author: post.author === 'Admin' || post.author === 'AJN Consultoria e Engenharia'
-		? { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' }
+		? { '@type': 'Organization', '@id': `${siteOrigin}/#organization`, name: 'AJN Consultoria e Engenharia', logo: { '@type': 'ImageObject', url: absoluteSiteUrl('/images/branding/logo.png') } }
 		: { '@type': 'Person', name: post.author },
 	publisher: {
 		'@type': 'Organization',
+		'@id': `${siteOrigin}/#organization`,
 		name: 'AJN Consultoria e Engenharia',
 		logo: { '@type': 'ImageObject', url: absoluteSiteUrl('/images/branding/logo.png') },
 	},
-	mainEntityOfPage: absoluteSiteUrl(post.path),
+	mainEntityOfPage: absoluteSiteUrl(`${post.path}/`),
 	image: [absoluteSiteUrl('/images/og/' + post.slug + '.jpg')],
 	inLanguage: 'pt-BR',
 };

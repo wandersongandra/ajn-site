@@ -1,6 +1,6 @@
 // Verificação estática do blog gerado pelo Astro.
 // Executar depois de "npm run build": node scripts/audit-blog.mjs
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 
 const blogDir = path.resolve('dist/blog');
@@ -37,6 +37,14 @@ for (const file of htmlFiles) {
 	if (route === 'index.html') {
 		if (!html.includes('id="blog-archive-grid"')) failures.push('Blog: grid não possui ID para navegação acessível.');
 		if (!html.includes('data-blog-search')) failures.push('Blog: pesquisa não encontrada.');
+		for (const required of [
+			'aria-label="Guias para começar"',
+			'/blog/laudo-tecnico-das-condicoes-ambientais-de-trabalho-ltcat',
+			'/blog/laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho',
+			'/blog/seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional',
+		]) {
+			if (!html.includes(required)) failures.push('Blog: curadoria inicial incompleta: ' + required);
+		}
 		report.archiveCards = (html.match(/class=["']blog-card["']/g) ?? []).length;
 		report.responsiveImages = (html.match(/\bsrcset=["']/g) ?? []).length;
 		if (report.archiveCards !== 20) failures.push('Arquivo do blog: esperados 20 cards; obtidos ' + report.archiveCards);
@@ -46,6 +54,31 @@ for (const file of htmlFiles) {
 	}
 
 	report.articles++;
+	// A postagem, o Open Graph e a imagem real de compartilhamento precisam coincidir.
+	const slug = route.replace(/\\/g, '/').replace(/\/index\.html$/, '');
+	const expectedOg = '/images/og/' + slug + '.jpg';
+	try { if (!(await stat(path.resolve('dist' + expectedOg))).isFile()) failures.push(route + ': imagem OG inválida'); }
+	catch { failures.push(route + ': imagem OG inexistente: ' + expectedOg); }
+	if (!html.includes(expectedOg)) failures.push(route + ': URL da imagem OG não corresponde ao arquivo publicado');
+	const jsonld = [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
+		.flatMap((match) => {
+			try {
+				const parsed = JSON.parse(match[1]);
+				return Array.isArray(parsed) ? parsed : [parsed];
+			} catch {
+				failures.push(route + ': JSON-LD inválido');
+				return [];
+			}
+		});
+	const article = jsonld.find((data) => data?.['@type'] === 'BlogPosting');
+	if (!article) failures.push(route + ': BlogPosting estruturado ausente');
+	else {
+		if (!article.publisher?.logo?.url) failures.push(route + ': logo do publisher ausente no BlogPosting');
+		if (article.author?.['@type'] === 'Organization' && !article.author?.logo?.url)
+			failures.push(route + ': autor institucional sem identificação de logo');
+		if (!String(article.mainEntityOfPage ?? '').endsWith('/blog/' + slug + '/'))
+			failures.push(route + ': mainEntityOfPage diverge da rota canônica com barra final');
+	}
 	// Cada âncora do sumário deve levar a uma seção realmente existente.
 	const sectionAnchors = [...html.matchAll(/href="#(blog-secao-[0-9]+)"/g)].map((match) => match[1]);
 	for (const target of sectionAnchors) {
