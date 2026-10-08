@@ -43,8 +43,8 @@
 #site-header .primary-navigation > ul.navigation-list {
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
-	gap: clamp(2px, .6vw, 12px);
+	justify-content: space-between;
+	gap: clamp(6px, .9vw, 14px);
 	margin: 0;
 	padding: 0;
 	list-style: none;
