@@ -25,7 +25,6 @@ const articleSchema = {
 <div class="blog-legacy">
 	<PageShell heading={blogArticle.heading}>
 		<div class="blog-article-layout">
-			<BlogSidebar context="article" />
 			<article class="blog-article reading-surface">
 				<p class="blog-article__meta">
 					Publicado em <time datetime="2026-01-23">{blogArticle.date}</time> · {blogArticle.author}
@@ -34,6 +33,7 @@ const articleSchema = {
 				<ContentSections sections={blogArticle.sections} />
 				<a href="/blog" class="blog-legacy__back">← Voltar para o blog</a>
 			</article>
+			<BlogSidebar context="article" />
 		</div>
 	</PageShell>
 	<script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
