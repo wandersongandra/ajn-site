@@ -15,7 +15,6 @@ const sections = [
 	['sectors', 'class="section home-sectors"'],
 	['clients', 'class="section clients"'],
 	['workflow', 'class="differentials section"'],
-	['contact', 'class="home-contact-cta"'],
 ];
 let previous = -1;
 for (const [name, needle] of sections) {
@@ -70,7 +69,22 @@ const heroEnd = html.indexOf('</section>', heroStart);
 const heroMarkup = html.slice(heroStart, heroEnd);
 check(/href="\/contato">Solicitar atendimento/.test(heroMarkup), 'Hero primary CTA does not target /contato');
 check(/href="\/servicos">Conhecer os serviços/.test(heroMarkup), 'Hero secondary CTA missing');
-check(homeHtml.includes('id="home-contact-title"'), 'Contact CTA heading missing');
+// O processo é a última seção; o footer global continua com contato.
+const workflowStart = html.indexOf('class="differentials section"');
+const workflowEnd = workflowStart >= 0 ? html.indexOf('</section>', workflowStart) : -1;
+const footerStart = html.indexOf('<footer class="site-footer"');
+check(workflowEnd >= 0 && footerStart > workflowEnd, 'Footer must follow the workflow section.');
+if (workflowEnd >= 0 && footerStart > workflowEnd) {
+	check(!/<section\\b/i.test(html.slice(workflowEnd + '</section>'.length, footerStart)),
+		'Another section unexpectedly appears after Nosso processo.');
+}
+check(!homeHtml.includes('class="home-contact-cta"') &&
+	!homeHtml.includes('id="home-contact-title"') &&
+	!homeHtml.includes('Precisa atualizar um laudo, organizar o SST'),
+	'Removed contact banner must not return.');
+check(footerStart >= 0 && html.slice(footerStart).includes('href="/contato"'),
+	'Footer must retain a path to the contact page.');
+
 check(homeHtml.includes('href="/servicos"'), 'Complete catalog link missing');
 check(/<img\b[^>]*loading="lazy"/.test(homeHtml), 'Lazy-loaded images missing');
 check(!homeHtml.includes('Conheça as Nossas Soluções'), 'Unrefined heading returned');
@@ -103,5 +117,5 @@ if (issues.length) {
 	for (const issue of issues) console.error('[home][FAIL] ' + issue);
 	process.exitCode = 1;
 } else {
-	console.log('[home] PASS: 6 sections, 1 H1, 6 services, 4 sectors, 10 client logos, accessible carousel and lightweight motion.');
+	console.log('[home] PASS: 5 sections, workflow immediately before footer, contact paths retained, accessible carousel and motion.');
 }
