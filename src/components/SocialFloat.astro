@@ -1,18 +1,22 @@
 ---
 import { site } from '../data/home';
+// A home já apresenta canais de contato próprios. Evite ícones sobre os cards.
+const showSocialRail = Astro.url.pathname !== '/';
 ---
 
-<aside class="social-rail" aria-label="Redes sociais">
-	<a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-		<img src="/images/icons/linkedin.png" alt="" width="42" height="42" />
-	</a>
-	<a href={site.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-		<img src="/images/icons/instagram.png" alt="" width="42" height="42" />
-	</a>
-	<a href={site.phoneHref} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-		<img src="/images/icons/whatsapp-icon.svg" alt="" width="42" height="42" />
-	</a>
-</aside>
+{showSocialRail && (
+	<aside class="social-rail" aria-label="Redes sociais">
+		<a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+			<img src="/images/icons/linkedin.png" alt="" width="42" height="42" />
+		</a>
+		<a href={site.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+			<img src="/images/icons/instagram.png" alt="" width="42" height="42" />
+		</a>
+		<a href={site.phoneHref} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+			<img src="/images/icons/whatsapp-icon.svg" alt="" width="42" height="42" />
+		</a>
+	</aside>
+)}
 
 <a class="whatsapp-float" href={site.phoneHref} target="_blank" rel="noopener noreferrer" aria-label="Fale com a AJN pelo WhatsApp">
 	<img src="/images/icons/whatsapp-icon.svg" alt="" width="54" height="54" />
