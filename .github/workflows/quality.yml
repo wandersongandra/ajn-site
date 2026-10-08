@@ -68,5 +68,8 @@ jobs:
       - name: Home workflow typography and motion audit
         run: npm run audit:workflow
 
+      - name: Home hero typography, copy and accessibility audit
+        run: npm run audit:hero
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
