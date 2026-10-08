@@ -34,7 +34,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('pt-BR', {
 					{blogPosts.map((post) => (
 						<article class="blog-card" data-blog-card data-blog-searchable={[post.title, post.description, post.topic].join(' ')} data-blog-category={post.topic}>
 							<a class="blog-card__image" href={post.href} aria-label={'Ler: ' + post.title}>
-								<Image src={post.image} alt={post.alt} width={900} format="webp" loading="lazy" sizes="(max-width: 680px) 100vw, (max-width: 1100px) 50vw, 380px" />
+								<Image src={post.image} alt={post.alt} width={640} widths={[320, 480, 640, 800]} sizes="(max-width: 620px) calc(100vw - 32px), (max-width: 1100px) 45vw, 380px" format="webp" loading="lazy" decoding="async" />
 							</a>
 							<div class="blog-card__body">
 								<p class="blog-card__category">{post.topic}</p>
