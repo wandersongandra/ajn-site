@@ -71,5 +71,8 @@ jobs:
       - name: Home hero typography, copy and accessibility audit
         run: npm run audit:hero
 
+      - name: Home services design and accessibility audit
+        run: npm run audit:home-services
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
