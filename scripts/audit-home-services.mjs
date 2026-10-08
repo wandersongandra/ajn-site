@@ -33,17 +33,17 @@ for (const [index, card] of cards.entries()) {
 	check(/aria-label="Ver detalhes: [^"]+"/.test(card), `Card ${index + 1}: link sem nome acessível.`);
 	check(/<h3\b[^>]*>[^<]+<\/h3>/.test(card), `Card ${index + 1}: H3 ausente.`);
 	check(/<p\b[^>]*>[^<]+<\/p>/.test(card), `Card ${index + 1}: descrição ausente.`);
-	const img = card.match(/<img\\b[^>]*>/)?.[0] ?? '';
-	const src = img.match(/\\ssrc="([^"]+)"/)?.[1];
-	const srcset = img.match(/\\ssrcset="([^"]+)"/)?.[1] ?? '';
-	const variants = [...srcset.matchAll(/(\\/_astro\\/[^\\s,]+\\.webp)\\s+([0-9]+)w/g)];
+	const img = card.match(/<img\b[^>]*>/)?.[0] ?? '';
+	const src = img.match(/\ssrc="([^"]+)"/)?.[1];
+	const srcset = img.match(/\ssrcset="([^"]+)"/)?.[1] ?? '';
+	const variants = [...srcset.matchAll(/(\/_astro\/[^\s,]+\.webp)\s+([0-9]+)w/g)];
 	check(Boolean(src) && src.startsWith('/_astro/') && src.endsWith('.webp'),
 		`Card ${index + 1}: a imagem precisa ser WebP otimizada pelo Astro.`);
 	check(/alt=""/.test(img) && /loading="lazy"/.test(img) && /decoding="async"/.test(img),
 		`Card ${index + 1}: foto decorativa deve carregar de forma otimizada.`);
-	check(/\\swidth="[0-9]+"/.test(img) && /\\sheight="[0-9]+"/.test(img),
+	check(/\swidth="[0-9]+"/.test(img) && /\sheight="[0-9]+"/.test(img),
 		`Card ${index + 1}: faltam dimensões intrínsecas.`);
-	check(/\\ssizes="[^"]+"/.test(img) && variants.length >= 2,
+	check(/\ssizes="[^"]+"/.test(img) && variants.length >= 2,
 		`Card ${index + 1}: ausência de srcset responsivo com múltiplos tamanhos.`);
 	check(/data-reveal/.test(card), `Card ${index + 1}: entrada progressiva ausente.`);
 	check(card.includes('Ver serviço'), `Card ${index + 1}: ação não está clara.`);
