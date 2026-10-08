@@ -1,22 +1,37 @@
 ---
 const sectors = [
-	{ name: 'Indústria', description: 'Inspeções, documentação de SST e avaliação de riscos nos processos produtivos.' },
-	{ name: 'Construção civil', description: 'Apoio com documentação e acompanhamento técnico das atividades em obra.' },
-	{ name: 'Comércio e serviços', description: 'PCMSO, ASOs, registros de SST no eSocial e treinamento das equipes.' },
-	{ name: 'Contratos terceirizados', description: 'Mobilização de trabalhadores, conferência documental e inspeções em campo.' },
+	{
+		name: 'Indústria',
+		description: 'Inspeções de SST, avaliação de riscos e documentação para as atividades industriais.',
+	},
+	{
+		name: 'Construção civil',
+		description: 'Inspeções e acompanhamento técnico em obra, com atenção à documentação de segurança.',
+	},
+	{
+		name: 'Comércio e serviços',
+		description: 'PCMSO, ASOs, registros de SST no eSocial e treinamentos conforme a atividade.',
+	},
+	{
+		name: 'Contratos terceirizados',
+		description: 'Conferência documental na mobilização de trabalhadores e inspeções durante o contrato.',
+	},
 ];
 ---
 <section class="section home-sectors" aria-labelledby="home-sectors-title">
 	<div class="site-shell home-sectors__layout">
 		<div class="home-sectors__heading" data-reveal>
-			<p class="home-section-heading__eyebrow">Onde podemos atuar</p>
-			<h2 id="home-sectors-title" class="section-title">Da indústria ao canteiro de obras.</h2>
-			<p>Uma obra, uma indústria e um escritório têm rotinas diferentes. O atendimento começa pela atividade e pelos documentos envolvidos.</p>
-			<a class="home-sectors__link" href="/contato">Explicar minha demanda <span aria-hidden="true">↗</span></a>
+			<p class="home-section-heading__eyebrow">Onde atuamos</p>
+			<h2 id="home-sectors-title" class="section-title">Da indústria ao canteiro de obras</h2>
+			<p>A demanda pode ser uma inspeção na fábrica, a documentação de uma obra ou o acompanhamento de terceiros. A AJN avalia cada caso antes de definir o atendimento.</p>
+			<a class="home-sectors__link" href="/contato">
+				Conversar com a AJN
+				<span aria-hidden="true">↗</span>
+			</a>
 		</div>
 		<div class="home-sectors__grid">
 			{sectors.map((sector, index) => (
-				<article class="home-sector-card" data-reveal style={`--reveal-delay: ${index * 65}ms`}>
+				<article class="home-sector-card" data-reveal style={`--reveal-delay: ${index * 85}ms`}>
 					<h3>{sector.name}</h3>
 					<p>{sector.description}</p>
 				</article>
