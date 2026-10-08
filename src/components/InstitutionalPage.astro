@@ -3,14 +3,14 @@ import { Image } from 'astro:assets';
 import fachada from '../assets/about/fachada.webp';
 import institutionalPhoto from '../assets/about/sobre-nos.webp';
 import { institutionalPage } from '../content/institutional/sobre-nos';
+import { absoluteSiteUrl, serializeJsonLd } from '../utils/site';
 
-const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 const breadcrumbs = {
 	'@context': 'https://schema.org',
 	'@type': 'BreadcrumbList',
 	itemListElement: [
-		{ '@type': 'ListItem', position: 1, name: 'Home', item: `${siteOrigin}/` },
-		{ '@type': 'ListItem', position: 2, name: 'Sobre nós', item: `${siteOrigin}/sobre-nos` },
+		{ '@type': 'ListItem', position: 1, name: 'Home', item: absoluteSiteUrl('/') },
+		{ '@type': 'ListItem', position: 2, name: 'Sobre nós', item: absoluteSiteUrl('/sobre-nos') },
 	],
 };
 ---
@@ -105,5 +105,5 @@ const breadcrumbs = {
 			<a class="about-page__contact-link" href="/contato">Falar com a AJN <span aria-hidden="true">↗</span></a>
 		</div>
 	</section>
-	<script type="application/ld+json" set:html={JSON.stringify(breadcrumbs)} />
+	<script type="application/ld+json" set:html={serializeJsonLd(breadcrumbs)} />
 </div>
