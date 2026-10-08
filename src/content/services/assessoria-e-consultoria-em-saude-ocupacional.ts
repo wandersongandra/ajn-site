@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "assessoria-e-consultoria-em-saude-ocupacional",
 	"path": "/servicos/assessoria-e-consultoria-em-saude-ocupacional",
 	"title": "Assessoria e consultoria em saúde ocupacional - AJN Consultoria e Engenharia",
-	"description": "Assessoria e consultoria em saúde ocupacional - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de traba...Saiba mais.",
+	"description": "Assessoria em saúde ocupacional e segurança do trabalho: avaliação de riscos, programas de prevenção, laudos e apoio técnico às empresas.",
 	"heading": "Assessoria e consultoria em saúde ocupacional",
 	"image": "/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp",
 	"imageAlt": "Assessoria e consultoria em saúde ocupacional",
