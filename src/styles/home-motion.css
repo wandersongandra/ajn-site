@@ -48,6 +48,22 @@
 		}
 	}
 
+	/* Etapas do atendimento: surgimento sutil; a interação não herda o atraso de entrada. */
+	@supports (translate: 0 1px) {
+		.home-page.motion-ready .workflow__step[data-reveal] {
+			transition-property: opacity, translate, background-color, border-color;
+			transition-duration: 480ms, 540ms, 220ms, 220ms;
+			transition-timing-function: ease-out, cubic-bezier(.22, 1, .36, 1), ease, ease;
+			transition-delay: var(--reveal-delay, 0ms), var(--reveal-delay, 0ms), 0ms, 0ms;
+		}
+	}
+	@media (max-width: 640px) {
+		.home-page.motion-ready .workflow__step[data-reveal] {
+			transition-delay: 0ms, 0ms, 0ms, 0ms;
+			transition-duration: 360ms, 420ms, 180ms, 180ms;
+		}
+	}
+
 	@keyframes ajn-hero-panel-enter {
 		from { opacity: 0; transform: translateY(14px); }
 		to { opacity: 1; transform: translateY(0); }
@@ -90,6 +106,11 @@
 		translate: none !important;
 		animation: none !important;
 		transition: none !important;
+	}
+	.home-page .workflow__step,
+	.home-page .workflow__step::before {
+		transition: none !important;
+		transform: none !important;
 	}
 	.home-page .hero__panel { animation: none !important; }
 }
