@@ -1,4 +1,4 @@
-const DEFAULT_SITE_ORIGIN = 'https://www.ajnengenharia.com.br';
+const DEFAULT_SITE_ORIGIN = 'https://ajnengenharia.com.br';
 
 export const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? DEFAULT_SITE_ORIGIN).replace(/\/+$/, '');
 
