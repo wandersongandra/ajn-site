@@ -37,6 +37,10 @@ for (const file of htmlFiles) {
 	if (route === 'index.html') {
 		if (!html.includes('id="blog-archive-grid"')) failures.push('Blog: grid não possui ID para navegação acessível.');
 		if (!html.includes('data-blog-search')) failures.push('Blog: pesquisa não encontrada.');
+		if (!html.includes('aria-live="polite" aria-atomic="true" data-blog-results'))
+			failures.push('Blog: total de resultados precisa anunciar a quantidade exibida.');
+		if (!html.includes('data-blog-more aria-controls="blog-archive-grid"'))
+			failures.push('Blog: botão mostrar mais não controla o grid de artigos.');
 		for (const required of [
 			'aria-label="Guias para começar"',
 			'/blog/laudo-tecnico-das-condicoes-ambientais-de-trabalho-ltcat',
