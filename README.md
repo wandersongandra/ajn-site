@@ -1,11 +1,12 @@
 # AJN Consultoria e Engenharia — Astro
 
-Reconstrução estática da homepage do site da AJN a partir do WordPress legado,
-com conteúdo, identidade visual e assets reais preservados.
+Reconstrução estática do site institucional da AJN a partir do WordPress legado,
+preservando as URLs catalogadas, o conteúdo migrado e a identidade visual.
 
-A Home foi concluída na Fase 1. A Fase 2 adicionou somente uma rota
-representativa por família de template; as demais URLs permanecem documentadas
-para as próximas fases.
+A migração documentada em `docs/MIGRATION_FINAL_STATUS.md` compreende 144
+rotas públicas de conteúdo e a rota técnica `/404`. A revisão de SEO, conteúdo
+e usabilidade permanece contínua; não confundir rotas geradas com homologação
+visual ou operacional de produção.
 
 ## Stack e limites
 
@@ -34,6 +35,7 @@ npm run dev
 npm run check
 npm run build
 npm run preview
+npm run validate
 ```
 
 O build gera a saída estática em `dist/`. As matrizes de arquitetura e paridade
