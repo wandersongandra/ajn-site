@@ -44,5 +44,8 @@ jobs:
       - name: Blog content and image audit
         run: node scripts/audit-blog.mjs
 
+      - name: Header navigation audit
+        run: node scripts/audit-header.mjs
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
