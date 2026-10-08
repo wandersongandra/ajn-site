@@ -41,9 +41,13 @@
 			card.hidden = !show;
 			if (show) visible++;
 		}
-		if (results) results.textContent = matches === 1 ? '1 artigo encontrado' : matches + ' artigos encontrados';
+		if (results) results.textContent = matches === 0
+			? 'Nenhum artigo encontrado'
+			: `Exibindo ${visible} de ${matches} ${matches === 1 ? 'artigo' : 'artigos'}`;
 		if (empty) empty.hidden = matches !== 0;
-		if (moreWrap) moreWrap.hidden = matches <= visibleLimit;
+		const remaining = Math.max(0, matches - visible);
+		if (moreWrap) moreWrap.hidden = remaining === 0;
+		if (more && remaining > 0) more.textContent = `Mostrar mais ${Math.min(pageSize, remaining)} ${remaining === 1 ? 'artigo' : 'artigos'}`;
 		for (const link of topicLinks) {
 			if ((link.dataset.blogTopic ?? '') === selectedTopic) link.setAttribute('aria-current', 'true');
 			else link.removeAttribute('aria-current');
