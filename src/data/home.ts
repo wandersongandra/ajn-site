@@ -83,7 +83,7 @@ export const missionVisionValues = [
 ] as const;
 
 export const services = [
-	{ title: 'Assessoria e Consultoria em Segurança do Trabalho', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional', description: 'Apoio à identificação de perigos, avaliação de riscos e definição de medidas de prevenção no ambiente de trabalho.', image: '/images/services/assessoria-e-consultoria-em-seguranca-do-trabalho.png' },
+	{ title: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional', description: 'Apoio à identificação de perigos, avaliação de riscos e definição de medidas de prevenção no ambiente de trabalho.', image: '/images/services/assessoria-e-consultoria-em-seguranca-do-trabalho.png' },
 	{ title: 'Gestão de E-Social', href: '/servicos/gestao-do-e-social', description: 'Orientação e organização das informações de Saúde e Segurança do Trabalho enviadas ao eSocial.', image: '/images/services/gestao-de-esocial.png' },
 	{ title: 'Gestão de Meio Ambiente', href: '/servicos/gestao-ambiental', description: 'Segregação, armazenamento e destinação correta dos resíduos', image: '/images/services/gestao-de-meio-ambiente.png' },
 	{ title: 'Gestão de Qualidade', href: '/servicos/gestao-da-qualidade', description: 'Este documento detalha os critérios de qualidade que devem ser seguidos durante a execução da obra.', image: '/images/services/gestao-de-qualidade.png' },
