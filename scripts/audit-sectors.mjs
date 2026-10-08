@@ -18,7 +18,7 @@ const section = match?.[0] ?? '';
 check(Boolean(match), 'Seção de setores ausente na home.');
 check(section.includes('id="home-sectors-title"'), 'Título da seção sem associação acessível.');
 check(section.includes('Da indústria ao canteiro de obras'), 'Título original da atuação foi perdido.');
-check(section.includes('A AJN avalia cada caso'), 'Texto sobre atendimento não está presente.');
+check(section.includes('O atendimento considera a atividade, os riscos e os registros envolvidos.'), 'Texto técnico sobre o escopo não está presente.');
 check(!section.includes('Uma obra, uma indústria e um escritório têm rotinas diferentes.'),
 	'Texto genérico anterior ainda aparece.');
 check(/href="\/contato"[^>]*>[\s\S]*?Conversar com a AJN/.test(section),
