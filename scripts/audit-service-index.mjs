@@ -8,6 +8,9 @@ if (cards.length !== 10) failures.push(`Dez serviços esperados, ${cards.length}
 for (const card of cards) {
   const heading = card.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i)?.[1] || 'Título ausente';
   const description = card.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] || '';
+  if (!/aria-label=["']Ver detalhes de [^"']+["']/.test(card)) {
+    failures.push(`${heading}: o link genérico precisa de nome acessível específico.`);
+  }
   if (!description || /\.\.\.\s*$/.test(description.trim()) || description.includes('...Saiba mais')) {
     failures.push(`${heading}: resumo vazio ou truncado.`);
   }
