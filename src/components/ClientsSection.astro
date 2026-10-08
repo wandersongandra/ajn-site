@@ -4,18 +4,16 @@ import { clients } from '../data/home';
 
 <section class="section clients" aria-labelledby="clients-title">
 	<div class="site-shell">
-		<h2 id="clients-title" class="section-title">Clientes que confiaram no nosso trabalho</h2>
-		<div class="clients-carousel" role="region" aria-label="Carrossel contínuo de logos de clientes">
-			<div class="clients__viewport">
-				<div class="clients__track" id="clients-track">
-					<div class="clients__group">
-						{clients.map((client) => <div class="client-logo"><img src={client.src} alt={client.alt} width="240" height="132" loading="lazy" /></div>)}
-					</div>
-					<div class="clients__group" aria-hidden="true">
-						{clients.map((client) => <div class="client-logo"><img src={client.src} alt="" width="240" height="132" loading="lazy" /></div>)}
-					</div>
+		<div class="home-section-heading home-section-heading--center">
+			<p class="home-section-heading__eyebrow">Portfólio</p>
+			<h2 id="clients-title" class="section-title">Clientes apresentados pela AJN</h2>
+		</div>
+		<div class="home-clients-grid" aria-label="Galeria de logotipos de clientes">
+			{clients.map((client) => (
+				<div class="home-client-logo">
+					<img src={client.src} alt="" width="240" height="132" loading="lazy" decoding="async" />
 				</div>
-			</div>
+			))}
 		</div>
 	</div>
 </section>
