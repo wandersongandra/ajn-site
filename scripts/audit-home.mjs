@@ -49,7 +49,7 @@ check(/alt="Logotipo BRAVO/.test(homeHtml) && /alt="Logotipo Hemarcon"/.test(hom
 const brandAsset = await readFile('dist/images/branding/ajn-logo-hd.webp');
 check(brandAsset.toString('ascii', 0, 4) === 'RIFF' &&
 	brandAsset.toString('ascii', 8, 12) === 'WEBP', 'AJN logo must be a valid WebP');
-check((homeHtml.match(/\/images\/branding\/ajn-logo-hd\.webp/g) ?? []).length >= 2,
+check((html.match(/\/images\/branding\/ajn-logo-hd\.webp/g) ?? []).length >= 2,
 	'Header and footer must use the new AJN branding image');
 check(clientsCss.includes('height: 152px') && clientsCss.includes('clamp(240px, 23vw, 320px)'),
 	'Client logos should be visibly larger on desktop');
