@@ -1,40 +1,42 @@
 ---
 import { services } from '../data/home';
 
-// Seis linhas de serviço para a Home. As demais continuam acessíveis no catálogo.
+// Serviços publicados no catálogo; títulos e destinos mantêm correspondência.
 const featuredServices = [
-	{ ...services[0], summary: 'Inspeções, avaliação dos riscos e orientação para as medidas de prevenção no trabalho.' },
-	{ ...services[4], summary: 'Acompanhamento do PCMSO, exames ocupacionais e controle dos ASOs.' },
-	{ ...services[1], summary: 'Organização dos registros de SST que precisam ser informados ao eSocial.' },
-	{ ...services[5], summary: 'Avaliação das condições de exposição e elaboração de documentos técnicos.' },
-	{ ...services[6], summary: 'Projetos de prevenção e combate a incêndio, conforme o tipo de edificação.' },
-	{ ...services[8], summary: 'Capacitação nas Normas Regulamentadoras, presencialmente ou pela plataforma online.' },
+	{ ...services[0], summary: 'Inspeções, avaliação de riscos e orientação sobre medidas de prevenção.' },
+	{ ...services[4], summary: 'Acompanhamento do PCMSO, exames ocupacionais e organização dos ASOs.' },
+	{ ...services[1], summary: 'Organização dos registros de Segurança e Saúde do Trabalho enviados ao eSocial.' },
+	{ ...services[5], summary: 'Avaliações de insalubridade e periculosidade para elaboração de laudos técnicos.' },
+	{ ...services[6], summary: 'Projetos de prevenção e combate a incêndio para diferentes tipos de edificação.' },
+	{ ...services[8], summary: 'Cursos sobre Normas Regulamentadoras, presenciais ou pela plataforma de treinamentos.' },
 ];
 ---
 
 <section class="section solutions" id="solucoes" aria-labelledby="solutions-title">
 	<div class="site-shell">
-		<div class="home-section-heading" data-reveal>
-			<p class="home-section-heading__eyebrow">Serviços</p>
-			<h2 id="solutions-title" class="section-title">Serviços de segurança do trabalho e engenharia.</h2>
-			<p>Consultoria de SST, saúde ocupacional, perícias, combate a incêndio e treinamentos. Escolha o serviço para conhecer o escopo de atendimento.</p>
+		<div class="home-section-heading home-services-heading" data-reveal>
+			<div class="home-services-heading__title">
+				<p class="home-section-heading__eyebrow">Serviços</p>
+				<h2 id="solutions-title" class="section-title">Segurança do trabalho e engenharia</h2>
+			</div>
+			<p class="home-services-heading__intro">Consultoria em SST, saúde ocupacional, perícias, projetos de incêndio e treinamentos. Veja o escopo de cada serviço antes de entrar em contato.</p>
 		</div>
 		<div class="home-services-grid">
 			{featuredServices.map((service, index) => (
-				<article class="service-card" data-reveal style={`--reveal-delay: ${Math.min(index * 65, 195)}ms`}>
-					<a class="home-service-card__link" href={service.href} aria-label={'Conhecer ' + service.title}>
-						<img src={service.image} alt="" width="600" height="360" loading="lazy" decoding="async" />
+				<article class="service-card" data-reveal style={`--reveal-delay: ${(index % 3) * 75}ms`}>
+					<a class="home-service-card__link" href={service.href} aria-label={`Ver detalhes: ${service.title}`}>
+						<img src={service.image} alt="" width="600" height="375" loading="lazy" decoding="async" />
 						<div class="service-card__content">
 							<h3>{service.title}</h3>
 							<p>{service.summary}</p>
-							<span class="service-card__link">Ver detalhes <span aria-hidden="true">→</span></span>
+							<span class="service-card__link">Ver serviço <span aria-hidden="true">→</span></span>
 						</div>
 					</a>
 				</article>
 			))}
 		</div>
 		<div class="home-services-footer" data-reveal>
-			<a class="home-text-link" href="/servicos">Ver todos os serviços da AJN <span aria-hidden="true">→</span></a>
+			<a class="home-text-link" href="/servicos">Consultar todos os serviços <span aria-hidden="true">→</span></a>
 		</div>
 	</div>
 </section>
