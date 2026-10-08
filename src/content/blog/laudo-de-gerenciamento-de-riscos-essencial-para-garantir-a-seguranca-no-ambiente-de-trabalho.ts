@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-laudo-de-gerenciamento-de-riscos-esse
 export const blogLaudoDeGerenciamentoDeRiscosEssencialParaGarantirASegurancaNoAmbienteDeTrabalho = {
 	 slug: "laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho", path: "/blog/laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho",
 	 title: "Laudo de Gerenciamento de Riscos: Essencial para Garantir a Segurança no Ambiente de Trabalho",
-	 description: "O laudo de gerenciamento de riscos, também conhecido como laudo pgr , é um documento técnico fundamental para a segurança no ambiente de trabalho. Ele reúne…",
+	 description: "Saiba como identificar perigos, avaliar riscos ocupacionais e documentar medidas de controle para orientar o gerenciamento de riscos.",
 	 heading: "Laudo de Gerenciamento de Riscos: Essencial para Garantir a Segurança no Ambiente de Trabalho",
 	 pubDate: "2026-02-10",
 	 author: "AJN Consultoria e Engenharia",
