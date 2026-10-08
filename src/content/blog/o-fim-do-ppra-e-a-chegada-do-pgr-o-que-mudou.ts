@@ -7,10 +7,60 @@ export const blogOFimDoPpraEAChegadaDoPgrOQueMudou = {
 	 description: "Entenda o que mudou com a substituição do PPRA pelo PGR e a adoção do gerenciamento de riscos ocupacionais a partir de 2022.",
 	 heading: "O Fim do PPRA e a chegada do PGR: o que mudou?",
 	 pubDate: "2025-01-24",
+	updatedAt: "2026-10-07",
 	 author: "Admin",
 	 image: { src: image0, alt: "O Fim do PPRA e a chegada do PGR: o que mudou?" },
 	 categories: ['Blog'],
-	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
+	 tags: ["PPRA","PGR","NR-1","riscos psicossociais"],
 	 gallery: [],
-	 sections: [{ heading: "", paragraphs: [{ segments: [{ bold: true, text: "O Fim do PPRA e a chegada do PGR: o que mudou?" }] }, "Em janeiro de 2022, o Programa de Prevenção de Riscos Ambientais (PPRA) foi substituído pelo Programa de Gerenciamento de Riscos (PGR). Essa mudança foi implementada através de duas novas Normas Regulamentadoras, publicadas em março de 2020.", { segments: [{ bold: true, text: "O que é o PGR?" }] }, "O PGR é uma ferramenta gerencial administrativa que tem a função de gerenciar os riscos ocupacionais. Ele não é apenas um documento para ser impresso e guardado na gaveta, mas sim um processo contínuo de melhoria. Toda alteração em algum processo da empresa deve ser refletida no PGR, garantindo que ele esteja sempre atualizado.", { segments: [{ bold: true, text: "Por que o PPRA mudou para PGR?" }] }, { segments: ["A mudança ocorreu porque duas portarias foram publicadas em março de 2020, aprovando as redações de duas novas", { bold: true, text: "NRs" }, ". A", { bold: true, text: "NR1" }, "trata das Disposições Gerais e Gerenciamento de Riscos Ocupacionais, enquanto a NR9 trata da Avaliação e Controle das Exposições Ocupacionais a Agentes Físicos, Químicos e Biológicos. Essas novas normas visam integrar todos os riscos ocupacionais, não apenas os ambientais."] }, { segments: [{ bold: true, text: "Principais diferenças entre PPRA e PGR" }] }, "• Abrangência: O PPRA se limitava a riscos ambientais, enquanto o PGR abrange todos os riscos ocupacionais, incluindo fatores ergonômicos e acidentes.", "• Processo Contínuo: O PGR é um processo contínuo de melhoria, enquanto o PPRA era mais estático.", "• Digitalização: O PGR permite a prestação de informações digitais e a digitalização de documentos, facilitando a gestão e o acesso às informações.", { segments: [{ bold: true, text: "Como essa mudança funciona?" }] }, "As empresas precisam atualizar seus programas de prevenção de riscos ambientais para atender às novas exigências do PGR. Isso inclui realizar uma avaliação atualizada dos riscos ocupacionais e criar um plano de ação para mitigálos3. As informações do PPRA podem ser aproveitadas, mas precisam ser adaptadas para atender às novas exigências.", "As novas NRs entraram em vigor em agosto de 2021, e as empresas tiveram até janeiro de 2022 para implementar o PGR.", "É importante que as empresas mantenham os dados do PPRA atualizados e os integrem ao novo programa.", "A transição do PPRA para o PGR representa um avanço significativo na gestão de riscos ocupacionais, trazendo uma abordagem mais abrangente e dinâmica.As empresas devem estar atentas às novas exigências e aproveitar essa oportunidade para melhorar continuamente a segurança e a saúde no ambiente de trabalho. A implementação efetiva do PGR não só garante conformidade com a legislação, mas também promove um ambiente de trabalho mais seguro e saudável para todos os colaboradores"], lists: [], subsections: [] }],
+	 sections: [
+  {
+    "heading": "",
+    "paragraphs": [
+      "A exigência de elaborar o antigo Programa de Prevenção de Riscos Ambientais (PPRA) da NR-9 foi substituída pela sistemática de gerenciamento de riscos ocupacionais da NR-1. A nova redação entrou em vigor em 3 de janeiro de 2022. Documentos anteriores não substituem, por si sós, um PGR adequado à situação atual.",
+      "O objetivo é identificar perigos, avaliar riscos e organizar medidas de prevenção como processo de gestão. A NR-9 continua relevante para a avaliação e o controle das exposições ocupacionais a agentes físicos, químicos e biológicos."
+    ]
+  },
+  {
+    "heading": "O que um PGR deve conter?",
+    "paragraphs": [
+      "O PGR precisa ter, no mínimo, o inventário de riscos ocupacionais e o plano de ação. O inventário registra perigos, grupos expostos, avaliação e classificação dos riscos; o plano organiza medidas, acompanhamento e prioridades. Uma pasta com documentos prontos e sem relação com a operação da empresa não substitui esse trabalho.",
+      "A organização deve reavaliar riscos diante de mudanças de processos, equipamentos, ambientes, incidentes e outras condições previstas na norma. Cabe à empresa garantir a implementação das medidas, não somente a contratação de um documento."
+    ]
+  },
+  {
+    "heading": "E os fatores psicossociais em 2026?",
+    "paragraphs": [
+      "A redação da NR-1 em vigor desde 26 de maio de 2026 explicitou os fatores de riscos psicossociais relacionados ao trabalho no gerenciamento de riscos ocupacionais. O foco é a organização e as condições de trabalho, e não a exposição pública de diagnósticos médicos individuais.",
+      "Para aplicar as exigências, a empresa deve utilizar critérios técnicos de identificação, avaliação e prevenção compatíveis com sua realidade e consultar o texto vigente. O PGR não deve ser confundido com o PCMSO ou com o LTCAT: cada instrumento possui finalidade própria."
+    ]
+  },
+  {
+    "heading": "Existem dispensas?",
+    "paragraphs": [
+      "Sim. O MTE explica condições específicas de dispensa de elaboração do PGR para MEI e determinadas microempresas e empresas de pequeno porte. A dispensa documental não deve ser interpretada como autorização para ignorar riscos ou deixar de cumprir outras medidas de SST."
+    ]
+  },
+  {
+    "heading": "Fontes oficiais",
+    "paragraphs": [
+      {
+        "segments": [
+          {
+            "text": "MTE — NR-1 vigente",
+            "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1"
+          }
+        ]
+      },
+      {
+        "segments": [
+          {
+            "text": "MTE — Perguntas frequentes sobre o PGR",
+            "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
+          }
+        ]
+      }
+    ]
+  }
+],
 } as const satisfies BlogContentData;

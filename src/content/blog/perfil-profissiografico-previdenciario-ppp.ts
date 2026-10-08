@@ -11,15 +11,62 @@ export const blogPerfilProfissiograficoPrevidenciarioPpp = {
 	 description: "Entenda o que é o Perfil Profissiográfico Previdenciário e como ele registra atividades e condições de exposição do trabalhador.",
 	 heading: "Perfil Profissiográfico Previdenciário (PPP)",
 	 pubDate: "2025-04-09",
+	updatedAt: "2026-10-07",
 	 author: "Admin",
 	 image: { src: image0, alt: "Perfil Profissiográfico Previdenciário (PPP)" },
 	 categories: ['Blog'],
-	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
+	 tags: ["PPP","eSocial","aposentadoria especial"],
 	 gallery: [{ src: image1, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image2, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image3, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image4, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image0, alt: "Perfil Profissiográfico Previdenciário (PPP)" }],
-	 sections: [{ heading: "", paragraphs: ["O Perfil Profissiográfico Previdenciário (PPP) é um documento de caráter individual e obrigatório para todos os trabalhadores expostos a condições de risco no ambiente de trabalho. Ele tem como principal objetivo registrar as condições laborais de cada empregado ao longo de sua trajetória profissional, especialmente no que se refere à exposição a agentes nocivos, como ruído excessivo, produtos químicos ou agentes biológicos, que possam prejudicar a saúde do trabalhador."], lists: [], subsections: [] },
-		{ heading: "O que é o PPP?", paragraphs: ["O PPP é um documento instituído pela Lei nº 8.213/91, que tem como objetivo garantir direitos aos trabalhadores que estiveram expostos a condições de risco durante o exercício de suas funções. Ele deve ser preenchido pelo empregador, em conformidade com as normas regulamentadoras de segurança e medicina do trabalho, e deve ser entregue ao trabalhador quando este se desligar da empresa.", "A principal função do PPP é servir como base para a contagem do tempo de serviço especial e, consequentemente, para a aposentadoria especial. A exposição a agentes nocivos, como produtos químicos, ruídos, radiações e outros, pode acelerar o processo de aposentadoria ou garantir uma aposentadoria com benefícios diferenciados."], lists: [], subsections: [] },
-		{ heading: "Ǫuem deve preencher o PPP?", paragraphs: ["O PPP deve ser preenchido pelo empregador, que tem a responsabilidade de manter a documentação atualizada e de fornecer todas as informações sobre as condições de trabalho. Ele é exigido sempre que o trabalhador pedir a aposentadoria, ou em casos de acidente de trabalho.", "O documento deve refletir com precisão as condições ambientais e os riscos aos quais o trabalhador esteve exposto durante a sua jornada profissional, como a intensidade e a duração da exposição a esses agentes."], lists: [], subsections: [] },
-		{ heading: "Como o PPP é preenchido?", paragraphs: ["O preenchimento do PPP deve seguir algumas diretrizes estabelecidas pelo INSS (Instituto Nacional do Seguro Social), que regula o processo. O documento contém diversas informações:", "Essas informações são essenciais para comprovar a exposição a condições especiais que possam garantir ao trabalhador a aposentadoria especial ou a compensação por condições de trabalho prejudiciais."], lists: [{ ordered: false, items: ["Dados de identificação do trabalhador: Nome, número de inscrição no INSS, cargo e função desempenhada.", "Atividades desempenhadas: Descrição detalhada das atividades exercidas e dos riscos presentes no ambiente de trabalho.", "Exposição a agentes nocivos: Detalhamento dos agentes químicos, físicos ou biológicos que o trabalhador esteve exposto, incluindo intensidade, frequência e tempo de exposição.", "Avaliação do impacto na saúde: Relatório dos possíveis efeitos que a exposição a tais agentes pode ter causado à saúde do trabalhador.", "Laudos e exames: Resultados de avaliações feitas ao longo do tempo, com foco na monitorização da saúde do trabalhador e na segurança do ambiente de trabalho."] }], subsections: [] },
-		{ heading: "Importância do PPP", paragraphs: ["A principal importância do PPP é garantir que o trabalhador tenha seus direitos assegurados, principalmente em relação à aposentadoria e à compensação por tempo de serviço especial. Ele também serve como uma forma de controle para que os empregadores adotem medidas de segurança para reduzir a exposição dos trabalhadores a riscos.", "Além disso, o PPP facilita o processo de verificação de tempo de serviço especial no momento da aposentadoria, proporcionando aos trabalhadores que atuaram em atividades insalubres, perigosas ou penosas a possibilidade de aposentar-se mais cedo ou de ter benefícios diferenciados, conforme a gravidade da exposição."], lists: [], subsections: [] },
-		{ heading: "PPP e a Aposentadoria Especial", paragraphs: ["O PPP tem uma relação direta com a aposentadoria especial, um tipo de aposentadoria concedida ao trabalhador que exerce atividades em condições prejudiciais à saúde ou à integridade física. A partir da Reforma da Previdência, as regras para aposentadoria especial foram alteradas, mas o PPP continua sendo uma ferramenta fundamental para comprovar o tempo de serviço especial e possibilitar o direito à aposentadoria com benefícios diferenciados.", "Trabalhadores que comprovarem exposição a agentes nocivos podem reduzir a idade mínima para aposentadoria ou diminuir o tempo de contribuição necessário, dependendo do nível de risco das atividades desempenhadas.", "O Perfil Profissiográfico Previdenciário (PPP) é um documento essencial para a proteção dos direitos dos trabalhadores expostos a riscos no ambiente de trabalho. Ele garante a comprovação das condições laborais e possibilita o acesso a direitos como a aposentadoria especial e benefícios relacionados à segurança e saúde no trabalho.", "Portanto, é fundamental que empresas e trabalhadores compreendam a importância de manter o PPP atualizado e em conformidade com as exigências legais, assegurando a qualidade de vida e o bem-estar do trabalhador, além de facilitar o processo de aposentadoria e outras compensações previdenciárias."], lists: [], subsections: [] }],
+	 sections: [
+  {
+    "heading": "O que registra o PPP?",
+    "paragraphs": [
+      "O Perfil Profissiográfico Previdenciário reúne o histórico laboral do trabalhador e informações das condições ambientais pertinentes à Previdência Social. É um registro que deve corresponder às atividades e exposições efetivamente documentadas; não equivale a um certificado automático de direito à aposentadoria especial.",
+      "O fundamento técnico das exposições deve ser coerente com os documentos ambientais, incluindo o LTCAT quando aplicável. Registros incorretos podem dificultar a análise previdenciária e precisam ser corrigidos na origem."
+    ]
+  },
+  {
+    "heading": "PPP eletrônico desde 2023",
+    "paragraphs": [
+      "Para períodos trabalhados a partir de 1º de janeiro de 2023, o PPP eletrônico substitui o documento físico para fins de comprovação perante o INSS. O trabalhador pode consultar o documento pelo Meu INSS. Períodos anteriores devem ser analisados conforme as regras e os registros aplicáveis à época.",
+      "O PPP eletrônico é formado a partir das informações prestadas ao eSocial; o evento S-2240 trata das condições ambientais e da exposição a agentes nocivos. O S-2220, por sua vez, transmite dados de monitoramento da saúde e de ASO, e não é o mesmo evento do PPP ambiental."
+    ]
+  },
+  {
+    "heading": "O PPP concede aposentadoria especial?",
+    "paragraphs": [
+      "Não automaticamente. A concessão é analisada pelo INSS conforme período, agente nocivo, intensidade ou forma de exposição e demais requisitos da legislação previdenciária. Receber um PPP não garante reconhecimento de tempo especial, assim como um laudo não substitui a decisão administrativa ou judicial.",
+      "Em caso de divergência, o trabalhador deve solicitar esclarecimento e correção ao empregador responsável pelos registros, guardando evidências e documentos pertinentes."
+    ]
+  },
+  {
+    "heading": "Fontes oficiais",
+    "paragraphs": [
+      {
+        "segments": [
+          {
+            "text": "eSocial — Implantação do PPP eletrônico",
+            "href": "https://www.gov.br/esocial/pt-br/noticias/disponibilizacao-do-perfil-profissiografico-previdenciario-ppp-eletronico/"
+          }
+        ]
+      },
+      {
+        "segments": [
+          {
+            "text": "eSocial — Eventos SST e S-2240",
+            "href": "https://www.gov.br/esocial/pt-br/empresas/manual-web-geral/manual-web-geral/"
+          }
+        ]
+      },
+      {
+        "segments": [
+          {
+            "text": "Lei nº 8.213/1991 — art. 58",
+            "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
+          }
+        ]
+      }
+    ]
+  }
+],
 } as const satisfies BlogContentData;

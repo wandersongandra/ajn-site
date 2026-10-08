@@ -14,6 +14,7 @@ const articleSchema = {
 	headline: blogArticle.heading,
 	description: blogArticle.description,
 	datePublished: '2026-01-23',
+	dateModified: blogArticle.updatedAt,
 	author: { '@type': 'Organization', name: blogArticle.author },
 	publisher: { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' },
 	mainEntityOfPage: siteOrigin + canonicalPath,
@@ -27,7 +28,7 @@ const articleSchema = {
 		<div class="blog-article-layout">
 			<article class="blog-article reading-surface">
 				<p class="blog-article__meta">
-					Publicado em <time datetime="2026-01-23">{blogArticle.date}</time> · {blogArticle.author}
+					Publicado em <time datetime="2026-01-23">{blogArticle.date}</time> · {blogArticle.author} · Conteúdo atualizado em <time datetime={blogArticle.updatedAt}>07 de outubro de 2026</time>
 				</p>
 				<Image class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width={880} widths={[480, 720, 880, 1100]} sizes="(max-width: 800px) calc(100vw - 32px), (max-width: 1100px) 70vw, 760px" format="webp" loading="eager" decoding="async" fetchpriority="high" />
 				<ContentSections sections={blogArticle.sections} />

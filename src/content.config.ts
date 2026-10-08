@@ -91,6 +91,7 @@ export const blogContentSchema = z.object({
 	description: z.string().min(1).max(180),
 	heading: z.string().min(1),
 	pubDate: z.coerce.date(),
+	updatedAt: z.coerce.date().optional(),
 	author: z.string().min(1),
 	image: blogImageSchema,
 	categories: z.array(z.string().min(1)).min(1),
