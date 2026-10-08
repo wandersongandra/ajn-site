@@ -9,9 +9,9 @@ const pages = [
 	['/servicos', 'dist/servicos/index.html'],
 	['/blog', 'dist/blog/index.html'],
 	['/contato', 'dist/contato/index.html'],
-	['/informacoes', 'dist/informacoes/index.html'],
+	['/mapa-site', 'dist/mapa-site/index.html'],
 ];
-const links = ['/', '/sobre-nos', '/servicos', '/blog', '/contato', '/informacoes'];
+const links = ['/', '/sobre-nos', '/servicos', '/blog', '/contato'];
 const failures = [];
 let inspected = 0;
 
