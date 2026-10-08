@@ -8,6 +8,7 @@ const check = (condition, message) => {
 const sections = [
 	['hero', 'class="hero"'],
 	['solutions', 'class="section solutions"'],
+	['sectors', 'class="section home-sectors"'],
 	['clients', 'class="section clients"'],
 	['workflow', 'class="differentials section"'],
 	['contact', 'class="home-contact-cta"'],
@@ -24,10 +25,12 @@ for (const [name, needle] of sections) {
 const homeHtml = html.slice(html.indexOf('class="home-page"'));
 const serviceCards = (homeHtml.match(/<article class="service-card"/g) ?? []).length;
 const clientLogos = (homeHtml.match(/class="home-client-logo"/g) ?? []).length;
+const sectorCards = (homeHtml.match(/class="home-sector-card"/g) ?? []).length;
 const h1Count = (html.match(/<h1\b/g) ?? []).length;
 check(h1Count === 1, 'Expected one H1, found ' + h1Count);
 check(serviceCards === 6, 'Expected six service cards, found ' + serviceCards);
 check(clientLogos === 10, 'Expected ten client logos, found ' + clientLogos);
+check(sectorCards === 4, 'Expected four sector cards, found ' + sectorCards);
 check(!homeHtml.includes('class="section mission"'), 'Mission/Vision/Values unexpectedly returned');
 check(!homeHtml.includes('class="about section"'), 'About AJN section unexpectedly returned');
 check(!homeHtml.includes('class="section highlights"'), 'Duplicate services highlights unexpectedly returned');
@@ -49,5 +52,5 @@ if (issues.length) {
 	for (const issue of issues) console.error('[home][FAIL] ' + issue);
 	process.exitCode = 1;
 } else {
-	console.log('[home] PASS: 5 sections ordered, 1 H1, 6 services, 10 logos, clear CTAs and no duplicated/moving content.');
+	console.log('[home] PASS: 6 sections ordered, 1 H1, 6 services, 4 sectors, 10 logos, clear CTAs and no duplicated/moving content.');
 }
