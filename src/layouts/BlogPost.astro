@@ -99,7 +99,9 @@ const galleryRemaining = galleryImages.slice(3);
 					<p class="blog-article__meta">
 						<span>Publicado em </span>
 						<time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
-						{post.author !== 'Admin' ? <span> · Por {post.author}</span> : null}
+						{post.author === 'Admin'
+              ? <span> · Por <a href="/sobre-nos">AJN Consultoria e Engenharia</a></span>
+              : <span> · Por {post.author}</span>}
 						{post.updatedAt && <span> · Atualizado em <time datetime={post.updatedAt.toISOString()}>{formattedUpdated}</time></span>}
 					</p>
 				</header>

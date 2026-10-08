@@ -51,6 +51,11 @@ for (const file of htmlFiles) {
 	for (const target of sectionAnchors) {
 		if (!html.includes('id="' + target + '"')) failures.push(route + ': sumário com destino ausente: ' + target);
 	}
+	// O autor deve ser identificável ao leitor; os posts legados de "Admin" usam a marca AJN.
+	if (!route.includes('a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional')
+		&& !html.includes('· Por ')) {
+		failures.push(route + ': autor não está visível no artigo');
+	}
 	if (!html.includes('class="blog-article__content"')) {
 		failures.push(route + ': artigo não contém região editorial padrão');
 	}
