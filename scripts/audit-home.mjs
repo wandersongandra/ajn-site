@@ -1,10 +1,10 @@
 // Regression checks for AJN Home only, executed after Astro's static build.
 import { readFile } from 'node:fs/promises';
 const html = await readFile('dist/index.html', 'utf8');
-const motionJs = await readFile('src/scripts/home-motion.ts', 'utf8');
+const motionJs = await readFile('public/scripts/home.js', 'utf8');
 const motionCss = await readFile('src/styles/home-motion.css', 'utf8');
 const clientsCss = await readFile('src/styles/clients-carousel.css', 'utf8');
-const clientsJs = await readFile('src/scripts/clients-carousel.ts', 'utf8');
+const clientsJs = await readFile('public/scripts/home.js', 'utf8');
 const issues = [];
 const check = (condition, message) => {
 	if (!condition) issues.push(message);

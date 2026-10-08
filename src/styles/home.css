@@ -300,6 +300,11 @@
 	line-height: 1.67;
 }
 
+/* Keep anchored homepage sections clear of the fixed header. */
+.home-page .solutions,
+.home-page .clients,
+.home-page .differentials { scroll-margin-top: 90px; }
+
 /* Access and focus are limited to homepage interactive elements. */
 .home-page a:focus-visible {
 	outline: 3px solid #53c46c;
@@ -351,8 +356,15 @@
 	.home-page .hero__actions { align-items: stretch; flex-direction: column; }
 	.home-page .hero__actions > .button { width: 100%; min-height: 48px; }
 	.home-page .home-services-grid { grid-template-columns: 1fr; gap: 14px; }
-	.home-page .home-service-card__link > img { height: 170px; max-height: 170px; }
-	.home-page .solutions .service-card__content { padding: 17px 17px 19px; }
+	.home-page .home-service-card__link > img { height: 150px; max-height: 150px; }
+	.home-page .solutions .service-card__content { padding: 15px 16px 17px; }
+	.home-page .solutions .service-card h3 { margin-bottom: 7px; font-size: 17px; }
+	.home-page .solutions .service-card p {
+		margin-bottom: 13px;
+		font-size: 13.5px;
+		line-height: 1.58;
+	}
+	.home-page .solutions .service-card .service-card__link { font-size: 12.5px; }
 	.home-page .home-section-heading { margin-bottom: 22px; }
 	.home-page .workflow__intro { margin-bottom: 30px; }
 }

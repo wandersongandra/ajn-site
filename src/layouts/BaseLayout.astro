@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import SocialFloat from '../components/SocialFloat.astro';
 import { site } from '../data/home';
+import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
 
 interface Props {
 	title?: string;
@@ -23,10 +24,9 @@ const {
 	noindex = false,
 } = Astro.props;
 
-const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}`;
-const canonicalUrl = `${siteOrigin}${normalizedPath}`;
-const imageUrl = ogImage.startsWith('http') ? ogImage : `${siteOrigin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
+const canonicalUrl = absoluteSiteUrl(normalizedPath);
+const imageUrl = absoluteSiteUrl(ogImage);
 const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';
 const robotsDirective = allowIndexing && !noindex
 	? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'
@@ -93,7 +93,7 @@ const websiteSchema = {
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-		<script type="application/ld+json" set:html={JSON.stringify([organizationSchema, websiteSchema])} />
+		<script type="application/ld+json" set:html={serializeJsonLd([organizationSchema, websiteSchema])} />
 		<title>{title}</title>
 	</head>
 	<body>

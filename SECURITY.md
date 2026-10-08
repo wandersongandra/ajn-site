@@ -22,6 +22,8 @@ Please include the affected route or file, steps to reproduce without exposing s
 - Staging should remain unindexed and must not receive production secrets.
 - GitHub Actions tokens should use minimum required permissions.
 - A successful CI run does not replace penetration testing, runtime security headers, server configuration or manual review.
+- The static build includes `public/.htaccess` with CSP, clickjacking, MIME-sniffing, referrer and permissions headers for Apache-compatible hosting. Verify those headers on the deployed host; the repository cannot prove provider behavior.
+- `npm run audit:security` checks the repository baseline for dangerous DOM sinks, client-side storage, inline executable scripts, unsafe CSP directives and duplicated site-origin configuration.
 - If a secret was exposed in any Git history, rotate/revoke it; merely deleting it from the latest commit is insufficient.
 
 ## Repository settings required

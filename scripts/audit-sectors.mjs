@@ -7,7 +7,7 @@ const [html, innerHtml, styles, motion, motionJs] = await Promise.all([
 	readFile('dist/sobre-nos/index.html', 'utf8'),
 	readFile('src/styles/home-editorial.css', 'utf8'),
 	readFile('src/styles/home-motion.css', 'utf8'),
-	readFile('src/scripts/home-motion.ts', 'utf8'),
+	readFile('public/scripts/home.js', 'utf8'),
 ]);
 
 const failures = [];
