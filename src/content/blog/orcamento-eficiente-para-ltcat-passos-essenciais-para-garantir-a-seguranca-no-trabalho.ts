@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-orcamento-eficiente-para-ltcat-passos
 export const blogOrcamentoEficienteParaLtcatPassosEssenciaisParaGarantirASegurancaNoTrabalho = {
 	 slug: "orcamento-eficiente-para-ltcat-passos-essenciais-para-garantir-a-seguranca-no-trabalho", path: "/blog/orcamento-eficiente-para-ltcat-passos-essenciais-para-garantir-a-seguranca-no-trabalho",
 	 title: "Orçamento Eficiente para LTCAT: Passos Essenciais para Garantir a Segurança no Trabalho",
-	 description: "O orçamento para o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) é um aspecto crucial para garantir a segurança no ambiente laboral. A elaboraçã…",
+	 description: "Saiba quais informações considerar ao solicitar um orçamento de LTCAT, incluindo atividades, ambientes avaliados e agentes nocivos.",
 	 heading: "Orçamento Eficiente para LTCAT: Passos Essenciais para Garantir a Segurança no Trabalho",
 	 pubDate: "2026-02-14",
 	 author: "AJN Consultoria e Engenharia",
