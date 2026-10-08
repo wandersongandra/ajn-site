@@ -58,7 +58,6 @@ const related = blogPosts
 			<span aria-current="page">{post.heading}</span>
 		</nav>
 		<div class="blog-article-layout">
-			<BlogSidebar context="article" />
 			<article class="blog-article reading-surface">
 				<header class="blog-article__header">
 					<p class="blog-article__kicker">Blog AJN {self ? ' · ' + self.topic : ''}</p>
@@ -117,6 +116,7 @@ const related = blogPosts
 					</div>
 				</footer>
 			</article>
+			<BlogSidebar context="article" />
 		</div>
 
 		{related.length > 0 && (
