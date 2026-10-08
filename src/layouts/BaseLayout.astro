@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/inner-motion.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import SocialFloat from '../components/SocialFloat.astro';
@@ -102,5 +103,8 @@ const websiteSchema = {
 		<main id="conteudo-principal"><slot /></main>
 		<Footer />
 		<SocialFloat />
+		<script>
+			import '../scripts/inner-motion';
+		</script>
 	</body>
 </html>

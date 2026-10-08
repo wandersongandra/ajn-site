@@ -36,6 +36,14 @@
 		to { opacity: 1; transform: translateY(0); }
 	}
 
+	/* As entradas no celular nao devem ficar atrasadas em cascata. */
+	@media (max-width: 640px) {
+		.home-page.motion-ready [data-reveal] {
+			transition-delay: 0ms;
+			transition-duration: 360ms, 430ms, 180ms, 180ms;
+		}
+	}
+
 	@media (min-width: 769px) {
 		.home-page .hero__panel {
 			animation: ajn-hero-panel-enter 650ms cubic-bezier(.22, 1, .36, 1) 180ms both;
@@ -43,6 +51,14 @@
 	}
 
 	@media (hover: hover) and (pointer: fine) {
+		/* Movimento reservado aos cards clicaveis; logos e setores ficam estaticos. */
+		.home-page .home-service-card__link > img {
+			transition: transform 450ms cubic-bezier(.22, 1, .36, 1);
+		}
+		.home-page .home-service-card__link:hover > img,
+		.home-page .home-service-card__link:focus-visible > img {
+			transform: scale(1.035);
+		}
 		.home-page .hero__actions > .button,
 		.home-page .home-contact-cta__button {
 			transition: transform 200ms ease, background-color 200ms ease, border-color 200ms ease;

@@ -62,5 +62,8 @@ jobs:
       - name: Home conversion and structure audit
         run: node scripts/audit-home.mjs
 
+      - name: Animation accessibility and performance guard
+        run: npm run audit:motion
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
