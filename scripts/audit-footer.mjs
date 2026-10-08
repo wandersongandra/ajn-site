@@ -48,7 +48,7 @@ for (const file of files) {
 		footer.includes('50.970.588/0001-84'),
 		`${route}: dados cadastrais incompletos`);
 	check(footer.includes('Rua Egeu, 34') &&
-		footer.includes('31812-120') || footer.includes('31.812-120'),
+		(footer.includes('31812-120') || footer.includes('31.812-120')),
 		`${route}: endereço confirmado ausente`);
 	check(footer.includes('(31) 98473-4644') &&
 		footer.includes('faleconosco@ajnengenharia.com.br'),
