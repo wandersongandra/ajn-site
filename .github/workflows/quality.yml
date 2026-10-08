@@ -50,6 +50,9 @@ jobs:
       - name: Services catalog image weight and search behavior
         run: npm run audit:services-catalog
 
+      - name: Dead CSS and active sections regression audit
+        run: npm run audit:dead-css
+
       - name: Internal anchor audit
         run: npm run audit:fragments
 
