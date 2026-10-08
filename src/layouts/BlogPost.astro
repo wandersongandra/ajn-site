@@ -17,6 +17,7 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 	year: 'numeric',
 	timeZone: 'UTC',
 });
+const formattedUpdated = post.updatedAt?.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 const articleSchema = {
@@ -25,6 +26,7 @@ const articleSchema = {
 	headline: post.heading,
 	description: post.description,
 	datePublished: post.pubDate.toISOString(),
+	dateModified: (post.updatedAt ?? post.pubDate).toISOString(),
 	author: post.author === 'Admin'
 		? { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' }
 		: { '@type': 'Person', name: post.author },
@@ -76,6 +78,7 @@ const galleryRemaining = galleryImages.slice(3);
 						<span>Publicado em </span>
 						<time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
 						{post.author !== 'Admin' ? <span> · Por {post.author}</span> : null}
+						{post.updatedAt && <span> · Atualizado em <time datetime={post.updatedAt.toISOString()}>{formattedUpdated}</time></span>}
 					</p>
 				</header>
 
