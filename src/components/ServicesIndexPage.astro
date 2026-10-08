@@ -2,21 +2,6 @@
 import '../styles/services-catalog.css';
 import PageShell from './PageShell.astro';
 import { serviceIndexItems } from '../content/services/catalog';
-
-// Recursos publicados em WebP/JPEG já presentes no projeto; preservam
-// o assunto de cada serviço sem baixar os PNGs legados de 180–320 KiB.
-const serviceImages: Record<string, string> = {
-  'Assessoria e consultoria em saúde ocupacional': '/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp',
-  'Gestão Ambiental': '/images/content/services/gestao-ambiental.webp',
-  'Gestão da Qualidade': '/images/content/services/gestao-da-qualidade.webp',
-  'Gestão do E-Social': '/images/content/services/gestao-do-e-social.webp',
-  'PCMSO e ASOs': '/images/content/services/pcmso-e-asos.jpg',
-  'Perícias em Periculosidade e Insalubridade': '/images/content/services/pericias-em-periculosidade-e-insalubridade.webp',
-  'Projetos de Combate a Incêndio e Pânico - PPCIP': '/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp',
-  'Projetos Elétricos Residenciais, Comerciais e Prediais com Foco em Qualidade, Prazo e Economia': '/images/featured/orcamento-projeto-eletrico-01.webp',
-  'Regularização de imóveis junto ao corpo de bombeiros': '/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp',
-  'Treinamento de NRs': '/images/content/services/treinamento-de-nrs.webp',
-};
 ---
 
 <PageShell heading="Serviços">
@@ -41,7 +26,7 @@ const serviceImages: Record<string, string> = {
           <a class="service-index-card__link" href={service.href} aria-label={`Conhecer o serviço: ${service.title}`}>
             <img
               class="service-index-card__image"
-              src={serviceImages[service.title]}
+              src={service.image}
               alt=""
               width="600"
               height="800"

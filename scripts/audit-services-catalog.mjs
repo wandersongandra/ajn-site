@@ -3,13 +3,25 @@ import { readFile, stat } from 'node:fs/promises';
 import vm from 'node:vm';
 import path from 'node:path';
 
-const [html, css, js] = await Promise.all([
+const [html, css, js, catalogSource, componentSource, globalCss] = await Promise.all([
   readFile('dist/servicos/index.html', 'utf8'),
   readFile('src/styles/services-catalog.css', 'utf8'),
   readFile('public/scripts/services-index.js', 'utf8'),
+  readFile('src/content/services/catalog.ts', 'utf8'),
+  readFile('src/components/ServicesIndexPage.astro', 'utf8'),
+  readFile('src/styles/global.css', 'utf8'),
 ]);
 const failures = [];
 const check = (condition, detail) => { if (!condition) failures.push(detail); };
+// Mantenibilidade: o mesmo item contém título, descrição, URL e imagem.
+// Evita lookup por texto exibido, código redundante e arquivos de estilo órfãos.
+const catalogImages = [...catalogSource.matchAll(/\bimage:\s*'([^']+)'/g)].map(match => match[1]);
+check(catalogImages.length === 10, `Catálogo: esperadas 10 imagens definidas no próprio dado, encontradas ${catalogImages.length}.`);
+check(new Set(catalogImages).size === 10, 'Catálogo: recursos de imagem repetidos.');
+check(componentSource.includes('src={service.image}') && !componentSource.includes('serviceImages['),
+  'O componente deve usar imagem do objeto de serviço, sem lookup por título.');
+check(!globalCss.includes('/* Services index */') && !globalCss.includes('/* Catálogo de serviços — leitura e pesquisa'),
+  'Estilos de catálogo antigos não devem voltar para global.css.');
 const cards = [...html.matchAll(/<article\b[^>]*data-service-card\b[^>]*>[\s\S]*?<\/article>/g)].map(m => m[0]);
 
 check(cards.length === 10, `Deveria haver 10 cartões de serviço; encontrados ${cards.length}.`);
@@ -71,7 +83,7 @@ check(run('incêndio') >= 1 && run('incendio') >= 1, 'Pesquisa com e sem acento 
 check(run('periculosidade') === 1, 'Pesquisa de perícias não encontra o termo.');
 check(run('texto inexistente') === 0 && empty.hidden === false, 'Estado vazio do catálogo não aparece.');
 check(run('') === 10 && empty.hidden === true, 'Limpar a busca deve recuperar todos os 10 serviços.');
-check(results.textContent === '10 serviços encontrados', 'Contagem de artigos visíveis incorreta.');
+check(results.textContent === '10 serviços encontrados', 'Contagem de serviços visíveis incorreta.');
 
 if (failures.length) {
   for (const f of failures) console.error('[catalogo][FAIL]', f);
