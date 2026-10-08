@@ -237,6 +237,7 @@
 	flex-direction: column;
 }
 .home-page .home-service-card__link > img {
+	display: block;
 	width: 100%;
 	height: auto;
 	max-height: none;
@@ -244,6 +245,8 @@
 	object-fit: cover;
 	object-position: center;
 	background: #e6ede5;
+	/* Ajuste leve nas fotos existentes, sem recolorir a identidade das marcas. */
+	filter: saturate(.94) contrast(1.025);
 }
 .home-page .solutions .service-card__content {
 	display: flex;
@@ -633,6 +636,27 @@
 	.home-page .workflow__step h3 { font-size: 19px; }
 	.home-page .workflow__step p { max-width: none; font-size: 14.5px; }
 }
+/* Mobile compacto: prioriza linhas legíveis e impede que a sequência aperte em 320 px. */
+@media (max-width: 380px) {
+	.home-page .hero__content { padding-block: 68px 64px; }
+	.home-page .hero__content h1 {
+		font-size: clamp(32px, 9vw, 36px);
+		letter-spacing: -.035em;
+	}
+	.home-page .hero__lead { font-size: 15px; }
+	.home-page .home-services-grid { gap: 16px; }
+	.home-page .solutions .service-card__content { padding: 21px 19px 23px; }
+	.home-page .solutions .home-services-heading .section-title {
+		font-size: clamp(30px, 8.2vw, 34px);
+		letter-spacing: -.037em;
+	}
+	.home-page .workflow__step,
+	.home-page .workflow__step:first-child,
+	.home-page .workflow__step:nth-child(3),
+	.home-page .workflow__step:last-child { gap: 16px; }
+	.home-page .workflow__step-number { flex-basis: 49px; font-size: 32px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.home-page .service-card,
 	.home-page .home-sector-card {
