@@ -24,7 +24,7 @@ const {
 } = Astro.props;
 
 const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
-const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}`;
+const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}/`;
 const canonicalUrl = `${siteOrigin}${normalizedPath}`;
 const imageUrl = ogImage.startsWith('http') ? ogImage : `${siteOrigin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
 const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';

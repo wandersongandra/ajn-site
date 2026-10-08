@@ -41,6 +41,15 @@ jobs:
       - name: SEO and link audit
         run: npm run audit:seo
 
+      - name: Canonical and sitemap consistency audit
+        run: npm run audit:canonical
+
+      - name: Image and responsive asset audit
+        run: npm run audit:assets
+
+      - name: Service cards and links audit
+        run: npm run audit:services
+
       - name: Internal anchor audit
         run: npm run audit:fragments
 

@@ -5,7 +5,8 @@ interface Props {
 
 const { heading } = Astro.props;
 const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
-const currentUrl = `${siteOrigin}${Astro.url.pathname}`;
+const pagePath = Astro.url.pathname === '/' ? '/' : `/${Astro.url.pathname.replace(/^\/+|\/+$/g, '')}/`;
+const currentUrl = `${siteOrigin}${pagePath}`;
 const breadcrumbSchema = {
 	'@context': 'https://schema.org',
 	'@type': 'BreadcrumbList',

@@ -12,11 +12,14 @@
     "preview": "astro preview",
     "astro": "astro",
     "audit:seo": "node scripts/audit-seo.mjs",
+    "audit:canonical": "node scripts/audit-canonical.mjs",
+    "audit:assets": "node scripts/audit-assets.mjs",
+    "audit:services": "node scripts/audit-service-index.mjs",
     "audit:fragments": "node scripts/audit-fragments.mjs",
     "audit:deploy": "node scripts/audit-deploy.mjs",
     "audit:contact": "node scripts/audit-contact.mjs",
     "test:audits": "node scripts/test-audit-fragments.mjs",
-    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:contact && npm run test:audits"
+    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:canonical && npm run audit:assets && npm run audit:services && npm run audit:fragments && npm run audit:deploy && npm run audit:contact && npm run test:audits"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

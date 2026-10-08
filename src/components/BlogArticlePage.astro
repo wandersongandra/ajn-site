@@ -20,7 +20,7 @@ const articleSchema = {
 	dateModified: blogArticle.updatedAt,
 	author: { '@type': 'Organization', name: blogArticle.author },
 	publisher: { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' },
-	mainEntityOfPage: siteOrigin + canonicalPath,
+	mainEntityOfPage: siteOrigin + canonicalPath + '/',
 	image: [siteOrigin + '/images/og/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional.jpg'],
 	inLanguage: 'pt-BR',
 };
