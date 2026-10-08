@@ -1,0 +1,85 @@
+/* Movimento nas paginas internas: aprimoramento progressivo sem dependencias.
+   O CSS so altera a visibilidade quando o JS ja identificou os elementos. */
+@media (prefers-reduced-motion: no-preference) {
+	@supports (translate: 0 1px) {
+		#conteudo-principal.inner-motion-ready [data-motion-enter] {
+			transition-property: opacity, translate;
+			transition-duration: 450ms, 540ms;
+			transition-timing-function: ease-out, cubic-bezier(.22, 1, .36, 1);
+			transition-delay: var(--motion-delay, 0ms);
+		}
+		#conteudo-principal.inner-motion-ready [data-motion-enter]:not(.is-visible):not(:focus-within) {
+			opacity: 0;
+			translate: 0 16px;
+		}
+		#conteudo-principal.inner-motion-ready [data-motion-enter].is-visible,
+		#conteudo-principal.inner-motion-ready [data-motion-enter]:focus-within {
+			opacity: 1;
+			translate: 0 0;
+		}
+	}
+	@media (max-width: 640px) {
+		#conteudo-principal.inner-motion-ready [data-motion-enter] {
+			transition-delay: 0ms;
+			transition-duration: 350ms, 400ms;
+		}
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		/* Pequeno zoom na foto, sem mudar o tamanho da caixa nem a grade. */
+		#conteudo-principal .service-index-card__image {
+			transition: transform 450ms cubic-bezier(.22, 1, .36, 1);
+		}
+		#conteudo-principal .service-index-card:hover .service-index-card__image,
+		#conteudo-principal .service-index-card:focus-within .service-index-card__image {
+			transform: scale(1.04);
+		}
+		#conteudo-principal .blog-card__image img,
+		#conteudo-principal .blog-related__media img {
+			transition: transform 450ms cubic-bezier(.22, 1, .36, 1);
+		}
+		#conteudo-principal .blog-card:hover .blog-card__image img,
+		#conteudo-principal .blog-card:focus-within .blog-card__image img,
+		#conteudo-principal .blog-related__card:hover .blog-related__media img,
+		#conteudo-principal .blog-related__card:focus-within .blog-related__media img {
+			transform: scale(1.035);
+		}
+		#conteudo-principal .link-index-item {
+			transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+		}
+		#conteudo-principal .link-index-item:hover,
+		#conteudo-principal .link-index-item:focus-visible {
+			border-color: #9fbea4;
+			background-color: #f6faf5;
+			box-shadow: 0 8px 18px rgb(18 52 26 / 7%);
+		}
+	}
+
+	@keyframes ajn-nav-enter {
+		from { opacity: 0; transform: translateY(-7px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+	@media (min-width: 1101px) {
+		#site-header .has-submenu.is-expanded > .submenu {
+			animation: ajn-nav-enter 175ms ease-out both;
+		}
+	}
+	@media (max-width: 1100px) {
+		#site-header .primary-navigation.is-open {
+			animation: ajn-nav-enter 190ms ease-out both;
+		}
+	}
+}
+
+/* Movimento nunca e requisito para ler, navegar ou usar teclado. */
+@media (prefers-reduced-motion: reduce) {
+	#conteudo-principal [data-motion-enter] {
+		opacity: 1 !important;
+		translate: none !important;
+		transition: none !important;
+	}
+	#site-header .has-submenu.is-expanded > .submenu,
+	#site-header .primary-navigation.is-open {
+		animation: none !important;
+	}
+}
