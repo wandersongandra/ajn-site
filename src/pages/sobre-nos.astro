@@ -1,4 +1,5 @@
 ---
+import '../styles/about-editorial.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InstitutionalPage from '../components/InstitutionalPage.astro';
 import { institutionalPage } from '../content/institutional/sobre-nos';
@@ -6,4 +7,7 @@ import { institutionalPage } from '../content/institutional/sobre-nos';
 
 <BaseLayout title={institutionalPage.title} description={institutionalPage.description} canonicalPath="/sobre-nos">
 	<InstitutionalPage />
+	<script>
+		import '../scripts/about-motion';
+	</script>
 </BaseLayout>
