@@ -41,6 +41,9 @@ jobs:
       - name: SEO and link audit
         run: npm run audit:seo
 
+      - name: Institutional content and canonical audit
+        run: npm run audit:editorial
+
       - name: Internal anchor audit
         run: npm run audit:fragments
 
