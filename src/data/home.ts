@@ -30,7 +30,7 @@ export const navigation: NavigationItem[] = [
 			{ label: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
 			{ label: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' },
 			{ label: 'Projetos de Combate a Incêndio e Pânico - PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
-			{ label: 'Projetos Elétricos Residenciais, Comerciais e Prediais', href: '/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia' },
+			{ label: 'Projetos Elétricos Residenciais, Comerciais e Prediais', href: '/projetos-eletricos-prediais' },
 			{ label: 'Regularização de imóveis junto ao corpo de bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
 			{ label: 'Treinamento de NRs', href: '/servicos/treinamento-de-nrs' },
 		],
@@ -42,7 +42,10 @@ export const navigation: NavigationItem[] = [
 
 export const hero = {
 	image: '/images/hero/banner.webp',
-	text: 'A empresa se destaca pela especialização em projetos de segurança do trabalho e engenharia, atendendo setores complexos, como grandes obras de infraestrutura, e empresas que demandam alta especialização. Além disso, o envolvimento familiar nas operações estratégicas proporciona um serviço personalizado e próximo dos clientes, o que fortalece o relacionamento e a confiança no atendimento',
+	eyebrow: 'AJN Consultoria e Engenharia',
+	title: 'Segurança do trabalho e engenharia para operações que não podem parar.',
+	description: 'Consultoria técnica, gestão de riscos, engenharia e saúde ocupacional para empresas que precisam trabalhar com segurança, conformidade e controle.',
+	areas: ['Segurança do Trabalho', 'Engenharia', 'Saúde Ocupacional', 'Treinamentos'],
 } as const;
 
 export const about = {
