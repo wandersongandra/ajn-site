@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "pericias-em-periculosidade-e-insalubridade",
 	"path": "/servicos/pericias-em-periculosidade-e-insalubridade",
 	"title": "Perícias em Periculosidade e Insalubridade - AJN Consultoria e Engenharia",
-	"description": "Perícias em Periculosidade e Insalubridade - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de trabalho...Saiba mais.",
+	"description": "Perícias de insalubridade e periculosidade com análise de agentes de risco, inspeções em campo e emissão de laudos técnicos.",
 	"heading": "Perícias em Periculosidade e Insalubridade",
 	"image": "/images/content/services/pericias-em-periculosidade-e-insalubridade.webp",
 	"imageAlt": "Perícias em Periculosidade e Insalubridade",
