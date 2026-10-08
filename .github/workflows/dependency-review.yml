@@ -1,4 +1,4 @@
-name: Dependency Review
+name: Dependency Security
 
 on:
   pull_request:
@@ -8,12 +8,26 @@ permissions:
   contents: read
 
 jobs:
-  dependency-review:
-    name: Dependency review (high+)
+  dependency-security:
+    name: Dependency audit (high+)
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/dependency-review-action@v4
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Configure Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Audit all installed dependencies
+        run: npm audit --audit-level=high
+      # GitHub's Dependency Graph is currently disabled for this repository.
+      # After enabling it, set repository variable ENABLE_DEPENDENCY_REVIEW=true.
+      - name: Native GitHub dependency review (when graph enabled)
+        if: ${{ vars.ENABLE_DEPENDENCY_REVIEW == 'true' }}
+        uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
