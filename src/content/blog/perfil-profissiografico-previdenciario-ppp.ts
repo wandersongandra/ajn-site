@@ -15,7 +15,7 @@ export const blogPerfilProfissiograficoPrevidenciarioPpp = {
 	 author: "Admin",
 	 image: { src: image0, alt: "Perfil Profissiográfico Previdenciário (PPP)" },
 	 categories: ['Blog'],
-	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
+	 tags: ["PPP","eSocial","aposentadoria especial"],
 	 gallery: [{ src: image1, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image2, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image3, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image4, alt: "Perfil Profissiográfico Previdenciário (PPP)" }, { src: image0, alt: "Perfil Profissiográfico Previdenciário (PPP)" }],
 	 sections: [
   {
