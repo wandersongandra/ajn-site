@@ -1,14 +1,40 @@
 ---
+import '../styles/blog.css';
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
+import BlogSidebar from './BlogSidebar.astro';
 import { Image } from 'astro:assets';
 import { blogArticle } from '../content/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
+
+const canonicalPath = '/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
+const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
+const articleSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: blogArticle.heading,
+	description: blogArticle.description,
+	datePublished: '2026-01-23',
+	author: { '@type': 'Organization', name: blogArticle.author },
+	publisher: { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' },
+	mainEntityOfPage: siteOrigin + canonicalPath,
+	image: [siteOrigin + '/images/og/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional.jpg'],
+	inLanguage: 'pt-BR',
+};
 ---
 
-<PageShell heading={blogArticle.heading}>
-	<article class="blog-article">
-		<Image class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width={1200} format="webp" loading="eager" />
-		<p class="blog-article__meta">Por: {blogArticle.author} - {blogArticle.date}</p>
-		<ContentSections sections={blogArticle.sections} />
-	</article>
-</PageShell>
+<div class="blog-legacy">
+	<PageShell heading={blogArticle.heading}>
+		<div class="blog-article-layout">
+			<BlogSidebar context="article" />
+			<article class="blog-article reading-surface">
+				<p class="blog-article__meta">
+					Publicado em <time datetime="2026-01-23">{blogArticle.date}</time> · {blogArticle.author}
+				</p>
+				<Image class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width={1200} format="webp" loading="eager" />
+				<ContentSections sections={blogArticle.sections} />
+				<a href="/blog" class="blog-legacy__back">← Voltar para o blog</a>
+			</article>
+		</div>
+	</PageShell>
+	<script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+</div>
