@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import SocialFloat from '../components/SocialFloat.astro';
 import { site } from '../data/home';
 import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
+import { getSeoMetadata } from '../utils/seo';
 
 interface Props {
 	title?: string;
@@ -16,8 +17,8 @@ interface Props {
 }
 
 const {
-	title = 'AJN Consultoria e Engenharia | Segurança do Trabalho e Engenharia',
-	description = 'Consultoria e engenharia em QSSMA, segurança do trabalho, laudos, PCMSO, eSocial, projetos elétricos e prevenção contra incêndio.',
+	title: requestedTitle = 'AJN Consultoria e Engenharia | Segurança do Trabalho e Engenharia',
+	description: requestedDescription = 'Consultoria e engenharia em QSSMA, segurança do trabalho, laudos, PCMSO, eSocial, projetos elétricos e prevenção contra incêndio.',
 	canonicalPath = '/',
 	ogType = 'website',
 	ogImage = '/images/hero/banner.webp',
@@ -25,6 +26,10 @@ const {
 } = Astro.props;
 
 const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}/`;
+const seoPath = normalizedPath === '/' ? '/' : normalizedPath.replace(/\/$/, '');
+const seo = getSeoMetadata(seoPath, { title: requestedTitle, description: requestedDescription });
+const title = seo.title;
+const description = seo.description;
 const canonicalUrl = absoluteSiteUrl(normalizedPath);
 const imageUrl = absoluteSiteUrl(ogImage);
 const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';

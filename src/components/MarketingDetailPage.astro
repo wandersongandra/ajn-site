@@ -3,22 +3,25 @@ import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { MarketingContent } from '../content/types';
 import { Image } from 'astro:assets';
+import { getMarketingSeo, getRelatedService, normalizeKeywordTerms } from '../utils/seo';
 
 interface Props {
 	page: MarketingContent;
 }
 
 const { page } = Astro.props;
+const heading = getMarketingSeo(page).heading;
+const relatedService = getRelatedService(page.path);
 ---
 
-<PageShell heading={page.heading}>
+<PageShell heading={heading}>
 	<div class="detail-layout">
 		<div class="detail-layout__main reading-surface">
 			<div class="content-gallery">
-				{page.images.map((image) => <a href={image.src}><Image src={image.src} alt={image.alt} width={900} height={600} format="webp" loading="lazy" /></a>)}
+				{page.images.map((image) => <a href={image.src}><Image src={image.src} alt={image.alt === page.heading ? heading : normalizeKeywordTerms(image.alt)} width={900} height={600} format="webp" loading="lazy" /></a>)}
 			</div>
 			<p class="gallery-note">Clique nas imagens para ampliar</p>
-			<ContentSections sections={page.sections} />
+			<ContentSections sections={page.sections} formatHeading={normalizeKeywordTerms} />
 			<p class="page-cta"><a class="button" href="/contato">Falar com a AJN</a></p>
 		</div>
 		<aside class="detail-sidebar" aria-label="Navegação relacionada">
@@ -27,9 +30,10 @@ const { page } = Astro.props;
 			<h2>Explore</h2>
 			<ul>
 				<li><a href="/servicos">Nossos serviços</a></li>
+				{relatedService ? <li><a href={relatedService.href}>{relatedService.label}</a></li> : null}
 				<li><a href="/sobre-nos">Sobre a AJN</a></li>
 				<li><a href="/blog">Conteúdo técnico</a></li>
-				<li><a href="/informacoes">Informações</a></li>
+				<li><a href="/mapa-site">Mapa do site</a></li>
 			</ul>
 			<a class="detail-sidebar__all" href="/contato">Entrar em contato →</a>
 		</aside>

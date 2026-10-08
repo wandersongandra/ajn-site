@@ -5,20 +5,21 @@ import ContentParagraphView from './ContentParagraph.astro';
 
 interface Props {
 	sections: readonly ContentSection[];
+	formatHeading?: (heading: string) => string;
 }
 
-const { sections } = Astro.props;
+const { sections, formatHeading = (heading: string) => heading } = Astro.props;
 
 ---
 
 {sections.map((section) => (
 	<section class="content-section">
-		{section.heading ? <h2>{section.heading}</h2> : null}
+		{section.heading ? <h2>{formatHeading(section.heading)}</h2> : null}
 		{section.paragraphs.map((paragraph) => <ContentParagraphView paragraph={paragraph} />)}
 		{section.lists?.map((list) => <ContentList list={list} />)}
 		{section.subsections?.map((subsection) => (
 			<div class="content-subsection">
-				<h3>{subsection.heading}</h3>
+				<h3>{formatHeading(subsection.heading)}</h3>
 				{subsection.paragraphs.map((paragraph) => <ContentParagraphView paragraph={paragraph} />)}
 				{subsection.lists?.map((list) => <ContentList list={list} />)}
 			</div>

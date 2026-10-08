@@ -2,12 +2,28 @@
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { ServiceContent } from '../content/types';
+import { normalizeKeywordTerms } from '../utils/seo';
 
 interface Props {
 	page: ServiceContent;
 }
 
 const { page } = Astro.props;
+const serviceSectionHeadings: Record<string, string> = {
+	'/servicos/assessoria-e-consultoria-em-saude-ocupacional': 'Como funciona a assessoria em saúde ocupacional',
+	'/servicos/gestao-ambiental': 'Gestão de resíduos e práticas ambientais',
+	'/servicos/gestao-da-qualidade': 'Controle de qualidade em obras',
+	'/servicos/gestao-do-e-social': 'Gestão de eventos de SST no eSocial',
+	'/servicos/pcmso-e-asos': 'Gestão de PCMSO e ASOs',
+	'/servicos/pericias-em-periculosidade-e-insalubridade': 'Perícias de insalubridade e periculosidade',
+	'/servicos/projetos-de-combate-a-incendio-e-panico-ppcip': 'Projetos e regularização de segurança contra incêndio',
+	'/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia': 'Projetos elétricos residenciais, comerciais e prediais',
+	'/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros': 'Regularização de imóveis e documentos do Corpo de Bombeiros',
+	'/servicos/treinamento-de-nrs': 'Treinamentos de Normas Regulamentadoras',
+};
+const sections = page.sections.map((section, index) => index === 0 && section.heading === 'Informações'
+	? { ...section, heading: serviceSectionHeadings[page.path] ?? section.heading }
+	: section);
 ---
 
 <PageShell heading={page.heading}>
@@ -16,7 +32,7 @@ const { page } = Astro.props;
 			<img src={page.image} alt={page.imageAlt} width="1000" height="720" loading="eager" />
 		</div>
 		<div class="service-detail-wp__content">
-			<ContentSections sections={page.sections} />
+			<ContentSections sections={sections} formatHeading={normalizeKeywordTerms} />
 			<p class="page-cta"><a class="button" href="/contato">Entre em contato</a></p>
 		</div>
 	</div>

@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MarketingDetailPage from '../components/MarketingDetailPage.astro';
 import { marketingPages } from '../content/marketing';
+import { getMarketingSeo } from '../utils/seo';
 
 export function getStaticPaths() {
 	return marketingPages.map((page) => ({
@@ -11,8 +12,9 @@ export function getStaticPaths() {
 }
 
 const { page } = Astro.props;
+const seo = getMarketingSeo(page);
 ---
 
-<BaseLayout title={page.title} description={page.description} canonicalPath={page.path} ogImage={page.images[0]?.src}>
+<BaseLayout title={seo.title} description={seo.description} canonicalPath={page.path} ogImage={page.images[0]?.src}>
 	<MarketingDetailPage page={page} />
 </BaseLayout>
