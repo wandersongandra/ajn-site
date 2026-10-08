@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros",
 	"path": "/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros",
 	"title": "Regularização de imóveis junto ao corpo de bombeiros - AJN Consultoria e Engenharia",
-	"description": "Regularização de imóveis junto ao corpo de bombeiros - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local d...Saiba mais.",
+	"description": "Regularização de imóveis junto ao Corpo de Bombeiros: análise de conformidade, documentação técnica, projetos e acompanhamento de AVCB e CLCB.",
 	"heading": "Regularização de imóveis junto ao corpo de bombeiros",
 	"image": "/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp",
 	"imageAlt": "Regularização de imóveis junto ao corpo de bombeiros",
