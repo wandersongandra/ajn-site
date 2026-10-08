@@ -2612,153 +2612,238 @@ h3 { font-size: 24px; }
 	.clients__group[aria-hidden="true"] { display: none; }
 }
 
-/* Footer refinement — scoped to the site footer */
+/* Rodapé institucional: estilos finais isolados do restante do site. */
 .site-footer {
-	color: #eef4ed;
-	background: #29352c;
+	color: #e5efe5;
+	background: #223329;
+	border-top: 1px solid #38523e;
 }
-
 .site-footer .footer__grid {
 	display: grid;
-	grid-template-columns: minmax(260px, 1.35fr) minmax(150px, .75fr) minmax(250px, 1fr) minmax(140px, .65fr);
+	grid-template-columns: minmax(215px, 1.18fr) minmax(135px, .68fr) minmax(250px, 1.2fr) minmax(150px, .7fr);
 	align-items: start;
-	gap: clamp(2rem, 4vw, 3.25rem);
-	padding-block: 3.25rem 2.75rem;
+	gap: clamp(24px, 3.6vw, 56px);
+	padding-block: clamp(52px, 5.4vw, 78px) clamp(48px, 4.6vw, 65px);
 }
-
 .site-footer .footer__brand,
 .site-footer .footer__menu,
 .site-footer .footer__contact,
 .site-footer .footer__social-column {
 	min-width: 0;
 }
-
+.site-footer .footer__brand-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-start;
+	min-height: 44px;
+	margin-bottom: 24px;
+	border-radius: 4px;
+}
 .site-footer .footer__logo {
-	width: 168px;
+	display: block;
+	width: clamp(158px, 15vw, 178px);
 	height: auto;
-	margin: 0 0 1.25rem;
+	margin: 0;
 	object-fit: contain;
 	filter: brightness(0) invert(1);
 }
-
-.site-footer .footer__brand p,
-.site-footer .footer__contact p,
-.site-footer .footer__contact address,
-.site-footer .footer__contact > a,
-.site-footer .footer__menu a {
-	margin: 0 0 .7rem;
-	color: rgb(238 244 237 / 76%);
-	font-size: .8rem;
+.site-footer .footer__company-name {
+	display: grid;
+	gap: 6px;
+	margin: 0 0 14px;
+	line-height: 1.55;
+}
+.site-footer .footer__company-name > span {
+	color: #adbfaf;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .085em;
+	text-transform: uppercase;
+}
+.site-footer .footer__company-name strong {
+	color: #f0f6ef;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: -.015em;
+}
+.site-footer .footer__brand .footer__registration {
+	max-width: none;
+	margin: 0;
+	color: #c3d1c5;
+	font-size: 13.5px;
 	line-height: 1.65;
 }
-
-.site-footer .footer__brand p:last-child { max-width: 39ch; margin-top: 1rem; }
-.site-footer .footer__brand strong { color: var(--white); }
-.site-footer .footer__contact address { font-style: normal; }
-
+.site-footer .footer__registration > span {
+	margin-right: 4px;
+	color: #f0f6ef;
+	font-weight: 700;
+}
 .site-footer .footer__menu h2,
 .site-footer .footer__contact h2,
 .site-footer .footer__social-column h2 {
-	margin: 0 0 1.1rem;
-	color: var(--white);
-	font-size: .9rem;
-	font-weight: 750;
-	letter-spacing: .08em;
+	margin: 5px 0 24px;
+	color: #f5faf4;
+	font-size: 12.5px;
+	font-weight: 800;
+	letter-spacing: .105em;
+	line-height: 1.4;
 	text-transform: uppercase;
 }
-
-.site-footer .footer__menu ul { display: grid; gap: .15rem; }
+.site-footer .footer__menu ul {
+	display: grid;
+	gap: 13px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
 .site-footer .footer__menu li { margin: 0; }
+.site-footer .footer__menu a,
+.site-footer .footer__contact address,
+.site-footer .footer__contact > a {
+	display: block;
+	margin: 0;
+	color: #c9d7cb;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.68;
+	text-decoration: none;
+	overflow-wrap: anywhere;
+}
+.site-footer .footer__contact {
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+	gap: 13px;
+}
+.site-footer .footer__contact h2 { margin-bottom: 11px; }
+.site-footer .footer__contact address { font-style: normal; }
 .site-footer .footer__menu a:hover,
-.site-footer .footer__contact > a:hover { color: var(--white); }
-
+.site-footer .footer__contact > a:hover {
+	color: #fff;
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
 .site-footer .footer__actions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: .6rem;
-	margin-top: 1.15rem;
+	margin: 8px 0 0;
 }
-
 .site-footer .footer__button {
-	min-height: 42px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 48px;
 	margin: 0;
-	padding: .65rem .9rem;
-	border: 1px solid #4caf50;
-	border-radius: .45rem;
-	color: var(--white);
-	background: #4caf50;
-	font-size: .76rem;
-	font-weight: 700;
+	padding: 11px 17px;
+	border: 1px solid #439c55;
+	border-radius: 6px;
+	color: #fff;
+	background: #398d4d;
+	font-size: 13px;
+	font-weight: 750;
+	line-height: 1.5;
+	text-decoration: none;
+	transition: border-color 190ms ease, background-color 190ms ease, transform 190ms ease;
 }
-
+.site-footer .footer__button > span { font-size: 15px; line-height: 1; }
 .site-footer .footer__button:hover {
-	border-color: #67bd6a;
-	background: #67bd6a;
-	transform: translateY(-1px);
+	border-color: #6db87a;
+	color: #fff;
+	background: #2c7740;
 }
-
-.site-footer .footer__button--secondary {
-	border-color: rgb(238 244 237 / 30%);
-	background: transparent;
-}
-
-.site-footer .footer__button--secondary:hover {
-	border-color: rgb(238 244 237 / 65%);
-	background: rgb(238 244 237 / 9%);
-}
-
 .site-footer .footer__social {
-	gap: .65rem;
-	margin-top: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0;
 }
-
 .site-footer .footer__social a {
-	width: 42px;
-	height: 42px;
-	border: 1px solid rgb(255 255 255 / 24%);
-	background: var(--white);
-	transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+	display: grid;
+	width: 46px;
+	height: 46px;
+	place-items: center;
+	border: 1px solid rgb(231 244 233 / 21%);
+	border-radius: 50%;
+	background: #fff;
+	transition: transform 190ms ease, box-shadow 190ms ease;
 }
-
-.site-footer .footer__social a:hover {
-	box-shadow: 0 8px 18px rgb(0 0 0 / 18%);
-	transform: translateY(-2px);
+.site-footer .footer__social a[aria-label="WhatsApp da AJN"] {
+	background: #25d366;
 }
-
-.site-footer .footer__social a[aria-label="WhatsApp"] { background: #25d366; }
-.site-footer .footer__social img { width: 24px; height: 24px; }
-
+.site-footer .footer__social img {
+	display: block;
+	width: 26px;
+	height: 26px;
+	object-fit: contain;
+}
+.site-footer .footer__brand-link:focus-visible,
+.site-footer .footer__menu a:focus-visible,
+.site-footer .footer__contact > a:focus-visible,
+.site-footer .footer__button:focus-visible,
+.site-footer .footer__social a:focus-visible {
+	outline: 3px solid #b8e6ad;
+	outline-offset: 5px;
+}
 .site-footer .copyright-footer {
-	padding-block: 1rem;
-	border-top-color: rgb(255 255 255 / 12%);
-	background: #202a22;
+	padding-block: 18px;
+	border-top: 1px solid rgb(226 242 228 / 13%);
+	background: #192920;
 }
-
 .site-footer .copyright-footer__inner {
 	min-height: 24px;
-	color: rgb(238 244 237 / 62%);
-	font-size: .72rem;
+	color: #bbcbbd;
+	font-size: 12.5px;
+	line-height: 1.65;
 }
-
-@media (max-width: 1024px) {
+.site-footer .copyright-footer__inner small { font-size: inherit; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+	.site-footer .footer__button:hover { transform: translateY(-2px); }
+	.site-footer .footer__social a:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 16px rgb(0 0 0 / 17%);
+	}
+}
+@media (max-width: 1100px) {
 	.site-footer .footer__grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 2.5rem 2rem;
+		gap: 42px 50px;
 	}
-	.site-footer .footer__brand { grid-column: 1 / -1; }
+	.site-footer .footer__brand { grid-column: auto; }
 }
-
 @media (max-width: 640px) {
 	.site-footer .footer__grid {
 		grid-template-columns: 1fr;
-		gap: 2rem;
-		padding-block: 2.75rem 2.25rem;
+		gap: 0;
+		padding-block: 46px 37px;
 	}
-	.site-footer .footer__brand { grid-column: auto; }
-	.site-footer .footer__logo { width: 148px; }
-	.site-footer .footer__actions { align-items: stretch; flex-direction: column; }
-	.site-footer .footer__button { width: fit-content; }
-	.site-footer .copyright-footer__inner { align-items: flex-start; }
+	.site-footer .footer__brand,
+	.site-footer .footer__menu,
+	.site-footer .footer__contact,
+	.site-footer .footer__social-column {
+		grid-column: auto;
+		padding-block: 25px;
+	}
+	.site-footer .footer__brand { padding-top: 0; }
+	.site-footer .footer__social-column { padding-bottom: 0; }
+	.site-footer .footer__menu,
+	.site-footer .footer__contact,
+	.site-footer .footer__social-column {
+		border-top: 1px solid rgb(226 242 228 / 14%);
+	}
+	.site-footer .footer__menu h2,
+	.site-footer .footer__contact h2,
+	.site-footer .footer__social-column h2 { margin-top: 0; margin-bottom: 18px; }
+	.site-footer .footer__brand-link { margin-bottom: 18px; }
+	.site-footer .footer__logo { width: 164px; }
+	.site-footer .footer__menu ul { gap: 10px; }
+	.site-footer .footer__contact { gap: 11px; }
+	.site-footer .footer__actions { margin-top: 9px; }
+	.site-footer .copyright-footer__inner { padding-right: 65px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.site-footer .footer__button,
+	.site-footer .footer__social a { transition: none; transform: none; }
 }
 
 /* Continuous solutions marquee — no manual scrolling or side controls */
