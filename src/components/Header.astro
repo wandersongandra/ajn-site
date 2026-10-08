@@ -42,7 +42,6 @@ const isCurrent = (href: string) => href === '/'
 										class="submenu-toggle"
 										type="button"
 										aria-expanded="false"
-										aria-haspopup="true"
 										aria-controls={'submenu-' + item.href.slice(1)}
 										aria-label={'Expandir opções de ' + item.label}
 										data-submenu-toggle
@@ -105,7 +104,11 @@ const isCurrent = (href: string) => href === '/'
 	for (const group of submenuGroups) {
 		const subToggle = group.querySelector<HTMLButtonElement>('[data-submenu-toggle]');
 		subToggle?.addEventListener('click', () => {
-			const next = subToggle.getAttribute('aria-expanded') !== 'true';
+			// Um mouse já abre o submenu ao passar por ele: o clique não deve fechá-lo.
+			// No teclado e em telas touch, o mesmo botão alterna o estado normalmente.
+			const next = !compactNav.matches && group.matches(':hover')
+				? true
+				: subToggle.getAttribute('aria-expanded') !== 'true';
 			closeSubmenus(group);
 			setSubmenu(group, next);
 		});
