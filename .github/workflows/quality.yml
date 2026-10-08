@@ -53,6 +53,9 @@ jobs:
       - name: Dead CSS and active sections regression audit
         run: npm run audit:dead-css
 
+      - name: Duplicate asset inventory (non-destructive)
+        run: npm run audit:assets
+
       - name: Internal anchor audit
         run: npm run audit:fragments
 
