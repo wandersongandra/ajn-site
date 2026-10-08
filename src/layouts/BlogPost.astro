@@ -1,7 +1,9 @@
 ---
+import '../styles/blog.css';
 import { Image } from 'astro:assets';
 import ContentSections from '../components/ContentSections.astro';
 import BlogSidebar from '../components/BlogSidebar.astro';
+import { blogPosts } from '../content/blog/catalog';
 import type { BlogContentData } from '../content.config';
 
 interface Props {
@@ -19,46 +21,53 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 const articleSchema = {
 	'@context': 'https://schema.org',
-	'@type': 'Article',
+	'@type': 'BlogPosting',
 	headline: post.heading,
 	description: post.description,
 	datePublished: post.pubDate.toISOString(),
-	author: {
-		'@type': 'Person',
-		name: post.author,
-	},
+	author: post.author === 'Admin'
+		? { '@type': 'Organization', name: 'AJN Consultoria e Engenharia' }
+		: { '@type': 'Person', name: post.author },
 	publisher: {
 		'@type': 'Organization',
 		name: 'AJN Consultoria e Engenharia',
-		logo: {
-			'@type': 'ImageObject',
-			url: `${siteOrigin}/images/branding/logo.png`,
-		},
+		logo: { '@type': 'ImageObject', url: siteOrigin + '/images/branding/logo.png' },
 	},
-	mainEntityOfPage: `${siteOrigin}${post.path}`,
-	image: [`${siteOrigin}/images/og/${post.slug}.jpg`],
+	mainEntityOfPage: siteOrigin + post.path,
+	image: [siteOrigin + '/images/og/' + post.slug + '.jpg'],
 	inLanguage: 'pt-BR',
 };
+
+const toc = post.sections.map((section, index) => ({
+	title: section.heading.trim(),
+	id: 'blog-secao-' + (index + 1),
+})).filter((entry) => entry.title.length > 0);
+const self = blogPosts.find((item) => item.href === post.path);
+const related = blogPosts
+	.filter((item) => item.href !== post.path && item.topic === self?.topic)
+	.slice(0, 3);
 ---
 
-<section class="inner-page">
+<section class="inner-page blog-reading">
 	<div class="site-shell">
 		<nav class="breadcrumb" aria-label="Breadcrumb">
 			<a href="/">Home</a>
 			<span aria-hidden="true">/</span>
-			<a href="/blog/">Blog</a>
+			<a href="/blog">Blog</a>
 			<span aria-hidden="true">/</span>
 			<span aria-current="page">{post.heading}</span>
 		</nav>
-
 		<div class="blog-article-layout">
-			<BlogSidebar />
+			<BlogSidebar context="article" />
 			<article class="blog-article reading-surface">
 				<header class="blog-article__header">
-					<p class="page-kicker">AJN Consultoria e Engenharia · Blog</p>
+					<p class="blog-article__kicker">Blog AJN {self ? ' · ' + self.topic : ''}</p>
 					<h1 class="page-title">{post.heading}</h1>
+					<p class="blog-article__description">{post.description}</p>
 					<p class="blog-article__meta">
-						Por: {post.author} · <time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
+						<span>Publicado em </span>
+						<time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
+						{post.author !== 'Admin' ? <span> · Por {post.author}</span> : null}
 					</p>
 				</header>
 
@@ -69,9 +78,24 @@ const articleSchema = {
 					width={1200}
 					format="webp"
 					loading="eager"
+					fetchpriority="high"
+					sizes="(max-width: 900px) 100vw, 850px"
 				/>
 
-				<ContentSections sections={post.sections} />
+				{toc.length > 1 ? (
+					<nav class="blog-article__toc" aria-label="Nesta publicação">
+						<h2>Neste artigo</h2>
+						<ol>{toc.map((entry) => <li><a href={'#' + entry.id}>{entry.title}</a></li>)}</ol>
+					</nav>
+				) : null}
+
+				<div class="blog-article__content">
+					{post.sections.map((section, index) => (
+						<div id={'blog-secao-' + (index + 1)} class="blog-article__section">
+							<ContentSections sections={[section]} />
+						</div>
+					))}
+				</div>
 
 				{post.gallery.length > 0 ? (
 					<div class="blog-article__gallery" aria-label="Imagens relacionadas ao artigo">
@@ -82,13 +106,43 @@ const articleSchema = {
 				) : null}
 
 				<footer class="blog-article__footer">
-					<p class="blog-article__label">Tags</p>
-					<ul class="blog-article__tags">
-						{post.tags.map((tag) => <li>{tag}</li>)}
-					</ul>
+					{self && (
+						<a class="blog-article__topic" href={'/blog?tema=' + encodeURIComponent(self.topic)}>
+							Mais artigos sobre {self.topic} <span aria-hidden="true">→</span>
+						</a>
+					)}
+					<div class="blog-article__actions">
+						<a href="/blog">← Voltar para o blog</a>
+						<a href="/contato">Falar com a AJN →</a>
+					</div>
 				</footer>
 			</article>
 		</div>
+
+		{related.length > 0 && (
+			<section class="blog-related" aria-labelledby="blog-related-heading">
+				<div class="blog-related__heading">
+					<div>
+						<p>Continue a leitura</p>
+						<h2 id="blog-related-heading">Artigos do mesmo assunto</h2>
+					</div>
+					<a href="/blog">Ver blog completo →</a>
+				</div>
+				<div class="blog-related__grid">
+					{related.map((item) => (
+						<article class="blog-related__card">
+							<a href={item.href} class="blog-related__media" aria-label={'Ler: ' + item.title}>
+								<Image src={item.image} alt={item.alt} width={600} format="webp" loading="lazy" />
+							</a>
+							<div>
+								<p>{item.topic}</p>
+								<h3><a href={item.href}>{item.title}</a></h3>
+							</div>
+						</article>
+					))}
+				</div>
+			</section>
+		)}
 	</div>
 	<script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
 </section>
