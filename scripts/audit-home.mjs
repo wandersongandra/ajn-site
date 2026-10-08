@@ -35,6 +35,24 @@ const h1Count = (html.match(/<h1\b/g) ?? []).length;
 check(h1Count === 1, 'Expected one H1, found ' + h1Count);
 check(serviceCards === 6, 'Expected six service cards, found ' + serviceCards);
 check(clientLogos === 10, 'Expected ten original client logos, found ' + clientLogos);
+const clientFiles = ['01','02','03','04','06','07','08','09','10'];
+for (const suffix of clientFiles) {
+	const src = `/images/clients/cliente-${suffix}-hd.webp`;
+	check(homeHtml.includes(`src="${src}"`), 'Missing HD client logo: ' + src);
+	const binary = await readFile('dist' + src);
+	check(binary.toString('ascii', 0, 4) === 'RIFF' &&
+		binary.toString('ascii', 8, 12) === 'WEBP', 'Invalid WebP image: ' + src);
+}
+check(homeHtml.includes('/images/clients/cliente-05.png'), 'Hemarcon must remain in the portfolio');
+check(/alt="Logotipo BRAVO/.test(homeHtml) && /alt="Logotipo Hemarcon"/.test(homeHtml),
+	'The client carousel must use meaningful names for all logos');
+const brandAsset = await readFile('dist/images/branding/ajn-logo-hd.webp');
+check(brandAsset.toString('ascii', 0, 4) === 'RIFF' &&
+	brandAsset.toString('ascii', 8, 12) === 'WEBP', 'AJN logo must be a valid WebP');
+check((homeHtml.match(/\/images\/branding\/ajn-logo-hd\.webp/g) ?? []).length >= 2,
+	'Header and footer must use the new AJN branding image');
+check(clientsCss.includes('height: 152px') && clientsCss.includes('clamp(240px, 23vw, 320px)'),
+	'Client logos should be visibly larger on desktop');
 check(duplicateLogos === 10, 'Expected ten decorative carousel duplicates, found ' + duplicateLogos);
 check(sectorCards === 4, 'Expected four sector cards, found ' + sectorCards);
 check(!homeHtml.includes('class="section mission"'), 'Mission/Vision/Values unexpectedly returned');
