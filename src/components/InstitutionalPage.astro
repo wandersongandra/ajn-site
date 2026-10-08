@@ -1,36 +1,109 @@
 ---
-import PageShell from './PageShell.astro';
+import { Image } from 'astro:assets';
+import fachada from '../assets/about/fachada.webp';
+import institutionalPhoto from '../assets/about/sobre-nos.webp';
 import { institutionalPage } from '../content/institutional/sobre-nos';
+
+const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
+const breadcrumbs = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Home', item: `${siteOrigin}/` },
+		{ '@type': 'ListItem', position: 2, name: 'Sobre nós', item: `${siteOrigin}/sobre-nos` },
+	],
+};
 ---
 
-<PageShell heading={institutionalPage.heading}>
-	<div class="institutional-intro">
-		<div class="institutional-intro__image">
-			<img src={institutionalPage.images[0].src} alt={institutionalPage.images[0].alt} width="900" height="600" loading="eager" />
+<div class="about-page" data-about-page>
+	<section class="about-page__hero" aria-labelledby="about-title">
+		<div class="site-shell">
+			<nav class="about-page__breadcrumb" aria-label="Navegação estrutural">
+				<a href="/">Início</a><span aria-hidden="true">/</span><span aria-current="page">Sobre nós</span>
+			</nav>
+			<div class="about-page__hero-grid">
+				<div class="about-page__hero-copy" data-about-reveal>
+					<p class="about-page__eyebrow">{institutionalPage.eyebrow}</p>
+					<h1 id="about-title">{institutionalPage.heading}</h1>
+					<p class="about-page__lead">{institutionalPage.lead}</p>
+					<a class="about-page__text-link" href="#atuacao">Conheça nossa atuação <span aria-hidden="true">↗</span></a>
+				</div>
+				<figure class="about-page__hero-media" data-about-reveal>
+					<Image src={fachada} alt="" format="webp" quality={84}
+						widths={[480, 720, 960, 1200]}
+						sizes="(max-width: 780px) calc(100vw - 32px), 49vw"
+						loading="eager" fetchpriority="high" decoding="async"
+					/>
+				</figure>
+			</div>
 		</div>
-		<div>
-			<h2>{institutionalPage.introTitle}</h2>
-			{institutionalPage.intro.map((paragraph) => <p>{paragraph}</p>)}
-		</div>
-	</div>
-
-	<div class="institutional-gallery">
-		<img src={institutionalPage.images[1].src} alt={institutionalPage.images[1].alt} width="220" height="220" loading="lazy" />
-		<img src={institutionalPage.images[2].src} alt={institutionalPage.images[2].alt} width="900" height="600" loading="lazy" />
-		<img src={institutionalPage.images[3].src} alt={institutionalPage.images[3].alt} width="900" height="600" loading="lazy" />
-	</div>
-
-	<div class="values-grid">
-		{institutionalPage.values.map((value) => (
-			<section>
-				<h2>{value.heading}</h2>
-				<p>{value.text}</p>
-			</section>
-		))}
-	</div>
-
-	<section class="content-section">
-		<h2>{institutionalPage.quality.heading}</h2>
-		<p>{institutionalPage.quality.text}</p>
 	</section>
-</PageShell>
+
+	<section class="about-page__intro" id="atuacao" aria-labelledby="about-intro-title">
+		<div class="site-shell about-page__intro-grid">
+			<div class="about-page__section-heading" data-about-reveal>
+				<p class="about-page__eyebrow">Quem somos</p>
+				<h2 id="about-intro-title">{institutionalPage.introTitle}</h2>
+			</div>
+			<div class="about-page__intro-text" data-about-reveal>
+				{institutionalPage.intro.map(paragraph => <p>{paragraph}</p>)}
+			</div>
+		</div>
+	</section>
+
+	<section class="about-page__areas" aria-labelledby="about-areas-title">
+		<div class="site-shell">
+			<div class="about-page__section-heading" data-about-reveal>
+				<p class="about-page__eyebrow">Serviços</p>
+				<h2 id="about-areas-title">{institutionalPage.areasTitle}</h2>
+			</div>
+			<div class="about-page__areas-grid">
+				{institutionalPage.areas.map(area => (
+					<article class="about-page__area" data-about-reveal>
+						<h3>{area.title}</h3>
+						<p>{area.text}</p>
+					</article>
+				))}
+			</div>
+			<a class="about-page__text-link" href="/servicos">Consultar os serviços <span aria-hidden="true">↗</span></a>
+		</div>
+	</section>
+
+	<section class="about-page__principles" aria-labelledby="about-principles-title">
+		<div class="site-shell about-page__principles-grid">
+			<figure class="about-page__principles-media" data-about-reveal>
+				<Image src={institutionalPhoto} alt="" format="webp" quality={84}
+					widths={[400, 640, 800, 960]}
+					sizes="(max-width: 780px) calc(100vw - 32px), 43vw"
+					loading="lazy" decoding="async"
+				/>
+			</figure>
+			<div class="about-page__principles-copy">
+				<div class="about-page__section-heading" data-about-reveal>
+					<p class="about-page__eyebrow">Nossa forma de trabalhar</p>
+					<h2 id="about-principles-title">{institutionalPage.principlesTitle}</h2>
+				</div>
+				<div class="about-page__principles-list">
+					{institutionalPage.values.map(value => (
+						<section class="about-page__principle" data-about-reveal>
+							<h3>{value.heading}</h3>
+							<p>{value.text}</p>
+						</section>
+					))}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="about-page__closing" aria-labelledby="about-closing-title">
+		<div class="site-shell about-page__closing-inner" data-about-reveal>
+			<div>
+				<p class="about-page__eyebrow">Contato</p>
+				<h2 id="about-closing-title">{institutionalPage.closingTitle}</h2>
+				<p>{institutionalPage.closingText}</p>
+			</div>
+			<a class="about-page__contact-link" href="/contato">Falar com a AJN <span aria-hidden="true">↗</span></a>
+		</div>
+	</section>
+	<script type="application/ld+json" set:html={JSON.stringify(breadcrumbs)} />
+</div>
