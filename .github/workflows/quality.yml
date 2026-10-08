@@ -41,6 +41,18 @@ jobs:
       - name: SEO and link audit
         run: npm run audit:seo
 
+      - name: Internal anchor audit
+        run: npm run audit:fragments
+
+      - name: Environment indexing and canonical audit
+        run: npm run audit:deploy
+
+      - name: Audit regression fixtures
+        run: npm run test:audits
+
+      - name: Contact delivery fallback audit
+        run: npm run audit:contact
+
       - name: Blog content and image audit
         run: node scripts/audit-blog.mjs
 

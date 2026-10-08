@@ -2,7 +2,16 @@
 import PageShell from './PageShell.astro';
 import { site } from '../data/home';
 
-const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT?.trim() ?? '';
+const configuredEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT?.trim() ?? '';
+// Sem endpoint HTTPS confirmado, não renderizamos um formulário que não pode enviar.
+const contactEndpoint = (() => {
+	try {
+		const url = new URL(configuredEndpoint);
+		return url.protocol === 'https:' && !url.username && !url.password ? url.href : '';
+	} catch {
+		return '';
+	}
+})();
 ---
 
 <PageShell heading="Contato">
@@ -52,82 +61,96 @@ const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT?.trim() ?? '';
 			</nav>
 		</section>
 
-		<section class="contact-page contact-page--form" aria-labelledby="contact-form-title">
-			<div class="contact-page__form-header">
-				<p class="contact-page__eyebrow">Fale com a AJN</p>
-				<h2 id="contact-form-title">Envie sua mensagem</h2>
-				<p>Preencha os campos abaixo e conte brevemente como podemos ajudar.</p>
-			</div>
-			<form
-				class="contact-form"
-				data-contact-form
-				action={contactEndpoint || undefined}
-				method="post"
-				enctype="multipart/form-data"
-				data-contact-endpoint={contactEndpoint || undefined}
-				aria-describedby="contact-form-help contact-form-status"
-			>
-				<div class="contact-form__row">
-					<div class="contact-form__field">
-						<label for="contact-name">Nome <span aria-hidden="true">*</span></label>
-						<input id="contact-name" name="nome" type="text" autocomplete="name" required />
-					</div>
-					<div class="contact-form__field">
-						<label for="contact-email">E-mail <span aria-hidden="true">*</span></label>
-						<input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required />
-					</div>
+		{contactEndpoint ? (
+			<section class="contact-page contact-page--form" aria-labelledby="contact-form-title">
+				<div class="contact-page__form-header">
+					<p class="contact-page__eyebrow">Fale com a AJN</p>
+					<h2 id="contact-form-title">Envie sua mensagem</h2>
+					<p>Preencha os campos abaixo e conte brevemente como podemos ajudar.</p>
 				</div>
-
-				<div class="contact-form__row">
-					<div class="contact-form__field">
-						<label for="contact-phone">Telefone <span aria-hidden="true">*</span></label>
-						<input id="contact-phone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required />
+				<form
+					class="contact-form"
+					data-contact-form
+					action={contactEndpoint || undefined}
+					method="post"
+					enctype="multipart/form-data"
+					data-contact-endpoint={contactEndpoint || undefined}
+					aria-describedby="contact-form-help contact-form-status"
+				>
+					<div class="contact-form__row">
+						<div class="contact-form__field">
+							<label for="contact-name">Nome <span aria-hidden="true">*</span></label>
+							<input id="contact-name" name="nome" type="text" autocomplete="name" required />
+						</div>
+						<div class="contact-form__field">
+							<label for="contact-email">E-mail <span aria-hidden="true">*</span></label>
+							<input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required />
+						</div>
 					</div>
-					<div class="contact-form__field">
-						<label for="contact-source">Como nos conheceu <span aria-hidden="true">*</span></label>
-						<select id="contact-source" name="como_nos_conheceu" required>
-							<option value="">Selecione</option>
-							<option>Busca do Google</option>
-							<option>Outros Buscadores</option>
-							<option>Indicação</option>
-							<option>Outros</option>
-						</select>
+	
+					<div class="contact-form__row">
+						<div class="contact-form__field">
+							<label for="contact-phone">Telefone <span aria-hidden="true">*</span></label>
+							<input id="contact-phone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required />
+						</div>
+						<div class="contact-form__field">
+							<label for="contact-source">Como nos conheceu <span aria-hidden="true">*</span></label>
+							<select id="contact-source" name="como_nos_conheceu" required>
+								<option value="">Selecione</option>
+								<option>Busca do Google</option>
+								<option>Outros Buscadores</option>
+								<option>Indicação</option>
+								<option>Outros</option>
+							</select>
+						</div>
 					</div>
+	
+					<div class="contact-form__field">
+						<label for="contact-attachment">Anexo</label>
+						<input id="contact-attachment" name="anexo" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+						<small>PDF, DOC, DOCX, JPG ou PNG.</small>
+					</div>
+	
+					<div class="contact-form__field">
+						<label for="contact-message">Mensagem <span aria-hidden="true">*</span></label>
+						<textarea id="contact-message" name="mensagem" rows="6" required></textarea>
+					</div>
+	
+					<button class="button" type="submit">Enviar mensagem</button>
+					<p id="contact-form-help" class="contact-form__help">* Campos obrigatórios.</p>
+					<p id="contact-form-status" class="contact-form__status" data-contact-status role="status" aria-live="polite" tabindex="-1">
+						Preencha os campos obrigatórios para enviar a mensagem.
+					</p>
+				</form>
+			</section>
+		) : (
+			<section class="contact-page contact-page--form" aria-labelledby="contact-form-title">
+				<div class="contact-page__form-header">
+					<p class="contact-page__eyebrow">Canais de atendimento</p>
+					<h2 id="contact-form-title">Entre em contato sem preencher formulário</h2>
+					<p>O envio pelo formulário não está disponível neste momento. Para pedir um orçamento ou esclarecer uma dúvida, fale diretamente com a AJN pelo WhatsApp ou e-mail.</p>
 				</div>
-
-				<div class="contact-form__field">
-					<label for="contact-attachment">Anexo</label>
-					<input id="contact-attachment" name="anexo" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
-					<small>PDF, DOC, DOCX, JPG ou PNG.</small>
+				<div class="contact-page__alternate-actions">
+					<a class="button" href={site.phoneHref} target="_blank" rel="noopener noreferrer">Conversar pelo WhatsApp</a>
+					<a class="contact-page__email" href={`mailto:${site.email}`}>Enviar e-mail</a>
 				</div>
-
-				<div class="contact-form__field">
-					<label for="contact-message">Mensagem <span aria-hidden="true">*</span></label>
-					<textarea id="contact-message" name="mensagem" rows="6" required></textarea>
-				</div>
-
-				<button class="button" type="submit">Enviar mensagem</button>
-				<p id="contact-form-help" class="contact-form__help">* Campos obrigatórios.</p>
-				<p id="contact-form-status" class="contact-form__status" data-contact-status role="status" aria-live="polite" tabindex="-1">
-					Envio online indisponível neste ambiente.
-				</p>
-			</form>
-		</section>
+			</section>
+		)}
 	</div>
 </PageShell>
 
-<script>
-	const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
-	const status = document.querySelector<HTMLElement>('[data-contact-status]');
-	const contactEndpoint = form?.dataset.contactEndpoint?.trim() ?? '';
 
-	form?.addEventListener('submit', (event) => {
-		if (contactEndpoint) return;
-		event.preventDefault();
-		if (!form.reportValidity()) return;
-		if (status) {
-			status.textContent = 'O formulário está validado, mas o envio ainda não está habilitado neste ambiente.';
-			status.focus?.();
-		}
-	});
-</script>
+<style>
+	.contact-page__alternate-actions {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 12px 24px;
+		margin-top: 24px;
+	}
+	.contact-page__alternate-actions .contact-page__email {
+		display: inline-block;
+		padding-block: 12px;
+		overflow-wrap: anywhere;
+	}
+</style>
