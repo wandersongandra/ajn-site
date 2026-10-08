@@ -40,3 +40,23 @@ const standalonePost = {
 
 export const blogPosts = [standalonePost, ...archivedPosts]
 	.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
+
+
+/** Related posts are chosen by overlapping editorial topics, never by recency alone. */
+export function getRelatedBlogPosts(href: string, limit = 3) {
+	const current = blogPosts.find((post) => post.href === href);
+	if (!current) return [];
+
+	const currentTags = new Set(current.tags.map((tag) => tag.toLocaleLowerCase('pt-BR')));
+	return blogPosts
+		.filter((post) => post.href !== href)
+		.map((post) => ({
+			post,
+			score: (post.topic === current.topic ? 10 : 0)
+				+ post.tags.filter((tag) => currentTags.has(tag.toLocaleLowerCase('pt-BR'))).length * 2,
+		}))
+		.filter((candidate) => candidate.score > 0)
+		.sort((a, b) => b.score - a.score || b.post.pubDate.getTime() - a.post.pubDate.getTime())
+		.slice(0, limit)
+		.map(({ post }) => post);
+}
