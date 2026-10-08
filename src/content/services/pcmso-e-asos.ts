@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "pcmso-e-asos",
 	"path": "/servicos/pcmso-e-asos",
 	"title": "PCMSO e ASOs - AJN Consultoria e Engenharia",
-	"description": "PCMSO e ASOs - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de trabalho, bem como projetos de seguran...Saiba mais.",
+	"description": "Gestão de PCMSO e ASOs: atualização conforme os riscos do PGR, organização dos exames ocupacionais e acompanhamento do cronograma de ações.",
 	"heading": "PCMSO e ASOs",
 	"image": "/images/content/services/pcmso-e-asos.jpg",
 	"imageAlt": "PCMSO e ASOs",

@@ -65,6 +65,13 @@ for (const file of htmlFiles) {
 	if (!title) failures.push(`${route}: title ausente`);
 	if (!description) failures.push(`${route}: description ausente`);
 	if (!canonical) failures.push(`${route}: canonical ausente`);
+	if (route.startsWith('/servicos/') && route !== '/servicos/') {
+		if (!description || /\.\.\.\s*Saiba mais/i.test(description)) {
+			failures.push(`${route}: descrição de serviço ausente ou truncada pelo WordPress`);
+		} else if (description.length < 85 || description.length > 180) {
+			warnings.push(`${route}: descrição de serviço fora da faixa editorial (85–180 caracteres)`);
+		}
+	}
 	if (!robots) failures.push(`${route}: robots ausente`);
 	if (h1Count !== 1) failures.push(`${route}: esperado 1 H1, encontrado ${h1Count}`);
 
