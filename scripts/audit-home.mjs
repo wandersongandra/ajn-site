@@ -1,6 +1,8 @@
 // Regression checks for AJN Home only, executed after Astro's static build.
 import { readFile } from 'node:fs/promises';
 const html = await readFile('dist/index.html', 'utf8');
+const motionJs = await readFile('src/scripts/home-motion.ts', 'utf8');
+const motionCss = await readFile('src/styles/home-motion.css', 'utf8');
 const issues = [];
 const check = (condition, message) => {
 	if (!condition) issues.push(message);
@@ -47,10 +49,25 @@ check(homeHtml.includes('href="/servicos"'), 'Complete catalog link missing');
 check(/<img\b[^>]*loading="lazy"/.test(homeHtml), 'Lazy-loaded images missing');
 check(!homeHtml.includes('Conheça as Nossas Soluções'), 'Unrefined heading returned');
 check(!homeHtml.includes('Saiba mais sobre os treinamentos'), 'Generic service copy returned');
+check((homeHtml.match(/data-reveal/g) ?? []).length >= 14, 'Entrance targets missing from homepage');
+check(!homeHtml.includes('01 / 06'), 'Decorative service numbering unexpectedly returned');
+check(!homeHtml.includes('home-sector-card__number'), 'Decorative sector numbering unexpectedly returned');
+check(!homeHtml.includes('Soluções para a segurança e a continuidade da sua operação'),
+	'Generic homepage pitch unexpectedly returned');
+check(motionJs.includes('IntersectionObserver') && motionJs.includes('observer.unobserve'),
+	'Motion must use one-shot intersection observation instead of scroll handlers');
+check(motionJs.includes('prefers-reduced-motion') && motionJs.includes('saveData'),
+	'Motion must honor reduced-motion and data-saver preferences');
+check(motionJs.includes("home.classList.add('motion-ready')") &&
+	motionCss.includes('.home-page.motion-ready [data-reveal]'),
+	'No-JS content must remain visible; CSS must depend on script-enabled class');
+check(!/addEventListener\(['"]scroll['"]/.test(motionJs),
+	'Per-frame scroll listener unexpectedly introduced');
+
 
 if (issues.length) {
 	for (const issue of issues) console.error('[home][FAIL] ' + issue);
 	process.exitCode = 1;
 } else {
-	console.log('[home] PASS: 6 sections ordered, 1 H1, 6 services, 4 sectors, 10 logos, clear CTAs and no duplicated/moving content.');
+	console.log('[home] PASS: 6 sections, 1 H1, 6 services, 4 sectors, 10 logos, natural copy and accessible lightweight motion.');
 }
