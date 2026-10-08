@@ -15,7 +15,7 @@ export const blogNr35TrabalhoEmAlturaESeguranca = {
 	author: "Admin",
 	image: { src: image3, alt: "NR-35: Trabalho em Altura e Segurança" },
 	categories: ['Blog'],
-	tags: [],
+	tags: ["NR-35","trabalho em altura","treinamento presencial","escadas"],
 	gallery: [{ src: image3, alt: "NR-35: Trabalho em Altura e Segurança" }, { src: image4, alt: "NR-35: Trabalho em Altura e Segurança" }, { src: image5, alt: "NR-35: Trabalho em Altura e Segurança" }],
 	sections: [
   {
