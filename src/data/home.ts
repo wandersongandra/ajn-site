@@ -43,8 +43,8 @@ export const navigation: NavigationItem[] = [
 export const hero = {
 	image: '/images/hero/banner.webp',
 	eyebrow: 'AJN Consultoria e Engenharia',
-	title: 'Segurança do trabalho e engenharia para sua empresa.',
-	description: 'Consultoria em SST, gestão de riscos, saúde ocupacional, laudos, projetos de engenharia e treinamentos. Atendimento de acordo com a necessidade de cada operação.',
+	title: 'Segurança do trabalho, laudos e engenharia.',
+	description: 'PGR, PCMSO, ASOs, eSocial, treinamentos e projetos técnicos. Conte com a AJN para avaliar a demanda e definir o serviço necessário.',
 	areas: ['Segurança do Trabalho', 'Engenharia', 'Saúde Ocupacional', 'Treinamentos'],
 } as const;
 
@@ -107,25 +107,25 @@ export const workflowSteps = [
 		number: '01',
 		icon: 'diagnostic',
 		title: 'Diagnóstico',
-		text: 'Levantamos as necessidades, as atividades e os documentos relevantes para definir o escopo do serviço.',
+		text: 'Você apresenta a demanda e nós verificamos as atividades e os documentos envolvidos.',
 	},
 	{
 		number: '02',
 		icon: 'proposal',
 		title: 'Proposta',
-		text: 'Apresentamos uma proposta com entregas, responsabilidades e condições de contratação definidas.',
+		text: 'Apresentamos o que será feito, os prazos e as condições antes de iniciar.',
 	},
 	{
 		number: '03',
 		icon: 'execution',
 		title: 'Execução',
-		text: 'Executamos as atividades contratadas, observando os requisitos técnicos e profissionais aplicáveis.',
+		text: 'Realizamos os levantamentos, inspeções, laudos ou projetos previstos no escopo.',
 	},
 	{
 		number: '04',
 		icon: 'follow-up',
-		title: 'Acompanhamento',
-		text: 'Quando previsto no contrato, acompanhamos atualizações e orientamos os próximos passos.',
+		title: 'Entrega e orientação',
+		text: 'Entregamos o serviço contratado e esclarecemos os encaminhamentos previstos.',
 	},
 ] as const;
 
