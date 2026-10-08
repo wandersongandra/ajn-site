@@ -8,12 +8,33 @@ import { clients } from '../data/home';
 			<p class="home-section-heading__eyebrow">Portfólio</p>
 			<h2 id="clients-title" class="section-title">Clientes da AJN</h2>
 		</div>
-		<div class="home-clients-grid" data-reveal aria-label="Galeria de logotipos de clientes">
-			{clients.map((client) => (
-				<div class="home-client-logo">
-					<img src={client.src} alt="" width="240" height="132" loading="lazy" decoding="async" />
-				</div>
-			))}
+	</div>
+
+	<div class="home-clients-carousel" data-clients-carousel role="region" aria-roledescription="carrossel" aria-labelledby="clients-title">
+		<div class="home-clients-viewport" data-clients-viewport data-reveal tabindex="0" aria-label="Logotipos dos clientes da AJN">
+			<div class="home-clients-rail" data-clients-rail>
+				<ul class="home-clients-list" aria-label="Logotipos dos clientes da AJN">
+					{clients.map((client, index) => (
+						<li class="home-client-logo">
+							<img src={client.src} alt={`Logotipo de cliente da AJN, ${index + 1} de ${clients.length}`} width="240" height="132" loading="lazy" decoding="async" />
+						</li>
+					))}
+				</ul>
+				<!-- Cópia apenas visual: torna a passagem entre a última e a primeira logo contínua. -->
+				<ul class="home-clients-list home-clients-list--duplicate" aria-hidden="true" inert>
+					{clients.map((client) => (
+						<li class="home-client-logo home-client-logo--duplicate">
+							<img src={client.src} alt="" width="240" height="132" loading="lazy" decoding="async" />
+						</li>
+					))}
+				</ul>
+			</div>
+		</div>
+		<div class="home-clients-controls">
+			<button class="home-clients-pause" type="button" data-clients-pause aria-pressed="false" hidden>
+				<span class="home-clients-pause__symbol" aria-hidden="true"></span>
+				<span data-clients-pause-label>Pausar carrossel</span>
+			</button>
 		</div>
 	</div>
 </section>

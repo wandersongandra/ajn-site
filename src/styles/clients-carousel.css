@@ -1,0 +1,154 @@
+/* Portfólio AJN: logos sem cartões, em faixa contínua no desktop.
+   Sem JS ou com movimento reduzido, a faixa continua rolável manualmente. */
+.home-page .clients {
+	padding-block: clamp(54px, 6vw, 88px);
+	border-top: 1px solid #e5ece5;
+	border-bottom: 1px solid #e5ece5;
+	background: #fff;
+}
+.home-page .clients .home-section-heading {
+	margin-bottom: clamp(22px, 3.5vw, 42px);
+}
+.home-page .home-clients-carousel {
+	--client-gap: clamp(26px, 3.5vw, 58px);
+	position: relative;
+	width: 100%;
+}
+.home-page .home-clients-viewport {
+	overflow-x: auto;
+	overflow-y: hidden;
+	overscroll-behavior-inline: contain;
+	scroll-snap-type: x proximity;
+	scrollbar-width: none;
+	-webkit-overflow-scrolling: touch;
+	padding: 10px 0 14px;
+}
+.home-page .home-clients-viewport::-webkit-scrollbar { display: none; }
+.home-page .home-clients-rail {
+	display: flex;
+	align-items: center;
+	width: max-content;
+	gap: 0;
+}
+.home-page .home-clients-list {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: var(--client-gap);
+	margin: 0;
+	padding: 0 var(--client-gap) 0 0;
+	list-style: none;
+}
+.home-page .home-clients-list--duplicate { display: none; }
+.home-page .home-client-logo,
+.home-page .home-client-logo--duplicate {
+	display: flex;
+	flex: 0 0 clamp(165px, 18vw, 225px);
+	width: clamp(165px, 18vw, 225px);
+	min-width: 0;
+	min-height: 112px;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 6px 8px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	scroll-snap-align: center;
+}
+.home-page .home-client-logo img {
+	display: block;
+	width: 100%;
+	max-width: 205px;
+	height: 88px;
+	max-height: 88px;
+	object-fit: contain;
+	object-position: center;
+	/* Nunca desaturar, borrar ou esticar a identidade do cliente. */
+	filter: none;
+	opacity: 1;
+}
+.home-page .home-clients-controls {
+	display: flex;
+	justify-content: flex-end;
+	width: min(calc(100% - 40px), 1180px);
+	min-height: 44px;
+	margin: 5px auto 0;
+}
+.home-page .home-clients-pause {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	min-height: 44px;
+	padding: 9px 11px;
+	border: 0;
+	border-radius: 6px;
+	color: #426149;
+	background: transparent;
+	font: inherit;
+	font-size: 12px;
+	font-weight: 700;
+	cursor: pointer;
+}
+.home-page .home-clients-pause[hidden] { display: none; }
+.home-page .home-clients-pause:hover,
+.home-page .home-clients-pause:focus-visible {
+	background: #f0f6ef;
+	color: #245d33;
+}
+.home-page .home-clients-pause__symbol {
+	display: inline-block;
+	width: 10px;
+	height: 11px;
+	border-inline: 3px solid currentColor;
+}
+.home-page .home-clients-pause[aria-pressed="true"] .home-clients-pause__symbol {
+	border: 0;
+	width: 0;
+	height: 0;
+	border-top: 6px solid transparent;
+	border-bottom: 6px solid transparent;
+	border-left: 9px solid currentColor;
+}
+@keyframes ajn-clients-travel {
+	to { transform: translate3d(-50%, 0, 0); }
+}
+@media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+	.home-page .home-clients-carousel.is-ready .home-clients-viewport {
+		overflow-x: hidden;
+		scroll-snap-type: none;
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+		mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+	}
+	.home-page .home-clients-carousel.is-ready .home-clients-list--duplicate { display: flex; }
+	.home-page .home-clients-carousel.is-ready .home-clients-rail {
+		animation: ajn-clients-travel 43s linear infinite;
+		animation-play-state: paused;
+		will-change: transform;
+	}
+	.home-page .home-clients-carousel.is-ready.is-playing .home-clients-rail { animation-play-state: running; }
+	.home-page .home-clients-carousel.is-ready .home-clients-viewport:hover .home-clients-rail,
+	.home-page .home-clients-carousel.is-ready .home-clients-viewport:focus .home-clients-rail {
+		animation-play-state: paused;
+	}
+}
+@media (max-width: 768px) {
+	.home-page .clients { padding-block: 48px 40px; }
+	.home-page .home-clients-carousel { --client-gap: 26px; }
+	.home-page .home-clients-viewport { padding-inline: 18px; }
+	.home-page .home-client-logo,
+	.home-page .home-client-logo--duplicate {
+		flex-basis: clamp(155px, 43vw, 195px);
+		width: clamp(155px, 43vw, 195px);
+		min-height: 102px;
+		padding: 5px;
+	}
+	.home-page .home-client-logo img { height: 78px; max-height: 78px; }
+	.home-page .home-clients-controls { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.home-page .home-clients-rail { animation: none !important; transform: none !important; }
+	.home-page .home-clients-list--duplicate { display: none !important; }
+	.home-page .home-clients-viewport { overflow-x: auto !important; }
+}
