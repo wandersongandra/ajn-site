@@ -62,5 +62,11 @@ jobs:
       - name: Home conversion and structure audit
         run: node scripts/audit-home.mjs
 
+      - name: Home sectors design and accessibility audit
+        run: npm run audit:sectors
+
+      - name: Home workflow typography and motion audit
+        run: npm run audit:workflow
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
