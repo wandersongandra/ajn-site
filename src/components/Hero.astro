@@ -8,15 +8,11 @@ import { hero } from '../data/home';
 		<h1 id="hero-title">{hero.title}</h1>
 		<p class="hero__lead">{hero.description}</p>
 		<div class="hero__actions">
-			<a class="button" href="/servicos">Conheça nossas soluções</a>
-			<a class="button button--outline" href="/contato">Fale com um especialista</a>
+			<a class="button" href="/contato">Solicitar atendimento</a>
+			<a class="button button--outline" href="/servicos">Conhecer os serviços</a>
 		</div>
 		<ul class="hero__areas" aria-label="Áreas de atuação">
 			{hero.areas.map((area) => <li>{area}</li>)}
 		</ul>
-	</div>
-	<div class="hero__controls" aria-hidden="true">
-		<span>‹</span>
-		<span>›</span>
 	</div>
 </section>

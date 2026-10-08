@@ -1,19 +1,22 @@
 ---
+import '../styles/home.css';
 import ClientsSection from '../components/ClientsSection.astro';
 import DifferentialsSection from '../components/DifferentialsSection.astro';
 import Hero from '../components/Hero.astro';
-import HighlightsSection from '../components/HighlightsSection.astro';
+import HomeContactCta from '../components/HomeContactCta.astro';
 import SolutionsSection from '../components/SolutionsSection.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
 	title="AJN Consultoria e Engenharia | Segurança do Trabalho e Engenharia"
-	description="Consultoria e engenharia em QSSMA, segurança do trabalho, laudos, PCMSO, eSocial, projetos elétricos e prevenção contra incêndio."
+	description="Consultoria em segurança do trabalho, saúde ocupacional, eSocial, laudos técnicos, treinamentos e projetos de engenharia. Conheça os serviços da AJN."
 >
-	<Hero />
-	<ClientsSection />
-	<SolutionsSection />
-	<DifferentialsSection />
-	<HighlightsSection />
+	<div class="home-page">
+		<Hero />
+		<SolutionsSection />
+		<ClientsSection />
+		<DifferentialsSection />
+		<HomeContactCta />
+	</div>
 </BaseLayout>

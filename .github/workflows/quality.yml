@@ -47,5 +47,8 @@ jobs:
       - name: Header navigation audit
         run: node scripts/audit-header.mjs
 
+      - name: Home conversion and structure audit
+        run: node scripts/audit-home.mjs
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high

@@ -1,39 +1,33 @@
 ---
 import { services } from '../data/home';
+
+// Seis linhas de serviço para a Home. As demais continuam acessíveis no catálogo.
+const featuredServices = [services[0], services[4], services[1], services[5], services[6], services[8]];
 ---
 
 <section class="section solutions" id="solucoes" aria-labelledby="solutions-title">
 	<div class="site-shell">
-		<h2 id="solutions-title" class="section-title section-title--green">Conheça as Nossas Soluções</h2>
-		<div class="solutions-carousel" role="region" aria-label="Carrossel contínuo de soluções">
-			<div class="solutions__viewport">
-				<div class="solutions__track" id="solutions-track">
-					<div class="solutions__group">
-						{services.map((service) => (
-							<article class="service-card" style={`--card-image: url('${service.image}')`}>
-								<div class="service-card__overlay"></div>
-								<div class="service-card__content">
-									<h3>{service.title}</h3>
-									<p>{service.description}</p>
-									<a class="service-card__link" href={service.href}>Saiba mais</a>
-								</div>
-							</article>
-						))}
-					</div>
-					<div class="solutions__group" aria-hidden="true" inert>
-						{services.map((service) => (
-							<article class="service-card" style={`--card-image: url('${service.image}')`}>
-								<div class="service-card__overlay"></div>
-								<div class="service-card__content">
-									<h3>{service.title}</h3>
-									<p>{service.description}</p>
-									<a class="service-card__link" href={service.href} tabindex="-1">Saiba mais</a>
-								</div>
-							</article>
-						))}
-					</div>
-				</div>
-			</div>
+		<div class="home-section-heading">
+			<p class="home-section-heading__eyebrow">Áreas de atuação</p>
+			<h2 id="solutions-title" class="section-title">Serviços para sua operação</h2>
+			<p>Da gestão de SST aos projetos de engenharia, conheça as frentes de trabalho da AJN.</p>
+		</div>
+		<div class="home-services-grid">
+			{featuredServices.map((service) => (
+				<article class="service-card">
+					<a class="home-service-card__link" href={service.href} aria-label={'Conhecer ' + service.title}>
+						<img src={service.image} alt="" width="600" height="360" loading="lazy" decoding="async" />
+						<div class="service-card__content">
+							<h3>{service.title}</h3>
+							<p>{service.description}</p>
+							<span class="service-card__link">Conhecer serviço <span aria-hidden="true">→</span></span>
+						</div>
+					</a>
+				</article>
+			))}
+		</div>
+		<div class="home-services-footer">
+			<a class="home-text-link" href="/servicos">Ver todos os serviços da AJN <span aria-hidden="true">→</span></a>
 		</div>
 	</div>
 </section>

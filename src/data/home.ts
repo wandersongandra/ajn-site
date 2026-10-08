@@ -43,8 +43,8 @@ export const navigation: NavigationItem[] = [
 export const hero = {
 	image: '/images/hero/banner.webp',
 	eyebrow: 'AJN Consultoria e Engenharia',
-	title: 'Segurança do trabalho e engenharia para operações que não podem parar.',
-	description: 'Consultoria técnica, gestão de riscos, engenharia e saúde ocupacional para empresas que precisam trabalhar com segurança, conformidade e controle.',
+	title: 'Segurança do trabalho e engenharia para sua empresa.',
+	description: 'Consultoria em SST, gestão de riscos, saúde ocupacional, laudos, projetos de engenharia e treinamentos. Atendimento de acordo com a necessidade de cada operação.',
 	areas: ['Segurança do Trabalho', 'Engenharia', 'Saúde Ocupacional', 'Treinamentos'],
 } as const;
 
@@ -83,15 +83,15 @@ export const missionVisionValues = [
 ] as const;
 
 export const services = [
-	{ title: 'Assessoria e Consultoria em Segurança do Trabalho', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional', description: 'Oferecemos suporte técnico e estratégico para identificar, avaliar e controlar riscos ocupacionais...', image: '/images/services/assessoria-e-consultoria-em-seguranca-do-trabalho.png' },
-	{ title: 'Gestão de E-Social', href: '/servicos/gestao-do-e-social', description: 'A gestão do eSocial é essencial para garantir que as empresas cumpram todas as obrigações trabalhistas, previdenciárias e fiscais de forma integrada e eficiente.', image: '/images/services/gestao-de-esocial.png' },
+	{ title: 'Assessoria e Consultoria em Segurança do Trabalho', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional', description: 'Apoio à identificação de perigos, avaliação de riscos e definição de medidas de prevenção no ambiente de trabalho.', image: '/images/services/assessoria-e-consultoria-em-seguranca-do-trabalho.png' },
+	{ title: 'Gestão de E-Social', href: '/servicos/gestao-do-e-social', description: 'Orientação e organização das informações de Saúde e Segurança do Trabalho enviadas ao eSocial.', image: '/images/services/gestao-de-esocial.png' },
 	{ title: 'Gestão de Meio Ambiente', href: '/servicos/gestao-ambiental', description: 'Segregação, armazenamento e destinação correta dos resíduos', image: '/images/services/gestao-de-meio-ambiente.png' },
 	{ title: 'Gestão de Qualidade', href: '/servicos/gestao-da-qualidade', description: 'Este documento detalha os critérios de qualidade que devem ser seguidos durante a execução da obra.', image: '/images/services/gestao-de-qualidade.png' },
-	{ title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos', description: 'O PCMSO deve ser constantemente revisado e atualizado com base nos riscos identificados no Programa de Gerenciamento de Riscos (PGR).', image: '/images/services/gestao-de-PCMSO-e-ASOs.png' },
-	{ title: 'Perícia em Insalubridade e Periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade', description: 'Avalia se o ambiente de trabalho expõe os trabalhadores a agentes nocivos à saúde, como produtos químicos, ruídos, vibrações, radiações, entre outros.', image: '/images/services/pericia-em-insalubridade-e-periculosidade.png' },
-	{ title: 'Projetos de Combate a Incêndio', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip', description: 'Elaboração de projetos conforme normativas para atender às necessidades específicas de segurança contra incêndios de edificações comerciais, residenciais e industriais, de pequeno, médio e grande porte.', image: '/images/services/projetos-de-combate-a-incendio.png' },
+	{ title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos', description: 'Organização do acompanhamento de saúde ocupacional e dos ASOs, conforme os riscos das atividades.', image: '/images/services/gestao-de-PCMSO-e-ASOs.png' },
+	{ title: 'Perícia em Insalubridade e Periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade', description: 'Avaliações técnicas de condições de exposição para subsidiar perícias e documentos trabalhistas.', image: '/images/services/pericia-em-insalubridade-e-periculosidade.png' },
+	{ title: 'Projetos de Combate a Incêndio', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip', description: 'Projetos e documentação de prevenção e combate a incêndio, conforme as exigências aplicáveis a cada edificação.', image: '/images/services/projetos-de-combate-a-incendio.png' },
 	{ title: 'Regularização de Imóveis - CBM', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros', description: 'Elaboração de projetos conforme normativas para atender às necessidades específicas de segurança contra incêndios de edificações comerciais, residenciais e industriais, de pequeno, médio e grande porte.', image: '/images/services/regularizacao-de-imoveis-cbm.png' },
-	{ title: 'Treinamentos NRS', href: '/servicos/treinamento-de-nrs', description: 'Saiba mais sobre os treinamentos', image: '/images/services/treinamentos-nrs.png' },
+	{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs', description: 'Capacitações relacionadas às Normas Regulamentadoras, conforme a atividade e os requisitos do treinamento.', image: '/images/services/treinamentos-nrs.png' },
 ] as const;
 
 export const portfolio = [
@@ -107,25 +107,25 @@ export const workflowSteps = [
 		number: '01',
 		icon: 'diagnostic',
 		title: 'Diagnóstico',
-		text: 'Visitamos sua empresa, avaliamos os riscos e mapeamos as obrigações legais aplicáveis.',
+		text: 'Levantamos as necessidades, as atividades e os documentos relevantes para definir o escopo do serviço.',
 	},
 	{
 		number: '02',
 		icon: 'proposal',
 		title: 'Proposta',
-		text: 'Apresentamos um plano sob medida, com escopo, prazos e valores claros — sem surpresas.',
+		text: 'Apresentamos uma proposta com entregas, responsabilidades e condições de contratação definidas.',
 	},
 	{
 		number: '03',
 		icon: 'execution',
 		title: 'Execução',
-		text: 'Implementamos programas, laudos, projetos e treinamentos com equipe técnica habilitada.',
+		text: 'Executamos as atividades contratadas, observando os requisitos técnicos e profissionais aplicáveis.',
 	},
 	{
 		number: '04',
 		icon: 'follow-up',
 		title: 'Acompanhamento',
-		text: 'Monitoramos prazos, atualizamos documentos e damos suporte contínuo à sua equipe.',
+		text: 'Quando previsto no contrato, acompanhamos atualizações e orientamos os próximos passos.',
 	},
 ] as const;
 
