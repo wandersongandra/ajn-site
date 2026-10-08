@@ -6,7 +6,7 @@ export const blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosPar
 	slug: "ltcat-na-seguranca-do-trabalho-garantindo-protecao-e-reducao-de-riscos-para-sua-equipe",
 	path: "/blog/ltcat-na-seguranca-do-trabalho-garantindo-protecao-e-reducao-de-riscos-para-sua-equipe",
 	title: "LTCAT na Segurança do Trabalho: Garantindo Proteção e Redução de Riscos para sua Equipe",
-	description: "A implementação de estratégias eficazes na segurança do trabalho é essencial para garantir a integridade dos colaboradores e a continuidade das operações em qualquer empresa. Ne...",
+	description: "Entenda como a análise das condições ambientais ajuda a caracterizar exposições ocupacionais e organizar o acompanhamento técnico do LTCAT.",
 	heading: "LTCAT na Segurança do Trabalho: Garantindo Proteção e Redução de Riscos para sua Equipe",
 	pubDate: "2026-01-23",
 	author: "AJN Consultoria e Engenharia",
