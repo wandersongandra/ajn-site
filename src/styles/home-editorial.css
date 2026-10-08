@@ -34,147 +34,147 @@
 	line-height: 1.75;
 }
 
-/* Hero: duas colunas, benefício imediato e painel técnico sem números inventados. */
+/* Hero: fotografia preservada, tipografia em primeiro plano e lateral sem aparência de dashboard. */
 .home-page .hero {
-	min-height: clamp(565px, 48vw, 720px);
+	min-height: clamp(580px, 49vw, 710px);
 	background-image:
-		linear-gradient(95deg, rgb(11 36 20 / 94%) 0%, rgb(18 48 28 / 86%) 43%, rgb(15 36 24 / 56%) 100%),
+		linear-gradient(100deg, rgb(9 30 20 / 93%) 0%, rgb(12 38 24 / 84%) 43%, rgb(12 37 25 / 50%) 100%),
 		var(--hero-image);
-	background-position: center center;
+	background-position: center 46%;
+	background-color: #10291b;
 }
 .home-page .hero__content {
 	display: grid;
-	grid-template-columns: minmax(0, 1.35fr) minmax(285px, .65fr);
+	grid-template-columns: minmax(0, 1.33fr) minmax(290px, .67fr);
 	align-items: center;
-	column-gap: clamp(30px, 5vw, 90px);
-	padding-block: clamp(82px, 9vw, 132px);
+	column-gap: clamp(40px, 5.8vw, 94px);
+	padding-block: clamp(80px, 9vw, 122px);
 }
 .home-page .hero__main { min-width: 0; }
-.home-page .hero__content h1 {
-	max-width: 14ch;
+.home-page .hero__eyebrow {
 	margin-bottom: 23px;
-	font-size: clamp(42px, 4.6vw, 66px);
-	letter-spacing: -.055em;
-	line-height: 1.1;
+	color: #c9e6c9;
+	font-size: 11.5px;
+	font-weight: 800;
+	letter-spacing: .145em;
+	line-height: 1.5;
+}
+.home-page .hero__content h1 {
+	max-width: 15ch;
+	margin-bottom: 24px;
+	color: #fff;
+	font-size: clamp(41px, 4.45vw, 63px);
+	font-weight: 800;
+	letter-spacing: -.047em;
+	line-height: 1.115;
+	text-wrap: balance;
 }
 .home-page .hero__lead {
-	max-width: 610px;
-	margin-bottom: 28px;
-	font-size: clamp(16px, 1.4vw, 18px);
-	line-height: 1.74;
-}
-.home-page .hero__eyebrow {
-	color: #d6efcf;
-	margin-bottom: 20px;
-	letter-spacing: .16em;
+	max-width: 55ch;
+	margin-bottom: 31px;
+	color: #e4ede4;
+	font-size: clamp(16px, 1.35vw, 18px);
+	line-height: 1.72;
+	text-wrap: pretty;
 }
 .home-page .hero__actions { gap: 13px; }
 .home-page .hero__actions > .button {
 	min-height: 52px;
-	padding-inline: 23px;
-	border-radius: 8px;
+	padding: 13px 23px;
+	border-radius: 6px;
 	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: .006em;
+	text-transform: none;
 }
 .home-page .hero__actions > .button:first-child {
-	border-color: #7ab66d;
-	background: #36884c;
+	border-color: #69aa72;
+	background: #327d48;
 }
 .home-page .hero__actions > .button:first-child:hover {
-	background: #286b3c;
-	border-color: #77ad72;
+	border-color: #86c18e;
+	background: #245f38;
 }
-.home-page .hero__areas { margin-top: 28px; gap: 9px; }
-.home-page .hero__areas li {
-	padding: 7px 12px;
-	border: 1px solid rgb(228 247 220 / 25%);
-	border-radius: 7px;
-	color: #e7f0e7;
-	background: rgb(255 255 255 / 7%);
-	font-size: 11px;
-	font-weight: 700;
-	letter-spacing: .02em;
+.home-page .hero__actions > .button--outline {
+	border-color: rgb(230 246 231 / 68%);
+	color: #f7faf7;
+	background: rgb(7 24 15 / 20%);
+}
+.home-page .hero__actions > .button--outline:hover {
+	border-color: #f5faf5;
+	color: #fff;
+	background: rgb(255 255 255 / 13%);
+}
+.home-page .hero__actions > .button:focus-visible,
+.home-page .hero__panel a:focus-visible {
+	outline: 3px solid #c9f0b6;
+	outline-offset: 4px;
 }
 .home-page .hero__panel {
 	position: relative;
 	align-self: center;
-	padding: clamp(24px, 3vw, 36px);
-	border: 1px solid rgb(231 244 230 / 25%);
-	border-radius: 18px;
+	min-width: 0;
+	padding: clamp(27px, 2.75vw, 38px);
+	border: 1px solid rgb(225 242 224 / 20%);
+	border-left: 3px solid #a2cba4;
+	border-radius: 6px;
 	color: #fff;
-	background: rgb(15 41 24 / 70%);
-	box-shadow: 0 25px 80px rgb(5 23 12 / 22%);
-	backdrop-filter: blur(15px);
+	background: linear-gradient(155deg, rgb(12 36 24 / 94%), rgb(12 38 25 / 84%));
+	box-shadow: 0 16px 50px rgb(4 19 11 / 18%);
+	backdrop-filter: none;
 }
-.home-page .hero__panel::before {
-	position: absolute;
-	top: 30px;
-	right: 28px;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: #b2db91;
-	content: '';
-	box-shadow: 0 0 0 7px rgb(179 219 145 / 12%);
-}
+.home-page .hero__panel::before { display: none; }
 .home-page .hero__panel-kicker {
 	display: block;
-	margin-bottom: 18px;
-	color: #bee1ad;
+	margin-bottom: 13px;
+	color: #b9deae;
 	font-size: 11px;
 	font-weight: 800;
-	letter-spacing: .14em;
+	letter-spacing: .13em;
+	line-height: 1.5;
 	text-transform: uppercase;
 }
 .home-page .hero__panel-title {
 	display: block;
-	max-width: 18ch;
-	margin-bottom: 24px;
-	color: #fff;
-	font-size: clamp(19px, 2vw, 25px);
-	font-weight: 800;
-	line-height: 1.34;
-	letter-spacing: -.03em;
+	max-width: 23ch;
+	margin-bottom: 25px;
+	color: #f5faf4;
+	font-size: clamp(21px, 1.8vw, 25px);
+	font-weight: 700;
+	letter-spacing: -.033em;
+	line-height: 1.28;
+	text-wrap: balance;
 }
 .home-page .hero__panel ul {
 	display: grid;
-	gap: 14px;
-	margin: 0 0 25px;
+	gap: 0;
+	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 .home-page .hero__panel li {
-	display: grid;
-	grid-template-columns: 20px 1fr;
-	gap: 11px;
-	align-items: start;
-	color: #e3eee2;
-	font-size: 12px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 5px;
+	margin: 0;
+	padding: 14px 0;
+	border-top: 1px solid rgb(231 245 227 / 17%);
+	color: #e3eee3;
+	line-height: 1.55;
+}
+.home-page .hero__panel li:last-child { padding-bottom: 0; }
+.home-page .hero__panel-item-title {
+	color: #f4faf4;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.45;
+}
+.home-page .hero__panel-item-detail {
+	color: #cbdccc;
+	font-size: 12.5px;
 	line-height: 1.6;
 }
-.home-page .hero__panel li span {
-	display: grid;
-	width: 20px;
-	height: 20px;
-	place-items: center;
-	border: 1px solid rgb(195 232 179 / 30%);
-	border-radius: 50%;
-	color: #c5eab8;
-	background: rgb(161 214 137 / 13%);
-	font-weight: 800;
-	font-size: 11px;
-}
-.home-page .hero__panel a {
-	display: inline-flex;
-	gap: 8px;
-	align-items: center;
-	min-height: 44px;
-	color: #d7f0c7;
-	font-size: 12px;
-	font-weight: 800;
-	text-decoration: underline;
-	text-underline-offset: 5px;
-}
-.home-page .hero__panel a:hover { color: #fff; }
 
 /* Serviços: capa fotográfica proporcional, índice e texto legível. */
 .home-page .solutions { background: #fff; }
