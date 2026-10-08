@@ -1,23 +1,22 @@
 ---
 const sectors = [
-	{ number: '01', name: 'Indústria', description: 'Avaliações, documentação de SST e apoio técnico às rotinas de prevenção.' },
-	{ number: '02', name: 'Construção e obras', description: 'Segurança do trabalho, inspeções e projetos aplicáveis às atividades em campo.' },
-	{ number: '03', name: 'Comércio e serviços', description: 'Organização das obrigações de saúde ocupacional e gestão dos riscos da atividade.' },
-	{ number: '04', name: 'Equipes terceirizadas', description: 'Apoio na mobilização, documentação e acompanhamento técnico, conforme o contrato.' },
+	{ name: 'Indústria', description: 'Inspeções, documentação de SST e avaliação de riscos nos processos produtivos.' },
+	{ name: 'Construção civil', description: 'Apoio com documentação e acompanhamento técnico das atividades em obra.' },
+	{ name: 'Comércio e serviços', description: 'PCMSO, ASOs, registros de SST no eSocial e treinamento das equipes.' },
+	{ name: 'Contratos terceirizados', description: 'Mobilização de trabalhadores, conferência documental e inspeções em campo.' },
 ];
 ---
 <section class="section home-sectors" aria-labelledby="home-sectors-title">
 	<div class="site-shell home-sectors__layout">
-		<div class="home-sectors__heading">
+		<div class="home-sectors__heading" data-reveal>
 			<p class="home-section-heading__eyebrow">Onde podemos atuar</p>
-			<h2 id="home-sectors-title" class="section-title">Cada operação tem riscos e exigências próprias.</h2>
-			<p>O escopo dos serviços considera o tipo de atividade, as condições de trabalho e as necessidades de cada empresa.</p>
-			<a class="home-sectors__link" href="/contato">Fale com nossa equipe <span aria-hidden="true">↗</span></a>
+			<h2 id="home-sectors-title" class="section-title">Da indústria ao canteiro de obras.</h2>
+			<p>Uma obra, uma indústria e um escritório têm rotinas diferentes. O atendimento começa pela atividade e pelos documentos envolvidos.</p>
+			<a class="home-sectors__link" href="/contato">Explicar minha demanda <span aria-hidden="true">↗</span></a>
 		</div>
 		<div class="home-sectors__grid">
-			{sectors.map((sector) => (
-				<article class="home-sector-card">
-					<span class="home-sector-card__number" aria-hidden="true">{sector.number}</span>
+			{sectors.map((sector, index) => (
+				<article class="home-sector-card" data-reveal style={`--reveal-delay: ${index * 65}ms`}>
 					<h3>{sector.name}</h3>
 					<p>{sector.description}</p>
 				</article>

@@ -2,32 +2,38 @@
 import { services } from '../data/home';
 
 // Seis linhas de serviço para a Home. As demais continuam acessíveis no catálogo.
-const featuredServices = [services[0], services[4], services[1], services[5], services[6], services[8]];
+const featuredServices = [
+	{ ...services[0], summary: 'Inspeções, avaliação dos riscos e orientação para as medidas de prevenção no trabalho.' },
+	{ ...services[4], summary: 'Acompanhamento do PCMSO, exames ocupacionais e controle dos ASOs.' },
+	{ ...services[1], summary: 'Organização dos registros de SST que precisam ser informados ao eSocial.' },
+	{ ...services[5], summary: 'Avaliação das condições de exposição e elaboração de documentos técnicos.' },
+	{ ...services[6], summary: 'Projetos de prevenção e combate a incêndio, conforme o tipo de edificação.' },
+	{ ...services[8], summary: 'Capacitação nas Normas Regulamentadoras, presencialmente ou pela plataforma online.' },
+];
 ---
 
 <section class="section solutions" id="solucoes" aria-labelledby="solutions-title">
 	<div class="site-shell">
-		<div class="home-section-heading">
-			<p class="home-section-heading__eyebrow">Áreas de atuação</p>
-			<h2 id="solutions-title" class="section-title">Soluções para a segurança e a continuidade da sua operação.</h2>
-			<p>Consultoria, documentação, saúde ocupacional e engenharia, conforme as necessidades e os riscos de cada atividade.</p>
+		<div class="home-section-heading" data-reveal>
+			<p class="home-section-heading__eyebrow">Serviços</p>
+			<h2 id="solutions-title" class="section-title">Serviços de segurança do trabalho e engenharia.</h2>
+			<p>Consultoria de SST, saúde ocupacional, perícias, combate a incêndio e treinamentos. Escolha o serviço para conhecer o escopo de atendimento.</p>
 		</div>
 		<div class="home-services-grid">
 			{featuredServices.map((service, index) => (
-				<article class="service-card">
+				<article class="service-card" data-reveal style={`--reveal-delay: ${Math.min(index * 65, 195)}ms`}>
 					<a class="home-service-card__link" href={service.href} aria-label={'Conhecer ' + service.title}>
 						<img src={service.image} alt="" width="600" height="360" loading="lazy" decoding="async" />
 						<div class="service-card__content">
-							<span class="home-service-card__index" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 06</span>
 							<h3>{service.title}</h3>
-							<p>{service.description}</p>
-							<span class="service-card__link">Conhecer serviço <span aria-hidden="true">→</span></span>
+							<p>{service.summary}</p>
+							<span class="service-card__link">Ver detalhes <span aria-hidden="true">→</span></span>
 						</div>
 					</a>
 				</article>
 			))}
 		</div>
-		<div class="home-services-footer">
+		<div class="home-services-footer" data-reveal>
 			<a class="home-text-link" href="/servicos">Ver todos os serviços da AJN <span aria-hidden="true">→</span></a>
 		</div>
 	</div>

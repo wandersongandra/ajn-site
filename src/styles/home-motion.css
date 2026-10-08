@@ -1,0 +1,78 @@
+/* Motion enhancement exclusive to the AJN home.
+   The default experience remains completely visible without JavaScript. */
+@media (prefers-reduced-motion: no-preference) {
+	/* Keep the first headline fast; scroll effects belong below the fold. */
+	.home-page .hero__eyebrow,
+	.home-page .hero__content h1,
+	.home-page .hero__lead,
+	.home-page .hero__actions {
+		animation-duration: 490ms;
+		animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+	}
+	.home-page .hero__content h1 { animation-delay: 40ms; }
+	.home-page .hero__lead { animation-delay: 75ms; }
+	.home-page .hero__actions { animation-delay: 110ms; }
+
+	@supports (translate: 0 1px) {
+		.home-page.motion-ready [data-reveal] {
+			transition-property: opacity, translate, transform, border-color;
+			transition-duration: 480ms, 560ms, 200ms, 200ms;
+			transition-timing-function: ease-out, cubic-bezier(.22, 1, .36, 1), ease, ease;
+			transition-delay: var(--reveal-delay, 0ms), var(--reveal-delay, 0ms), 0ms, 0ms;
+		}
+		.home-page.motion-ready [data-reveal]:not(.is-visible):not(:focus-within) {
+			opacity: 0;
+			translate: 0 18px;
+		}
+		.home-page.motion-ready [data-reveal].is-visible,
+		.home-page.motion-ready [data-reveal]:focus-within {
+			opacity: 1;
+			translate: 0 0;
+		}
+	}
+
+	@keyframes ajn-hero-panel-enter {
+		from { opacity: 0; transform: translateY(14px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	@media (min-width: 769px) {
+		.home-page .hero__panel {
+			animation: ajn-hero-panel-enter 650ms cubic-bezier(.22, 1, .36, 1) 180ms both;
+		}
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.home-page .hero__actions > .button,
+		.home-page .home-contact-cta__button {
+			transition: transform 200ms ease, background-color 200ms ease, border-color 200ms ease;
+		}
+		.home-page .hero__actions > .button:hover,
+		.home-page .home-contact-cta__button:hover {
+			transform: translateY(-2px);
+		}
+		.home-page .hero__panel a span,
+		.home-page .home-sectors__link span,
+		.home-page .service-card__link span,
+		.home-page .home-contact-cta__button span {
+			display: inline-block;
+			transition: transform 220ms ease;
+		}
+		.home-page .hero__panel a:hover span,
+		.home-page .home-sectors__link:hover span,
+		.home-page .home-service-card__link:hover .service-card__link span,
+		.home-page .home-contact-cta__button:hover span {
+			transform: translateX(3px);
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.home-page [data-reveal] {
+		opacity: 1 !important;
+		translate: none !important;
+		animation: none !important;
+		transition: none !important;
+	}
+	.home-page .hero__panel { animation: none !important; }
+}
