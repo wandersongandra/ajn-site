@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-seguranca-do-trabalho-e-pcmso-gestao-
 export const blogSegurancaDoTrabalhoEPcmsoGestaoDaSaudeOcupacional = {
 	 slug: "seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional", path: "/blog/seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional",
 	 title: "Segurança do Trabalho e PCMSO: Gestão da Saúde Ocupacional",
-	 description: "A segurança do trabalho é um tema de extrema relevância nas discussões sobre saúde e bem-estar no ambiente ocupacional. A prevenção de acidentes e doenças re…",
+	 description: "Entenda os objetivos do PCMSO e sua relação com os riscos ocupacionais e o acompanhamento da saúde dos trabalhadores.",
 	 heading: "Segurança do Trabalho e PCMSO: Gestão da Saúde Ocupacional",
 	 pubDate: "2025-10-02",
 	 author: "Admin",
