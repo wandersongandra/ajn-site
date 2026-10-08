@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-ltcat-na-seguranca-do-trabalho-fortal
 export const blogLtcatNaSegurancaDoTrabalhoFortalecaAProtecaoDosSeusFuncionariosEficazmente = {
 	 slug: "ltcat-na-seguranca-do-trabalho-fortaleca-a-protecao-dos-seus-funcionarios-eficazmente", path: "/blog/ltcat-na-seguranca-do-trabalho-fortaleca-a-protecao-dos-seus-funcionarios-eficazmente",
 	 title: "LTCAT na Segurança do Trabalho: Fortaleça a Proteção dos Seus Funcionários Eficazmente",
-	 description: "A segurança do trabalho LTCAT é um tema de extrema importância, especialmente no contexto atual onde a proteção dos empregados se tornou uma prioridade nas e…",
+	 description: "Veja como o LTCAT pode apoiar a documentação de agentes nocivos, o atendimento às exigências previdenciárias e a gestão de exposições.",
 	 heading: "LTCAT na Segurança do Trabalho: Fortaleça a Proteção dos Seus Funcionários Eficazmente",
 	 pubDate: "2026-01-23",
 	 author: "AJN Consultoria e Engenharia",
