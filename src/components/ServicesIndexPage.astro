@@ -23,13 +23,7 @@ const serviceImages: Record<string, string> = {
 			<span class="sr-only">Pesquisar serviços</span>
 			<input type="search" data-service-search placeholder="Pesquisar..." />
 		</label>
-		<label class="service-page-size">
-			<span>Exibir</span>
-			<select aria-label="Quantidade por página">
-				<option selected>{serviceIndexItems.length}</option>
-			</select>
-			<span>Por página</span>
-		</label>
+
 	</div>
 
 	<div class="service-index-grid" data-service-grid>
@@ -45,16 +39,35 @@ const serviceImages: Record<string, string> = {
 			</article>
 		))}
 	</div>
+	<p class="service-index-empty" data-service-empty role="status" hidden>
+		Nenhum serviço corresponde à pesquisa. Tente outro termo ou <a href="/contato">fale com a AJN</a>.
+	</p>
 </PageShell>
 
 <script>
 	const search = document.querySelector<HTMLInputElement>('[data-service-search]');
 	const cards = [...document.querySelectorAll<HTMLElement>('[data-service-card]')];
+	const empty = document.querySelector<HTMLElement>('[data-service-empty]');
 
 	search?.addEventListener('input', () => {
 		const query = search.value.trim().toLocaleLowerCase('pt-BR');
+		let visible = 0;
 		cards.forEach((card) => {
 			card.hidden = query.length > 0 && !(card.dataset.serviceTitle ?? '').includes(query);
+			if (!card.hidden) visible++;
 		});
+		if (empty) empty.hidden = visible > 0;
 	});
 </script>
+
+<style>
+	.service-index-empty {
+		margin-top: 24px;
+		padding: 20px;
+		border: 1px solid #d8e4d8;
+		border-radius: 8px;
+		background: #f6faf6;
+		line-height: 1.6;
+	}
+	.service-index-empty[hidden] { display: none; }
+</style>
