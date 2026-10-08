@@ -2105,6 +2105,9 @@ h3 { font-size: 24px; }
 
 /* Contact page refinement — scoped to /contato */
 .contact-layout {
+	/* Match the two dominant logo colors; the darker tone leads all typography. */
+	--wp-green: #5b9923;
+	--wp-green-dark: #576b43;
 	grid-template-columns: minmax(280px, .84fr) minmax(0, 1.16fr);
 	gap: clamp(2rem, 5vw, 4.5rem);
 	align-items: start;
@@ -2210,7 +2213,7 @@ h3 { font-size: 24px; }
 .contact-detail a {
 	display: block;
 	margin: 0;
-	color: var(--wp-text);
+	color: var(--wp-green-dark);
 	font-size: .88rem;
 	font-style: normal;
 	line-height: 1.65;
@@ -2226,7 +2229,7 @@ h3 { font-size: 24px; }
 	font-weight: 700;
 }
 
-.contact-page__email { color: var(--wp-text) !important; }
+.contact-page__email { color: var(--wp-green-dark) !important; }
 
 .contact-page__social {
 	display: flex;
@@ -2276,7 +2279,7 @@ h3 { font-size: 24px; }
 }
 
 .contact-form label {
-	color: var(--wp-text);
+	color: var(--wp-green-dark);
 	font-size: .8rem;
 	font-weight: 700;
 	line-height: 1.4;
