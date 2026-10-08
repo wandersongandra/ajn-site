@@ -58,7 +58,7 @@ for (const file of htmlFiles) {
 	if (!description || description.length < 75 || description.length > 180) {
 		failures.push(route + ': descrição com tamanho inválido (' + description.length + ' caracteres)');
 	}
-	if (/[.…]\s*$/.test(description) || /\.\.\.\s*$/.test(description)) {
+	if (/…\s*$/.test(description) || /\.\.\.\s*$/.test(description)) {
 		failures.push(route + ': descrição truncada');
 	}
 	if (title.includes('Ǫue') || title.includes('NR-35:Trabalho')) {
