@@ -37,7 +37,6 @@ export const navigation: NavigationItem[] = [
 	},
 	{ label: 'Blog', href: '/blog' },
 	{ label: 'Contato', href: '/contato' },
-	{ label: 'Informações', href: '/informacoes' },
 ];
 
 export const hero = {
