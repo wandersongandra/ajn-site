@@ -11,7 +11,7 @@ export const blogSegurancaDoTrabalhoELtcatConformidadeEProtecaoPrevidenciaria = 
 	 author: "Kaique",
 	 image: { src: image0, alt: "Segurança do Trabalho e LTCAT: Conformidade e Proteção Previdenciária" },
 	 categories: ['Blog'],
-	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
+	 tags: ["LTCAT","PPP","previdência","eSocial"],
 	 gallery: [],
 	 sections: [
   {
