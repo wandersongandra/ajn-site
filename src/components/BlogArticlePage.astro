@@ -29,7 +29,7 @@ const articleSchema = {
 				<p class="blog-article__meta">
 					Publicado em <time datetime="2026-01-23">{blogArticle.date}</time> · {blogArticle.author}
 				</p>
-				<Image class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width={1200} format="webp" loading="eager" />
+				<Image class="blog-article__image" src={blogArticle.image} alt={blogArticle.imageAlt} width={880} widths={[480, 720, 880, 1100]} sizes="(max-width: 800px) calc(100vw - 32px), (max-width: 1100px) 70vw, 760px" format="webp" loading="eager" decoding="async" fetchpriority="high" />
 				<ContentSections sections={blogArticle.sections} />
 				<a href="/blog" class="blog-legacy__back">← Voltar para o blog</a>
 			</article>
