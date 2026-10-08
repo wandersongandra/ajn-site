@@ -56,6 +56,14 @@ const descriptionMap = new Map();
 for (const file of htmlFiles) {
 	const route = routeFromHtml(file);
 	const html = await readFile(file, 'utf8');
+	// O arquivo gerado pelo Astro é apenas o fallback de uma rota HTTP 301 no servidor.
+	// Não deve ter H1/canonical próprios nem ser considerado página indexável.
+	if (route === '/informacoes') {
+		if (!/http-equiv=["']refresh["']/i.test(html) || !html.includes('/mapa-site')) {
+			failures.push('/informacoes: fallback de redirect sem destino /mapa-site.');
+		}
+		continue;
+	}
 	const title = html.match(/<title>([\s\S]*?)<\/title>/i)?.[1]?.trim();
 	const description = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i)?.[1]?.trim();
 	const canonical = html.match(/<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']/i)?.[1]?.trim();
