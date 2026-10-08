@@ -33,18 +33,24 @@ for (const [index, card] of cards.entries()) {
 	check(/aria-label="Ver detalhes: [^"]+"/.test(card), `Card ${index + 1}: link sem nome acessível.`);
 	check(/<h3\b[^>]*>[^<]+<\/h3>/.test(card), `Card ${index + 1}: H3 ausente.`);
 	check(/<p\b[^>]*>[^<]+<\/p>/.test(card), `Card ${index + 1}: descrição ausente.`);
-	const img = card.match(/<img\b[^>]*>/)?.[0] ?? '';
-	const src = img.match(/src="([^"]+)"/)?.[1];
-	check(Boolean(src) && src.startsWith('/images/services/'), `Card ${index + 1}: imagem não corresponde ao catálogo.`);
+	const img = card.match(/<img\\b[^>]*>/)?.[0] ?? '';
+	const src = img.match(/\\ssrc="([^"]+)"/)?.[1];
+	const srcset = img.match(/\\ssrcset="([^"]+)"/)?.[1] ?? '';
+	const variants = [...srcset.matchAll(/(\\/_astro\\/[^\\s,]+\\.webp)\\s+([0-9]+)w/g)];
+	check(Boolean(src) && src.startsWith('/_astro/') && src.endsWith('.webp'),
+		`Card ${index + 1}: a imagem precisa ser WebP otimizada pelo Astro.`);
 	check(/alt=""/.test(img) && /loading="lazy"/.test(img) && /decoding="async"/.test(img),
 		`Card ${index + 1}: foto decorativa deve carregar de forma otimizada.`);
-	check(/width="600"/.test(img) && /height="375"/.test(img),
-		`Card ${index + 1}: dimensões de imagem para reservar espaço ausentes.`);
+	check(/\\swidth="[0-9]+"/.test(img) && /\\sheight="[0-9]+"/.test(img),
+		`Card ${index + 1}: faltam dimensões intrínsecas.`);
+	check(/\\ssizes="[^"]+"/.test(img) && variants.length >= 2,
+		`Card ${index + 1}: ausência de srcset responsivo com múltiplos tamanhos.`);
 	check(/data-reveal/.test(card), `Card ${index + 1}: entrada progressiva ausente.`);
 	check(card.includes('Ver serviço'), `Card ${index + 1}: ação não está clara.`);
-	if (src) {
-		try { check((await stat('dist' + src)).isFile(), `Card ${index + 1}: arquivo da imagem ausente: ${src}`); }
-		catch { issues.push(`Card ${index + 1}: imagem ausente: ${src}`); }
+	for (const imagePath of new Set([src, ...variants.map(v => v[1])])) {
+		if (!imagePath) continue;
+		try { check((await stat('dist' + imagePath)).isFile(), `Card ${index + 1}: recurso ausente: ${imagePath}`); }
+		catch { issues.push(`Card ${index + 1}: imagem ausente: ${imagePath}`); }
 	}
 }
 check(section.includes('href="/servicos"') && section.includes('Consultar todos os serviços'),
