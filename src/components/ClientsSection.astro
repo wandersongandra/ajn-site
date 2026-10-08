@@ -14,9 +14,9 @@ import { clients } from '../data/home';
 		<div class="home-clients-viewport" data-clients-viewport data-reveal tabindex="0" aria-label="Logotipos dos clientes da AJN">
 			<div class="home-clients-rail" data-clients-rail>
 				<ul class="home-clients-list" aria-label="Logotipos dos clientes da AJN">
-					{clients.map((client, index) => (
+					{clients.map((client) => (
 						<li class="home-client-logo">
-							<img src={client.src} alt={`Logotipo de cliente da AJN, ${index + 1} de ${clients.length}`} width="240" height="132" loading="lazy" decoding="async" />
+							<img src={client.src} alt={`Logotipo ${client.alt}`} width="320" height="170" loading="lazy" decoding="async" />
 						</li>
 					))}
 				</ul>
@@ -24,7 +24,7 @@ import { clients } from '../data/home';
 				<ul class="home-clients-list home-clients-list--duplicate" aria-hidden="true" inert>
 					{clients.map((client) => (
 						<li class="home-client-logo home-client-logo--duplicate">
-							<img src={client.src} alt="" width="240" height="132" loading="lazy" decoding="async" />
+							<img src={client.src} alt="" width="320" height="170" loading="lazy" decoding="async" />
 						</li>
 					))}
 				</ul>

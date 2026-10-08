@@ -10,7 +10,7 @@
 	margin-bottom: clamp(22px, 3.5vw, 42px);
 }
 .home-page .home-clients-carousel {
-	--client-gap: clamp(26px, 3.5vw, 58px);
+	--client-gap: clamp(28px, 3.2vw, 52px);
 	position: relative;
 	width: 100%;
 }
@@ -43,14 +43,14 @@
 .home-page .home-client-logo,
 .home-page .home-client-logo--duplicate {
 	display: flex;
-	flex: 0 0 clamp(165px, 18vw, 225px);
-	width: clamp(165px, 18vw, 225px);
+	flex: 0 0 clamp(240px, 23vw, 320px);
+	width: clamp(240px, 23vw, 320px);
 	min-width: 0;
-	min-height: 112px;
+	min-height: 176px;
 	align-items: center;
 	justify-content: center;
 	margin: 0;
-	padding: 6px 8px;
+	padding: 6px 4px;
 	border: 0;
 	border-radius: 0;
 	background: transparent;
@@ -60,9 +60,9 @@
 .home-page .home-client-logo img {
 	display: block;
 	width: 100%;
-	max-width: 205px;
-	height: 88px;
-	max-height: 88px;
+	max-width: 310px;
+	height: 152px;
+	max-height: 152px;
 	object-fit: contain;
 	object-position: center;
 	/* Nunca desaturar, borrar ou esticar a identidade do cliente. */
@@ -135,16 +135,16 @@
 }
 @media (max-width: 768px) {
 	.home-page .clients { padding-block: 48px 40px; }
-	.home-page .home-clients-carousel { --client-gap: 26px; }
+	.home-page .home-clients-carousel { --client-gap: 22px; }
 	.home-page .home-clients-viewport { padding-inline: 18px; }
 	.home-page .home-client-logo,
 	.home-page .home-client-logo--duplicate {
-		flex-basis: clamp(155px, 43vw, 195px);
-		width: clamp(155px, 43vw, 195px);
-		min-height: 102px;
+		flex-basis: clamp(188px, 52vw, 255px);
+		width: clamp(188px, 52vw, 255px);
+		min-height: 136px;
 		padding: 5px;
 	}
-	.home-page .home-client-logo img { height: 78px; max-height: 78px; }
+	.home-page .home-client-logo img { height: 124px; max-height: 124px; }
 	.home-page .home-clients-controls { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
