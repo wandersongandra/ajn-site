@@ -128,8 +128,8 @@
 		will-change: transform;
 	}
 	.home-page .home-clients-carousel.is-ready.is-playing .home-clients-rail { animation-play-state: running; }
-	.home-page .home-clients-carousel.is-ready:hover .home-clients-rail,
-	.home-page .home-clients-carousel.is-ready:focus-within .home-clients-rail {
+	.home-page .home-clients-carousel.is-ready .home-clients-viewport:hover .home-clients-rail,
+	.home-page .home-clients-carousel.is-ready .home-clients-viewport:focus .home-clients-rail {
 		animation-play-state: paused;
 	}
 }
