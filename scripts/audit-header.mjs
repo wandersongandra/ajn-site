@@ -45,8 +45,11 @@ for (const [route, file] of pages) {
 	}
 	check(headerMarkup.includes('href="https://ajntreinamentos.formasegnr.com"'), 'link externo de treinamentos incorreto');
 	check(headerMarkup.includes('target="_blank"') && headerMarkup.includes('rel="noopener noreferrer"'), 'link externo sem proteções');
+	if (links.includes(route)) {
 	check(new RegExp('href="' + route + '"[^>]*aria-current="page"', 'i').test(headerMarkup),
 		'marcação aria-current da rota ausente');
+	}
+	check(!headerMarkup.includes('href="/informacoes"'), 'Informações não pode constar no cabeçalho');
 }
 
 if (failures.length > 0) {
