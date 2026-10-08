@@ -4,7 +4,7 @@ import image0 from '../../assets/blog/blog-ltcat-e-seguranca-do-trabalho-como-ga
 export const blogLtcatESegurancaDoTrabalhoComoGarantirAProtecaoEficazDaSuaEquipe = {
 	 slug: "ltcat-e-seguranca-do-trabalho-como-garantir-a-protecao-eficaz-da-sua-equipe", path: "/blog/ltcat-e-seguranca-do-trabalho-como-garantir-a-protecao-eficaz-da-sua-equipe",
 	 title: "LTCAT e Segurança do Trabalho: Como Garantir a Proteção Eficaz da Sua Equipe",
-	 description: "A segurança do trabalho é uma questão fundamental para todas as empresas que desejam garantir um ambiente saudável e seguro para seus colaboradores. Um dos i…",
+	 description: "Conheça o papel do LTCAT na avaliação das condições ambientais e sua relação com treinamentos e outras medidas de segurança.",
 	 heading: "LTCAT e Segurança do Trabalho: Como Garantir a Proteção Eficaz da Sua Equipe",
 	 pubDate: "2026-01-23",
 	 author: "AJN Consultoria e Engenharia",
