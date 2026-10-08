@@ -34,7 +34,7 @@ const serviceImages: Record<string, string> = {
 				<div class="service-index-card__content">
 					<h2>{service.title}</h2>
 					<p>{service.description}</p>
-					<a href={service.href}>Saiba mais</a>
+					<a href={service.href} aria-label={'Ver detalhes de ' + service.title}>Saiba mais</a>
 				</div>
 			</article>
 		))}
