@@ -17,8 +17,9 @@
     "audit:contact": "node scripts/audit-contact.mjs",
     "audit:sectors": "node scripts/audit-sectors.mjs",
     "audit:workflow": "node scripts/audit-workflow.mjs",
+    "audit:hero": "node scripts/audit-hero.mjs",
     "test:audits": "node scripts/test-audit-fragments.mjs",
-    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run test:audits"
+    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run test:audits"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
