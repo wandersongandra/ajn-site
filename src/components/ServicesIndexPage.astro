@@ -1,48 +1,68 @@
 ---
+import '../styles/services-catalog.css';
 import PageShell from './PageShell.astro';
 import { serviceIndexItems } from '../content/services/catalog';
-import { services } from '../data/home';
 
+// Recursos publicados em WebP/JPEG já presentes no projeto; preservam
+// o assunto de cada serviço sem baixar os PNGs legados de 180–320 KiB.
 const serviceImages: Record<string, string> = {
-	'Assessoria e consultoria em saúde ocupacional': services[0].image,
-	'Gestão Ambiental': services[2].image,
-	'Gestão da Qualidade': services[3].image,
-	'Gestão do E-Social': services[1].image,
-	'PCMSO e ASOs': services[4].image,
-	'Perícias em Periculosidade e Insalubridade': services[5].image,
-	'Projetos de Combate a Incêndio e Pânico - PPCIP': services[6].image,
-	'Projetos Elétricos Residenciais, Comerciais e Prediais com Foco em Qualidade, Prazo e Economia': '/images/featured/orcamento-projeto-eletrico-01.webp',
-	'Regularização de imóveis junto ao corpo de bombeiros': services[7].image,
-	'Treinamento de NRs': services[8].image,
+  'Assessoria e consultoria em saúde ocupacional': '/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp',
+  'Gestão Ambiental': '/images/content/services/gestao-ambiental.webp',
+  'Gestão da Qualidade': '/images/content/services/gestao-da-qualidade.webp',
+  'Gestão do E-Social': '/images/content/services/gestao-do-e-social.webp',
+  'PCMSO e ASOs': '/images/content/services/pcmso-e-asos.jpg',
+  'Perícias em Periculosidade e Insalubridade': '/images/content/services/pericias-em-periculosidade-e-insalubridade.webp',
+  'Projetos de Combate a Incêndio e Pânico - PPCIP': '/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp',
+  'Projetos Elétricos Residenciais, Comerciais e Prediais com Foco em Qualidade, Prazo e Economia': '/images/featured/orcamento-projeto-eletrico-01.webp',
+  'Regularização de imóveis junto ao corpo de bombeiros': '/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp',
+  'Treinamento de NRs': '/images/content/services/treinamento-de-nrs.webp',
 };
 ---
 
 <PageShell heading="Serviços">
-\t<p class="service-index-intro">Consulte as áreas de atendimento da AJN em segurança do trabalho, saúde ocupacional, laudos e projetos técnicos. Abra cada serviço para conhecer o escopo e solicitar uma proposta.</p>
-	<div class="service-index-toolbar" aria-label="Filtros de serviços">
-		<label class="service-search">
-			<span class="sr-only">Pesquisar serviços</span>
-			<input type="search" data-service-search placeholder="Pesquisar por serviço ou documento..." />
-		</label>
+  <div class="service-catalog">
+    <p class="service-index-intro">Conheça as áreas de atendimento da AJN em segurança do trabalho, saúde ocupacional, laudos e projetos técnicos. Consulte o escopo de cada serviço antes de solicitar uma proposta.</p>
+    <nav class="service-catalog__documents" aria-label="Laudos e programas mais procurados">
+      <span>Procurando um documento específico?</span>
+      <a href="/elaboracao-pgr">Elaboração de PGR <span aria-hidden="true">↗</span></a>
+      <a href="/emissao-ltcat">Emissão de LTCAT <span aria-hidden="true">↗</span></a>
+    </nav>
+    <div class="service-index-toolbar" role="search" aria-label="Pesquisar no catálogo de serviços">
+      <label class="service-search" for="service-catalog-search">Pesquisar serviços</label>
+      <div class="service-catalog__search-row">
+        <input id="service-catalog-search" type="search" data-service-search aria-controls="service-catalog-grid" placeholder="Ex.: PCMSO, treinamento, incêndio" autocomplete="off" />
+        <p class="service-catalog__count" data-service-results role="status" aria-live="polite" aria-atomic="true">10 serviços</p>
+      </div>
+    </div>
 
-	</div>
-
-	<div class="service-index-grid" data-service-grid>
-		{serviceIndexItems.map((service) => (
-			<article class="service-index-card" data-service-card data-service-title={service.title.toLocaleLowerCase('pt-BR')}>
-				<img class="service-index-card__image" src={serviceImages[service.title] ?? '/images/services/treinamentos-nrs.png'} alt="" width="600" height="800" loading="lazy" />
-				<div class="service-index-card__overlay"></div>
-				<div class="service-index-card__content">
-					<h2>{service.title}</h2>
-					<p>{service.description}</p>
-					<a href={service.href}>Saiba mais</a>
-				</div>
-			</article>
-		))}
-	</div>
-	<p class="service-index-empty" data-service-empty role="status" hidden>
-		Nenhum serviço corresponde à pesquisa. Tente outro termo ou <a href="/contato">fale com a AJN</a>.
-	</p>
+    <div class="service-index-grid" id="service-catalog-grid" data-service-grid>
+      {serviceIndexItems.map((service, index) => (
+        <article class="service-index-card" data-service-card data-service-searchable={[service.title, service.description].join(' ')}>
+          <a class="service-index-card__link" href={service.href} aria-label={`Conhecer o serviço: ${service.title}`}>
+            <img
+              class="service-index-card__image"
+              src={serviceImages[service.title]}
+              alt=""
+              width="600"
+              height="800"
+              loading={index === 0 ? 'eager' : 'lazy'}
+              fetchpriority={index === 0 ? 'high' : 'low'}
+              decoding="async"
+            />
+            <span class="service-index-card__overlay" aria-hidden="true"></span>
+            <span class="service-index-card__content">
+              <span class="service-index-card__title">{service.title}</span>
+              <span class="service-index-card__description">{service.description}</span>
+              <span class="service-index-card__cta">Ver detalhes <span aria-hidden="true">↗</span></span>
+            </span>
+          </a>
+        </article>
+      ))}
+    </div>
+    <p class="service-index-empty" data-service-empty role="status" hidden>
+      Nenhum serviço corresponde à pesquisa. Tente outro termo ou <a href="/contato">fale com a AJN</a>.
+    </p>
+  </div>
 </PageShell>
 
 <script src="/scripts/services-index.js" is:inline defer></script>
