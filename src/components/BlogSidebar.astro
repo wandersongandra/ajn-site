@@ -1,56 +1,42 @@
 ---
-import { blogPages } from '../content/blog';
-import { blogPosts } from '../content/blog/catalog';
+import { blogPosts, blogTopics } from '../content/blog/catalog';
 
-const tags = [...new Set(blogPages.flatMap((post) => post.tags))].slice(0, 10);
+interface Props {
+	context?: 'archive' | 'article';
+}
+const { context = 'archive' } = Astro.props;
+const usedTopics = blogTopics.filter((topic) => blogPosts.some((post) => post.topic === topic));
 ---
 
-<aside class="blog-sidebar" aria-label="Navegação do Blog">
-	<form class="blog-sidebar__search" action="/blog/" method="get" role="search">
-		<label for="blog-search">Buscar por...</label>
+<aside class="blog-sidebar" aria-label="Explorar conteúdo do blog">
+	<form class="blog-sidebar__search" action="/blog" method="get" role="search" data-blog-form>
+		<label for="blog-search">Pesquisar artigos</label>
 		<div class="blog-sidebar__search-row">
-			<input id="blog-search" name="q" type="search" data-blog-search />
-			<button type="submit">Buscar</button>
+			<input id="blog-search" name="q" type="search" placeholder="Ex.: LTCAT, PGR, NR-35" autocomplete="off" data-blog-search />
+			<button type="submit" aria-label="Pesquisar artigos">Buscar</button>
 		</div>
 	</form>
-
-	<section>
-		<h2>Últimas postagens</h2>
-		<ul>
-			{blogPosts.slice(0, 3).map((post) => <li><a href={post.href}>{post.title}</a></li>)}
-		</ul>
+	<section class="blog-sidebar__topics" aria-labelledby="blog-topics-title">
+		<h2 id="blog-topics-title">Assuntos</h2>
+		<nav aria-label="Filtrar blog por assunto">
+			<ul class="blog-sidebar__topic-list">
+				<li><a href="/blog" data-blog-topic="">Todos os artigos <span>{blogPosts.length}</span></a></li>
+				{usedTopics.map((topic) => (
+					<li>
+						<a href={'/blog?tema=' + encodeURIComponent(topic)} data-blog-topic={topic}>
+							{topic} <span>{blogPosts.filter((post) => post.topic === topic).length}</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
 	</section>
-
-	<section>
-		<h2>Tags</h2>
-		<div class="blog-sidebar__tags">
-			{tags.map((tag) => <a href={`/blog/?tag=${encodeURIComponent(tag)}`}>{tag}</a>)}
-		</div>
-	</section>
+	{context === 'article' && (
+		<section class="blog-sidebar__recent" aria-labelledby="blog-recent-title">
+			<h2 id="blog-recent-title">Outras leituras</h2>
+			<ul>
+				{blogPosts.slice(0, 4).map((post) => <li><a href={post.href}>{post.title}</a></li>)}
+			</ul>
+		</section>
+	)}
 </aside>
-
-<script>
-	const search = document.querySelector<HTMLInputElement>('[data-blog-search]');
-	const cards = [...document.querySelectorAll<HTMLElement>('[data-blog-card]')];
-	const params = new URLSearchParams(window.location.search);
-	const requestedTag = params.get('tag')?.trim().toLocaleLowerCase('pt-BR') ?? '';
-	const requestedQuery = params.get('q')?.trim().toLocaleLowerCase('pt-BR') ?? '';
-
-	const applyFilters = () => {
-		if (cards.length === 0) return;
-		const query = search?.value.trim().toLocaleLowerCase('pt-BR') ?? '';
-		cards.forEach((card) => {
-			const title = card.dataset.blogTitle ?? '';
-			const tags = card.dataset.blogTags ?? '';
-			const matchesQuery = !query || title.includes(query) || tags.includes(query);
-			const matchesTag = !requestedTag || tags.includes(requestedTag);
-			card.hidden = !(matchesQuery && matchesTag);
-		});
-	};
-
-	if (search) {
-		search.value = requestedQuery;
-		search.addEventListener('input', applyFilters);
-	}
-	applyFilters();
-</script>
