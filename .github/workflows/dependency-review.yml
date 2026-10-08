@@ -28,6 +28,6 @@ jobs:
       # After enabling it, set repository variable ENABLE_DEPENDENCY_REVIEW=true.
       - name: Native GitHub dependency review (when graph enabled)
         if: ${{ vars.ENABLE_DEPENDENCY_REVIEW == 'true' }}
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
