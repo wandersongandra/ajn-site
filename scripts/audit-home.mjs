@@ -75,7 +75,7 @@ const workflowEnd = workflowStart >= 0 ? html.indexOf('</section>', workflowStar
 const footerStart = html.indexOf('<footer class="site-footer"');
 check(workflowEnd >= 0 && footerStart > workflowEnd, 'Footer must follow the workflow section.');
 if (workflowEnd >= 0 && footerStart > workflowEnd) {
-	check(!/<section\\b/i.test(html.slice(workflowEnd + '</section>'.length, footerStart)),
+	check(!/<section\b/i.test(html.slice(workflowEnd + '</section>'.length, footerStart)),
 		'Another section unexpectedly appears after Nosso processo.');
 }
 check(!homeHtml.includes('class="home-contact-cta"') &&
