@@ -5,67 +5,17 @@ import { clients } from '../data/home';
 <section class="section clients" aria-labelledby="clients-title">
 	<div class="site-shell">
 		<h2 id="clients-title" class="section-title">Clientes que confiaram no nosso trabalho</h2>
-		<div class="carousel-shell clients-carousel">
-			<button class="carousel-button carousel-button--prev" type="button" data-scroll-prev="clients-track" aria-controls="clients-track" aria-label="Clientes anteriores">‹</button>
-			<div class="clients__track" id="clients-track" data-scroll-track role="region" aria-label="Logos de clientes" tabindex="0">
-				{clients.map((client) => <div class="client-logo"><img src={client.src} alt={client.alt} width="240" height="132" loading="lazy" /></div>)}
+		<div class="clients-carousel" role="region" aria-label="Carrossel contínuo de logos de clientes">
+			<div class="clients__viewport">
+				<div class="clients__track" id="clients-track">
+					<div class="clients__group">
+						{clients.map((client) => <div class="client-logo"><img src={client.src} alt={client.alt} width="240" height="132" loading="lazy" /></div>)}
+					</div>
+					<div class="clients__group" aria-hidden="true">
+						{clients.map((client) => <div class="client-logo"><img src={client.src} alt="" width="240" height="132" loading="lazy" /></div>)}
+					</div>
+				</div>
 			</div>
-			<button class="carousel-button carousel-button--next" type="button" data-scroll-next="clients-track" aria-controls="clients-track" aria-label="Próximos clientes">›</button>
 		</div>
 	</div>
 </section>
-
-<script>
-	document.querySelectorAll<HTMLButtonElement>('[data-scroll-prev],[data-scroll-next]').forEach((button) => {
-		button.addEventListener('click', () => {
-			const targetId = button.dataset.scrollPrev ?? button.dataset.scrollNext;
-			const target = targetId ? document.getElementById(targetId) : null;
-			if (!target) return;
-			const direction = button.hasAttribute('data-scroll-prev') ? -1 : 1;
-			target.scrollBy({ left: direction * Math.max(280, target.clientWidth * .72), behavior: 'smooth' });
-		});
-	});
-
-	const clientsTrack = document.getElementById('clients-track');
-	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-	let autoplayId: number | undefined;
-	let isInteracting = false;
-
-	if (clientsTrack) {
-		const stopAutoplay = () => {
-			if (autoplayId !== undefined) window.clearInterval(autoplayId);
-			autoplayId = undefined;
-		};
-		const advanceClients = () => {
-			const firstClient = clientsTrack.firstElementChild;
-			if (!firstClient) return;
-			const gap = Number.parseFloat(getComputedStyle(clientsTrack).columnGap) || 0;
-			const step = firstClient.getBoundingClientRect().width + gap;
-			const lastPosition = clientsTrack.scrollWidth - clientsTrack.clientWidth;
-			const nextPosition = clientsTrack.scrollLeft >= lastPosition - step / 2 ? 0 : clientsTrack.scrollLeft + step;
-			clientsTrack.scrollTo({ left: nextPosition, behavior: 'smooth' });
-		};
-		const startAutoplay = () => {
-			if (reducedMotion.matches || isInteracting || document.hidden || autoplayId !== undefined) return;
-			autoplayId = window.setInterval(advanceClients, 4500);
-		};
-		const pauseAutoplay = () => {
-			isInteracting = true;
-			stopAutoplay();
-		};
-		const resumeAutoplay = () => {
-			isInteracting = false;
-			startAutoplay();
-		};
-
-		clientsTrack.addEventListener('pointerenter', pauseAutoplay);
-		clientsTrack.addEventListener('pointerleave', resumeAutoplay);
-		clientsTrack.addEventListener('focusin', pauseAutoplay);
-		clientsTrack.addEventListener('focusout', (event) => {
-			if (!clientsTrack.contains(event.relatedTarget as Node | null)) resumeAutoplay();
-		});
-		document.addEventListener('visibilitychange', () => document.hidden ? stopAutoplay() : startAutoplay());
-		reducedMotion.addEventListener('change', () => reducedMotion.matches ? stopAutoplay() : startAutoplay());
-		startAutoplay();
-	}
-</script>
