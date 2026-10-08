@@ -5,12 +5,12 @@ import { hero } from '../data/home';
 <section class="hero" style={`--hero-image: url('${hero.image}')`} aria-labelledby="hero-title">
 	<div class="site-shell hero__content">
 		<div class="hero__main">
-		<p class="hero__eyebrow">{hero.eyebrow}</p>
-		<h1 id="hero-title">{hero.title}</h1>
-		<p class="hero__lead">{hero.description}</p>
-		<div class="hero__actions">
-			<a class="button" href="/contato">Solicitar atendimento</a>
-			<a class="button button--outline" href="/servicos">Conhecer os serviços</a>
+			<p class="hero__eyebrow">{hero.eyebrow}</p>
+			<h1 id="hero-title">{hero.title}</h1>
+			<p class="hero__lead">{hero.description}</p>
+			<div class="hero__actions">
+				<a class="button" href="/contato">Solicitar atendimento</a>
+				<a class="button button--outline" href="/servicos">Conhecer os serviços</a>
 		</div>
 		<ul class="hero__areas" aria-label="Áreas de atuação">
 			{hero.areas.map((area) => <li>{area}</li>)}
