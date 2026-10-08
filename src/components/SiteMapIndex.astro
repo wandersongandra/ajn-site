@@ -1,0 +1,43 @@
+---
+import PageShell from './PageShell.astro';
+import { siteMapPage, siteMapSections, siteMapLinkCount } from '../content/institutional/mapa-site';
+
+const displayTitle = (title: string, path: string) => {
+	const clean = title.replace(/\s-\sAJN Consultoria e Engenharia.*$/i, '').trim();
+	return clean || path;
+};
+---
+<PageShell heading={siteMapPage.heading}>
+	<div class="site-index">
+		<div class="site-index__intro">
+			<p>{siteMapPage.intro}</p>
+			<span class="site-index__total">{siteMapLinkCount} páginas organizadas por assunto</span>
+		</div>
+		<nav class="site-index__nav" aria-label="Categorias do mapa do site">
+			{siteMapSections.map((group) => (
+				<a href={`#${group.id}`}>
+					<span>{group.title}</span>
+					<span class="site-index__count" aria-label={`${group.links.length} páginas`}>{group.links.length}</span>
+				</a>
+			))}
+		</nav>
+		<div class="site-index__sections">
+			{siteMapSections.map((group) => (
+				<section class="site-index__section" id={group.id} aria-labelledby={`site-index-${group.id}`}>
+					<div class="site-index__heading">
+						<div>
+							<h2 id={`site-index-${group.id}`}>{group.title}</h2>
+							<p>{group.description}</p>
+						</div>
+						<a href="#conteudo-principal" class="site-index__back">Voltar ao início <span aria-hidden="true">↑</span></a>
+					</div>
+					<ul class="site-index__links">
+						{group.links.map((item) => (
+							<li><a href={item.path}>{displayTitle(item.title, item.path)} <span aria-hidden="true">↗</span></a></li>
+						))}
+					</ul>
+				</section>
+			))}
+		</div>
+	</div>
+</PageShell>

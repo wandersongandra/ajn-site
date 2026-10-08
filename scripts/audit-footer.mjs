@@ -18,7 +18,7 @@ async function htmlFiles(dir) {
 }
 
 const files = await htmlFiles(root);
-const requiredLinks = ['/', '/sobre-nos', '/servicos', '/blog', '/contato', '/informacoes', '/mapa-site'];
+const requiredLinks = ['/', '/sobre-nos', '/servicos', '/blog', '/contato', '/mapa-site'];
 const legacy = [
 	'A empresa se destaca na prestação de serviços',
 	'com atendimento personalizado e atuação preventiva',
@@ -31,6 +31,8 @@ let checked = 0;
 for (const file of files) {
 	const route = path.relative(root, file).replaceAll(path.sep, '/');
 	const html = await readFile(file, 'utf8');
+	// O HTML de fallback do redirecionamento não carrega layout global.
+	if (route === 'informacoes/index.html' || route === 'informacoes.html') continue;
 	const footer = html.match(/<footer\b[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/)?.[0] ?? '';
 	check(Boolean(footer), `${route}: rodapé não encontrado`);
 	if (!footer) continue;

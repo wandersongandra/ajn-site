@@ -83,5 +83,8 @@ jobs:
       - name: About page design, images and accessibility audit
         run: npm run audit:about
 
+      - name: Sitemap consolidation and redirect audit
+        run: npm run audit:sitemap
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high

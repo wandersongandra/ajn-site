@@ -1,9 +1,10 @@
 ---
+import '../styles/sitemap-editorial.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import LinkIndexPage from '../components/LinkIndexPage.astro';
+import SiteMapIndex from '../components/SiteMapIndex.astro';
 import { siteMapPage } from '../content/institutional/mapa-site';
 ---
 
 <BaseLayout title={siteMapPage.title} description={siteMapPage.description} canonicalPath="/mapa-site">
-	<LinkIndexPage heading={siteMapPage.heading} intro={siteMapPage.intro} links={siteMapPage.links} />
+	<SiteMapIndex />
 </BaseLayout>
