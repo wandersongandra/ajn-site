@@ -142,7 +142,6 @@ export const routeCatalog: readonly RouteCatalogEntry[] = [
 	{ path: "/projeto-instalacoes-eletricas", title: "Projeto de instalações elétricas - AJN Consultoria e Engenharia" },
 	{ path: "/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros", title: "Regularização de imóveis junto ao corpo de bombeiros - AJN Consultoria e Engenharia" },
 	{ path: "/laudo-pgr", title: "Laudo pgr - AJN Consultoria e Engenharia" },
-	{ path: "/informacoes", title: "Informações - AJN Consultoria e Engenharia" },
 	{ path: "/laudos-sst", title: "Laudos de sst - AJN Consultoria e Engenharia" },
 	{ path: "/servicos/pcmso-e-asos", title: "PCMSO e ASOs - AJN Consultoria e Engenharia" },
 	{ path: "/plataforma-acessibilidade-preco", title: "Plataforma de acessibilidade preço - AJN Consultoria e Engenharia" },
