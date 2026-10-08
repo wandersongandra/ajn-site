@@ -278,3 +278,143 @@
 	.blog-reading .blog-article-layout > .blog-sidebar,
 	.blog-legacy .blog-article-layout > .blog-sidebar { grid-column: auto; grid-row: auto; }
 }
+
+
+/* Fase visual 2 — proporções editoriais compactas. Sem efeito fora de /blog. */
+.blog-hub .blog-card__image {
+	display: block;
+	background: #f1f5ef;
+}
+.blog-hub .blog-card__image img {
+	display: block;
+	width: 100%;
+	height: 152px;
+	max-height: 152px;
+	aspect-ratio: auto;
+	object-fit: cover;
+	object-position: center;
+}
+.blog-hub .blog-card__body {
+	padding: 16px 17px 18px;
+}
+.blog-hub .blog-card__category { margin-bottom: 5px; }
+.blog-hub .blog-card__date { margin-bottom: 7px; }
+.blog-hub .blog-card h3 {
+	margin-bottom: 9px;
+	font-size: clamp(16px, 1.45vw, 18px);
+	line-height: 1.4;
+}
+.blog-hub .blog-card__summary {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	margin-bottom: 13px;
+	line-height: 1.65;
+}
+.blog-hub .blog-grid { gap: 18px; }
+
+/* Destaque com altura limitada e imagem integral, sem cortes agressivos. */
+.blog-reading .blog-article__image,
+.blog-legacy .blog-article__image {
+	display: block;
+	width: 100%;
+	height: clamp(215px, 27vw, 340px);
+	max-height: 340px;
+	aspect-ratio: auto;
+	object-fit: contain;
+	object-position: center;
+	background: #f3f6f2;
+	margin-bottom: 26px;
+}
+.blog-reading .blog-article__gallery-section {
+	padding-top: 26px;
+	margin-top: 26px;
+	border-top: 1px solid var(--blog-line);
+}
+.blog-reading .blog-article__gallery-section h2 {
+	margin: 0 0 14px;
+	font-size: clamp(18px, 1.7vw, 23px);
+	line-height: 1.35;
+}
+.blog-reading .blog-article__gallery {
+	margin-top: 0;
+	gap: 10px;
+}
+.blog-reading .blog-article__gallery img {
+	display: block;
+	width: 100%;
+	height: 124px;
+	max-height: 124px;
+	aspect-ratio: auto;
+	object-fit: contain;
+	background: #f3f6f2;
+	border: 1px solid #e4ebe2;
+	border-radius: 5px;
+}
+.blog-reading .blog-article__gallery-more {
+	margin-top: 14px;
+}
+.blog-reading .blog-article__gallery-more summary {
+	display: list-item;
+	width: fit-content;
+	min-height: 44px;
+	padding: 12px 10px 10px 3px;
+	color: #22642f;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+}
+.blog-reading .blog-article__gallery-more[open] summary {
+	margin-bottom: 14px;
+}
+.blog-reading .blog-related__media img {
+	display: block;
+	width: 100%;
+	height: 130px;
+	aspect-ratio: auto;
+	object-fit: cover;
+}
+.blog-reading .blog-related__card > div { padding: 13px 15px 16px; }
+.blog-reading .blog-article__header { padding-bottom: 0; }
+.blog-reading .blog-article__description { margin-bottom: 12px; }
+.blog-reading .blog-article__meta { margin-bottom: 19px; }
+
+/* Densidade em telas menores: filtros horizontais e cards sem fotos gigantes. */
+@media (max-width: 800px) {
+	.blog-hub .blog-sidebar { gap: 10px; }
+	.blog-hub .blog-sidebar__search { padding: 13px; }
+	.blog-hub .blog-sidebar__topics { min-width: 0; }
+	.blog-hub .blog-sidebar__topic-list {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 8px;
+		overflow-x: auto;
+		max-width: 100%;
+		padding: 0 0 8px;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+	}
+	.blog-hub .blog-sidebar__topic-list li {
+		flex: 0 0 auto;
+	}
+	.blog-hub .blog-sidebar__topic-list a {
+		white-space: nowrap;
+		gap: 7px;
+		padding: 9px 11px;
+		border: 1px solid var(--blog-line);
+	}
+	.blog-reading .blog-article__image,
+	.blog-legacy .blog-article__image { height: 290px; max-height: 290px; }
+}
+@media (max-width: 620px) {
+	.blog-hub .blog-card__image img { height: 166px; max-height: 166px; }
+	.blog-hub .blog-card__body { padding: 16px; }
+	.blog-hub .blog-sidebar__search-row { grid-template-columns: minmax(0, 1fr) auto; }
+	.blog-hub .blog-sidebar__search button { padding-inline: 15px; }
+	.blog-hub .blog-sidebar__search input { font-size: 16px; }
+	.blog-reading .blog-article__image,
+	.blog-legacy .blog-article__image { height: 218px; max-height: 218px; }
+	.blog-reading .blog-article__gallery img { height: 110px; max-height: 110px; }
+	.blog-reading .blog-related__media img { height: 150px; }
+}
