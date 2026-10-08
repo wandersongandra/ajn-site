@@ -1,40 +1,57 @@
 import type { MarketingContent } from '../types';
 
 export const empresaQueFazPgr = {
-	slug: 'empresa-que-faz-pgr',
-	path: '/empresa-que-faz-pgr',
-	title: 'Empresa que faz pgr - AJN Consultoria e Engenharia',
-	description: 'Empresa que faz pgr ajn consultoria e engenharia, sob a liderança do engenheiro antônio jorlei, destaca-se no mercado por sua especialização em...',
-	heading: 'Empresa que faz pgr',
-	images: [
-		{ src: '/images/content/marketing/empresa-que-faz-pgr/empresa-que-faz-pgr-01.webp', alt: 'Empresa que faz pgr' },
-		{ src: '/images/content/marketing/empresa-que-faz-pgr/empresa-que-faz-pgr-02.webp', alt: 'Empresa que faz pgr' },
-		{ src: '/images/content/marketing/empresa-que-faz-pgr/empresa-que-faz-pgr-03.webp', alt: 'Empresa que faz pgr' },
-	],
-	sections: [
-		{ heading: 'AJN Consultoria e Engenharia: Sua empresa que faz pgr', paragraphs: [
-			'A empresa que faz pgr AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, destaca-se no mercado por sua especialização em Qualidade, Segurança, Meio Ambiente e Saúde.',
-			'Com mais de 08 anos de atuação, a empresa tem se dedicado à implementação de projetos de Segurança contra incêndios, visando a obtenção de AVCB/CLCB em edificações de diversos portes e finalidades em Belo Horizonte, MG.',
-		] },
-		{ heading: 'Serviços Especializados em Segurança do Trabalho', paragraphs: [
-			'A empresa que faz pgr oferece medidas abrangentes para garantir a saúde e segurança no ambiente de trabalho.',
-			'Além dos projetos de segurança contra incêndio para obtenção de licenças AVCB e CLCB, a AJN Consultoria e Engenharia disponibiliza uma variedade de serviços, tais como:',
-		], lists: [{ items: [
-			'Prevenção e combate a incêndios, incluindo consultoria e projeto;',
-			'Segurança ocupacional, qualidade, saúde e consultoria ambiental;',
-			'Elaboração de relatórios de especialistas e responsabilidade técnica;',
-			'Certificações e treinamentos conforme as Normas Regulamentadoras (NRs);',
-			'Mobilização de equipe especializada.',
-		] }] },
-		{ heading: 'A Importância da empresa que faz pgr', paragraphs: [
-			'O Programa de Gerenciamento de Riscos é essencial para identificar, avaliar e controlar os riscos ambientais e ocupacionais presentes nas empresas.',
-			'Visando promover um ambiente de trabalho seguro e conforme as normas regulatórias, a empresa que faz pgr contribui significativamente para a prevenção de acidentes, doenças ocupacionais e impactos ambientais.',
-			'A AJN Consultoria e Engenharia se destaca pela especialização na elaboração de PGR personalizados, adaptados às necessidades e particularidades de cada cliente.',
-			'Com especialização e comprometimento, a empresa que faz pgr assegura a segurança e o bem-estar dos trabalhadores, bem como a preservação do meio ambiente.',
-		], subsections: [{ heading: 'Conte com a AJN Consultoria e Engenharia para empresa que faz pgr', paragraphs: [
-			'Se você busca um parceiro confiável para implementar medidas eficazes de segurança do trabalho e elaborar o Programa de Gerenciamento de Riscos de forma personalizada, conte com a especialização da AJN Consultoria e Engenharia.',
-			'Entre em contato conosco e saiba como podemos contribuir para a segurança e conformidade da sua empresa!',
-		] }] },
-		{ heading: 'Para saber mais sobre Empresa que faz pgr', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
-	],
+  slug: 'empresa-que-faz-pgr',
+  path: '/empresa-que-faz-pgr',
+  title: 'Empresa para Elaborar PGR: Como Contratar | AJN',
+  description: 'Precisa contratar a elaboração de PGR? Saiba o que informar na solicitação, quais documentos considerar e como avaliar o escopo do serviço.',
+  heading: 'Empresa para elaboração de PGR',
+  images: [
+    { src: '/images/content/marketing/empresa-que-faz-pgr/empresa-que-faz-pgr-01.webp', alt: 'Consultoria para elaboração de PGR' },
+    { src: '/images/content/marketing/empresa-que-faz-pgr/empresa-que-faz-pgr-02.webp', alt: 'Levantamento de riscos ocupacionais' },
+    { src: '/images/content/marketing/empresa-que-faz-pgr/empresa-que-faz-pgr-03.webp', alt: 'Análise técnica de documentação de SST' },
+  ],
+  sections: [
+    {
+      heading: 'O que avaliar antes de contratar',
+      paragraphs: [
+        'A contratação de um serviço de PGR começa pelo entendimento das atividades e dos riscos ocupacionais do estabelecimento. Uma proposta precisa deixar claros o levantamento previsto, os documentos a entregar e as responsabilidades das partes.',
+        'O preço e o prazo dependem do porte da operação, dos ambientes e atividades a avaliar, dos documentos existentes e da necessidade de visitas técnicas. Por isso, não é adequado definir um orçamento sem conhecer a demanda.',
+      ],
+    },
+    {
+      heading: 'Informações úteis para pedir uma proposta',
+      paragraphs: [
+        'Ao entrar em contato com a AJN, separe as informações disponíveis para facilitar a definição do serviço.',
+      ],
+      lists: [{ items: [
+        'Cidade do estabelecimento, segmento de atividade e número aproximado de trabalhadores.',
+        'Principais funções, processos, máquinas e ambientes em que o trabalho é realizado.',
+        'PGR anterior, inventário de riscos, plano de ação e documentos complementares, caso existam.',
+        'Prazos, exigências contratuais e eventuais mudanças recentes nas atividades.',
+      ] }],
+    },
+    {
+      heading: 'Entregas e acompanhamento',
+      paragraphs: [
+        'O PGR previsto na NR-1 contém, no mínimo, inventário de riscos ocupacionais e plano de ação. Esses documentos devem representar as condições reais do estabelecimento e apoiar o acompanhamento das medidas de prevenção.',
+        { segments: [
+          'Para entender o conteúdo técnico, consulte nossa página sobre ',
+          { text: 'elaboração de PGR', href: '/elaboracao-pgr' },
+          '.',
+        ] },
+      ],
+    },
+    {
+      heading: 'Solicite atendimento',
+      paragraphs: [
+        'A AJN Consultoria e Engenharia atende demandas de segurança do trabalho e documentação técnica. Descreva sua necessidade para verificarmos o escopo e as condições de atendimento.',
+        { segments: [
+          'Envie as informações pela nossa ',
+          { text: 'página de contato', href: '/contato' },
+          '.',
+        ] },
+      ],
+    },
+  ],
 } as const satisfies MarketingContent;

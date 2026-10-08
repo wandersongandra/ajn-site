@@ -24,7 +24,7 @@ const {
 	noindex = false,
 } = Astro.props;
 
-const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}`;
+const normalizedPath = canonicalPath === '/' ? '/' : `/${canonicalPath.replace(/^\/+|\/+$/g, '')}/`;
 const canonicalUrl = absoluteSiteUrl(normalizedPath);
 const imageUrl = absoluteSiteUrl(ogImage);
 const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';
