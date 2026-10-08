@@ -1197,119 +1197,12 @@ h3 { font-size: 24px; }
 }
 .about__copy .button { margin-top: 14px; }
 
-/* Shared carousel controls */
-.carousel-shell { position: relative; }
-.carousel-button {
-	position: absolute;
-	top: 50%;
-	z-index: 3;
-	display: grid;
-	width: 38px;
-	height: 38px;
-	place-items: center;
-	border: 0;
-	border-radius: 50%;
-	color: #fff;
-	background: var(--wp-green);
-	font-size: 28px;
-	line-height: 1;
-	transform: translateY(-50%);
-	box-shadow: 0 2px 5px rgb(0 0 0 / 18%);
-}
-.carousel-button--prev { left: -18px; }
-.carousel-button--next { right: -18px; }
-.carousel-button:hover { background: var(--wp-green-dark); }
-
-/* Clients legacy carousel */
-.clients {
-	padding: 62px 0;
-	border: 0;
-	background: var(--wp-light);
-}
-.clients__track {
-	display: grid;
-	grid-auto-flow: column;
-	grid-auto-columns: calc((100% - 64px) / 5);
-	gap: 16px;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	scrollbar-width: none;
-}
-.clients__track::-webkit-scrollbar { display: none; }
-.client-logo {
-	display: grid;
-	min-height: 112px;
-	place-items: center;
-	padding: 12px;
-	border: 1px solid #e6e6e6;
-	border-radius: 4px;
-	background: #fff;
-	scroll-snap-align: start;
-}
-.client-logo img {
-	width: 100%;
-	height: 86px;
-	padding: 4px;
-	border: 0;
-	border-radius: 0;
-	object-fit: contain;
-	background: #fff;
-	filter: none;
-	box-shadow: none;
-}
-
-/* Mission / Vision / Values */
-.mission {
-	padding: 72px 0;
-	background: #fff;
-}
-.mission__grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 24px;
-}
-.mission__grid article {
-	min-height: 260px;
-	padding: 30px;
-	border: 1px solid var(--wp-border);
-	border-top: 4px solid var(--wp-green);
-	border-radius: 8px;
-	color: var(--wp-text);
-	background: #fff;
-	box-shadow: var(--wp-shadow);
-}
-.mission__grid article::after { display: none; }
-.mission__grid h2 {
-	margin-bottom: 16px;
-	color: var(--wp-green-dark);
-	font-size: 24px;
-	font-weight: 700;
-}
-.mission__grid p {
-	margin: 0;
-	color: var(--wp-text);
-	font-size: 14px;
-}
-
 /* Legacy service carousels */
 .solutions {
 	padding: 72px 0;
 	background: var(--wp-light);
 }
 .solutions::before { display: none; }
-.solutions__track,
-.highlights__track {
-	display: grid;
-	grid-auto-flow: column;
-	grid-auto-columns: calc((100% - 48px) / 3);
-	gap: 24px;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	scrollbar-width: none;
-}
-.solutions__track::-webkit-scrollbar,
-.highlights__track::-webkit-scrollbar { display: none; }
-
 .service-card {
 	min-height: 390px;
 	border-radius: 8px;
@@ -1843,9 +1736,6 @@ h3 { font-size: 24px; }
 @media (max-width: 1100px) {
 	.site-shell { width: min(100% - 32px, 960px); }
 	.primary-navigation a { padding-inline: 8px; font-size: 13px; }
-	.solutions__track,
-	.highlights__track { grid-auto-columns: calc((100% - 24px) / 2); }
-	.clients__track { grid-auto-columns: calc((100% - 48px) / 4); }
 }
 
 @media (max-width: 992px) {
@@ -1911,23 +1801,6 @@ h3 { font-size: 24px; }
 	.hero__controls { display: none; }
 	.section { padding: 56px 0; }
 	.section-title { font-size: 26px; }
-	.clients__track { grid-auto-columns: calc((100% - 32px) / 3); }
-	.solutions__track,
-	.highlights__track { grid-auto-columns: 82%; }
-	.carousel-button--prev { left: -8px; }
-	.carousel-button--next { right: -8px; }
-	.portfolio__grid {
-		grid-template-columns: 1fr 1fr;
-		grid-auto-rows: 190px;
-	}
-	.portfolio__item,
-	.portfolio__item--1,
-	.portfolio__item--2,
-	.portfolio__item--3,
-	.portfolio__item--4,
-	.portfolio__item--5,
-	.portfolio__item--6,
-	.portfolio__item--7 { grid-area: auto; }
 	.differentials__grid { grid-template-columns: 1fr; }
 	.service-index-grid { grid-template-columns: 1fr; }
 	.service-index-toolbar { align-items: stretch; flex-direction: column; }
@@ -1957,7 +1830,6 @@ h3 { font-size: 24px; }
 	.about__image-wrap { min-height: 350px; }
 	.about__image { width: calc(100% - 30px); height: 340px; }
 	.about__secondary-image { width: 145px; height: 115px; bottom: 12px; }
-	.clients__track { grid-auto-columns: 52%; }
 	.blog-grid { grid-template-columns: 1fr; }
 	.contact-form__row { grid-template-columns: 1fr; }
 	.footer__grid { grid-template-columns: 1fr; }
@@ -2309,169 +2181,18 @@ h3 { font-size: 24px; }
 	.contact-form > .contact-form__status { grid-column: auto; }
 }
 
-/* Client carousel refinement — logos stay visual, not card-shaped */
+/* Faixa de clientes atual: trilho e logos definidos apenas em clients-carousel.css. */
 .clients {
 	padding: 3.5rem 0 3.75rem;
 	background: #f4f7f3;
 }
-
 .clients .section-title {
 	margin-bottom: 2rem;
 	color: var(--wp-green-dark);
 }
-
-.clients-carousel { padding-inline: 1rem; }
-
-.clients__track {
-	display: grid;
-	grid-auto-flow: column;
-	grid-auto-columns: calc((100% - 3rem) / 4);
-	gap: 1rem;
-	padding: .5rem 0 .75rem;
-	overflow-x: auto;
-	scroll-behavior: smooth;
-	scroll-snap-type: x mandatory;
-	scrollbar-width: none;
-}
-
-.clients__track::-webkit-scrollbar { display: none; }
-
-.client-logo {
-	display: grid;
-	min-height: 154px;
-	place-items: center;
-	padding: .75rem;
-	border: 0;
-	border-radius: 0;
-	background: transparent;
-	scroll-snap-align: start;
-}
-
-.client-logo img {
-	display: block;
-	width: 100%;
-	max-width: 250px;
-	height: 132px;
-	padding: 0;
-	border: 0;
-	border-radius: 0;
-	object-fit: contain;
-	background: transparent;
-	mix-blend-mode: multiply;
-	filter: saturate(1.08) contrast(1.04);
-	transform: scale(1.04);
-	transition: transform .28s ease, filter .28s ease;
-}
-
-.client-logo:hover img,
-.client-logo:focus-within img {
-	filter: saturate(1.16) contrast(1.08);
-	transform: scale(1.1);
-}
-
-.clients-carousel .carousel-button {
-	width: 42px;
-	height: 42px;
-	}
-
-@media (max-width: 1100px) {
-	.clients__track { grid-auto-columns: calc((100% - 2rem) / 3); }
-}
-
 @media (max-width: 768px) {
 	.clients { padding: 3rem 0 3.25rem; }
 	.clients .section-title { margin-bottom: 1.5rem; }
-	.clients-carousel { padding-inline: .75rem; }
-	.clients__track { grid-auto-columns: minmax(220px, 72%); gap: .75rem; }
-	.client-logo { min-height: 140px; }
-	.client-logo img { height: 120px; }
-	.clients-carousel .carousel-button { width: 38px; height: 38px; }
-}
-
-@media (max-width: 576px) {
-	.clients__track { grid-auto-columns: minmax(230px, 86%); }
-	.client-logo img { height: 112px; }
-}
-
-/* Continuous client marquee — no manual horizontal scrolling or frames */
-.clients-carousel { padding: 0; }
-.clients__viewport {
-	width: 100%;
-	overflow: hidden;
-}
-
-.clients__track {
-	display: flex;
-	width: max-content;
-	padding: .5rem 0 .75rem;
-	overflow: visible;
-	scroll-snap-type: none;
-	animation: clients-marquee 36s linear infinite;
-	will-change: transform;
-}
-
-.clients__group {
-	display: flex;
-	flex: none;
-	gap: 1rem;
-}
-
-.client-logo {
-	flex: 0 0 clamp(240px, 20vw, 300px);
-	min-height: 170px;
-	padding: .5rem;
-	border: 0 !important;
-	border-radius: 0;
-	background: transparent !important;
-}
-
-.client-logo img {
-	width: 100%;
-	max-width: 260px;
-	height: 146px;
-	background: transparent !important;
-	filter: saturate(1.08) contrast(1.06);
-	transform: scale(var(--client-logo-scale, 1));
-}
-
-.clients__group .client-logo:nth-child(1) { --client-logo-scale: .88; }
-.clients__group .client-logo:nth-child(2) { --client-logo-scale: .92; }
-.clients__group .client-logo:nth-child(3) { --client-logo-scale: 1.18; }
-.clients__group .client-logo:nth-child(4) { --client-logo-scale: 1.18; }
-.clients__group .client-logo:nth-child(5) { --client-logo-scale: 1.1; }
-.clients__group .client-logo:nth-child(6) { --client-logo-scale: .78; }
-.clients__group .client-logo:nth-child(7) { --client-logo-scale: 1.02; }
-.clients__group .client-logo:nth-child(8) { --client-logo-scale: 1.08; }
-.clients__group .client-logo:nth-child(9) { --client-logo-scale: .9; }
-.clients__group .client-logo:nth-child(10) { --client-logo-scale: 1.02; }
-
-.client-logo:hover img {
-	filter: saturate(1.15) contrast(1.1);
-	transform: scale(calc(var(--client-logo-scale, 1) + .04));
-}
-
-@keyframes clients-marquee {
-	from { transform: translateX(0); }
-	to { transform: translateX(-50%); }
-}
-
-@media (max-width: 768px) {
-	.clients__group { gap: .75rem; }
-	.client-logo {
-		flex-basis: min(76vw, 280px);
-		min-height: 154px;
-	}
-	.client-logo img { height: 136px; }
-}
-
-@media (max-width: 576px) {
-	.client-logo { flex-basis: min(82vw, 270px); }
-	.client-logo img { height: 124px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.clients__track { animation: none; }
-	.clients__group[aria-hidden="true"] { display: none; }
 }
 
 /* Rodapé institucional: estilos finais isolados do restante do site. */

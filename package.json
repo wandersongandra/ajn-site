@@ -28,7 +28,8 @@
     "audit:editorial": "node scripts/audit-editorial.mjs",
     "audit:sst-seo": "node scripts/audit-sst-seo.mjs",
     "audit:services-catalog": "node scripts/audit-services-catalog.mjs",
-    "audit:dead-css": "node scripts/audit-dead-css.mjs"
+    "audit:dead-css": "node scripts/audit-dead-css.mjs",
+    "audit:assets": "node scripts/audit-asset-duplicates.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
