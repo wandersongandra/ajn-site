@@ -3,15 +3,15 @@ import image0 from '../../assets/blog/blog-orcamento-eficiente-para-ltcat-passos
 
 export const blogOrcamentoEficienteParaLtcatPassosEssenciaisParaGarantirASegurancaNoTrabalho = {
 	 slug: "orcamento-eficiente-para-ltcat-passos-essenciais-para-garantir-a-seguranca-no-trabalho", path: "/blog/orcamento-eficiente-para-ltcat-passos-essenciais-para-garantir-a-seguranca-no-trabalho",
-	 title: "Orçamento Eficiente para LTCAT: Passos Essenciais para Garantir a Segurança no Trabalho",
+	 title: "Orçamento de LTCAT: o que considerar antes de contratar",
 	 description: "Saiba quais informações considerar ao solicitar um orçamento de LTCAT, incluindo atividades, ambientes avaliados e agentes nocivos.",
-	 heading: "Orçamento Eficiente para LTCAT: Passos Essenciais para Garantir a Segurança no Trabalho",
+	 heading: "Orçamento de LTCAT: o que considerar antes de contratar",
 	 pubDate: "2026-02-14",
 	updatedAt: "2026-10-07",
 	 author: "AJN Consultoria e Engenharia",
 	 image: { src: image0, alt: "Orçamento Eficiente para LTCAT: Passos Essenciais para Garantir a Segurança no Trabalho" },
 	 categories: ['Blog'],
-	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
+	 tags: ["LTCAT","orçamento","responsabilidade técnica"],
 	 gallery: [],
 	 sections: [
   {
