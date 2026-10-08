@@ -80,5 +80,8 @@ jobs:
       - name: Footer content and responsive design audit
         run: npm run audit:footer
 
+      - name: About page design, images and accessibility audit
+        run: npm run audit:about
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high

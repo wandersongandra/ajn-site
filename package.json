@@ -21,8 +21,9 @@
     "audit:home-services": "node scripts/audit-home-services.mjs",
     "audit:footer": "node scripts/audit-footer.mjs",
     "audit:security": "node scripts/audit-security.mjs",
+    "audit:about": "node scripts/audit-about.mjs",
     "test:audits": "node scripts/test-audit-fragments.mjs",
-    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:security && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run audit:home-services && npm run audit:footer && npm run test:audits"
+    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:security && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run audit:home-services && npm run audit:footer && npm run audit:about && npm run test:audits"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
