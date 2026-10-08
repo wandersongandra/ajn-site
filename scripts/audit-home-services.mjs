@@ -49,7 +49,7 @@ for (const [index, card] of cards.entries()) {
 	const variants = [...srcset.matchAll(/(\/_astro\/[^\s,]+\.webp)\s+([0-9]+)w/g)];
 	check(Boolean(src) && src.startsWith('/_astro/') && src.endsWith('.webp'),
 		`Card ${index + 1}: a imagem precisa ser WebP otimizada pelo Astro.`);
-	check(/\salt=""/.test(img), `Card ${index + 1}: alt decorativo precisa estar vazio.`);
+	check(/\srole="presentation"/.test(img), `Card ${index + 1}: imagem decorativa precisa ser ignorada por leitores de tela.`);
 	check(/\sloading="lazy"/.test(img), `Card ${index + 1}: imagem precisa de loading lazy.`);
 	check(/\sdecoding="async"/.test(img), `Card ${index + 1}: imagem precisa de decoding async.`);
 	check(/\swidth="[0-9]+"/.test(img) && /\sheight="[0-9]+"/.test(img),
