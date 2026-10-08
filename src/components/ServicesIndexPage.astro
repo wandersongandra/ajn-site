@@ -50,11 +50,11 @@ const serviceImages: Record<string, string> = {
               decoding="async"
             />
             <span class="service-index-card__overlay" aria-hidden="true"></span>
-            <span class="service-index-card__content">
-              <span class="service-index-card__title">{service.title}</span>
-              <span class="service-index-card__description">{service.description}</span>
+            <div class="service-index-card__content">
+              <h2 class="service-index-card__title">{service.title}</h2>
+              <p class="service-index-card__description">{service.description}</p>
               <span class="service-index-card__cta">Ver detalhes <span aria-hidden="true">↗</span></span>
-            </span>
+            </div>
           </a>
         </article>
       ))}
