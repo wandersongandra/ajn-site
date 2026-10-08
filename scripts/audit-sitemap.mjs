@@ -29,7 +29,7 @@ for (const group of groups) {
 	check(content.includes(`href="#${group}"`), `Atalho de grupo ausente: ${group}`);
 	check(content.includes(`id="${group}"`), `Seção de grupo ausente: ${group}`);
 }
-const paths = [...content.matchAll(/<li>\s*<a\s+href="(\/[^"]+)"/g)].map(m => m[1]);
+const paths = [...content.matchAll(/<li>\s*<a\s+href="(\/[^"]*)"/g)].map(m => m[1]);
 check(paths.length === entries.length,
 	`Mapa HTML tem ${paths.length} links, mas catálogo tem ${entries.length}.`);
 check(new Set(paths).size === paths.length, 'Um ou mais links se repetem entre os grupos.');
