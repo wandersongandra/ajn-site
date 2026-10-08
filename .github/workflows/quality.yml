@@ -74,5 +74,8 @@ jobs:
       - name: Home services design and accessibility audit
         run: npm run audit:home-services
 
+      - name: Footer content and responsive design audit
+        run: npm run audit:footer
+
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
