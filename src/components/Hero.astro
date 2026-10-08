@@ -4,6 +4,7 @@ import { hero } from '../data/home';
 
 <section class="hero" style={`--hero-image: url('${hero.image}')`} aria-labelledby="hero-title">
 	<div class="site-shell hero__content">
+		<div class="hero__main">
 		<p class="hero__eyebrow">{hero.eyebrow}</p>
 		<h1 id="hero-title">{hero.title}</h1>
 		<p class="hero__lead">{hero.description}</p>
@@ -14,5 +15,16 @@ import { hero } from '../data/home';
 		<ul class="hero__areas" aria-label="Áreas de atuação">
 			{hero.areas.map((area) => <li>{area}</li>)}
 		</ul>
+		</div>
+		<aside class="hero__panel" aria-label="Soluções da AJN">
+			<span class="hero__panel-kicker">Atuação técnica</span>
+			<strong class="hero__panel-title">Da prevenção ao acompanhamento em campo.</strong>
+			<ul>
+				<li><span aria-hidden="true">✓</span> Gestão de riscos e documentação de SST</li>
+				<li><span aria-hidden="true">✓</span> Saúde ocupacional e eSocial</li>
+				<li><span aria-hidden="true">✓</span> Engenharia, projetos e treinamentos</li>
+			</ul>
+			<a href="/servicos">Explore nossas soluções <span aria-hidden="true">↗</span></a>
+		</aside>
 	</div>
 </section>
