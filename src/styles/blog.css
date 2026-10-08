@@ -263,3 +263,18 @@
 	.blog-hub .blog-card,
 	.blog-hub .blog-card__link span { transition: none; }
 }
+
+
+/* Leitura primeiro no DOM: sidebar mantém sua posição visual no desktop. */
+.blog-reading .blog-article-layout > .blog-sidebar,
+.blog-legacy .blog-article-layout > .blog-sidebar { grid-column: 1; grid-row: 1; }
+.blog-reading .blog-article-layout > .blog-article,
+.blog-legacy .blog-article-layout > .blog-article { grid-column: 2; grid-row: 1; }
+@media (max-width: 800px) {
+	.blog-reading .blog-article-layout,
+	.blog-legacy .blog-article-layout { grid-template-columns: 1fr; }
+	.blog-reading .blog-article-layout > .blog-article,
+	.blog-legacy .blog-article-layout > .blog-article,
+	.blog-reading .blog-article-layout > .blog-sidebar,
+	.blog-legacy .blog-article-layout > .blog-sidebar { grid-column: auto; grid-row: auto; }
+}
