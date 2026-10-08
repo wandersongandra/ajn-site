@@ -555,25 +555,6 @@
 	}
 }
 
-/* Último CTA: destaque editorial, sem formulário repetido. */
-.home-page .home-contact-cta {
-	padding-block: clamp(68px, 7vw, 104px);
-	background:
-		radial-gradient(circle at 93% 0%, rgb(149 197 115 / 19%) 0, transparent 34%),
-		linear-gradient(125deg, #123a23 0%, #1e5731 100%);
-}
-.home-page .home-contact-cta h2 {
-	font-size: clamp(29px, 3.3vw, 43px);
-	line-height: 1.16;
-	letter-spacing: -.043em;
-}
-.home-page .home-contact-cta p:not(.home-contact-cta__eyebrow) { font-size: 15px; }
-.home-page .home-contact-cta__button {
-	min-height: 54px;
-	border-radius: 8px;
-	font-size: 14px;
-}
-
 @media (max-width: 1024px) {
 	.home-page .hero__content { grid-template-columns: minmax(0, 1fr) minmax(254px, .72fr); gap: 30px; }
 	.home-page .hero__content h1 { font-size: clamp(38px, 4.4vw, 53px); }
@@ -651,7 +632,6 @@
 	.home-page .workflow__step-number { flex: 0 0 57px; margin: 0; font-size: 35px; }
 	.home-page .workflow__step h3 { font-size: 19px; }
 	.home-page .workflow__step p { max-width: none; font-size: 14.5px; }
-	.home-page .home-contact-cta { padding-block: 60px; }
 }
 @media (prefers-reduced-motion: reduce) {
 	.home-page .service-card,

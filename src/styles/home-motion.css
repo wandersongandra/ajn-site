@@ -92,25 +92,21 @@
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.home-page .hero__actions > .button,
-		.home-page .home-contact-cta__button {
+		.home-page .hero__actions > .button {
 			transition: transform 200ms ease, background-color 200ms ease, border-color 200ms ease;
 		}
-		.home-page .hero__actions > .button:hover,
-		.home-page .home-contact-cta__button:hover {
+		.home-page .hero__actions > .button:hover {
 			transform: translateY(-2px);
 		}
 		.home-page .hero__panel a span,
 		.home-page .home-sectors__link span,
-		.home-page .service-card__link span,
-		.home-page .home-contact-cta__button span {
+		.home-page .service-card__link span {
 			display: inline-block;
 			transition: transform 220ms ease;
 		}
 		.home-page .hero__panel a:hover span,
 		.home-page .home-sectors__link:hover span,
-		.home-page .home-service-card__link:hover .service-card__link span,
-		.home-page .home-contact-cta__button:hover span {
+		.home-page .home-service-card__link:hover .service-card__link span {
 			transform: translateX(3px);
 		}
 	}

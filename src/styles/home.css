@@ -300,77 +300,6 @@
 	line-height: 1.67;
 }
 
-/* Uma única chamada final: sem formulário repetido ou métricas fictícias. */
-.home-page .home-contact-cta {
-	padding: clamp(42px, 5vw, 65px) 0;
-	color: #fff;
-	background: #204e2c;
-}
-.home-page .home-contact-cta__layout {
-	display: grid;
-	grid-template-columns: minmax(0, 1.6fr) minmax(240px, .7fr);
-	align-items: center;
-	gap: clamp(25px, 4vw, 60px);
-}
-.home-page .home-contact-cta__eyebrow {
-	margin: 0 0 9px;
-	color: #a9d7b0;
-	font-size: 12px;
-	font-weight: 800;
-	text-transform: uppercase;
-	letter-spacing: .1em;
-}
-.home-page .home-contact-cta h2 {
-	max-width: 650px;
-	margin: 0 0 12px;
-	color: #fff;
-	font-size: clamp(24px, 3vw, 36px);
-	line-height: 1.22;
-	letter-spacing: -.025em;
-}
-.home-page .home-contact-cta p:not(.home-contact-cta__eyebrow) {
-	max-width: 660px;
-	margin: 0;
-	color: #e6f0e5;
-	font-size: 15px;
-	line-height: 1.72;
-}
-.home-page .home-contact-cta__actions {
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	gap: 14px;
-}
-.home-page .home-contact-cta__button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 12px;
-	min-height: 49px;
-	padding: 13px 18px;
-	border-radius: 6px;
-	color: #173e21;
-	background: #fff;
-	font-size: 14px;
-	font-weight: 800;
-	text-align: center;
-}
-.home-page .home-contact-cta__button:hover {
-	color: #173e21;
-	background: #eef6ee;
-}
-.home-page .home-contact-cta__secondary {
-	align-self: center;
-	min-height: 44px;
-	padding: 11px;
-	color: #e5f2e4;
-	font-size: 14px;
-	font-weight: 700;
-	text-decoration: underline;
-	text-underline-offset: 4px;
-}
-.home-page .home-contact-cta__secondary:hover { color: #fff; }
-
 /* Access and focus are limited to homepage interactive elements. */
 .home-page a:focus-visible {
 	outline: 3px solid #53c46c;
@@ -380,7 +309,6 @@
 	.home-page .home-services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.home-page .home-client-logo { min-height: 84px; }
 	.home-page .home-client-logo img { height: 60px; }
-	.home-page .home-contact-cta__layout { grid-template-columns: 1fr auto; }
 }
 @media (max-width: 768px) {
 	.home-page .section { padding-block: 48px; }
@@ -406,8 +334,6 @@
 		scroll-snap-align: start;
 	}
 	.home-page .home-client-logo img { height: 65px; }
-	.home-page .home-contact-cta__layout { grid-template-columns: 1fr; gap: 24px; }
-	.home-page .home-contact-cta__actions { max-width: 330px; }
 }
 @media (max-width: 576px) {
 	.home-page .hero { min-height: 480px; }
@@ -429,8 +355,6 @@
 	.home-page .solutions .service-card__content { padding: 17px 17px 19px; }
 	.home-page .home-section-heading { margin-bottom: 22px; }
 	.home-page .workflow__intro { margin-bottom: 30px; }
-	.home-page .home-contact-cta__actions { max-width: none; }
-	.home-page .home-contact-cta__button { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
 	.home-page .hero__eyebrow, .home-page .hero__content h1,
