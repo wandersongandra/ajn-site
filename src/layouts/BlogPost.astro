@@ -47,6 +47,30 @@ const toc = post.sections.map((section, index) => ({
 const self = blogPosts.find((item) => item.href === post.path);
 const related = getRelatedBlogPosts(post.path);
 
+// Relaciona artigos aos serviços publicados sem alterar as URLs legadas.
+const servicesByTopic: Record<string, readonly { title: string; href: string }[]> = {
+  'LTCAT': [
+    { title: 'Elaboração de LTCAT', href: '/emissao-ltcat' },
+    { title: 'LTCAT e insalubridade: diferenças', href: '/laudo-ltcat-insalubridade' },
+  ],
+  'PGR e riscos': [
+    { title: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+    { title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' },
+  ],
+  'PCMSO': [
+    { title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+  ],
+  'PPP e eSocial': [
+    { title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' },
+    { title: 'Elaboração de LTCAT', href: '/emissao-ltcat' },
+  ],
+  'Normas regulamentadoras': [
+    { title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' },
+  ],
+};
+const relatedServices = servicesByTopic[self?.topic ?? ''] ?? [];
+
+
 // Exibe fotos complementares sem repetir a capa ou a mesma foto mais de uma vez.
 const galleryImages = post.gallery.filter((image, index, images) =>
 	image.src.src !== post.image.src.src
@@ -107,6 +131,15 @@ const galleryRemaining = galleryImages.slice(3);
 						</div>
 					))}
 				</div>
+
+				{relatedServices.length > 0 && (
+					<nav class="blog-article__service-links" aria-label="Serviços relacionados a este artigo">
+						<p class="blog-article__service-links-heading">Precisa de apoio com esse assunto?</p>
+						<ul>{relatedServices.map((service) => (
+							<li><a href={service.href}>{service.title}<span aria-hidden="true"> →</span></a></li>
+						))}</ul>
+					</nav>
+				)}
 
 				{galleryImages.length > 0 && (
 					<section class="blog-article__gallery-section" aria-labelledby="article-gallery-title">

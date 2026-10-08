@@ -1,52 +1,45 @@
 import type { MarketingContent } from '../types';
 
 export const laudoLtcatInsalubridade = {
-	slug: 'laudo-ltcat-insalubridade',
-	path: '/laudo-ltcat-insalubridade',
-	title: 'Laudo ltcat insalubridade - AJN Consultoria e Engenharia',
-	description: 'Laudo ltcat insalubridade, a empresa oferece uma ampla gama de serviços, incluindo prevenção e combate a incêndios, consultoria em segurança ocupacional,...',
-	heading: 'Laudo ltcat insalubridade',
-	images: [
-		{ src: '/images/content/marketing/laudo-ltcat-insalubridade/laudo-ltcat-insalubridade-01.webp', alt: 'Laudo ltcat insalubridade' },
-		{ src: '/images/content/marketing/laudo-ltcat-insalubridade/laudo-ltcat-insalubridade-02.webp', alt: 'Laudo ltcat insalubridade' },
-		{ src: '/images/content/marketing/laudo-ltcat-insalubridade/laudo-ltcat-insalubridade-03.webp', alt: 'Laudo ltcat insalubridade' },
-	],
-	sections: [
-		{
-			heading: 'A Importância do laudo ltcat insalubridade',
-			paragraphs: [
-				'A segurança do trabalho é um aspecto fundamental para garantir um ambiente laboral saudável e seguro para os colaboradores.',
-				' Nesse sentido, o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) desempenha um papel crucial na identificação e avaliação de possíveis agentes nocivos presentes no local de trabalho, incluindo aqueles que podem gerar insalubridade.',
-				'O laudo ltcat insalubridade é essencial para a proteção da saúde ocupacional dos trabalhadores e para assegurar a conformidade legal das empresas.',
-			],
-		},
-		{
-			heading: 'AJN Consultoria e Engenharia: Especialista em laudo ltcat insalubridade',
-			paragraphs: [
-				'A empresa AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, é especializada em oferecer soluções abrangentes em segurança do trabalho, como o laudo ltcat insalubridade.',
-				'Com mais de 08 anos de experiência no mercado, a empresa se destaca pela qualidade e precisão dos serviços prestados, incluindo a elaboração de Laudos Técnicos das Condições Ambientais do Trabalho.',
-				'A localização privilegiada em Belo Horizonte, MG, permite à AJN Consultoria e Engenharia atender clientes de diversos setores e tamanhos, garantindo medidas eficazes para a saúde e segurança no ambiente de trabalho.',
-				'Além do laudo ltcat insalubridade, a empresa oferece uma ampla gama de serviços, incluindo prevenção e combate a incêndios, consultoria em segurança ocupacional, qualidade, saúde e meio ambiente, certificações e treinamentos em Normas Regulamentadoras (NRs).',
-			],
-		},
-		{
-			heading: 'Vantagens do laudo ltcat insalubridade com a AJN Consultoria e Engenharia',
-			paragraphs: [
-				'A elaboração do laudo ltcat insalubridade pela AJN Consultoria e Engenharia proporciona diversas vantagens para empresas e colaboradores.',
-				'Com análises precisas e relatórios detalhados, a empresa garante a conformidade com as normas vigentes e a segurança jurídica para seus clientes.',
-				'Além disso, ao identificar e controlar os agentes insalubres no ambiente de trabalho, o laudo ltcat insalubridade contribui para a prevenção de doenças ocupacionais e a promoção da qualidade de vida dos trabalhadores.',
-			],
-			subsections: [{
-				heading: 'Conte com a AJN Consultoria e Engenharia',
-				paragraphs: [
-					' Se sua empresa busca garantir um ambiente de trabalho seguro e saudável, conte com a especialização da AJN Consultoria e Engenharia na elaboração do Laudo Técnico das Condições Ambientais do Trabalho.',
-					'Proteja a saúde de seus colaboradores, esteja conforme a legislação e promova um ambiente de trabalho mais seguro e produtivo. Entre em contato conosco e saiba como podemos ajudar!',
-				],
-			}],
-		},
-		{
-			heading: 'Para saber mais sobre Laudo ltcat insalubridade',
-			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
-		},
-	],
+  slug: 'laudo-ltcat-insalubridade',
+  path: '/laudo-ltcat-insalubridade',
+  title: 'LTCAT e Insalubridade: Qual a Diferença? | AJN',
+  description: 'LTCAT e laudo de insalubridade têm finalidades diferentes. Entenda a base previdenciária, os critérios da NR-15 e quando avaliar cada documento.',
+  heading: 'LTCAT e laudo de insalubridade: diferenças',
+  images: [
+    { src: '/images/content/marketing/laudo-ltcat-insalubridade/laudo-ltcat-insalubridade-01.webp', alt: 'Avaliação técnica de condições ambientais de trabalho' },
+    { src: '/images/content/marketing/laudo-ltcat-insalubridade/laudo-ltcat-insalubridade-02.webp', alt: 'Análise de riscos e exposição ocupacional' },
+    { src: '/images/content/marketing/laudo-ltcat-insalubridade/laudo-ltcat-insalubridade-03.webp', alt: 'Documentação de segurança e saúde do trabalho' },
+  ],
+  sections: [
+    {
+      heading: 'LTCAT: finalidade previdenciária',
+      paragraphs: [
+        'O LTCAT reúne informações técnicas sobre condições ambientais de trabalho e exposição a agentes nocivos para fins previdenciários, nos termos do art. 58 da Lei nº 8.213/1991. É uma referência para informações sobre exposição registradas nos documentos previdenciários pertinentes.',
+        'A existência de um LTCAT não define automaticamente se uma atividade é insalubre para fins trabalhistas nem assegura, por si só, o reconhecimento de aposentadoria especial.',
+      ],
+    },
+    {
+      heading: 'Insalubridade: critérios trabalhistas da NR-15',
+      paragraphs: [
+        'A análise de insalubridade tem finalidade trabalhista e considera os critérios previstos na NR-15 e em seus anexos. Dependendo do agente e da situação, a avaliação pode envolver medidas quantitativas, avaliação qualitativa e inspeção técnica.',
+        'Não basta identificar a presença de um produto químico, ruído ou outro agente para concluir que existe direito a adicional: é necessária a caracterização segundo os critérios aplicáveis e as condições efetivamente observadas.',
+      ],
+    },
+    {
+      heading: 'Um laudo substitui o outro?',
+      paragraphs: [
+        'Não automaticamente. Embora possam utilizar levantamentos ambientais relacionados, LTCAT e laudo de insalubridade atendem a finalidades legais distintas. A empresa deve verificar quais documentos precisa manter segundo a situação concreta.',
+        { segments: ['Entenda também o processo de ', { text: 'elaboração de LTCAT', href: '/emissao-ltcat' }, ' e o serviço de ', { text: 'perícias em insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }, '.'] },
+      ],
+    },
+    {
+      heading: 'Peça uma avaliação da documentação',
+      paragraphs: [
+        'Informe à AJN as atividades envolvidas, os setores, os agentes que precisam de avaliação e o objetivo do documento. Assim, o escopo pode ser definido sem confundir obrigações previdenciárias e trabalhistas.',
+        { segments: ['Converse com a AJN pela ', { text: 'página de contato', href: '/contato' }, '.'] },
+        { segments: ['Fontes oficiais: ', { text: 'NR-15 (MTE)', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-15-nr-15' }, ' e ', { text: 'Lei nº 8.213/1991, art. 58', href: 'https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm' }, '.'] },
+      ],
+    },
+  ],
 } as const satisfies MarketingContent;

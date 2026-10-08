@@ -44,6 +44,9 @@ jobs:
       - name: Institutional content and canonical audit
         run: npm run audit:editorial
 
+      - name: SST landing pages and Blog service link audit
+        run: npm run audit:sst-seo
+
       - name: Internal anchor audit
         run: npm run audit:fragments
 
