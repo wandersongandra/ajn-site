@@ -62,10 +62,19 @@ export const about = {
 	secondaryImage: '/images/about/persianas-automaticas.webp',
 } as const;
 
-export const clients = Array.from({ length: 10 }, (_, index) => ({
-	src: `/images/clients/cliente-${String(index + 1).padStart(2, '0')}.png`,
-	alt: 'Cliente AJN Consultoria e Engenharia',
-}));
+// Identificação conferida pelas marcas fornecidas pela AJN. Hemarcon mantém o arquivo existente.
+export const clients = [
+	{ src: '/images/clients/cliente-01-hd.webp', alt: 'BRAVO Consultoria, Treinamento e Prevenção' },
+	{ src: '/images/clients/cliente-02-hd.webp', alt: 'Construtora Vereda' },
+	{ src: '/images/clients/cliente-03-hd.webp', alt: 'Doutor Agora' },
+	{ src: '/images/clients/cliente-04-hd.webp', alt: 'GreenYellow' },
+	{ src: '/images/clients/cliente-05.png', alt: 'Hemarcon' },
+	{ src: '/images/clients/cliente-06-hd.webp', alt: 'Reciclart' },
+	{ src: '/images/clients/cliente-07-hd.webp', alt: 'Santa Maria Ecologic' },
+	{ src: '/images/clients/cliente-08-hd.webp', alt: 'Supernova Participações' },
+	{ src: '/images/clients/cliente-09-hd.webp', alt: 'Techsystem Elevadores' },
+	{ src: '/images/clients/cliente-10-hd.webp', alt: 'Uptec Construção e Tecnologia' },
+] as const;
 
 export const missionVisionValues = [
 	{
