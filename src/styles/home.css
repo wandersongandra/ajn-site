@@ -383,7 +383,7 @@
 	.home-page .home-contact-cta__layout { grid-template-columns: 1fr auto; }
 }
 @media (max-width: 768px) {
-	.home-page .home-page .section { padding-block: 48px; }
+	.home-page .section { padding-block: 48px; }
 	.home-page .hero { min-height: 520px; }
 	.home-page .hero__content {
 		width: min(100% - 32px, var(--shell));
