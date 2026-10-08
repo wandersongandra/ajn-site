@@ -9,15 +9,16 @@ const featuredServices = [services[0], services[4], services[1], services[5], se
 	<div class="site-shell">
 		<div class="home-section-heading">
 			<p class="home-section-heading__eyebrow">Áreas de atuação</p>
-			<h2 id="solutions-title" class="section-title">Serviços para sua operação</h2>
-			<p>Da gestão de SST aos projetos de engenharia, conheça as frentes de trabalho da AJN.</p>
+			<h2 id="solutions-title" class="section-title">Soluções para a segurança e a continuidade da sua operação.</h2>
+			<p>Consultoria, documentação, saúde ocupacional e engenharia, conforme as necessidades e os riscos de cada atividade.</p>
 		</div>
 		<div class="home-services-grid">
-			{featuredServices.map((service) => (
+			{featuredServices.map((service, index) => (
 				<article class="service-card">
 					<a class="home-service-card__link" href={service.href} aria-label={'Conhecer ' + service.title}>
 						<img src={service.image} alt="" width="600" height="360" loading="lazy" decoding="async" />
 						<div class="service-card__content">
+							<span class="home-service-card__index" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 06</span>
 							<h3>{service.title}</h3>
 							<p>{service.description}</p>
 							<span class="service-card__link">Conhecer serviço <span aria-hidden="true">→</span></span>
