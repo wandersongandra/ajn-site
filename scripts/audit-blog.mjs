@@ -20,15 +20,6 @@ async function collectHtml(dir) {
 	return files;
 }
 
-function plainText(value) {
-	return value
-		.replace(/&amp;/g, '&')
-		.replace(/&quot;/g, '"')
-		.replace(/&#(?:x27|39);/gi, "'")
-		.replace(/<[^>]*>/g, '')
-		.trim();
-}
-
 let htmlFiles = [];
 try {
 	htmlFiles = await collectHtml(blogDir);
@@ -39,8 +30,8 @@ try {
 for (const file of htmlFiles) {
 	const html = await readFile(file, 'utf8');
 	const route = path.relative(blogDir, file).replaceAll(path.sep, '/');
-	const title = plainText(html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] ?? '');
-	const description = plainText(html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)/i)?.[1] ?? '');
+	const title = (html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] ?? '').trim();
+	const description = (html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)/i)?.[1] ?? '').trim();
 	const h1Count = (html.match(/<h1\b/gi) ?? []).length;
 
 	if (route === 'index.html') {
