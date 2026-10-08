@@ -11,18 +11,53 @@ export const blogPppFacilOUeEComoConsultarESuaImportancia = {
 	 description: "Saiba o que é o PPP, como consultar o documento e por que o registro das condições de trabalho é importante para fins previdenciários.",
 	 heading: "PPP Fácil: O Que é, Como Consultar e Sua Importância",
 	 pubDate: "2025-04-09",
+	updatedAt: "2026-10-07",
 	 author: "Admin",
 	 image: { src: image0, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" },
 	 categories: ['Blog'],
 	 tags: ["consultoria pcmso", "elaboracao de pgr e pcmso", "emissao ltcat", "empresa de pcmso", "laudo pgr", "laudos de saude e seguranca do trabalho", "laudos de seguranca do trabalho", "ltcat evento esocial", "ltcat renovacao", "manutencao de elevadores bh", "orcamento ltcat", "projeto de protecao contra incendio", "projeto eletrico comercial", "seguranca do trabalho ltcat", "seguranca do trabalho pcmso"],
 	 gallery: [{ src: image0, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image1, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image2, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image3, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }, { src: image4, alt: "PPP Fácil: O Que é, Como Consultar e Sua Importância" }],
-	 sections: [{ heading: "", paragraphs: ["O Perfil Profissiográfico Previdenciário (PPP) é um documento essencial para os trabalhadores brasileiros, especialmente aqueles que trabalham em condições que envolvem exposição a agentes nocivos. Este documento reúne informações sobre o histórico laboral, as atividades desempenhadas e os fatores de risco aos quais o trabalhador esteve exposto. Consultar o PPP é um direito do trabalhador e pode ser essencial para garantir benefícios previdenciários, como a aposentadoria especial."], lists: [], subsections: [] },
-		{ heading: "Como Consultar o PPP", paragraphs: ["Solicitação ao Empregador: O PPP é responsabilidade do empregador, que deve fornecê- lo sempre que o trabalhador requisitar, seja na rescisão do contrato ou em outros momentos específicos.", "Conferência de Dados: Ao receber o documento, é importante verificar se todas as informações estão corretas, como:", "Agentes nocivos e medidas de proteção adotadas.", "Encaminhamento ao INSS: Caso precise do PPP para fins de aposentadoria especial ou outros benefícios previdenciários, o trabalhador deve apresentá-lo ao Instituto Nacional do Seguro Social (INSS).", "Se o empregador não fornecer o documento, o trabalhador pode buscar auxílio no sindicato da categoria ou na Justiça do Trabalho.", "Hoje já é possível fazer essa consulta de forma online, é um processo simples e pode ser feito através do site ou aplicativo Meu INSS."], lists: [{ ordered: false, items: ["Identificação da empresa;", "Dados do trabalhador;", "Atividades desempenhadas;"] }], subsections: [] },
-		{ heading: "Passo a Passo:", paragraphs: [], lists: [], subsections: [] },
-		{ heading: "Acesse o Meu INSS:", paragraphs: ["Entre no site oficial do Meu INSS ou baixe o aplicativo disponível para Android e iOS."], lists: [], subsections: [] },
-		{ heading: "Faça Login:", paragraphs: ["Utilize sua conta Gov.br para acessar o sistema. Caso ainda não tenha uma conta, será necessário criar uma."], lists: [], subsections: [] },
-		{ heading: "Localize o Serviço:", paragraphs: [{ segments: ["Após o login, procure pela opção", { bold: true, text: "\"Extratos/Documentos\"" }, "ou diretamente pelo serviço"] }], lists: [], subsections: [] },
-		{ heading: "\"Emitir PPP Eletrônico\".", paragraphs: [], lists: [], subsections: [{ heading: "Solicite o Documento:", paragraphs: ["Clique na opção para emitir o PPP. O documento será gerado automaticamente com base nas informações fornecidas pela empresa ao sistema eSocial."], lists: [] }] },
-		{ heading: "Baixe ou Imprima:", paragraphs: ["Após a emissão, você pode salvar o documento em formato PDF ou imprimi-lo para uso futuro.", { segments: ["O PPP eletrônico está disponível para períodos trabalhados a partir de", { bold: true, text: "01/01/2023" }, "."] }, "Para períodos anteriores, o trabalhador ainda deve solicitar o PPP físico diretamente à empresa empregadora."], lists: [], subsections: [] },
-		{ heading: "Importância do PPP", paragraphs: ["O PPP é mais do que um simples histórico de trabalho; ele desempenha um papel crucial na proteção dos direitos do trabalhador. Este documento é utilizado principalmente para:", "Consultar o PPP e garantir que ele esteja correto é um direito e uma responsabilidade de todos os trabalhadores. Além de assegurar benefícios previdenciários, o documento reflete a importância da proteção e cuidado com a saúde ocupacional. Lembre-se de verificar as informações contidas no PPP e, se necessário, buscar suporte para garantir seus direitos. O cuidado hoje é o benefício de amanhã!"], lists: [{ ordered: false, items: ["Comprovar Exposição a Riscos: O PPP é uma evidência necessária para demonstrar que o trabalhador esteve exposto a agentes nocivos, facilitando o acesso à aposentadoria especial.", "Prevenção e Saúde no Trabalho: Com base nos dados contidos no PPP, empresas e órgãos podem elaborar políticas de saúde e segurança no trabalho mais eficientes.", "Histórico Laboral Documentado: Serve como um registro oficial da trajetória do trabalhador, algo valioso para questões legais e previdenciárias."] }], subsections: [] }],
+	 sections: [
+  {
+    "heading": "Como consultar o PPP eletrônico",
+    "paragraphs": [
+      "Para consultar os períodos abrangidos pelo PPP eletrônico, acesse o site ou aplicativo Meu INSS com sua conta gov.br e procure o serviço referente ao Perfil Profissiográfico Previdenciário. Confira vínculos, datas e informações disponíveis. A apresentação de dados depende dos eventos enviados e processados na base oficial.",
+      "A implementação do PPP eletrônico alcança períodos de trabalho a partir de 1º de janeiro de 2023; a disponibilização ao trabalhador começou em janeiro daquele ano. Para períodos anteriores, o documento físico pode continuar sendo necessário."
+    ]
+  },
+  {
+    "heading": "O que conferir no documento?",
+    "paragraphs": [
+      "Verifique se o período de vínculo corresponde ao período trabalhado, se as atividades estão identificadas e se as informações de exposição a agentes nocivos refletem os registros da empresa. Ausência ou divergência de informação não deve ser corrigida por tentativa de edição do trabalhador no portal.",
+      "Se houver divergência, solicite ao empregador a conferência das informações declaradas ao eSocial e dos documentos ambientais que as fundamentam. Guarde o protocolo do pedido e, se necessário, procure orientação previdenciária."
+    ]
+  },
+  {
+    "heading": "Qual é a relação com o LTCAT?",
+    "paragraphs": [
+      "O LTCAT é uma das bases técnicas para a caracterização previdenciária da exposição a agentes nocivos; o PPP apresenta o histórico do trabalhador. Um instrumento não substitui automaticamente o outro. A análise de aposentadoria especial depende dos requisitos legais e da avaliação do INSS."
+    ]
+  },
+  {
+    "heading": "Fontes oficiais",
+    "paragraphs": [
+      {
+        "segments": [
+          {
+            "text": "eSocial — PPP eletrônico e Meu INSS",
+            "href": "https://www.gov.br/esocial/pt-br/noticias/disponibilizacao-do-perfil-profissiografico-previdenciario-ppp-eletronico/"
+          }
+        ]
+      },
+      {
+        "segments": [
+          {
+            "text": "Manual do eSocial — SST",
+            "href": "https://www.gov.br/esocial/pt-br/empresas/manual-web-geral/manual-web-geral/"
+          }
+        ]
+      }
+    ]
+  }
+],
 } as const satisfies BlogContentData;
