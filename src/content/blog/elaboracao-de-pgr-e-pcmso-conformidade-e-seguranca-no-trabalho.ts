@@ -5,15 +5,15 @@ import type { BlogContentData } from '../types';
 export const blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho = {
 	slug: "elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho",
 	path: "/blog/elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho",
-	title: "Elaboração de PGR e PCMSO: Conformidade e Segurança no Trabalho",
+	title: "PGR e PCMSO: funções diferentes e como integrar os programas",
 	description: "Entenda a relação entre PGR e PCMSO na gestão de riscos ocupacionais e no acompanhamento da saúde dos trabalhadores.",
-	heading: "Elaboração de PGR e PCMSO: Conformidade e Segurança no Trabalho",
+	heading: "PGR e PCMSO: funções diferentes e como integrar os programas",
 	pubDate: "2025-10-02",
 	updatedAt: "2026-10-07",
 	author: "Kaique",
 	image: { src: image0, alt: "Elaboração de PGR e PCMSO: Conformidade e Segurança no Trabalho" },
 	categories: ['Blog'],
-	tags: ["Elaboração de pgr e pcmso"],
+	tags: ["PGR","PCMSO","NR-1","NR-7"],
 	gallery: [{ src: image0, alt: "Elaboração de PGR e PCMSO: Conformidade e Segurança no Trabalho" }],
 	sections: [
   {
