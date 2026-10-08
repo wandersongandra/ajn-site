@@ -1,9 +1,9 @@
 ---
 const sectors = [
-	{ number: '01', name: 'Indústria', description: 'Inspeções, documentação de SST e avaliação de riscos nos processos produtivos.' },
-	{ number: '02', name: 'Construção civil', description: 'Apoio com documentação e acompanhamento técnico das atividades em obra.' },
-	{ number: '03', name: 'Comércio e serviços', description: 'PCMSO, ASOs, registros de SST no eSocial e treinamento das equipes.' },
-	{ number: '04', name: 'Contratos terceirizados', description: 'Mobilização de trabalhadores, conferência documental e inspeções em campo.' },
+	{ name: 'Indústria', description: 'Inspeções, documentação de SST e avaliação de riscos nos processos produtivos.' },
+	{ name: 'Construção civil', description: 'Apoio com documentação e acompanhamento técnico das atividades em obra.' },
+	{ name: 'Comércio e serviços', description: 'PCMSO, ASOs, registros de SST no eSocial e treinamento das equipes.' },
+	{ name: 'Contratos terceirizados', description: 'Mobilização de trabalhadores, conferência documental e inspeções em campo.' },
 ];
 ---
 <section class="section home-sectors" aria-labelledby="home-sectors-title">
@@ -17,7 +17,6 @@ const sectors = [
 		<div class="home-sectors__grid">
 			{sectors.map((sector, index) => (
 				<article class="home-sector-card" data-reveal style={`--reveal-delay: ${index * 65}ms`}>
-					<span class="home-sector-card__number" aria-hidden="true">{sector.number}</span>
 					<h3>{sector.name}</h3>
 					<p>{sector.description}</p>
 				</article>
