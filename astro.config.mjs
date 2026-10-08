@@ -7,7 +7,10 @@ const site = (process.env.PUBLIC_SITE_ORIGIN || 'https://www.ajnengenharia.com.b
 // https://astro.build/config
 export default defineConfig({
 	site,
-	integrations: [sitemap()],
+	integrations: [sitemap({
+		// Redirecionamentos não representam páginas indexáveis.
+		filter: (url) => !/^\/informacoes\/?$/.test(new URL(url).pathname),
+	})],
 	// Fallback estático do Astro; a hospedagem Apache aplica HTTP 301 via .htaccess.
 	redirects: { '/informacoes': { destination: '/mapa-site', status: 301 } },
 });
