@@ -35,6 +35,8 @@ for (const file of htmlFiles) {
 	const h1Count = (html.match(/<h1\b/gi) ?? []).length;
 
 	if (route === 'index.html') {
+		if (!html.includes('id="blog-archive-grid"')) failures.push('Blog: grid não possui ID para navegação acessível.');
+		if (!html.includes('data-blog-search')) failures.push('Blog: pesquisa não encontrada.');
 		report.archiveCards = (html.match(/class=["']blog-card["']/g) ?? []).length;
 		report.responsiveImages = (html.match(/\bsrcset=["']/g) ?? []).length;
 		if (report.archiveCards !== 20) failures.push('Arquivo do blog: esperados 20 cards; obtidos ' + report.archiveCards);
@@ -44,6 +46,17 @@ for (const file of htmlFiles) {
 	}
 
 	report.articles++;
+	// Cada âncora do sumário deve levar a uma seção realmente existente.
+	const sectionAnchors = [...html.matchAll(/href="#(blog-secao-[0-9]+)"/g)].map((match) => match[1]);
+	for (const target of sectionAnchors) {
+		if (!html.includes('id="' + target + '"')) failures.push(route + ': sumário com destino ausente: ' + target);
+	}
+	if (!html.includes('class="blog-article__content"')) {
+		failures.push(route + ': artigo não contém região editorial padrão');
+	}
+	if (!html.includes('application/ld+json') || !html.includes('BlogPosting')) {
+		failures.push(route + ': dados estruturados BlogPosting ausentes');
+	}
 	// Os artigos possuem data de revisão e referências identificáveis.
 	if (!/["']dateModified["']\s*:/.test(html)) {
 		failures.push(route + ': data de revisão ausente no BlogPosting');
