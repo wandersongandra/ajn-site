@@ -46,6 +46,15 @@ const self = blogPosts.find((item) => item.href === post.path);
 const related = blogPosts
 	.filter((item) => item.href !== post.path && item.topic === self?.topic)
 	.slice(0, 3);
+
+// Exibe fotos complementares sem repetir a capa ou a mesma foto mais de uma vez.
+const galleryImages = post.gallery.filter((image, index, images) =>
+	image.src.src !== post.image.src.src
+	&& images.findIndex((entry) => entry.src.src === image.src.src) === index
+);
+const galleryPreview = galleryImages.slice(0, 3);
+const galleryRemaining = galleryImages.slice(3);
+
 ---
 
 <section class="inner-page blog-reading">
@@ -74,11 +83,13 @@ const related = blogPosts
 					class="blog-article__image"
 					src={post.image.src}
 					alt={post.image.alt}
-					width={1200}
+					width={880}
+					widths={[480, 720, 880, 1100]}
+					sizes="(max-width: 800px) calc(100vw - 32px), (max-width: 1100px) 70vw, 760px"
 					format="webp"
 					loading="eager"
+					decoding="async"
 					fetchpriority="high"
-					sizes="(max-width: 900px) 100vw, 850px"
 				/>
 
 				{toc.length > 1 ? (
@@ -96,13 +107,26 @@ const related = blogPosts
 					))}
 				</div>
 
-				{post.gallery.length > 0 ? (
-					<div class="blog-article__gallery" aria-label="Imagens relacionadas ao artigo">
-						{post.gallery.map((image) => (
-							<Image src={image.src} alt={image.alt} width={900} format="webp" loading="lazy" />
-						))}
-					</div>
-				) : null}
+				{galleryImages.length > 0 && (
+					<section class="blog-article__gallery-section" aria-labelledby="article-gallery-title">
+						<h2 id="article-gallery-title">Imagens relacionadas</h2>
+						<div class="blog-article__gallery" aria-label="Galeria do artigo">
+							{galleryPreview.map((image) => (
+								<Image src={image.src} alt={image.alt} width={440} widths={[240, 320, 440, 600]} sizes="(max-width: 620px) 45vw, (max-width: 900px) 30vw, 200px" format="webp" loading="lazy" decoding="async" />
+							))}
+						</div>
+						{galleryRemaining.length > 0 && (
+							<details class="blog-article__gallery-more">
+								<summary>Ver mais {galleryRemaining.length} imagens</summary>
+								<div class="blog-article__gallery">
+									{galleryRemaining.map((image) => (
+										<Image src={image.src} alt={image.alt} width={440} widths={[240, 320, 440, 600]} sizes="(max-width: 620px) 45vw, (max-width: 900px) 30vw, 200px" format="webp" loading="lazy" decoding="async" />
+									))}
+								</div>
+							</details>
+						)}
+					</section>
+				)}
 
 				<footer class="blog-article__footer">
 					{self && (
@@ -132,7 +156,7 @@ const related = blogPosts
 					{related.map((item) => (
 						<article class="blog-related__card">
 							<a href={item.href} class="blog-related__media" aria-label={'Ler: ' + item.title}>
-								<Image src={item.image} alt={item.alt} width={600} format="webp" loading="lazy" />
+								<Image src={item.image} alt={item.alt} width={440} widths={[240, 360, 440, 640]} sizes="(max-width: 620px) calc(100vw - 32px), (max-width: 900px) 45vw, 300px" format="webp" loading="lazy" decoding="async" />
 							</a>
 							<div>
 								<p>{item.topic}</p>
