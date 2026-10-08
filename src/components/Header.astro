@@ -8,16 +8,6 @@ const isCurrent = (href: string) => href === '/'
 ---
 
 <header class="site-header" id="site-header">
-	<div class="topbar">
-		<div class="site-shell topbar__inner">
-			<span class="topbar__address"><span aria-hidden="true">●</span> {site.address}</span>
-			<div class="topbar__contacts">
-				<a href={site.phoneHref} rel="nofollow noopener noreferrer" target="_blank"><span aria-hidden="true">☎</span> {site.phone}</a>
-				<a href={`mailto:${site.email}`}><span aria-hidden="true">✉</span> {site.email}</a>
-			</div>
-		</div>
-	</div>
-
 	<div class="site-shell header-main">
 		<a class="brand" href="/" aria-label="Voltar para a página inicial">
 			<img src="/images/branding/logo.png" alt={site.name} width="200" height="80" />
