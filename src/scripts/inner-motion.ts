@@ -55,3 +55,6 @@ if (main && !main.querySelector('.home-page') && 'IntersectionObserver' in windo
 		main.classList.add('inner-motion-ready');
 	}
 }
+
+// Impede colisao de declaracoes no escopo global com scripts da Home.
+export {};
