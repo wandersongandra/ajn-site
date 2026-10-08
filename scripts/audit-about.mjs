@@ -1,11 +1,11 @@
 // Auditoria exclusiva da rota "Sobre nós" após build Astro.
-import { readFile, stat } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 
 const [html, home, css, js, component, page] = await Promise.all([
 	readFile('dist/sobre-nos/index.html', 'utf8'),
 	readFile('dist/index.html', 'utf8'),
 	readFile('src/styles/about-editorial.css', 'utf8'),
-	readFile('src/scripts/about-motion.ts', 'utf8'),
+	readFile('public/scripts/about-motion.js', 'utf8'),
 	readFile('src/components/InstitutionalPage.astro', 'utf8'),
 	readFile('src/pages/sobre-nos.astro', 'utf8'),
 ]);
@@ -78,7 +78,7 @@ check(css.includes('@media (max-width: 780px)') &&
 check(css.includes(':focus-visible') && css.includes('@media (prefers-reduced-motion: reduce)'),
 	'Foco de teclado e movimento reduzido ausentes.');
 check(page.includes("import '../styles/about-editorial.css'") &&
-	page.includes("import '../scripts/about-motion'"),
+	page.includes('src="/scripts/about-motion.js"'),
 	'CSS e JS precisam carregar exclusivamente na rota sobre-nos.');
 check(!home.includes('class="about-page"'), 'A mudança não pode inserir conteúdo sobre nós na Home.');
 check(!component.includes('<PageShell'), 'Redesign precisa evitar segundo H1 e título genérico empilhado.');

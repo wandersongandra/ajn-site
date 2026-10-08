@@ -6,7 +6,7 @@ const [html, style, motion, motionJs] = await Promise.all([
 	readFile('dist/index.html', 'utf8'),
 	readFile('src/styles/home-editorial.css', 'utf8'),
 	readFile('src/styles/home-motion.css', 'utf8'),
-	readFile('src/scripts/home-motion.ts', 'utf8'),
+	readFile('public/scripts/home.js', 'utf8'),
 ]);
 
 const issues = [];

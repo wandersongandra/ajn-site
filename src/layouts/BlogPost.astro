@@ -5,6 +5,7 @@ import ContentSections from '../components/ContentSections.astro';
 import BlogSidebar from '../components/BlogSidebar.astro';
 import { blogPosts, getRelatedBlogPosts } from '../content/blog/catalog';
 import type { BlogContentData } from '../content.config';
+import { absoluteSiteUrl, serializeJsonLd } from '../utils/site';
 
 interface Props {
 	post: BlogContentData;
@@ -19,7 +20,6 @@ const formattedDate = post.pubDate.toLocaleDateString('pt-BR', {
 });
 const formattedUpdated = post.updatedAt?.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 const articleSchema = {
 	'@context': 'https://schema.org',
 	'@type': 'BlogPosting',
@@ -33,10 +33,10 @@ const articleSchema = {
 	publisher: {
 		'@type': 'Organization',
 		name: 'AJN Consultoria e Engenharia',
-		logo: { '@type': 'ImageObject', url: siteOrigin + '/images/branding/logo.png' },
+		logo: { '@type': 'ImageObject', url: absoluteSiteUrl('/images/branding/logo.png') },
 	},
-	mainEntityOfPage: siteOrigin + post.path,
-	image: [siteOrigin + '/images/og/' + post.slug + '.jpg'],
+	mainEntityOfPage: absoluteSiteUrl(post.path),
+	image: [absoluteSiteUrl('/images/og/' + post.slug + '.jpg')],
 	inLanguage: 'pt-BR',
 };
 
@@ -169,5 +169,5 @@ const galleryRemaining = galleryImages.slice(3);
 			</section>
 		)}
 	</div>
-	<script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+	<script type="application/ld+json" set:html={serializeJsonLd(articleSchema)} />
 </section>

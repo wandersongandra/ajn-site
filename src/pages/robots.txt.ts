@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
+import { siteOrigin } from '../utils/site';
 
 export const prerender = true;
 
 export const GET: APIRoute = () => {
-	const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
 	const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';
 
 	const body = allowIndexing

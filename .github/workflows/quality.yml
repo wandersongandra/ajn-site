@@ -47,6 +47,9 @@ jobs:
       - name: Environment indexing and canonical audit
         run: npm run audit:deploy
 
+      - name: Security baseline audit
+        run: npm run audit:security
+
       - name: Audit regression fixtures
         run: npm run test:audits
 

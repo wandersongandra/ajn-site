@@ -32,6 +32,7 @@ private/
 # browser and local preview artifacts
 .playwright-cli/
 output/
+.tmp-og-test/
 
 # Phase 2 visual QA screenshots
 tests/visual/screenshots/

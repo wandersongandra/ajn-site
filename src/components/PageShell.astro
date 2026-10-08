@@ -4,8 +4,9 @@ interface Props {
 }
 
 const { heading } = Astro.props;
-const siteOrigin = (import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://www.ajnengenharia.com.br').replace(/\/+$/, '');
-const currentUrl = `${siteOrigin}${Astro.url.pathname}`;
+import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
+
+const currentUrl = absoluteSiteUrl(Astro.url.pathname);
 const breadcrumbSchema = {
 	'@context': 'https://schema.org',
 	'@type': 'BreadcrumbList',
@@ -30,5 +31,5 @@ const breadcrumbSchema = {
 			<slot />
 		</div>
 	</div>
-	<script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+	<script type="application/ld+json" set:html={serializeJsonLd(breadcrumbSchema)} />
 </section>
