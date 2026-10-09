@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/nr-12-analise-de-riscos-de-maquinas.webp';
 import image from '../../assets/blog/editorial-maquinas.webp';
 import type { BlogContentData } from '../types';
 
@@ -10,7 +11,7 @@ export const blogNr12AnaliseDeRiscosDeMaquinas = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Normas regulamentadoras',
-  image: { src: image, alt: 'Ilustração técnica de máquina esquemática com proteção e componentes de segurança' },
+  image: { src: ajnEditorial, alt: 'Escavadeira em operação no canteiro de obras' },
   categories: ['Normas regulamentadoras'],
   tags: ['NR-12', 'máquinas', 'análise de risco', 'proteções'],
   gallery: [],
