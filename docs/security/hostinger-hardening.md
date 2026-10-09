@@ -23,7 +23,7 @@ Hostinger documenta `.htaccess` em planos de hospedagem compatíveis, com limita
 
 ## Plano de rollout
 
-1. Manter esta PR em draft até confirmar com o operador o plano, document root, versão/configuração do LiteSpeed e como validar uma cópia de preview sem substituir o site.
+1. Manter esta PR em draft até confirmar com o operador o plano, document root, versão/configuração do LiteSpeed e como validar uma cópia de preview sem substituir o site. O Quality Gate desta PR falhou por a branch base `main` ainda conter o title SEO PGR com 23 caracteres; correção está na PR #50. Repetir os checks depois que a dependência for resolvida. Não mesclar nem disparar publicação sem autorização específica.
 2. Em preview isolado, testar páginas representativas, todos os recursos no console, headers HTTP, redirect 302, certificado TLS, caminhos codificados e query strings. Confirmar ausência de loop e comportamento de `/informacoes`.
 3. Revisar os eventos CSP manualmente; como não há collector, registrar URLs/recursos legítimos observados sem dados pessoais. Não promover CSP enquanto houver violações não explicadas.
 4. Só após aprovação explícita, aplicar/publicar a alteração em janela controlada. Repetir GET dos headers e `www` para apex. Não executar pelo agente.
