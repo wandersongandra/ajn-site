@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/gestao-de-terceiros-em-sst.webp';
 import image from '../../assets/blog/editorial-terceiros.webp';
 import type { BlogContentData } from '../types';
 
@@ -10,7 +11,7 @@ export const blogGestaoDeTerceirosEmSst = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Gestão de SST',
-  image: { src: image, alt: 'Ilustração editorial do fluxo de informações de SST entre empresa contratante e contratada' },
+  image: { src: ajnEditorial, alt: 'Profissionais com equipamentos de proteção reunidos durante atividade de campo' },
   categories: ['Gestão de SST'],
   tags: ['terceirização', 'mobilização', 'NR-1', 'documentação'],
   gallery: [],
