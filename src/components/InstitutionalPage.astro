@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import fachada from '../assets/about/fachada.webp';
-import institutionalPhoto from '../assets/about/sobre-nos.webp';
+import institutionalPhoto from '../assets/about/ajn/equipe-ajn-telhado.webp';
 import { institutionalPage } from '../content/institutional/sobre-nos';
 import { absoluteSiteUrl, serializeJsonLd } from '../utils/site';
 
@@ -72,7 +72,7 @@ const breadcrumbs = {
 	<section class="about-page__principles" aria-labelledby="about-principles-title">
 		<div class="site-shell about-page__principles-grid">
 			<figure class="about-page__principles-media" data-about-reveal>
-				<Image src={institutionalPhoto} alt="" role="presentation" format="webp" quality={84}
+				<Image src={institutionalPhoto} alt="Profissionais com capacetes da equipe AJN em uma área técnica" format="webp" quality={84}
 					widths={[400, 640, 800, 960]}
 					sizes="(max-width: 780px) calc(100vw - 32px), 43vw"
 					loading="lazy" decoding="async"
