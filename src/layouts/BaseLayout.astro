@@ -32,6 +32,8 @@ const title = seo.title;
 const description = seo.description;
 const canonicalUrl = absoluteSiteUrl(normalizedPath);
 const imageUrl = absoluteSiteUrl(ogImage);
+const ga4Candidate = (import.meta.env.PUBLIC_GA4_MEASUREMENT_ID ?? '').trim().toUpperCase();
+const ga4MeasurementId = /^G-[A-Z0-9]{6,20}$/.test(ga4Candidate) ? ga4Candidate : '';
 const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';
 const robotsDirective = allowIndexing && !noindex
 	? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'
@@ -106,14 +108,21 @@ const websiteSchema = {
 		<Header />
 		<main id="conteudo-principal"><slot /></main>
 		<Footer />
-		<aside id="ajn-privacy-notice" class="privacy-notice" aria-labelledby="ajn-privacy-title" aria-describedby="ajn-privacy-description" hidden>
+		<aside id="ajn-privacy-notice" class="privacy-notice" aria-labelledby="ajn-privacy-title" aria-describedby="ajn-privacy-description" data-ga4-id={ga4MeasurementId} hidden>
 			<div class="privacy-notice__copy">
-				<h2 id="ajn-privacy-title">Privacidade na AJN</h2>
-				<p id="ajn-privacy-description">Utilizamos recursos necessários para disponibilizar o site e serviços externos, como fontes. Não identificamos cookies de publicidade ou análise no código atual. Consulte como seus dados podem ser tratados.</p>
+				<h2 id="ajn-privacy-title">Suas preferências de privacidade</h2>
+				<p id="ajn-privacy-description">Usamos recursos técnicos para disponibilizar o site. Com sua autorização, poderemos utilizar o Google Analytics para conhecer as páginas visitadas e a origem geográfica aproximada dos acessos. Sem autorização, não carregamos o Analytics.</p>
+				<div class="privacy-notice__choices" data-privacy-options hidden>
+					<label class="privacy-notice__choice"><input type="checkbox" checked disabled /> <span><strong>Necessários</strong> — recursos indispensáveis ao funcionamento do site.</span></label>
+					<label class="privacy-notice__choice"><input type="checkbox" data-privacy-analytics /> <span><strong>Análise de audiência</strong> — Google Analytics 4, opcional.</span></label>
+				</div>
 			</div>
 			<div class="privacy-notice__actions">
-				<a href="/politica-de-privacidade/#cookies">Ver detalhes</a>
-				<button type="button" data-privacy-acknowledge>Entendi</button>
+				<a href="/politica-de-privacidade/#cookies">Política de cookies</a>
+				<button type="button" class="privacy-notice__secondary" data-privacy-customize>Personalizar</button>
+				<button type="button" class="privacy-notice__secondary" data-privacy-reject>Rejeitar opcionais</button>
+				<button type="button" data-privacy-accept>Aceitar análise</button>
+				<button type="button" data-privacy-save hidden>Salvar preferências</button>
 			</div>
 		</aside>
 		<script is:inline src="/scripts/privacy-notice.js" defer></script>

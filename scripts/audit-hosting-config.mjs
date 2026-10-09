@@ -13,9 +13,11 @@ const reportOnly = header('Content-Security-Policy-Report-Only');
 check(Boolean(enforced), 'A CSP atualmente enforced deve ser preservada.');
 check(Boolean(reportOnly), 'A CSP candidata deve permanecer em Report-Only.');
 check(cspSourcesEqual(reportOnly, 'default-src', ["'self'"]) &&
-	cspSourcesEqual(reportOnly, 'script-src', ["'self'"]), 'CSP candidata deve restringir default/script a self.');
+	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com']), 'CSP candidata deve restringir default/script a self.');
 check(cspSourcesEqual(reportOnly, 'form-action', ["'self'"]) &&
-	cspSourcesEqual(reportOnly, 'img-src', ["'self'", 'data:']), 'CSP candidata deve restringir forms e imagens.');
+	cspSourcesEqual(reportOnly, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']), 'CSP candidata deve restringir forms e imagens.');
+check(cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com']),
+  'CSP candidata deve permitir apenas endpoints de medição GA4 conhecidos.');
 check(cspSourcesEqual(reportOnly, 'style-src', ["'self'", 'https://fonts.googleapis.com']) &&
 	cspSourcesEqual(reportOnly, 'font-src', ["'self'", 'https://fonts.gstatic.com']),
 	'CSP candidata deve permitir somente as origens exatas de Google Fonts nos respectivos contextos.');

@@ -2727,3 +2727,16 @@ h3 { font-size: 24px; }
 @media (prefers-reduced-motion: reduce) {
   .privacy-notice, .privacy-notice * { transition: none !important; animation: none !important; }
 }
+
+/* Preferências granulares: mesma legibilidade para aceitar e rejeitar. */
+.privacy-notice__choices[hidden], .privacy-notice__actions [hidden] { display: none !important; }
+.privacy-notice__choices { display: grid; gap: 10px; margin-top: 14px; }
+.privacy-notice__choice { display: flex; align-items: flex-start; gap: 10px; font-size: .85rem; line-height: 1.5; }
+.privacy-notice__choice input { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; accent-color: #225d42; }
+.privacy-notice__actions { flex-wrap: wrap; justify-content: flex-end; }
+.privacy-notice__actions .privacy-notice__secondary { background: #fff; color: #225d42; }
+.privacy-notice__actions .privacy-notice__secondary:hover { background: #eff6f1; }
+@media (max-width: 700px) {
+  .privacy-notice__actions { justify-content: flex-start; }
+  .privacy-notice__actions button { flex: 1 1 145px; }
+}
