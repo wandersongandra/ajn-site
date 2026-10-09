@@ -1,57 +1,79 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageShell from '../components/PageShell.astro';
+import { site } from '../data/home';
 
 const heading = 'Termos de Uso';
 ---
 
 <BaseLayout
 	title="Termos de Uso | AJN Consultoria e Engenharia"
-	description="Consulte as condições de acesso e uso do site da AJN Consultoria e Engenharia."
+	description="Conheça as condições de uso do site institucional da AJN, as orientações sobre conteúdo técnico, direitos autorais e canais de contato."
 	canonicalPath="/termos-de-uso"
 >
 	<PageShell heading={heading}>
-		<section class="content-section">
-			<h2>1. Aceitação e aplicação</h2>
-			<p>Ao acessar <a href="https://ajnengenharia.com.br/">ajnengenharia.com.br</a>, você concorda com estes Termos de Uso e com a legislação aplicável. Se não concordar, não utilize o site. O conteúdo é informativo e institucional; a consulta ao site, por si só, não constitui contratação de serviço nem substitui uma avaliação técnica específica.</p>
-		</section>
+		<article class="legal-document" aria-label="Condições de uso do site da AJN">
+			<div class="legal-document__introduction">
+				<p>Estas condições descrevem o uso do site institucional <a href="https://ajnengenharia.com.br/">ajnengenharia.com.br</a>, mantido pela AJN Consultoria e Engenharia. O site apresenta informações gerais sobre serviços de segurança e saúde no trabalho e engenharia, além de oferecer canais de contato.</p>
+			</div>
+			<nav class="legal-document__contents" aria-label="Nestes Termos de Uso">
+				<strong>Nesta página</strong>
+				<ul>
+					<li><a href="#finalidade">Finalidade do site</a></li>
+					<li><a href="#direitos-autorais">Propriedade intelectual</a></li>
+					<li><a href="#uso-responsavel">Uso responsável</a></li>
+					<li><a href="#informacoes-tecnicas">Informações técnicas</a></li>
+					<li><a href="#terceiros">Serviços externos</a></li>
+					<li><a href="#privacidade">Privacidade</a></li>
+					<li><a href="#atualizacoes">Alterações e contato</a></li>
+				</ul>
+			</nav>
 
-		<section class="content-section">
-			<h2>2. Uso permitido e propriedade intelectual</h2>
-			<p>É permitido acessar e consultar temporariamente o conteúdo para uso pessoal e não comercial. Textos, imagens, marcas e demais materiais são protegidos pelas normas de propriedade intelectual aplicáveis. Sem autorização do titular, não é permitido:</p>
-			<ul class="content-list">
-				<li>reproduzir, modificar ou distribuir o conteúdo para finalidade comercial ou exibição pública;</li>
-				<li>remover avisos de autoria ou de propriedade;</li>
-				<li>tentar descompilar ou fazer engenharia reversa de software disponibilizado no site; ou</li>
-				<li>republicar ou espelhar os materiais em outro servidor.</li>
-			</ul>
-			<p>Uma autorização concedida poderá ser encerrada em caso de descumprimento destas condições. Cópias obtidas para consulta devem deixar de ser utilizadas quando a autorização terminar, sem prejuízo de direitos assegurados pela legislação.</p>
-		</section>
+			<section id="finalidade" class="content-section">
+				<h2>1. Finalidade e alcance</h2>
+				<p>O acesso a este site permite consultar informações institucionais e conhecer os serviços da AJN. O conteúdo publicado é informativo: não constitui contratação automática nem substitui um diagnóstico, laudo, projeto, treinamento ou orientação técnica individualizada.</p>
+				<p>Solicitações de orçamento e contratação dependem de análise de escopo e das condições definidas diretamente entre as partes. Estes Termos não afastam direitos previstos na legislação brasileira.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>3. Uso responsável</h2>
-			<p>Você se compromete a utilizar o site de forma lícita e a não tentar comprometer sua disponibilidade, segurança ou funcionamento. Não é permitido introduzir ou disseminar vírus ou código malicioso, acessar sistemas sem autorização ou utilizar o site para publicar ou transmitir conteúdo ilegal, discriminatório ou que viole direitos de terceiros.</p>
-		</section>
+			<section id="direitos-autorais" class="content-section">
+				<h2>2. Conteúdo e propriedade intelectual</h2>
+				<p>Textos, imagens, marcas, elementos de identidade e demais materiais podem estar protegidos pelos direitos de seus respectivos titulares. É permitido acessar e consultar o conteúdo para conhecer os serviços apresentados, respeitada a legislação aplicável.</p>
+				<p>Sem autorização do titular dos direitos, não é permitido:</p>
+				<ul class="content-list">
+					<li>reproduzir, comercializar, modificar ou distribuir conteúdos protegidos fora das hipóteses permitidas por lei;</li>
+					<li>remover avisos de autoria ou de propriedade intelectual;</li>
+					<li>tentar acessar ou modificar áreas e recursos técnicos sem autorização; ou</li>
+					<li>republicar integralmente os materiais como se fossem próprios.</li>
+				</ul>
+				<p>Materiais de terceiros mencionados ou utilizados no site permanecem sujeitos aos direitos de seus respectivos titulares.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>4. Informações e disponibilidade</h2>
-			<p>O conteúdo é disponibilizado conforme apresentado e pode conter erros técnicos, tipográficos ou desatualizações. A AJN procura manter as informações adequadas, mas não garante que todo conteúdo esteja sempre completo, atualizado ou disponível sem interrupções. Informações gerais do site não substituem análise, orientação ou contratação específica.</p>
-			<p>Na medida permitida pela legislação aplicável, a AJN não responde por danos decorrentes da impossibilidade de uso do site ou da confiança exclusiva em informações gerais aqui publicadas. Esta disposição não exclui responsabilidades ou direitos que não possam ser afastados por lei.</p>
-		</section>
+			<section id="uso-responsavel" class="content-section">
+				<h2>3. Uso responsável</h2>
+				<p>O visitante deve utilizar o site de maneira lícita, sem tentar prejudicar sua disponibilidade, segurança ou funcionamento. Não são permitidas tentativas de acesso não autorizado, distribuição de códigos maliciosos ou outras condutas que violem direitos de terceiros.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>5. Links para terceiros</h2>
-			<p>O site pode conter links para páginas ou serviços de terceiros. A inclusão de um link não significa recomendação ou endosso. A AJN não controla esses serviços nem se responsabiliza por seu conteúdo ou funcionamento; o acesso é feito conforme as condições e políticas do respectivo terceiro.</p>
-		</section>
+			<section id="informacoes-tecnicas" class="content-section">
+				<h2>4. Informações técnicas e disponibilidade</h2>
+				<p>A AJN procura apresentar informações úteis e atualizadas, mas conteúdos institucionais podem sofrer alterações ou conter imprecisões. A disponibilidade contínua do site não é garantida, especialmente em situações de manutenção, incidentes de infraestrutura ou indisponibilidade de serviços de terceiros.</p>
+				<p>As informações gerais publicadas não substituem avaliação técnica das condições reais de cada empresa ou atividade. Eventuais responsabilidades serão apuradas nos limites permitidos pela legislação aplicável, sem afastar direitos que a lei assegure ao visitante.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>6. Alterações destes termos</h2>
-			<p>Estes Termos podem ser atualizados quando necessário. A versão vigente será publicada nesta página. O uso do site após uma atualização significa que você teve acesso à versão publicada, sem afastar direitos previstos na legislação aplicável.</p>
-		</section>
+			<section id="terceiros" class="content-section">
+				<h2>5. Links e plataformas externas</h2>
+				<p>O site contém links para plataformas de treinamentos, WhatsApp e redes sociais, entre outros recursos externos. O acesso a esses serviços depende das condições e políticas de cada fornecedor; a presença de um link não representa garantia sobre seu funcionamento ou suas práticas.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>7. Legislação aplicável</h2>
-			<p>Estes Termos são interpretados conforme a legislação aplicável no Brasil. Nada nestas disposições limita direitos ou garantias que a legislação determine como indisponíveis.</p>
-		</section>
+			<section id="privacidade" class="content-section">
+				<h2>6. Privacidade e cookies</h2>
+				<p>O tratamento de informações pessoais e os recursos técnicos utilizados durante a navegação estão explicados na <a href="/politica-de-privacidade/">Política de Privacidade</a>. Para informações específicas sobre cookies, consulte a seção <a href="/politica-de-privacidade/#cookies">Cookies e recursos externos</a>.</p>
+			</section>
+
+			<section id="atualizacoes" class="content-section">
+				<h2>7. Alterações, legislação e contato</h2>
+				<p>Estes Termos podem ser atualizados quando necessário, e a versão vigente permanecerá disponível nesta página. O conteúdo e a interpretação destas condições observam a legislação aplicável no Brasil, sem afastar direitos ou garantias indisponíveis previstos em lei.</p>
+				<p>Para solicitar informações sobre o site ou seus serviços, entre em contato com a AJN pelo e-mail <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+			</section>
+		</article>
 	</PageShell>
 </BaseLayout>

@@ -4,45 +4,112 @@ import PageShell from '../components/PageShell.astro';
 import { site } from '../data/home';
 
 const heading = 'Política de Privacidade';
+// O formulário só é oferecido quando existe endpoint HTTPS configurado.
+const formAvailable = (() => {
+	try {
+		const endpoint = new URL(import.meta.env.PUBLIC_CONTACT_ENDPOINT?.trim() ?? '');
+		return endpoint.protocol === 'https:' && !endpoint.username && !endpoint.password;
+	} catch {
+		return false;
+	}
+})();
 ---
 
 <BaseLayout
 	title="Política de Privacidade | AJN Consultoria e Engenharia"
-	description="Saiba como a AJN Consultoria e Engenharia trata informações relacionadas à navegação e aos contatos feitos pelo site."
+	description="Conheça as informações tratadas pela AJN em seus canais digitais, seus direitos, as tecnologias de navegação e como entrar em contato."
 	canonicalPath="/politica-de-privacidade"
 >
 	<PageShell heading={heading}>
-		<section class="content-section">
-			<p>Esta Política de Privacidade explica como a AJN Consultoria e Engenharia trata informações relacionadas ao acesso a <a href="https://ajnengenharia.com.br/">ajnengenharia.com.br</a> e aos contatos iniciados por meio dos canais apresentados neste site.</p>
-			<p>O site é institucional. Na versão pública verificada, não há formulário de contato ativo. Você pode falar com a AJN pelo e-mail <a href={`mailto:${site.email}`}>{site.email}</a> ou pelo WhatsApp indicado na página. Ao escolher um desses canais, você decide quais informações incluir na mensagem; o conteúdo será recebido e tratado para compreender e responder à solicitação.</p>
-		</section>
+		<article class="legal-document" aria-label="Informações sobre privacidade e dados pessoais">
+			<div class="legal-document__introduction">
+				<p>Este documento explica como a AJN Consultoria e Engenharia utiliza informações relacionadas à navegação pelo site <a href="https://ajnengenharia.com.br/">ajnengenharia.com.br</a> e aos contatos iniciados por seus canais institucionais. Ele se refere ao site da AJN, não às políticas de sistemas de terceiros acessados por links.</p>
+				<p>Para consultar especificamente as tecnologias de navegação, acesse a seção <a href="#cookies">Cookies e recursos externos</a>.</p>
+			</div>
+			<nav class="legal-document__contents" aria-label="Nesta Política de Privacidade">
+				<strong>Nesta página</strong>
+				<ul>
+					<li><a href="#responsavel">Responsável e contato</a></li>
+					<li><a href="#dados-pessoais">Informações tratadas</a></li>
+					<li><a href="#finalidades">Finalidades e fundamentos</a></li>
+					<li><a href="#compartilhamento">Serviços externos</a></li>
+					<li><a href="#retencao">Retenção e segurança</a></li>
+					<li><a href="#cookies">Cookies e navegação</a></li>
+					<li><a href="#direitos">Seus direitos</a></li>
+				</ul>
+			</nav>
 
-		<section class="content-section">
-			<h2>Informações e finalidade</h2>
-			<p>A AJN solicita informações pessoais somente quando necessárias para atender uma solicitação ou prestar um serviço. As informações fornecidas diretamente são utilizadas para a finalidade informada no contato e não são divulgadas publicamente. O compartilhamento poderá ocorrer quando necessário para atender à solicitação, cumprir obrigação legal ou proteger direitos, observada a legislação aplicável.</p>
-			<p>As mensagens recebidas por e-mail ou WhatsApp também podem ser tratadas pelos respectivos provedores, de acordo com as políticas e configurações desses serviços. O site contém links para serviços e páginas externas, que possuem práticas próprias de privacidade.</p>
-		</section>
+			<section id="responsavel" class="content-section">
+				<h2>Responsável e canal de contato</h2>
+				<p>Para assuntos relacionados aos dados pessoais tratados pela AJN, o contato institucional é:</p>
+				<address class="legal-document__contact">
+					<strong>AJN Consultoria e Engenharia</strong>
+					<span>CNPJ: 50.970.588/0001-84</span>
+					<span>{site.fullAddress}</span>
+					<a href={`mailto:${site.email}`}>{site.email}</a>
+				</address>
+				<p>Esse endereço também pode ser utilizado para dúvidas sobre esta política e solicitações relacionadas à Lei Geral de Proteção de Dados Pessoais (LGPD). A publicação desse canal não equivale à indicação de um encarregado específico.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>Retenção e proteção</h2>
-			<p>As informações recebidas são mantidas pelo período necessário para responder à solicitação, prestar o serviço ou cumprir obrigações aplicáveis. A AJN adota medidas de proteção compatíveis com a natureza das informações para reduzir riscos de acesso, uso, alteração ou divulgação não autorizados.</p>
-			<p>O site carrega fontes tipográficas do Google Fonts. Essa requisição a um serviço externo é necessária para exibir a tipografia configurada; consulte a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade do Google</a> para informações sobre o tratamento feito pelo provedor.</p>
-		</section>
+			<section id="dados-pessoais" class="content-section">
+				<h2>Quais informações podem ser tratadas</h2>
+				<ul class="content-list">
+					<li><strong>Contatos voluntários:</strong> nome, endereço de e-mail, telefone, empresa e outras informações que a pessoa optar por compartilhar ao escrever para a AJN por e-mail ou WhatsApp.</li>
+					<li><strong>Dados técnicos de acesso:</strong> endereço IP, horários, páginas solicitadas e informações do navegador podem constar em registros técnicos de servidores e provedores de hospedagem, para entrega das páginas, operação e segurança.</li>
+					<li><strong>Solicitações de serviços:</strong> informações sobre demandas de SST e engenharia compartilhadas durante o atendimento, conforme a necessidade da solicitação.</li>
+				</ul>
+				{formAvailable ? (
+					<p>A página de contato também pode apresentar um formulário, conforme a configuração ativa do site. Os dados enviados por esse recurso seguem para o serviço HTTPS responsável pelo recebimento, cujas condições devem ser verificadas pela AJN antes da ativação.</p>
+				) : (
+					<p>Na configuração atual do site, o formulário eletrônico não está habilitado; os contatos são iniciados pelos canais de e-mail e WhatsApp publicados.</p>
+				)}
+				<p>Evite enviar dados pessoais sensíveis, documentos médicos ou informações desnecessárias pelos canais públicos de contato.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>Cookies e publicidade</h2>
-			<p>Na versão do código do site analisada, não foram encontrados recursos de publicidade, Google AdSense, DoubleClick, rastreamento de afiliados ou ferramentas de analytics, nem código próprio destinado a gravar cookies. Essa descrição se refere ao site e ao código verificados; provedores de hospedagem, comunicação ou serviços externos podem operar de acordo com suas próprias configurações e políticas.</p>
-		</section>
+			<section id="finalidades" class="content-section">
+				<h2>Finalidades e fundamentos do tratamento</h2>
+				<p>As informações fornecidas diretamente podem ser utilizadas para responder a dúvidas, avaliar solicitações, preparar propostas, dar continuidade a atendimentos e cumprir obrigações relacionadas à prestação de serviços. Os registros técnicos da navegação podem ser utilizados para operação, diagnóstico e proteção da infraestrutura.</p>
+				<p>O fundamento jurídico aplicável depende da atividade e do contexto, incluindo procedimentos preliminares relacionados à contratação, cumprimento de obrigações legais ou regulatórias e outras hipóteses previstas na LGPD, quando pertinentes. O envio de uma mensagem não significa, por si só, consentimento para publicidade ou rastreamento.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>Links externos e suas escolhas</h2>
-			<p>Links para outros sites são fornecidos para conveniência. A AJN não controla o conteúdo nem as práticas desses serviços externos e recomenda que você consulte as políticas correspondentes. Você pode optar por não fornecer informações em uma mensagem, entendendo que isso pode limitar a possibilidade de resposta ou atendimento.</p>
-		</section>
+			<section id="compartilhamento" class="content-section">
+				<h2>Hospedagem, comunicação e serviços externos</h2>
+				<p>A operação do site depende de serviços de hospedagem e entrega de conteúdo. Ao acessar a página, esses provedores podem receber informações técnicas necessárias à conexão e ao funcionamento do serviço.</p>
+				<p>O site carrega a fonte tipográfica Google Fonts, que envolve requisições aos domínios do Google. Consulte a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade do Google</a> para entender as práticas do provedor.</p>
+				<p>Ao optar por acessar WhatsApp, redes sociais ou a plataforma de treinamentos por links, o visitante passa a utilizar serviços externos, sujeitos às respectivas políticas. As informações compartilhadas em mensagens também podem ser processadas pelos provedores desses canais.</p>
+				<p>O compartilhamento de dados pela AJN, quando necessário para atendimento, obrigações aplicáveis ou exercício de direitos, deve observar a finalidade e a legislação pertinente. O uso de infraestrutura ou serviços internacionais deve ser avaliado conforme as regras aplicáveis a transferências internacionais de dados.</p>
+			</section>
 
-		<section class="content-section">
-			<h2>Solicitações e contato</h2>
-			<p>Para dúvidas ou solicitações relacionadas a informações pessoais que você tenha enviado à AJN, entre em contato pelo endereço <a href={`mailto:${site.email}`}>{site.email}</a>. A solicitação será analisada conforme as circunstâncias e a legislação aplicável.</p>
-			<p>Esta política pode ser atualizada para refletir mudanças no site ou em suas práticas. A versão vigente ficará disponível nesta página.</p>
-		</section>
+			<section id="retencao" class="content-section">
+				<h2>Retenção e segurança</h2>
+				<p>O período de manutenção dos dados depende da finalidade do contato, da relação eventualmente estabelecida e das obrigações aplicáveis. Quando não existir necessidade legítima de manutenção, os dados devem ser eliminados ou tratados conforme a legislação. Para informações sobre uma solicitação específica, utilize o canal de contato informado nesta página.</p>
+				<p>A AJN declara adotar medidas de proteção compatíveis com as informações sob sua responsabilidade. Nenhum serviço conectado à internet oferece risco zero; comunicações sensíveis devem ser encaminhadas por canais adequados à sua natureza.</p>
+			</section>
+
+			<section id="cookies" class="content-section">
+				<h2>Cookies e recursos externos</h2>
+				<p>Na versão do código-fonte examinada, o site institucional da AJN não implementa cookies próprios de análise de audiência, publicidade comportamental ou personalização, nem integra Google Analytics, Meta Pixel ou ferramentas equivalentes. Não identificamos scripts próprios criando ou lendo cookies no navegador.</p>
+				<p>A infraestrutura de hospedagem e serviços externos podem empregar mecanismos técnicos de sessão, segurança, rede ou cache conforme suas configurações. A ausência de cookies no código da AJN não comprova a inexistência de todos os cookies ou identificadores gerados pela infraestrutura durante o acesso.</p>
+				<h3>Como as tecnologias são utilizadas</h3>
+				<ul class="content-list">
+					<li><strong>Operação e segurança:</strong> registros técnicos e eventuais cookies estritamente necessários à entrega, proteção ou manutenção do site podem decorrer da hospedagem, quando configurados pelo provedor.</li>
+					<li><strong>Fontes externas:</strong> para exibir a tipografia, o navegador faz requisições ao Google Fonts; isso pode envolver dados técnicos de conexão, independentemente do uso de cookies.</li>
+					<li><strong>Medição e publicidade:</strong> não foram identificadas integrações ativas dessas categorias no código analisado. Caso sejam adicionadas, a AJN deverá atualizar este aviso e implantar controles de preferência e consentimento quando exigidos.</li>
+				</ul>
+				<p>É possível revisar ou bloquear cookies pelas configurações do navegador. A restrição de tecnologias necessárias pode afetar o funcionamento de determinados serviços. O acesso por links ao WhatsApp, redes sociais ou treinamento fica sujeito às práticas dos respectivos destinos.</p>
+				<p><strong>Por que não há banner de aceite neste momento?</strong> Não identificamos cookies não necessários ativos no código institucional que justifiquem solicitar um consentimento de rastreamento. Um aviso que alegasse coletar consentimento sem efetivamente controlar tecnologias seria enganoso. Esta avaliação deve ser refeita se a AJN ativar métricas, publicidade, vídeos incorporados ou outras integrações.</p>
+			</section>
+
+			<section id="direitos" class="content-section">
+				<h2>Direitos de quem fornece dados</h2>
+				<p>Conforme a LGPD e as condições aplicáveis a cada situação, você pode solicitar confirmação de tratamento, acesso, correção de informações, eliminação ou bloqueio quando cabível, informações sobre compartilhamento e outros direitos previstos em lei. Quando a base legal for o consentimento, é possível solicitar sua revogação.</p>
+				<p>Para exercer seus direitos ou esclarecer como seus dados foram tratados, escreva para <a href={`mailto:${site.email}`}>{site.email}</a>, descrevendo a solicitação. Poderemos precisar verificar a identidade do solicitante antes de disponibilizar dados, evitando acesso indevido por terceiros.</p>
+			</section>
+
+			<section id="atualizacoes" class="content-section">
+				<h2>Atualizações e documentos relacionados</h2>
+				<p>Esta política pode ser revista se as práticas, funcionalidades ou fornecedores do site forem alterados. A versão vigente será disponibilizada aqui. Para as condições de uso do conteúdo institucional, consulte os <a href="/termos-de-uso/">Termos de Uso</a>.</p>
+			</section>
+		</article>
 	</PageShell>
 </BaseLayout>
