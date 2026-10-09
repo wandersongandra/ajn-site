@@ -147,5 +147,7 @@ export const routeCatalog: readonly RouteCatalogEntry[] = [
 	{ path: "/plataforma-acessibilidade-preco", title: "Plataforma de acessibilidade preço - AJN Consultoria e Engenharia" },
 	{ path: "/emissao-ltcat", title: "Emissão ltcat - AJN Consultoria e Engenharia" },
 	{ path: "/escada-rolante-bh", title: "Escada rolante bh - AJN Consultoria e Engenharia" },
+	{ path: "/projetos-spda", title: "Projetos de SPDA - AJN Consultoria e Engenharia" },
+	{ path: "/projetos-cabeamento-estruturado", title: "Projetos de cabeamento estruturado - AJN Consultoria e Engenharia" },
 ] as const;
 
