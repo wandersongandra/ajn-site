@@ -12,9 +12,12 @@ const heading = 'Termos de Uso';
 	canonicalPath="/termos-de-uso"
 >
 	<PageShell heading={heading}>
-		<article class="legal-document" aria-label="Condições de uso do site da AJN">
+		<article class="legal-document legal-document--terms" aria-label="Condições de uso do site da AJN">
+			<div class="legal-document__eyebrow"><span class="legal-document__eyebrow-line" aria-hidden="true"></span> Informações institucionais <span class="legal-document__edition">Revisão: outubro de 2026</span></div>
 			<div class="legal-document__introduction">
-				<p>Estas condições descrevem o uso do site institucional <a href="https://ajnengenharia.com.br/">ajnengenharia.com.br</a>, mantido pela AJN Consultoria e Engenharia. O site apresenta informações gerais sobre serviços de segurança e saúde no trabalho e engenharia, além de oferecer canais de contato.</p>
+				<p>Este é o espaço institucional da AJN Consultoria e Engenharia. Aqui apresentamos nossa atuação em Segurança e Saúde no Trabalho e engenharia, compartilhamos conteúdo técnico e disponibilizamos canais para conversar sobre serviços.</p>
+				<p>Estas condições explicam o que o site oferece, como seu conteúdo pode ser utilizado e quais são os limites das informações publicadas.</p>
+				<div class="legal-document__quicklinks" aria-label="Acessos rápidos"><a href="#informacoes-tecnicas">Informações técnicas <span aria-hidden="true">↗</span></a><a href="/politica-de-privacidade/">Como tratamos dados <span aria-hidden="true">↗</span></a></div>
 			</div>
 			<nav class="legal-document__contents" aria-label="Nestes Termos de Uso">
 				<strong>Nesta página</strong>
@@ -66,12 +69,12 @@ const heading = 'Termos de Uso';
 
 			<section id="privacidade" class="content-section">
 				<h2>6. Privacidade e cookies</h2>
-				<p>O tratamento de informações pessoais e os recursos técnicos utilizados durante a navegação estão explicados na <a href="/politica-de-privacidade/">Política de Privacidade</a>. Para informações específicas sobre cookies, consulte a seção <a href="/politica-de-privacidade/#cookies">Cookies e recursos externos</a>.</p>
+				<p>A <a href="/politica-de-privacidade/">Política de Privacidade</a> explica os dados tratados pela AJN, as finalidades e como exercer seus direitos. A <a href="/politica-de-cookies/">Política de Cookies</a> descreve as categorias de tecnologias de navegação, incluindo a análise opcional por Google Analytics 4. Para referência, veja também a seção <a href="/politica-de-privacidade/#cookies">Cookies e recursos externos</a>.</p>
 			</section>
 
 			<section id="atualizacoes" class="content-section">
 				<h2>7. Alterações, legislação e contato</h2>
-				<p>Estes Termos podem ser atualizados quando necessário, e a versão vigente permanecerá disponível nesta página. O conteúdo e a interpretação destas condições observam a legislação aplicável no Brasil, sem afastar direitos ou garantias indisponíveis previstos em lei.</p>
+				<p>Revisados em outubro de 2026. Estes Termos podem ser atualizados quando necessário, e a versão vigente permanecerá disponível nesta página. O conteúdo e a interpretação destas condições observam a legislação aplicável no Brasil, sem afastar direitos ou garantias indisponíveis previstos em lei.</p>
 				<p>Para solicitar informações sobre o site ou seus serviços, entre em contato com a AJN pelo e-mail <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
 			</section>
 		</article>

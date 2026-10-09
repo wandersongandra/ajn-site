@@ -6,6 +6,7 @@ const expect = (ok, note) => { if (!ok) issues.push(note); };
 const pages = [
 	['privacidade', 'dist/politica-de-privacidade/index.html', '/politica-de-privacidade/'],
 	['termos', 'dist/termos-de-uso/index.html', '/termos-de-uso/'],
+	['cookies', 'dist/politica-de-cookies/index.html', '/politica-de-cookies/'],
 ];
 const origin = process.env.PUBLIC_SITE_ORIGIN?.replace(/\/+$/, '');
 const indexing = process.env.PUBLIC_ALLOW_INDEXING;
@@ -19,7 +20,8 @@ for (const [label, filename, route] of pages) {
 	const robots = /<meta name="robots" content="([^"]+)"/i.exec(html)?.[1] ?? '';
 	expect(indexing === 'true' ? !/\bnoindex\b/i.test(robots) : /\bnoindex\b/i.test(robots), label + ': indexação incorreta.');
 	expect((html.match(/<h1\b/g) ?? []).length === 1, label + ': deve haver H1 único.');
-	expect(html.includes('class="legal-document"'), label + ': falta estrutura de leitura editorial.');
+	expect(html.includes('class="legal-document legal-document--'), label + ': falta estrutura editorial das páginas legais.');
+	expect(html.includes('legal-document__eyebrow') && html.includes('legal-document__quicklinks'), label + ': falta hierarquia editorial.');
 	expect(html.includes('aria-label="Nesta') || html.includes('aria-label="Nestes'), label + ': navegação interna ausente.');
 	expect(html.includes('href="/politica-de-privacidade/"') && html.includes('href="/termos-de-uso/"'), label + ': links legais recíprocos ausentes.');
 	expect(html.includes('50.970.588/0001-84') || label === 'termos', label + ': responsável identificado incorretamente.');
@@ -30,17 +32,24 @@ for (const [label, filename, route] of pages) {
 		expect(html.includes('href="https://policies.google.com/privacy"'), 'privacidade: Google Fonts sem aviso externo.');
 		expect(html.includes('Google Analytics 4') && html.includes('Rejeitar opcionais'), 'privacidade: GA4 e consentimento não explicados.');
 	}
+	if (label === 'cookies') {
+		for (const key of ['id="categorias"', 'id="preferencias"', 'id="medicao"', 'data-privacy-open', 'G-N6L406K645']) {
+			expect(html.includes(key), 'cookies: item essencial ausente: ' + key);
+		}
+		expect(html.includes('Google Analytics 4') && html.includes('180 dias'), 'cookies: transparência insuficiente.');
+	}
 	if (label === 'termos') {
 		expect(html.includes('href="/politica-de-privacidade/#cookies"'), 'termos: falta link para cookies.');
 	}
 }
 const home = await readFile('dist/index.html', 'utf8');
-expect(home.includes('href="/politica-de-privacidade/#cookies"'), 'rodapé precisa disponibilizar seção de cookies.');
+expect(home.includes('href="/politica-de-cookies/"'), 'rodapé precisa disponibilizar política de cookies.');
 expect(home.includes('id="ajn-privacy-notice"') && home.includes('data-privacy-accept') && home.includes('data-privacy-reject') && home.includes('data-privacy-customize'), 'banner de consentimento incompleto.');
 expect(home.includes('data-privacy-open'), 'rodapé sem controle para rever aviso.');
 expect(home.includes('/scripts/privacy-notice.js'), 'script de aviso ausente.');
 const policyHtml = await readFile('dist/politica-de-privacidade/index.html', 'utf8');
 expect(policyHtml.includes('armazenada localmente no navegador por até 180 dias'), 'Política não explica armazenamento de preferência.');
+expect(policyHtml.includes('consentimento como fundamento') && policyHtml.includes('Política de Cookies'), 'Política não explica base legal da análise ou página de cookies.');
 const contactTemplate = await readFile('src/components/ContactPage.astro', 'utf8');
 expect(contactTemplate.includes('href="/politica-de-privacidade/"'), 'futuro formulário deve fornecer link para privacidade.');
 const executablePaths = ['public/scripts', 'src'];

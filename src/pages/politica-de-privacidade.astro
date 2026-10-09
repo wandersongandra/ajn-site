@@ -21,10 +21,12 @@ const formAvailable = (() => {
 	canonicalPath="/politica-de-privacidade"
 >
 	<PageShell heading={heading}>
-		<article class="legal-document" aria-label="Informações sobre privacidade e dados pessoais">
+		<article class="legal-document legal-document--privacy" aria-label="Informações sobre privacidade e dados pessoais">
+			<div class="legal-document__eyebrow"><span class="legal-document__eyebrow-line" aria-hidden="true"></span> Governança e transparência <span class="legal-document__edition">Revisão: outubro de 2026</span></div>
 			<div class="legal-document__introduction">
 				<p>Este documento explica como a AJN Consultoria e Engenharia utiliza informações relacionadas à navegação pelo site <a href="https://ajnengenharia.com.br/">ajnengenharia.com.br</a> e aos contatos iniciados por seus canais institucionais. Ele se refere ao site da AJN, não às políticas de sistemas de terceiros acessados por links.</p>
-				<p>Para consultar especificamente as tecnologias de navegação, acesse a seção <a href="#cookies">Cookies e recursos externos</a>.</p>
+				<p>O uso de tecnologias de medição depende da sua escolha. Para consultar categorias, finalidades e como mudar sua preferência, veja a <a href="/politica-de-cookies/">Política de Cookies</a>.</p>
+				<div class="legal-document__quicklinks" aria-label="Acessos rápidos"><a href="#direitos">Exercer seus direitos <span aria-hidden="true">↗</span></a><a href="/politica-de-cookies/">Entender os cookies <span aria-hidden="true">↗</span></a></div>
 			</div>
 			<nav class="legal-document__contents" aria-label="Nesta Política de Privacidade">
 				<strong>Nesta página</strong>
@@ -69,7 +71,7 @@ const formAvailable = (() => {
 			<section id="finalidades" class="content-section">
 				<h2>Finalidades e fundamentos do tratamento</h2>
 				<p>As informações fornecidas diretamente podem ser utilizadas para responder a dúvidas, avaliar solicitações, preparar propostas, dar continuidade a atendimentos e cumprir obrigações relacionadas à prestação de serviços. Os registros técnicos da navegação podem ser utilizados para operação, diagnóstico e proteção da infraestrutura.</p>
-				<p>O fundamento jurídico aplicável depende da atividade e do contexto, incluindo procedimentos preliminares relacionados à contratação, cumprimento de obrigações legais ou regulatórias e outras hipóteses previstas na LGPD, quando pertinentes. O envio de uma mensagem não significa, por si só, consentimento para publicidade ou rastreamento.</p>
+				<p>O fundamento jurídico depende de cada atividade. Para responder a solicitações e preparar propostas, podem ser aplicáveis procedimentos preliminares à contratação; obrigações legais e regulatórias podem justificar outros tratamentos; a operação e proteção do site podem envolver interesses legítimos avaliados caso a caso. <strong>Para o Google Analytics 4, utilizamos o consentimento como fundamento</strong>, solicitado antes do carregamento da tag. Enviar uma mensagem não autoriza publicidade nem rastreamento.</p>
 			</section>
 
 			<section id="compartilhamento" class="content-section">
@@ -83,12 +85,12 @@ const formAvailable = (() => {
 			<section id="retencao" class="content-section">
 				<h2>Retenção e segurança</h2>
 				<p>O período de manutenção dos dados depende da finalidade do contato, da relação eventualmente estabelecida e das obrigações aplicáveis. Quando não existir necessidade legítima de manutenção, os dados devem ser eliminados ou tratados conforme a legislação. Para informações sobre uma solicitação específica, utilize o canal de contato informado nesta página.</p>
-				<p>A AJN declara adotar medidas de proteção compatíveis com as informações sob sua responsabilidade. Nenhum serviço conectado à internet oferece risco zero; comunicações sensíveis devem ser encaminhadas por canais adequados à sua natureza.</p>
+				<p>A AJN procura adotar medidas de proteção compatíveis com as informações sob sua responsabilidade. Nenhum serviço conectado à internet oferece risco zero; comunicações sensíveis devem ser encaminhadas por canais adequados à sua natureza.</p>
 			</section>
 
 			<section id="cookies" class="content-section">
 				<h2>Cookies e recursos externos</h2>
-				<p>O site está preparado para utilizar o <strong>Google Analytics 4 (GA4)</strong>, exclusivamente quando houver um identificador de medição válido configurado e a pessoa autorizar a categoria opcional de análise de audiência. Sem essa autorização, o script de análise não é carregado. A integração poderá ser ativada futuramente, sem alterar a finalidade aqui descrita.</p>
+				<p>O site utiliza o <strong>Google Analytics 4 (GA4)</strong> para análise de audiência somente após autorização expressa. A integração está configurada para o fluxo de medição do site oficial da AJN. Sem essa escolha, a tag de análise não é carregada pelo código do site.</p>
 				<p>A infraestrutura de hospedagem e serviços externos podem empregar mecanismos técnicos de sessão, segurança, rede ou cache conforme suas configurações. A ausência de cookies no código da AJN não comprova a inexistência de todos os cookies ou identificadores gerados pela infraestrutura durante o acesso.</p>
 				<h3>Como as tecnologias são utilizadas</h3>
 				<ul class="content-list">
@@ -97,6 +99,7 @@ const formAvailable = (() => {
 					<li><strong>Análise de audiência (opcional):</strong> mediante escolha afirmativa, o GA4 poderá medir visualizações de páginas, origem dos acessos e localização aproximada por cidade ou estado, conforme disponibilidade e configurações do Google. O serviço pode utilizar identificadores e cookies como <code>_ga</code> e <code>_ga_*</code> (os nomes e prazos efetivos dependem da configuração e do Google). Os dados de localização são estimados e podem ser agregados ou omitidos nos relatórios.</li>
 					<li><strong>Publicidade:</strong> não configuramos Meta Pixel, remarketing ou publicidade personalizada nesta integração. O consentimento para análise não autoriza essas outras finalidades.</li>
 				</ul>
+				<p>Para consultar a tabela de categorias, fornecedores e como revisar a sua escolha, acesse a <a href="/politica-de-cookies/">Política de Cookies</a>.</p>
 				<p>É possível revisar ou bloquear cookies pelas configurações do navegador. A restrição de tecnologias necessárias pode afetar o funcionamento de determinados serviços. O acesso por links ao WhatsApp, redes sociais ou treinamento fica sujeito às práticas dos respectivos destinos.</p>
 				<p><strong>Como escolher?</strong> O aviso permite <strong>Aceitar análise</strong>, <strong>Rejeitar opcionais</strong> ou <strong>Personalizar</strong>. Nenhuma opção vem previamente marcada para análise. O consentimento é específico para o Google Analytics e pode ser revogado pelo link “Preferências de cookies” no rodapé. A rejeição não impede o acesso ao conteúdo. A escolha é armazenada localmente no navegador por até 180 dias, junto à data e à configuração do identificador de medição, para não solicitar a mesma preferência em toda visita. Essa preferência não é enviada à AJN por esse mecanismo.</p>
 				<p>Ao revogar o consentimento, o site deixa de enviar novas medições, tenta remover os cookies próprios de análise conhecidos e recarrega a página sem carregar o Analytics. Cookies de terceiros ou dados já enviados anteriormente podem não ser eliminados por essa ação. Consulte a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade do Google</a> para saber mais. A escolha pode ser alterada ou os dados locais apagados pelas configurações do navegador.</p>
@@ -110,7 +113,7 @@ const formAvailable = (() => {
 
 			<section id="atualizacoes" class="content-section">
 				<h2>Atualizações e documentos relacionados</h2>
-				<p>Esta política pode ser revista se as práticas, funcionalidades ou fornecedores do site forem alterados. A versão vigente será disponibilizada aqui. Para as condições de uso do conteúdo institucional, consulte os <a href="/termos-de-uso/">Termos de Uso</a>.</p>
+				<p>Revisada em outubro de 2026 para refletir o uso opcional do Google Analytics 4. Esta política pode ser atualizada se as práticas, funcionalidades ou fornecedores do site mudarem. Consulte também os <a href="/termos-de-uso/">Termos de Uso</a> e a <a href="/politica-de-cookies/">Política de Cookies</a>.</p>
 			</section>
 		</article>
 	</PageShell>
