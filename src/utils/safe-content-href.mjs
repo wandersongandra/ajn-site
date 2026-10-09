@@ -3,10 +3,11 @@ export function isSafeContentHref(href) {
 
 	try {
 		const base = new URL('https://content.invalid');
-		const url = new URL(href, base);
 		if (href.startsWith('/')) {
-			return !href.startsWith('//') && !href.includes('\\') && url.origin === base.origin;
+			return !href.startsWith('//') && new URL(href, base).origin === base.origin;
 		}
+		if (!/^https:\/\//i.test(href)) return false;
+		const url = new URL(href);
 		return url.protocol === 'https:' && !url.username && !url.password;
 	} catch {
 		return false;

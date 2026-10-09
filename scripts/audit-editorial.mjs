@@ -16,7 +16,10 @@ const [home, services, contact, pgr, pcmso, catalog] = await Promise.all([
   read('src/content/services/catalog.ts'),
 ]);
 
-const origin = (process.env.PUBLIC_SITE_ORIGIN || 'https://ajnengenharia.com.br').replace(/\/+$/, '');
+const origin = process.env.PUBLIC_SITE_ORIGIN?.replace(/\/+$/, '');
+const indexing = process.env.PUBLIC_ALLOW_INDEXING;
+check(Boolean(origin), 'PUBLIC_SITE_ORIGIN deve corresponder ao ambiente usado no build.');
+check(indexing === 'true' || indexing === 'false', 'PUBLIC_ALLOW_INDEXING deve declarar explicitamente o ambiente do build.');
 for (const [name, html, route] of [
   ['Home', home, '/'],
   ['Serviços', services, '/servicos/'],
@@ -24,12 +27,14 @@ for (const [name, html, route] of [
   ['Elaboração PGR', pgr, '/elaboracao-pgr/'],
   ['PCMSO', pcmso, '/servicos/pcmso-e-asos/'],
 ]) {
-  check(html.includes(`rel="canonical" href="${origin}${route}"`), `${name}: canonical deve refletir URL pública com barra final.`);
+  if (origin) check(html.includes(`rel="canonical" href="${origin}${route}"`), `${name}: canonical deve refletir URL pública com barra final.`);
   const title = html.match(/<title>(.*?)<\/title>/s)?.[1] ?? '';
   const description = html.match(/<meta name="description" content="([^"]+)"/)?.[1] ?? '';
   check(title.length >= 24 && title.length <= 68, `${name}: título SEO ausente ou fora de faixa (${title.length}).`);
   check(description.length >= 85 && description.length <= 170, `${name}: descrição SEO inadequada (${description.length}).`);
-  check(!/noindex/.test(html.match(/<meta name="robots" content="([^"]+)"/)?.[1] ?? '') || process.env.PUBLIC_ALLOW_INDEXING !== 'true', `${name}: versão pública não pode usar noindex.`);
+  const robots = html.match(/<meta name="robots" content="([^"]+)"/)?.[1] ?? '';
+  if (indexing === 'true') check(!/\bnoindex\b/i.test(robots), `${name}: build indexável contém noindex.`);
+  if (indexing === 'false') check(/\bnoindex\b/i.test(robots), `${name}: build de preview deve conter noindex.`);
 }
 const excerpts = [...catalog.matchAll(/description: '([^']+)'/g)].map((match) => match[1]);
 check(excerpts.length === 10, `Catálogo de serviços deve ter 10 descrições, encontrou ${excerpts.length}.`);

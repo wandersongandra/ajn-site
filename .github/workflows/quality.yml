@@ -116,3 +116,5 @@ jobs:
           npm run build
           npm run audit:deploy
           npm run audit:seo
+          npm run audit:editorial
+          npm run audit:sst-seo
