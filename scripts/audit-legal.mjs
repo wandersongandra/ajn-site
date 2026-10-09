@@ -40,7 +40,7 @@ expect(home.includes('id="ajn-privacy-notice"') && home.includes('data-privacy-a
 expect(home.includes('data-privacy-open'), 'rodapé sem controle para rever aviso.');
 expect(home.includes('/scripts/privacy-notice.js'), 'script de aviso ausente.');
 const policyHtml = await readFile('dist/politica-de-privacidade/index.html', 'utf8');
-expect(policyHtml.includes('armazenamento local (localStorage)') && policyHtml.includes('180 dias'), 'Política não explica armazenamento de preferência.');
+expect(policyHtml.includes('armazenamento local do navegador') && policyHtml.includes('180 dias'), 'Política não explica armazenamento de preferência.');
 const contactTemplate = await readFile('src/components/ContactPage.astro', 'utf8');
 expect(contactTemplate.includes('href="/politica-de-privacidade/"'), 'futuro formulário deve fornecer link para privacidade.');
 const executablePaths = ['public/scripts', 'src'];
