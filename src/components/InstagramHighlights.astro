@@ -1,5 +1,7 @@
 ---
 import { site } from '../data/home';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 // Seleção editorial: somente publicações públicas conferidas e vinculadas ao perfil AJN.
 // Links indisponíveis ficam fora do site até nova verificação.
@@ -11,6 +13,7 @@ const posts = [
     title: 'Insalubridade: avaliação técnica e prevenção',
     description: 'Como a análise das condições de exposição ajuda a orientar medidas de prevenção.',
     href: 'https://www.instagram.com/reel/DUagMmhkTBG/',
+    cover: '/images/social/DUagMmhkTBG.webp',
   },
   {
     kind: 'Reel',
@@ -18,6 +21,7 @@ const posts = [
     title: 'Içamento de chillers no Shopping Tatuapé',
     description: 'Acompanhamento de uma operação de içamento e análise do plano de rigging.',
     href: 'https://www.instagram.com/reel/DSKuL-yEXrF/',
+    cover: '/images/social/DSKuL-yEXrF.webp',
   },
   {
     kind: 'Reel',
@@ -25,6 +29,7 @@ const posts = [
     title: 'Sinais de risco que precisam de atenção',
     description: 'Atos, condições e desvios operacionais que merecem correção antes de um acidente.',
     href: 'https://www.instagram.com/reel/DTxR39Yjky3/',
+    cover: '/images/social/DTxR39Yjky3.webp',
   },
   {
     kind: 'Publicação',
@@ -32,6 +37,7 @@ const posts = [
     title: 'Treinamento de NR-35 na Hemarcon',
     description: 'Registro da capacitação em segurança para atividades em altura.',
     href: 'https://www.instagram.com/p/DUJRrqxkbkI/',
+    cover: '/images/social/DUJRrqxkbkI.webp',
   },
   {
     kind: 'Publicação',
@@ -39,6 +45,7 @@ const posts = [
     title: 'Segurança do trabalho na prática',
     description: 'Visita técnica, conferência documental e orientações de prevenção em campo.',
     href: 'https://www.instagram.com/p/DSmc5DGjiQW/',
+    cover: '/images/social/DSmc5DGjiQW.webp',
   },
   {
     kind: 'Publicação',
@@ -46,8 +53,16 @@ const posts = [
     title: 'Segurança em instalação de climatização',
     description: 'Sinalização e organização das áreas de trabalho no Shopping Tatuapé.',
     href: 'https://www.instagram.com/p/DRnThhXEhtu/',
+    cover: '/images/social/DRnThhXEhtu.webp',
   },
 ] as const;
+
+// Capas locais, sem links efêmeros do CDN do Instagram.
+// Sem arquivo correspondente, o cartão editorial continua acessível e funcional.
+const availablePosts = posts.map((post) => ({
+  ...post,
+  localCover: existsSync(join(process.cwd(), 'public', post.cover.slice(1))) ? post.cover : null,
+}));
 ---
 
 <section class="section instagram-highlights" aria-labelledby="instagram-highlights-title">
@@ -61,9 +76,14 @@ const posts = [
       <a class="instagram-highlights__profile" href={site.instagram} target="_blank" rel="noopener noreferrer">Conhecer o perfil <span aria-hidden="true">↗</span></a>
     </div>
     <div class="instagram-highlights__rail" role="region" aria-label="Publicações selecionadas do Instagram da AJN" tabindex="0">
-      {posts.map((post, index) => (
+      {availablePosts.map((post, index) => (
         <article class="instagram-highlights__card">
           <a href={post.href} class="instagram-highlights__link" target="_blank" rel="noopener noreferrer" aria-label={`Abrir no Instagram: ${post.title}`}>
+            {post.localCover && (
+              <div class="instagram-highlights__media">
+                <img src={post.localCover} alt="" width="720" height="560" loading="lazy" decoding="async" />
+              </div>
+            )}
             <div class="instagram-highlights__top">
               <span class="instagram-highlights__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
               <span class="instagram-highlights__kind">{post.kind}</span>
@@ -94,6 +114,8 @@ const posts = [
   .instagram-highlights__link { min-height: 300px; height: 100%; display: flex; flex-direction: column; padding: 1.35rem; color: inherit; text-decoration: none; transition: border-color .2s ease, transform .2s ease; border-radius: inherit; }
   .instagram-highlights__link:hover { transform: translateY(-3px); }
   .instagram-highlights__link:focus-visible { outline: 3px solid #276e3f; outline-offset: 3px; }
+  .instagram-highlights__media { width: 100%; aspect-ratio: 9 / 6; overflow: hidden; border-radius: 7px; background: #e7eee5; margin-bottom: 1.1rem; }
+  .instagram-highlights__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .instagram-highlights__top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #edf0eb; padding-bottom: 1.1rem; }
   .instagram-highlights__index { font-size: 1.8rem; font-weight: 700; letter-spacing: -.06em; color: #aac0ac; }
   .instagram-highlights__kind { border: 1px solid #c8d8c8; color: #355e3a; border-radius: 99px; font-size: .7rem; padding: .34rem .6rem; }
