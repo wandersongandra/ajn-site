@@ -12,6 +12,13 @@
 	.home-page .hero__content h1 { animation-delay: 40ms; }
 	.home-page .hero__lead { animation-delay: 75ms; }
 	.home-page .hero__actions { animation-delay: 110ms; }
+	.home-page .hero::before {
+		animation: ajn-hero-image-enter 1200ms cubic-bezier(.22, 1, .36, 1) both;
+	}
+	@keyframes ajn-hero-image-enter {
+		from { transform: scale(1.055); }
+		to { transform: scale(1); }
+	}
 
 	@supports (translate: 0 1px) {
 		.home-page.motion-ready [data-reveal] {
@@ -28,6 +35,12 @@
 		.home-page.motion-ready [data-reveal]:focus-within {
 			opacity: 1;
 			translate: 0 0;
+		}
+		.home-page.motion-ready [data-reveal="from-left"]:not(.is-visible):not(:focus-within) {
+			translate: -22px 0;
+		}
+		.home-page.motion-ready [data-reveal="from-right"]:not(.is-visible):not(:focus-within) {
+			translate: 22px 0;
 		}
 	}
 
@@ -125,4 +138,9 @@
 		transform: none !important;
 	}
 	.home-page .hero__panel { animation: none !important; }
+	.home-page .hero::before { animation: none !important; transform: none !important; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.home-page.motion-saver .hero::before { animation: none; }
 }
