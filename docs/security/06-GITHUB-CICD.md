@@ -26,7 +26,9 @@ Proteção de branch, checks obrigatórios, bloqueio de force-push, revisão mí
 
 ## Estado da PR #50 nesta revisão
 
-No commit remoto `db53cc0`, Quality Gate, CodeQL Security Analysis, Secret Leak Scan e Dependency Security concluíram com sucesso. CodeQL apontou a regex de fechamento `</script>` que não reconhecia `</script >`; há comentário inline e correção/teste local nesta rodada. Essa execução de CI não vale para os novos commits. CodeRabbit marcou o review automático como pulado por a PR estar em draft. Os checks precisam ser reexecutados nos SHAs após a separação do `.htaccess`.
+No commit remoto `4974469`, Quality Gate (`validate`), os dois jobs da análise CodeQL, Secret Leak Scan e Dependency Security passaram. A anotação inline sobre `</script >` foi corrigida e recebeu resposta; o parser agora reconhece whitespace e há regressão automatizada. Nesta revisão também foi corrigida a checagem incompleta de esquemas em `scripts/audit-seo.mjs` e a Action Gitleaks foi fixada ao SHA do tag v3 (`e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e`). Essas mudanças locais ainda exigem novo push/scan para atualizar os alertas e status do CodeQL. CodeRabbit pulou a revisão automática por a PR estar em draft.
+
+A PR #51, baseada diretamente na `main`, mantém a configuração Hostinger isolada e draft. Seu Quality Gate falha porque a `main` ainda tem o título PGR de 23 caracteres, corrigido apenas na PR #50; os demais workflows observados passaram. Não se deve tratar esse resultado como validado nem mesclar a PR de infraestrutura antes da dependência ser resolvida e dos checks serem repetidos. Nenhuma PR foi mesclada e nenhum deploy foi executado.
 
 ## Recomendação
 

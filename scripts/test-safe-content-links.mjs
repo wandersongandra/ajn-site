@@ -52,6 +52,24 @@ test('rejeita esquemas executáveis, origem relativa externa e HTTP', () => {
 	}
 });
 
+test('a política usada pela auditoria SEO rejeita esquemas não autorizados e URLs malformadas', () => {
+	for (const href of [
+		'data:text/html,conteudo',
+		'vbscript:msgbox(1)',
+		'javascript:alert(1)',
+		'//externo.example/rota',
+		'/\\externo.example/rota',
+		'https://user:pass@example.com/',
+		'ftp://example.com/arquivo',
+		'/rota%ZZ',
+		'/rota%0d%0aheader',
+	]) {
+		assert.equal(isSafeContentHref(href), false, href);
+	}
+	assert.equal(isSafeContentHref('/servicos/?origem=seo'), true);
+	assert.equal(isSafeContentHref('https://www.gov.br/'), true);
+});
+
 test('normaliza caminhos locais sem escapar da origem permitida', () => {
 	assert.equal(isSafeContentHref('/a/../contato'), true);
 	assert.equal(isSafeContentHref('/%2e%2e/contato'), true);
