@@ -28,7 +28,7 @@ for (const [label, filename, route] of pages) {
 			expect(html.includes(key), 'privacidade: seção ausente: ' + key);
 		}
 		expect(html.includes('href="https://policies.google.com/privacy"'), 'privacidade: Google Fonts sem aviso externo.');
-		expect(html.includes('não implementa cookies próprios'), 'privacidade: inventário honesto sobre cookies ausente.');
+		expect(html.includes('Google Analytics 4') && html.includes('Rejeitar opcionais'), 'privacidade: GA4 e consentimento não explicados.');
 	}
 	if (label === 'termos') {
 		expect(html.includes('href="/politica-de-privacidade/#cookies"'), 'termos: falta link para cookies.');
@@ -36,6 +36,11 @@ for (const [label, filename, route] of pages) {
 }
 const home = await readFile('dist/index.html', 'utf8');
 expect(home.includes('href="/politica-de-privacidade/#cookies"'), 'rodapé precisa disponibilizar seção de cookies.');
+expect(home.includes('id="ajn-privacy-notice"') && home.includes('data-privacy-accept') && home.includes('data-privacy-reject') && home.includes('data-privacy-customize'), 'banner de consentimento incompleto.');
+expect(home.includes('data-privacy-open'), 'rodapé sem controle para rever aviso.');
+expect(home.includes('/scripts/privacy-notice.js'), 'script de aviso ausente.');
+const policyHtml = await readFile('dist/politica-de-privacidade/index.html', 'utf8');
+expect(policyHtml.includes('armazenada localmente no navegador por até 180 dias'), 'Política não explica armazenamento de preferência.');
 const contactTemplate = await readFile('src/components/ContactPage.astro', 'utf8');
 expect(contactTemplate.includes('href="/politica-de-privacidade/"'), 'futuro formulário deve fornecer link para privacidade.');
 const executablePaths = ['public/scripts', 'src'];
@@ -55,8 +60,16 @@ const cookieWrite = /\bdocument\s*\.\s*cookie\b|\blocalStorage\b|\bsessionStorag
 const trackers = /\bgtag\s*\(|\bfbq\s*\(|googletagmanager\.com|google-analytics\.com|connect\.facebook\.net|doubleclick\.net|hotjar\.com|clarity\.ms|adsbygoogle/i;
 for (const filename of ownScripts) {
 	const content = await readFile(filename, 'utf8');
-	expect(!cookieWrite.test(content), filename + ': armazenamento/cookies encontrados; reavaliar consentimento e política.');
-	expect(!trackers.test(content), filename + ': possível rastreamento encontrado; reavaliar antes de ativar.');
+	if (filename.replaceAll('\\', '/').endsWith('/scripts/privacy-notice.js')) {
+    expect(content.includes('ajn-cookie-preferences-v2') &&
+      content.includes("if (loaded || !id || !enabled) return;") &&
+      content.includes("window.localStorage.setItem(KEY") &&
+      content.includes("window.location.reload()"),
+      'Consentimento: bloqueio prévio, armazenamento ou revogação não encontrados.');
+  } else {
+    expect(!cookieWrite.test(content), filename + ': armazenamento/cookies encontrados; reavaliar consentimento e política.');
+    expect(!trackers.test(content), filename + ': possível rastreamento encontrado; reavaliar antes de ativar.');
+  }
 }
 const externalScripts = /<script\b[^>]*\ssrc\s*=\s*["']https?:\/\//i;
 expect(!externalScripts.test(home), 'script externo de terceiros encontrado na home; verificar cookies e consentimento.');
