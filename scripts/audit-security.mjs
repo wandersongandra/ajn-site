@@ -24,10 +24,15 @@ const source = await Promise.all(sourceFiles.map(async (path) => ({ path, text: 
 
 check(headers.includes('Content-Security-Policy'), 'public/.htaccess não define Content-Security-Policy.');
 check(headers.includes("script-src 'self'"), 'CSP deve restringir scripts a self.');
+check(headers.includes("form-action 'self'"), 'CSP deve limitar submissões de formulário à própria origem.');
+check(!/form-action[^;]*https?:/.test(headers), 'CSP não deve permitir submissão de formulário para qualquer host HTTPS.');
+check(headers.includes("img-src 'self' data:"), 'CSP deve limitar imagens a recursos locais e data URLs.');
+check(!/img-src[^;]*\shttps?:/.test(headers), 'CSP não deve permitir imagens de qualquer host HTTPS.');
 check(!/script-src[^;]*'unsafe-inline'/.test(headers) && !headers.includes("'unsafe-eval'"), 'CSP não deve liberar scripts inline ou eval.');
 check(headers.includes("style-src-attr 'unsafe-inline'"), 'CSP deve declarar explicitamente a exceção limitada aos atributos de estilo existentes.');
 check(!/(^|;)\s*style-src\s+[^;]*'unsafe-inline'/.test(headers), 'style-src não deve liberar blocos de estilo inline.');
 check(headers.includes('X-Content-Type-Options "nosniff"'), 'X-Content-Type-Options nosniff ausente.');
+check(headers.includes('Strict-Transport-Security "max-age=31536000"'), 'HSTS de um ano ausente.');
 check(headers.includes('X-Frame-Options "DENY"'), 'X-Frame-Options DENY ausente.');
 check(headers.includes('Referrer-Policy "strict-origin-when-cross-origin"'), 'Referrer-Policy restritiva ausente.');
 check(headers.includes('Permissions-Policy'), 'Permissions-Policy ausente.');
