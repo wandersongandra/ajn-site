@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/nr-10-documentacao-capacitacao-e-transicao.webp';
 import image from '../../assets/blog/editorial-eletricidade.webp';
 import type { BlogContentData } from '../types';
 
@@ -10,7 +11,7 @@ export const blogNr10DocumentacaoCapacitacaoETransicao = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Normas regulamentadoras',
-  image: { src: image, alt: 'Ilustração esquemática de circuito elétrico, documentação e bloqueio de energia' },
+  image: { src: ajnEditorial, alt: 'Operação em rede elétrica com equipamento de elevação e trabalhador' },
   categories: ['Normas regulamentadoras'],
   tags: ['NR-10', 'risco elétrico', 'capacitação', 'documentação'],
   gallery: [],
