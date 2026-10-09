@@ -45,12 +45,45 @@ export function extractScriptElements(html) {
 	return scripts;
 }
 
+// Read attribute names without treating data-src or quoted strings like " src=x"
+// as real HTML attributes. This is a lightweight audit parser, not a DOM sanitizer.
+export function getHtmlAttributeValue(attributes, expectedName) {
+	const source = String(attributes);
+	const expected = expectedName.toLowerCase();
+	let cursor = 0;
+	while (cursor < source.length) {
+		while (cursor < source.length && /\s/.test(source[cursor])) cursor += 1;
+		if (source[cursor] === '/' || source[cursor] === '>') { cursor += 1; continue; }
+		const start = cursor;
+		while (cursor < source.length && !/[\s=/>]/.test(source[cursor])) cursor += 1;
+		if (start === cursor) { cursor += 1; continue; }
+		const name = source.slice(start, cursor).toLowerCase();
+		while (cursor < source.length && /\s/.test(source[cursor])) cursor += 1;
+		if (source[cursor] !== '=') continue;
+		cursor += 1;
+		while (cursor < source.length && /\s/.test(source[cursor])) cursor += 1;
+		let value;
+		if (source[cursor] === '"' || source[cursor] === "'") {
+			const quote = source[cursor++];
+			const valueStart = cursor;
+			while (cursor < source.length && source[cursor] !== quote) cursor += 1;
+			value = source.slice(valueStart, cursor);
+			if (source[cursor] === quote) cursor += 1;
+		} else {
+			const valueStart = cursor;
+			while (cursor < source.length && !/[\s>]/.test(source[cursor])) cursor += 1;
+			value = source.slice(valueStart, cursor);
+		}
+		if (name === expected) return value;
+	}
+	return null;
+}
+
 export function hasExactHtmlAttribute(attributes, name) {
 	if (!/^[a-z][a-z0-9-]*$/i.test(name)) throw new Error('Nome de atributo inválido');
-	return new RegExp('(?:^|\\s)' + name + '\\s*=', 'i').test(attributes);
+	return getHtmlAttributeValue(attributes, name) !== null;
 }
 
 export function isJsonLdScript(attributes) {
-	const match = /(?:^|\s)type\s*=\s*(["'])([^"']+)\1/i.exec(attributes);
-	return match?.[2].toLowerCase() === 'application/ld+json';
+	return getHtmlAttributeValue(attributes, 'type')?.toLowerCase() === 'application/ld+json';
 }
