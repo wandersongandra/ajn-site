@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Ilustração de análise de risco e permissão de trabalho</title><desc id="desc">Uma atividade é planejada por etapas antes de receber autorização.</desc>
+  <rect width="1200" height="675" fill="#f0f4ed"/><path d="M180 500h840" stroke="#c6d5c4" stroke-width="4"/>
+  <rect x="120" y="148" width="370" height="350" rx="18" fill="#fff" stroke="#a9c2aa" stroke-width="4"/><text x="305" y="204" text-anchor="middle" fill="#263a2a" font-family="Arial,sans-serif" font-size="26" font-weight="700">ANALISAR</text>
+  <g fill="#d9e8d6"><rect x="165" y="239" width="280" height="54" rx="8"/><rect x="165" y="315" width="280" height="54" rx="8"/><rect x="165" y="391" width="280" height="54" rx="8"/></g><g stroke="#347a44" stroke-width="6" fill="none"><path d="M184 263l10 10 18-22M184 339l10 10 18-22M184 415l10 10 18-22"/><path d="M230 267h180M230 343h150M230 419h170"/></g>
+  <path d="M526 320h142m-28-26 28 26-28 26" fill="none" stroke="#347a44" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="710" y="148" width="370" height="350" rx="18" fill="#fff" stroke="#a9c2aa" stroke-width="4"/><path d="M824 220h140v180H824z" fill="#e4efe1" stroke="#39784a" stroke-width="7"/><path d="M852 286l36 35 68-78" fill="none" stroke="#317442" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><text x="895" y="449" text-anchor="middle" fill="#263a2a" font-family="Arial,sans-serif" font-size="24" font-weight="700">LIBERAÇÃO CONDICIONADA</text>
+</svg>

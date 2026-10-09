@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Ilustração de gestão de terceiros em SST</title><desc id="desc">Duas equipes conectadas por um fluxo de documentos e controles de segurança.</desc>
+  <rect width="1200" height="675" fill="#edf4eb"/><path d="M0 530H1200" stroke="#c3d5c2" stroke-width="3"/>
+  <rect x="86" y="120" width="370" height="350" rx="16" fill="#fff" stroke="#afc5b0" stroke-width="4"/><rect x="744" y="120" width="370" height="350" rx="16" fill="#fff" stroke="#afc5b0" stroke-width="4"/>
+  <circle cx="270" cy="235" r="54" fill="#357a46"/><path d="M184 395c14-72 158-72 172 0v30H184z" fill="#357a46"/><circle cx="930" cy="235" r="54" fill="#4b6854"/><path d="M844 395c14-72 158-72 172 0v30H844z" fill="#4b6854"/>
+  <path d="M470 292h248m-28-25 28 25-28 25" fill="none" stroke="#2d7041" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="518" y="390" width="164" height="112" rx="10" fill="#d5e6d2" stroke="#6e9a73" stroke-width="4"/><path d="M550 421h98m-98 26h98m-98 26h62" stroke="#357a46" stroke-width="8" stroke-linecap="round"/>
+  <text x="600" y="590" text-anchor="middle" fill="#263a2a" font-family="Arial,sans-serif" font-size="28" font-weight="700">FLUXO DE SST ENTRE EMPRESAS</text>
+</svg>

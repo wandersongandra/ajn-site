@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Ilustração de segurança em instalações elétricas</title><desc id="desc">Diagrama esquemático de circuito com bloqueio e verificação.</desc>
+  <rect width="1200" height="675" fill="#edf4eb"/><path d="M160 337h235l55-95 90 190 70-95h430" fill="none" stroke="#3c7650" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="160" cy="337" r="26" fill="#fff" stroke="#3c7650" stroke-width="10"/><circle cx="1040" cy="337" r="26" fill="#fff" stroke="#3c7650" stroke-width="10"/>
+  <rect x="504" y="116" width="192" height="120" rx="16" fill="#fff" stroke="#b1c8b1" stroke-width="4"/><path d="M548 168h104m-104 30h64" stroke="#497754" stroke-width="9" stroke-linecap="round"/>
+  <path d="M560 441v-45a40 40 0 0 1 80 0v45" fill="none" stroke="#317442" stroke-width="12"/><rect x="540" y="438" width="120" height="92" rx="12" fill="#317442"/><circle cx="600" cy="475" r="9" fill="#fff"/><path d="M600 483v18" stroke="#fff" stroke-width="7"/>
+  <text x="600" y="596" text-anchor="middle" fill="#263a2a" font-family="Arial,sans-serif" font-size="27" font-weight="700">ANÁLISE · DESENERGIZAÇÃO · VERIFICAÇÃO</text>
+</svg>

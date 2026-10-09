@@ -147,5 +147,13 @@ export const routeCatalog: readonly RouteCatalogEntry[] = [
 	{ path: "/plataforma-acessibilidade-preco", title: "Plataforma de acessibilidade preço - AJN Consultoria e Engenharia" },
 	{ path: "/emissao-ltcat", title: "Emissão ltcat - AJN Consultoria e Engenharia" },
 	{ path: "/escada-rolante-bh", title: "Escada rolante bh - AJN Consultoria e Engenharia" },
+	{ path: "/blog/gestao-de-terceiros-em-sst-documentos-mobilizacao-e-controles", title: "Gestão de terceiros em SST: documentos, mobilização e controles - AJN Consultoria e Engenharia" },
+	{ path: "/blog/esocial-sst-diferencas-entre-s2210-s2220-e-s2240", title: "eSocial SST: diferenças entre S-2210, S-2220 e S-2240 - AJN Consultoria e Engenharia" },
+	{ path: "/blog/apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco", title: "APR e Permissão de Trabalho: como planejar atividades de risco - AJN Consultoria e Engenharia" },
+	{ path: "/blog/nr-10-documentacao-capacitacao-e-transicao-regulatoria", title: "NR-10: documentação, capacitação e transição regulatória - AJN Consultoria e Engenharia" },
+	{ path: "/blog/nr-12-como-organizar-a-analise-de-riscos-de-maquinas", title: "NR-12: como organizar a análise de riscos de máquinas - AJN Consultoria e Engenharia" },
+	{ path: "/blog/higiene-ocupacional-como-planejar-avaliacoes-de-exposicao", title: "Higiene ocupacional: como planejar avaliações de exposição - AJN Consultoria e Engenharia" },
+	{ path: "/blog/aep-e-aet-diferencas-e-quando-aplicar-cada-avaliacao", title: "AEP e AET: diferenças e aplicações da ergonomia no trabalho - AJN Consultoria e Engenharia" },
+	{ path: "/blog/investigacao-de-acidentes-como-transformar-registros-em-prevencao", title: "Investigação de acidentes: dos registros às medidas preventivas - AJN Consultoria e Engenharia" },
 ] as const;
 
