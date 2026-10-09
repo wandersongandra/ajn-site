@@ -44,6 +44,10 @@ for (const width of widths) {
     assert(pageErrors.length === 0, `JS errors ${route} at ${width}px: ${pageErrors.join('; ')}`);
 
     if (route === '/') {
+      // O painel de privacidade é fixo e corretamente intercepta cliques até a escolha;
+      // testar o feed depois de rejeitar opcionais, sem iniciar rastreamento.
+      const reject = page.locator('[data-privacy-reject]');
+      if (await reject.isVisible()) await reject.click();
       const section = page.locator('.instagram-highlights');
       assert(await section.count() === 1, `Instagram showcase missing at ${width}px`);
       assert(await section.locator('article.instagram-highlights__card').count() === 6, `Six original posts expected at ${width}px`);
