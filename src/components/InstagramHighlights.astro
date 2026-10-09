@@ -150,7 +150,12 @@ const availablePosts = posts.map((post) => ({
   .instagram-highlights__body p { color: #4e5a51; font-size: .93rem; line-height: 1.6; margin: 0; }
   .instagram-highlights__action { color: #245b37; font-weight: 700; font-size: .83rem; display: flex; justify-content: space-between; gap: .5rem; padding-top: 1rem; border-top: 1px solid #edf0eb; }
   .instagram-highlights__note { color: #536356; font-size: .78rem; margin: .35rem 0 0; }
-  @media (max-width: 850px) { .instagram-highlights__rail { grid-auto-columns: minmax(255px, 54%); } }
+  @media (max-width: 850px) {
+    .instagram-highlights__heading { align-items: flex-start; flex-direction: column; }
+    .instagram-highlights__heading > div:first-child { min-width: 0; max-width: 100%; }
+    .instagram-highlights__tools { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; }
+    .instagram-highlights__rail { grid-auto-columns: minmax(255px, 54%); }
+  }
   @media (max-width: 600px) { .instagram-highlights__heading { align-items: start; flex-direction: column; } .instagram-highlights__tools { width: 100%; justify-content: space-between; } .instagram-highlights__rail { grid-auto-columns: minmax(255px, 88%); } .instagram-highlights__link { min-height: 285px; } }
   @media (prefers-reduced-motion: reduce) { .instagram-highlights__rail { scroll-behavior: auto; } .instagram-highlights__link { transition: none; } .instagram-highlights__link:hover { transform: none; } }
 </style>
