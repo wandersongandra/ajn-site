@@ -44,6 +44,9 @@ jobs:
       - name: Host redirect semantics regression test
         run: npm run test:hosting-redirect
 
+      - name: Host policy origin and script parsing tests
+        run: npm run test:hosting-policy
+
       - name: SEO and link audit
         run: npm run audit:seo
 
