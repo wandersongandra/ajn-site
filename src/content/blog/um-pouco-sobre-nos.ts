@@ -1,5 +1,5 @@
 import type { BlogContentData } from '../types';
-import image0 from '../../assets/blog/blog-um-pouco-sobre-nos-8c632fd360.webp';
+import image0 from '../../assets/blog/ajn/um-pouco-sobre-nos.webp';
 
 export const blogUmPoucoSobreNos = {
 	 slug: "um-pouco-sobre-nos", path: "/blog/um-pouco-sobre-nos",
@@ -9,7 +9,7 @@ export const blogUmPoucoSobreNos = {
 	 pubDate: "2024-11-19",
 	updatedAt: "2026-10-07",
 	 author: "AJN Consultoria e Engenharia",
-	 image: { src: image0, alt: "Um pouco sobre nós" },
+	 image: { src: image0, alt: 'Profissionais de engenharia e segurança em atividade de campo' },
 	 categories: ['Blog'],
 	 tags: ["AJN","consultoria","engenharia","segurança do trabalho"],
 	 gallery: [],

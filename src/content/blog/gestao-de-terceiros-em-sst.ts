@@ -1,4 +1,4 @@
-import image from '../../assets/blog/editorial-terceiros.webp';
+import image from '../../assets/blog/ajn/gestao-de-terceiros-em-sst.webp';
 import type { BlogContentData } from '../types';
 
 export const blogGestaoDeTerceirosEmSst = {
@@ -10,7 +10,7 @@ export const blogGestaoDeTerceirosEmSst = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Gestão de SST',
-  image: { src: image, alt: 'Ilustração editorial do fluxo de informações de SST entre empresa contratante e contratada' },
+  image: { src: image, alt: 'Profissionais usando EPIs durante atividade de campo em obra' },
   categories: ['Gestão de SST'],
   tags: ['terceirização', 'mobilização', 'NR-1', 'documentação'],
   gallery: [],

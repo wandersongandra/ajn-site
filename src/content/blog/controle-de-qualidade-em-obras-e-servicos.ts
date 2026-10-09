@@ -1,4 +1,4 @@
-import image from '../../assets/blog/editorial-qualidade-obras.webp';
+import image from '../../assets/blog/ajn/controle-de-qualidade-em-obras-e-servicos.webp';
 import type { BlogContentData } from '../types';
 
 export const blogControleDeQualidadeEmObrasEServicos = {
@@ -10,7 +10,7 @@ export const blogControleDeQualidadeEmObrasEServicos = {
 	pubDate: '2026-10-09',
 	author: 'AJN Consultoria e Engenharia',
 	topic: 'Gestão ambiental e qualidade',
-	image: { src: image, alt: 'Ilustração editorial de inspeção e registro de etapas de uma obra' },
+	image: { src: image, alt: 'Formas e estruturas de fundação em canteiro de obras' },
 	categories: ['Gestão ambiental e qualidade'],
 	tags: ['qualidade em obras', 'FVS', 'materiais', 'não conformidade', 'contratos'],
 	gallery: [],
