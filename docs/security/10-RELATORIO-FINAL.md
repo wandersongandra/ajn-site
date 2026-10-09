@@ -62,7 +62,7 @@ Contagens de severidade: **5 Média, 4 Baixa; 0 Crítica/Alta**. Evidência: 7 c
 
 ## 8. Estado Git
 
-Branch: `security/auditoria-hardening-2026-10-08`, base `5a5edaf`. Commits das rodadas anteriores: `608a24e`, `ea10b65`; os commits desta segunda rodada serão registrados após a revisão final. Não alterar `main`. Push/PR dependem da verificação de `gh` auth e sincronização segura; sem merge ou deploy.
+Branch: `security/auditoria-hardening-2026-10-08`, base `5a5edaf`, sincronizada com `origin/main` na abertura da PR. Commits nesta rodada: `ec1fe43` (código/testes) e `301001e` (documentação). PR draft [#50](https://github.com/wandersongandra/ajn-site/pull/50) aberta para aprovação. Sem merge ou deploy; `main` não foi alterada.
 
 ## 9. Classificação final
 

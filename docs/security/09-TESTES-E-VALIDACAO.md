@@ -25,6 +25,6 @@
 | GET de HTTP apex e `www` | HTTP 301 para HTTPS correspondente | `www` HTTPS continua 200, sem redirect ao apex; canonical HTML aponta ao apex |
 | GET host staging | raiz falhou; robots respondeu sem headers do repositório | origem atual não comprovada, status BLOQUEADO |
 | `git diff --check` | PASS nesta revisão | sem erros de whitespace; avisos de conversão LF/CRLF do Git no Windows não alteram conteúdo |
-| `git diff --cached --check` | executar antes dos commits | será revalidado após stage explícito |
+| `git diff --cached --check` | PASS antes dos commits | stage explícito do código e da documentação, sem erros de whitespace |
 
 Não houve QA de browser no Hostinger porque o root do preview falha e não existe collector CSP; também não houve POST, carga, fuzzing, DAST ativo ou acesso administrativo. O redirect/header candidate depois da aplicação, o plano/document root Hostinger, o formulário de provedor e a renderização visual/teclado permanecem não verificados.
