@@ -29,7 +29,9 @@
     "audit:sst-seo": "node scripts/audit-sst-seo.mjs",
     "audit:services-catalog": "node scripts/audit-services-catalog.mjs",
     "audit:dead-css": "node scripts/audit-dead-css.mjs",
-    "audit:assets": "node scripts/audit-asset-duplicates.mjs"
+    "audit:assets": "node scripts/audit-asset-duplicates.mjs",
+    "audit:hosting-config": "node scripts/audit-hosting-config.mjs",
+    "test:hosting-redirect": "node --test scripts/test-hosting-redirect.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

@@ -38,6 +38,12 @@ jobs:
       - name: Static build
         run: npm run build
 
+      - name: Hostinger headers and resource compatibility audit
+        run: npm run audit:hosting-config
+
+      - name: Host redirect semantics regression test
+        run: npm run test:hosting-redirect
+
       - name: SEO and link audit
         run: npm run audit:seo
 
