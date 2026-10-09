@@ -1,6 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { extractScriptElements } from './security-html.mjs';
+import { extractScriptElements, hasExactHtmlAttribute, isJsonLdScript } from './security-html.mjs';
 
 const issues = [];
 
@@ -38,7 +38,11 @@ for (const { path, text } of source) {
 	if (text.includes('set:html=') && !text.includes('serializeJsonLd(')) {
 		issues.push(`${path} usa set:html sem serializeJsonLd().`);
 	}
-	check(!/<script(?![^>]*(?:src=|type=["']application\/ld\+json["']))[^>]*>/i.test(text), `${path} contém script inline executável.`);
+	for (const match of text.matchAll(/<script\b([^>]*)>/gi)) {
+		const attributes = match[1];
+		check(hasExactHtmlAttribute(attributes, 'src') || isJsonLdScript(attributes),
+			`${path} contém script sem src externo ou JSON-LD declarado.`);
+	}
 }
 
 const distFiles = await walk('dist').catch(() => []);
@@ -49,14 +53,14 @@ for (const path of htmlFiles) {
 	const scripts = extractScriptElements(html);
 	let jsonLdCount = 0;
 	for (const { attributes, body } of scripts) {
-		if (/\btype=["']application\/ld\+json["']/i.test(attributes)) {
+		if (isJsonLdScript(attributes)) {
 			jsonLdCount += 1;
 			try {
 				JSON.parse(body);
 			} catch {
 				issues.push(`${path} contém JSON-LD inválido.`);
 			}
-		} else if (!/\bsrc\s*=/i.test(attributes) && body.trim()) {
+		} else if (!hasExactHtmlAttribute(attributes, 'src') && body.trim()) {
 			issues.push(`${path} contém script executável inline.`);
 		}
 	}
