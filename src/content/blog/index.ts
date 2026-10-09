@@ -18,8 +18,29 @@ import { blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho } from './ela
 import { blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe } from './ltcat-essencial-para-a-seguranca-do-trabalho-e-protecao-da-sua-equipe';
 import { blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosParaSuaEquipe } from './ltcat-na-seguranca-do-trabalho-garantindo-protecao-e-reducao-de-riscos-para-sua-equipe';
 import { blogNr35TrabalhoEmAlturaESeguranca } from './nr-35-trabalho-em-altura-e-seguranca';
+import { blogArticle } from './a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional';
+import { blogGestaoDeTerceirosEmSst } from './gestao-de-terceiros-em-sst';
+import { blogEventosEsocialSst } from './eventos-esocial-sst';
+import { blogAprEPermissaoDeTrabalho } from './apr-e-permissao-de-trabalho';
+import { blogNr10DocumentacaoCapacitacaoETransicao } from './nr-10-documentacao-capacitacao-e-transicao';
+import { blogNr12AnaliseDeRiscosDeMaquinas } from './nr-12-analise-de-riscos-de-maquinas';
+import { blogHigieneOcupacionalPlanejamentoDeAvaliacoes } from './higiene-ocupacional-planejamento-de-avaliacoes';
+import { blogAepEAetDiferencasEAplicacoes } from './aep-e-aet-diferencas-e-aplicacoes';
+import { blogInvestigacaoDeAcidentesEAprendizadoPreventivo } from './investigacao-de-acidentes-e-aprendizado-preventivo';
+import { blogGestaoDeResiduosNaOperacao } from './gestao-de-residuos-na-operacao';
+import { blogControleDeQualidadeEmObrasEServicos } from './controle-de-qualidade-em-obras-e-servicos';
+import { blogPpcipAvcbClcbComoOrganizarRegularizacao } from './ppcip-avcb-clcb-como-organizar-regularizacao';
 
 export const blogPages = [
+	validateBlogContent(blogArticle),
+	validateBlogContent(blogGestaoDeTerceirosEmSst),
+	validateBlogContent(blogEventosEsocialSst),
+	validateBlogContent(blogAprEPermissaoDeTrabalho),
+	validateBlogContent(blogNr10DocumentacaoCapacitacaoETransicao),
+	validateBlogContent(blogNr12AnaliseDeRiscosDeMaquinas),
+	validateBlogContent(blogHigieneOcupacionalPlanejamentoDeAvaliacoes),
+	validateBlogContent(blogAepEAetDiferencasEAplicacoes),
+	validateBlogContent(blogInvestigacaoDeAcidentesEAprendizadoPreventivo),
 	validateBlogContent(blogLaudoTecnicoDasCondicoesAmbientaisDeTrabalhoLtcat),
 	validateBlogContent(blogLtcatPapelFundamentalNaSegurancaDoTrabalhoENoBemEstarDosColaboradores),
 	validateBlogContent(blogOrcamentoEficienteParaLtcatPassosEssenciaisParaGarantirASegurancaNoTrabalho),
@@ -39,4 +60,7 @@ export const blogPages = [
 	validateBlogContent(blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe),
 	validateBlogContent(blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosParaSuaEquipe),
 	validateBlogContent(blogNr35TrabalhoEmAlturaESeguranca),
+	validateBlogContent(blogGestaoDeResiduosNaOperacao),
+	validateBlogContent(blogControleDeQualidadeEmObrasEServicos),
+	validateBlogContent(blogPpcipAvcbClcbComoOrganizarRegularizacao),
 ] as const;

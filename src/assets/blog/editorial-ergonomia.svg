@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Ilustração de avaliação ergonômica</title><desc id="desc">Posto de trabalho, atividade e observação organizacional formam uma análise de ergonomia.</desc>
+  <rect width="1200" height="675" fill="#edf4eb"/><path d="M95 500h1010" stroke="#c3d5c2" stroke-width="5"/>
+  <rect x="170" y="335" width="430" height="25" rx="8" fill="#527d59"/><path d="M220 360v135m330-135v135" stroke="#527d59" stroke-width="16" stroke-linecap="round"/>
+  <rect x="300" y="210" width="200" height="122" rx="10" fill="#fff" stroke="#779a7a" stroke-width="6"/><rect x="324" y="232" width="152" height="78" rx="6" fill="#d9e8d6"/><path d="M385 332v30m-46 0h92" stroke="#527d59" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="760" cy="230" r="50" fill="#3a7849"/><path d="M676 390c18-76 150-76 168 0v22H676z" fill="#3a7849"/><path d="M810 305l92 30-34 66-84-28" fill="#b8cfb8" stroke="#527d59" stroke-width="6"/>
+  <rect x="820" y="150" width="240" height="74" rx="14" fill="#fff" stroke="#a6c0a8" stroke-width="4"/><text x="940" y="197" text-anchor="middle" fill="#263a2a" font-family="Arial,sans-serif" font-size="25" font-weight="700">ATIVIDADE REAL</text>
+  <text x="600" y="590" text-anchor="middle" fill="#263a2a" font-family="Arial,sans-serif" font-size="28" font-weight="700">AEP IDENTIFICA · AET APROFUNDA</text>
+</svg>

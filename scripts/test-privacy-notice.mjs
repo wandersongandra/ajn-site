@@ -30,9 +30,14 @@ function setup({ id = '', choice = null, blocked = false } = {}) {
   };
   const storage = { getItem(k) { if(blocked) throw Error('blocked'); return map.get(k) || null; },
     setItem(k,v) { if(blocked) throw Error('blocked'); map.set(k,v); } };
-  const window = { localStorage: storage, location: { hostname:'ajnengenharia.com.br', reload(){this.reloaded=true;} } };
+  const windowHandlers = {};
+  const window = {
+    localStorage: storage,
+    location: { hostname:'ajnengenharia.com.br', reloaded:false, reload(){this.reloaded=true;} },
+    addEventListener(type, listener) { windowHandlers[type] = listener; },
+  };
   vm.runInNewContext(code, { document, window, Date: class extends Date { static now() { return now; } } });
-  return { notice, controls, handlers, inserted, map, window, cookies };
+  return { notice, controls, handlers, inserted, map, window, windowHandlers, cookies };
 }
 test('sem ID: não carrega GA4 mesmo com aceite', () => {
   const s=setup();
@@ -95,4 +100,40 @@ test('storage bloqueado mantém banner e não inicia GA4', () => {
   const s=setup({id:'G-ABCDEF1234',blocked:true});
   assert.equal(s.notice.hidden,false);
   assert.equal(s.inserted.length,0);
+});
+
+test('clique no Instagram não é medido sem consentimento', () => {
+  const s = setup({ id:'G-ABCDEF1234' });
+  s.windowHandlers['ajn:instagram-outbound']({
+    detail: { contentId: 'DSKuL-yEXrF', contentType: 'reel', placement: 'home_editorial' },
+  });
+  assert.equal(s.inserted.length, 0);
+  assert.equal(s.window.dataLayer, undefined);
+});
+test('com aceite, evento do Instagram é medido sem dados pessoais', () => {
+  const s = setup({ id:'G-ABCDEF1234' });
+  s.handlers['accept:click']();
+  s.windowHandlers['ajn:instagram-outbound']({
+    detail: { contentId: 'DSKuL-yEXrF', contentType: 'reel', placement: 'home_editorial' },
+  });
+  const event = s.window.dataLayer.map(args => [...args]).find(args => args[0] === 'event');
+  assert.equal(event[1], 'instagram_outbound_click');
+  assert.equal(event[2].content_id, 'DSKuL-yEXrF');
+  assert.equal(event[2].content_type, 'reel');
+  assert.equal(event[2].placement, 'home_editorial');
+  assert.equal(Object.keys(event[2]).length, 3);
+});
+test('rejeitar e depois aceitar reabilita GA4 na própria página', () => {
+  const s = setup({ id:'G-ABCDEF1234' });
+  s.handlers['reject:click']();
+  assert.equal(s.window['ga-disable-G-ABCDEF1234'], true);
+  s.handlers['reopen:click']();
+  s.handlers['accept:click']();
+  assert.equal(s.window['ga-disable-G-ABCDEF1234'], false);
+  s.windowHandlers['ajn:instagram-outbound']({
+    detail: { contentId: 'profile', contentType: 'post', placement: 'home_editorial' },
+  });
+  const event = s.window.dataLayer.map(args => [...args]).find(args => args[0] === 'event');
+  assert.ok(event);
+  assert.equal(event[2].content_id, 'profile');
 });

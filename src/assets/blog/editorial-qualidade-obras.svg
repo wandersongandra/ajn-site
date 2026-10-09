@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" fill="none">
+  <rect width="1200" height="675" fill="#ECEFE9"/>
+  <path d="M0 488h1200v187H0z" fill="#DCE3DA"/>
+  <path d="M90 482V239l198-106 196 106v243" fill="#F8F9F6" stroke="#AEBCAE" stroke-width="8"/>
+  <path d="M122 258 288 170l164 88" stroke="#315B3D" stroke-width="8"/>
+  <path d="M162 292h251M162 334h251M162 376h251" stroke="#C0CBC0" stroke-width="8"/>
+  <path d="M640 484V177h378v307" fill="#D3DDD2" stroke="#A8B8A8" stroke-width="8"/>
+  <path d="M694 232h269M694 280h269M694 328h196M694 376h236" stroke="#718B75" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="908" cy="420" r="40" fill="#F8F9F6" stroke="#315B3D" stroke-width="7"/>
+  <path d="m889 420 13 13 27-29" stroke="#315B3D" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M501 382h105m-24-24 24 24-24 24" stroke="#728872" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M104 539h923" stroke="#A8B8A8" stroke-width="2"/>
+  <text x="70" y="82" fill="#213C2A" font-family="Arial,sans-serif" font-size="30" font-weight="700" letter-spacing="3">VERIFICAÇÃO E RASTREABILIDADE</text>
+</svg>

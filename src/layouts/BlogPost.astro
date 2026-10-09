@@ -48,28 +48,53 @@ const toc = post.sections.map((section, index) => ({
 const self = blogPosts.find((item) => item.href === post.path);
 const related = getRelatedBlogPosts(post.path);
 
-// Relaciona artigos aos serviços publicados sem alterar as URLs legadas.
-const servicesByTopic: Record<string, readonly { title: string; href: string }[]> = {
-  'LTCAT': [
-    { title: 'Elaboração de LTCAT', href: '/emissao-ltcat' },
-    { title: 'LTCAT e insalubridade: diferenças', href: '/laudo-ltcat-insalubridade' },
-  ],
-  'PGR e riscos': [
-    { title: 'Elaboração de PGR', href: '/elaboracao-pgr' },
-    { title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' },
-  ],
-  'PCMSO': [
-    { title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
-  ],
-  'PPP e eSocial': [
-    { title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' },
-    { title: 'Elaboração de LTCAT', href: '/emissao-ltcat' },
-  ],
-  'Normas regulamentadoras': [
-    { title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' },
+// Links só aparecem quando há uma página de serviço existente e compatível.
+const relatedServicesBySlug: Record<string, readonly { title: string; href: string }[]> = {
+  'laudo-tecnico-das-condicoes-ambientais-de-trabalho-ltcat': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-papel-fundamental-na-seguranca-do-trabalho-e-no-bem-estar-dos-colaboradores': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'orcamento-eficiente-para-ltcat-passos-essenciais-para-garantir-a-seguranca-no-trabalho': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-e-seguranca-do-trabalho-como-garantir-a-protecao-eficaz-da-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-e-seguranca-do-trabalho-como-proteger-sua-empresa-com-eficiencia': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-guia-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-na-seguranca-do-trabalho-fortaleca-a-protecao-dos-seus-funcionarios-eficazmente': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'seguranca-do-trabalho-e-ltcat-conformidade-e-protecao-previdenciaria': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-guia-essencial-para-garantir-seguranca-do-trabalho-eficaz': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-essencial-para-a-seguranca-do-trabalho-e-protecao-da-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'ltcat-na-seguranca-do-trabalho-garantindo-protecao-e-reducao-de-riscos-para-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
+  'o-fim-do-ppra-e-a-chegada-do-pgr-o-que-mudou': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr' }],
+  'laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr' }],
+  'elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr' }, { title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos' }],
+  'seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional': [{ title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos' }],
+  'ppp-facil-o-ue-e-como-consultar-e-sua-importancia': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
+  'perfil-profissiografico-previdenciario-ppp': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
+  'nr-35-trabalho-em-altura-e-seguranca': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
+  'gestao-de-terceiros-em-sst-documentos-mobilizacao-e-controles': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' }],
+  'esocial-sst-diferencas-entre-s2210-s2220-e-s2240': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
+  'apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' }],
+  'nr-10-documentacao-capacitacao-e-transicao-regulatoria': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
+  'higiene-ocupacional-como-planejar-avaliacoes-de-exposicao': [{ title: 'Perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }],
+  'investigacao-de-acidentes-como-transformar-registros-em-prevencao': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }],
+  'gestao-de-residuos-como-organizar-a-rotina-da-operacao': [{ title: 'Gestão ambiental', href: '/servicos/gestao-ambiental' }],
+  'controle-de-qualidade-em-obras-registros-inspecoes-e-desvios': [{ title: 'Gestão da qualidade', href: '/servicos/gestao-da-qualidade' }],
+  'ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel': [
+    { title: 'Projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+    { title: 'Regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
   ],
 };
-const relatedServices = servicesByTopic[self?.topic ?? ''] ?? [];
+const relatedServices = relatedServicesBySlug[post.slug] ?? [];
+const contextualCta: Record<string, string> = {
+  'Gestão de SST': 'Precisa coordenar riscos, documentos e rotinas de prevenção? Converse com a AJN sobre o escopo adequado à operação da sua empresa.',
+  'Saúde ocupacional': 'Quer organizar a rotina de saúde ocupacional e seus registros? Converse com a AJN sobre as necessidades da sua empresa.',
+  'Laudos e avaliações técnicas': 'Precisa avaliar documentos ou exposições ocupacionais? A equipe da AJN pode conversar sobre o escopo técnico aplicável.',
+  'Normas regulamentadoras': 'Precisa avaliar capacitação ou controles relacionados a uma NR? Converse com a AJN sobre a atividade e os requisitos envolvidos.',
+  'eSocial e obrigações': 'Precisa revisar a organização dos registros de SST enviados ao eSocial? Converse com a AJN sobre a sua rotina documental.',
+  'Segurança operacional': 'Quer estruturar uma atividade ou rotina preventiva? Converse com a AJN sobre o cenário e os controles necessários.',
+  'Institucional': 'Se quiser conhecer as frentes de atendimento da AJN, fale com a equipe pelo canal de contato.',
+  'Gestão ambiental e qualidade': 'Precisa organizar requisitos ambientais ou de qualidade em uma operação ou obra? Converse com a AJN sobre o escopo aplicável.',
+  'Engenharia e prevenção contra incêndio': 'Precisa analisar um projeto ou a situação documental de uma edificação? Converse com a AJN sobre os próximos passos possíveis.',
+};
+const ctaDescription = contextualCta[self?.topic ?? ''] ?? 'Converse com a equipe da AJN sobre as necessidades de SST da sua empresa.';
 
 
 // Exibe fotos complementares sem repetir a capa ou a mesma foto mais de uma vez.
@@ -134,6 +159,15 @@ const galleryRemaining = galleryImages.slice(3);
 						</div>
 					))}
 				</div>
+
+				<aside class="blog-article__contact" aria-labelledby="blog-contact-title">
+					<div>
+						<p>Próximo passo</p>
+						<h2 id="blog-contact-title">Quer avaliar esse tema na sua empresa?</h2>
+						<p>{ctaDescription}</p>
+					</div>
+					<a href="/contato">Conversar com a AJN <span aria-hidden="true">→</span></a>
+				</aside>
 
 				{relatedServices.length > 0 && (
 					<nav class="blog-article__service-links" aria-label="Serviços relacionados a este artigo">

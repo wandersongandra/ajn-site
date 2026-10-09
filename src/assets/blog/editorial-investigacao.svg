@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Ilustração de investigação de acidentes</title><desc id="desc">Uma linha do tempo liga evidências, condições de trabalho e ações preventivas.</desc>
+  <rect width="1200" height="675" fill="#edf4eb"/><path d="M150 340h900" stroke="#91b397" stroke-width="8"/>
+  <g stroke="#3a7849" stroke-width="7" fill="#fff"><circle cx="210" cy="340" r="38"/><circle cx="470" cy="340" r="38"/><circle cx="730" cy="340" r="38"/><circle cx="990" cy="340" r="38"/></g>
+  <g fill="#3a7849"><path d="M193 351l12-42h10l12 42h-10l-3-10h-10l-3 10zM456 351v-22l14 14 14-14v22h-9v-8l-5 5-5-5v8zM715 351l15-24 15 24h-10l-5-8-5 8zM981 322h18v36h-18z"/></g>
+  <g font-family="Arial,sans-serif" text-anchor="middle" fill="#263a2a"><text x="210" y="430" font-size="22" font-weight="700">REGISTRAR</text><text x="470" y="430" font-size="22" font-weight="700">ANALISAR</text><text x="730" y="430" font-size="22" font-weight="700">APRENDER</text><text x="990" y="430" font-size="22" font-weight="700">PREVENIR</text></g>
+  <text x="600" y="565" text-anchor="middle" fill="#526457" font-family="Arial,sans-serif" font-size="27">Foco nas condições e barreiras do trabalho</text>
+</svg>

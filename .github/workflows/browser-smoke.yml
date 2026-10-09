@@ -1,0 +1,73 @@
+name: Browser smoke — AJN social and engineering
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/components/InstagramHighlights.astro'
+      - 'src/pages/index.astro'
+      - 'src/pages/projetos-spda.astro'
+      - 'src/pages/projetos-cabeamento-estruturado.astro'
+      - 'src/content/marketing/projetos-eletricos-prediais.ts'
+      - 'src/content/services/**'
+      - 'public/scripts/instagram-highlights.js'
+      - 'scripts/browser-smoke.mjs'
+      - '.github/workflows/browser-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-smoke-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PUBLIC_SITE_ORIGIN: https://ajnengenharia.com.br
+      PUBLIC_ALLOW_INDEXING: 'false'
+      BASE_URL: http://127.0.0.1:4321
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install site and browser test dependencies
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Build preview
+        run: npm run build
+
+      - name: Launch local preview
+        run: |
+          nohup npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/ajn-preview.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4321/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/ajn-preview.log
+          exit 1
+
+      - name: Browser smoke 320 / 390 / 768 / 1440
+        run: node scripts/browser-smoke.mjs
+
+      - name: Upload screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ajn-browser-smoke
+          path: artifacts/browser-smoke/
+          retention-days: 7
+          if-no-files-found: warn

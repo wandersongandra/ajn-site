@@ -1,3 +1,5 @@
+import type { BlogTopic } from './blog/topics';
+
 export interface ContentLinkSegment {
 	text: string;
 	href: string;
@@ -82,6 +84,7 @@ export interface BlogContentData {
 	pubDate: string;
 	updatedAt?: string;
 	author: string;
+	topic?: BlogTopic;
 	image: BlogImage;
 	categories: readonly string[];
 	tags: readonly string[];

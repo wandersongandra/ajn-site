@@ -36,8 +36,8 @@ for (const [name, html, route] of [
   if (indexing === 'true') check(!/\bnoindex\b/i.test(robots), `${name}: build indexável contém noindex.`);
   if (indexing === 'false') check(/\bnoindex\b/i.test(robots), `${name}: build de preview deve conter noindex.`);
 }
-const excerpts = [...catalog.matchAll(/description: '([^']+)'/g)].map((match) => match[1]);
-check(excerpts.length === 10, `Catálogo de serviços deve ter 10 descrições, encontrou ${excerpts.length}.`);
+const excerpts = [...catalog.matchAll(/\{ group: '(?:sst|operations|engineering)', title: '[^']+', description: '([^']+)'/g)].map((match) => match[1]);
+check(excerpts.length === 13, `Catálogo de serviços deve ter 13 descrições, encontrou ${excerpts.length}.`);
 for (const excerpt of excerpts) {
   check(excerpt.length > 60, `Descrição excessivamente curta no catálogo: ${excerpt}`);
   check(!/\.\.\.|Saiba mais|^\d+\s*-/.test(excerpt), `Descrição truncada ou extraída sem revisão: ${excerpt}`);
@@ -49,5 +49,5 @@ if (failures.length) {
   failures.forEach((failure) => console.error('[editorial][FAIL]', failure));
   process.exitCode = 1;
 } else {
-  console.log('[editorial] PASS: 5 páginas, URL canônica, conteúdo técnico e 10 descrições de serviços.');
+  console.log('[editorial] PASS: 5 páginas, URL canônica, conteúdo técnico e 13 descrições de serviços.');
 }

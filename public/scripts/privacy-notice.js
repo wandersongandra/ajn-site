@@ -44,6 +44,7 @@
   function loadAnalytics() {
     if (loaded || !id || !enabled) return;
     loaded = true;
+    window['ga-disable-' + id] = false;
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
@@ -87,6 +88,22 @@
     enabled = stored;
     if (enabled) loadAnalytics();
   }
+  // Eventos do feed só chegam ao GA4 após consentimento ativo.
+  // O componente não conhece nem chama serviços de análise diretamente.
+  window.addEventListener('ajn:instagram-outbound', (event) => {
+    if (!enabled || !loaded || !id || window['ga-disable-' + id] === true ||
+        typeof window.gtag !== 'function') return;
+    const detail = event.detail;
+    if (!detail || typeof detail.contentId !== 'string' ||
+        !/^(?:[A-Za-z0-9_-]{5,32}|profile)$/.test(detail.contentId) ||
+        detail.placement !== 'home_editorial') return;
+    window.gtag('event', 'instagram_outbound_click', {
+      content_id: detail.contentId,
+      content_type: detail.contentType === 'reel' ? 'reel' : 'post',
+      placement: 'home_editorial',
+    });
+  });
+
   accept?.addEventListener('click', () => commit(true));
   reject?.addEventListener('click', () => commit(false));
   customize?.addEventListener('click', openPreferences);

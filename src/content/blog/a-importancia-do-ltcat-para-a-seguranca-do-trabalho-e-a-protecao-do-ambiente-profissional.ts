@@ -1,14 +1,20 @@
 import image0 from '../../assets/blog/blog-a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional-5b7fade9f1.webp';
+import type { BlogContentData } from '../types';
 
 export const blogArticle = {
+	slug: 'a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional',
+	path: '/blog/a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional',
 	title: 'LTCAT e segurança do trabalho: importância e proteção | AJN',
 	description: 'A importância do LTCAT para identificar riscos, apoiar a conformidade legal e proteger a saúde dos colaboradores.',
 	heading: 'A Importância do LTCAT para a Segurança do Trabalho e a Proteção do Ambiente Profissional',
-	image: image0,
-	imageAlt: 'A Importância do LTCAT para a Segurança do Trabalho e a Proteção do Ambiente Profissional',
-	date: '23 de Janeiro de 2026',
+	pubDate: '2026-01-23',
+	updatedAt: '2026-10-07',
 	author: 'AJN Consultoria e Engenharia',
-	updatedAt: "2026-10-07",
+	topic: 'Laudos e avaliações técnicas',
+	image: { src: image0, alt: 'Ilustração editorial sobre o LTCAT e a documentação de exposições ocupacionais' },
+	categories: ['Laudos e avaliações técnicas'],
+	tags: ['LTCAT', 'agentes nocivos', 'previdência', 'responsabilidade técnica'],
+	gallery: [],
 	sections: [
   {
     "heading": "O papel do LTCAT na documentação das exposições",
@@ -68,4 +74,4 @@ export const blogArticle = {
     ]
   }
 ],
-} as const;
+} as const satisfies BlogContentData;

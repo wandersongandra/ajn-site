@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { BlogImageMetadata } from './content/types';
+import { BLOG_TOPICS } from './content/blog/topics';
 import { isSafeContentHref } from './utils/safe-content-href.mjs';
 
 const contentLinkSegmentSchema = z.object({
@@ -94,6 +95,7 @@ export const blogContentSchema = z.object({
 	pubDate: z.coerce.date(),
 	updatedAt: z.coerce.date().optional(),
 	author: z.string().min(1),
+	topic: z.enum(BLOG_TOPICS).optional(),
 	image: blogImageSchema,
 	categories: z.array(z.string().min(1)).min(1),
 	tags: z.array(z.string().min(1)),
