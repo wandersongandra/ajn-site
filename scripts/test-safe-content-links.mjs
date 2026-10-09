@@ -99,9 +99,11 @@ test('escapa payload HTML e preserva JSON-LD válido', () => {
 	assert.deepEqual(JSON.parse(serialized), payload);
 });
 
-test('reconhece fechamento de script com espaços antes do delimitador', () => {
-	const scripts = extractScriptElements('<script type="application/ld+json">{"ok":true}</script ><script src="/a.js"></script>');
-	assert.equal(scripts.length, 2);
+test('reconhece tags de fechamento script com whitespace e atributos inesperados', () => {
+	const scripts = extractScriptElements('<script type="application/ld+json">{"ok":true}</script ><script src="/a.js">run()</script\t\n bar><script src="/b.js">next()</script>');
+	assert.equal(scripts.length, 3);
 	assert.equal(scripts[0].body, '{"ok":true}');
 	assert.equal(scripts[1].attributes, ' src="/a.js"');
+	assert.equal(scripts[1].body, 'run()');
+	assert.equal(scripts[2].attributes, ' src="/b.js"');
 });
