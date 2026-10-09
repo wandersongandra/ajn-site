@@ -1,7 +1,7 @@
 export const servicePage = {
   slug: 'projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia',
   path: '/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia',
-  title: 'Projetos elétricos residenciais, comerciais e prediais | AJN',
+  title: 'Projetos elétricos: escopo e documentação técnica | AJN',
   description: 'Projetos elétricos para edificações residenciais, comerciais e prediais, com definição de cargas, circuitos, proteções e documentação conforme o escopo.',
   heading: 'Projetos elétricos residenciais, comerciais e prediais',
   image: '/images/featured/orcamento-projeto-eletrico-01.webp',
