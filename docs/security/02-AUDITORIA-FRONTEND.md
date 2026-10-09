@@ -16,7 +16,7 @@ O JSON-LD inserido com `set:html` passa por `serializeJsonLd()` (`src/utils/site
 - **Evidência:** `contentLinkSegmentSchema` em `src/content.config.ts` antes da alteração aceitava `href: z.string().min(1)`; `ContentInline.astro` renderiza esse campo em `<a href>`.
 - **Cenário:** alguém adiciona acidentalmente ou maliciosamente `javascript:`/`data:` em conteúdo versionado e um visitante ativa o link.
 - **Correção:** schema aceita apenas caminho iniciado por `/` que não seja `//`, ou URL HTTPS sem credenciais; helper compartilhado em `src/utils/safe-content-href.mjs`.
-- **Teste:** `npm run test:security-links` cobre caminho local, HTTPS, esquemas ativos, protocol-relative, HTTP, credenciais e valor inválido.
+- **Teste:** `npm run test:security-links` (6 casos) cobre caminhos locais codificados, HTTPS, esquemas executáveis e `data:`, caracteres percent-encoded, protocol-relative, barras invertidas, caminhos relativos suspeitos, protocolos não autorizados, credenciais e valor inválido. Também exercita a serialização real de JSON-LD com payload HTML e confirma parse válido.
 - **Risco residual:** conteúdo é controlado por commit; a proteção não substitui revisão de alterações editoriais.
 
 ### AJN-SEC-008 — permissões de atributo de estilo inline
@@ -35,4 +35,4 @@ O JSON-LD inserido com `set:html` passa por `serializeJsonLd()` (`src/utils/site
 
 ## Resultado dos controles
 
-`npm run audit:security` passou em 188 arquivos fonte, cobrindo sinks DOM, Web Storage, scripts inline executáveis, JSON-LD, CSP e headers. `npm run check` passou com 217 arquivos, 0 erros/avisos/hints. `npm run build` gerou 144 páginas. A validação de navegação foi estática; não foi realizado teste visual/browser nesta rodada.
+Na segunda revisão, `npm run audit:security` passou em 189 arquivos fonte e 145 HTML compilados; valida JSON-LD parseável e verifica scripts inline executáveis e protocolos proibidos em links compilados. `npm run test:security-links` passou (6/6), além de `npm run check` (218 arquivos, 0 erros/avisos/hints) e `npm run build` (144 páginas), repetidos em contexto de produção e preview. A validação de navegação permanece automatizada/estática; não foi realizado teste visual/browser nesta rodada.

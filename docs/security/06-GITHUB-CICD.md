@@ -17,7 +17,7 @@
 - Quality Gate declara `permissions: contents: read` no nível do workflow.
 - CodeQL concede `actions: read`, `contents: read` e `security-events: write` apenas ao job de análise.
 - Gitleaks usa checkout com `persist-credentials: false`.
-- O workflow de qualidade constrói preview com `noindex` e realiza build indexável separado, sem publicar o artefato.
+- O workflow de qualidade constrói preview com `noindex` e realiza build indexável separado, sem publicar o artefato. Ambos executam `audit:editorial` e `audit:sst-seo` no mesmo contexto de origin/indexação do build.
 - Ações de terceiros não são pinadas por SHA; isso é risco residual de supply chain, não prova de comprometimento.
 
 ## Não verificável pelo checkout

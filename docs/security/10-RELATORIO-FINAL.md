@@ -4,28 +4,31 @@
 
 ## 1. Resumo executivo
 
-Arquitetura confirmada: Astro estático, 144 páginas de conteúdo e rota 404, sem API, banco, SSR ou autenticação. Produção já responde com HTML Astro em LiteSpeed; CI valida builds, mas não publica. Riscos mais relevantes: HSTS ausente no host observado; limites amplos de `form-action`/`img-src` na CSP; links editoriais sem esquema permitido; duas rotas legais em 404; mecanismo de deploy e settings administrativos não confirmados.
+Arquitetura confirmada: Astro estático, 144 páginas de conteúdo e rota 404, sem API, banco, SSR ou autenticação. Produção responde com HTML Astro em LiteSpeed; CI valida builds, mas não publica. Os bloqueios dos gates foram corrigidos: os títulos agora são explícitos e os audits exigem contexto de ambiente; as divergências de canonical eram comparação de artefato preview com auditor defaultando para apex. Permanecem riscos operacionais: HSTS ausente, CSP restrita ainda em Report-Only, páginas legais em 404, `www` sem redirect e confirmação do plano/fluxo Hostinger pendente.
 
 ## 2. Achados consolidados
 
 | ID | Severidade | Evidência | Estado atual | Resíduo |
 |---|---|---|---|---|
-| AJN-SEC-001 | Média | HSTS ausente em GETs HTTPS de produção | CORRIGIDO no repositório | depende de publicação e GET posterior |
-| AJN-SEC-002 | Média | CSP aceitava qualquer HTTPS para forms/imagens | CORRIGIDO no repositório e coberto por auditoria | header publicado ainda antigo até deploy |
-| AJN-SEC-003 | Baixa | schema aceitava esquema arbitrário em link editorial | CORRIGIDO; 5 testes e build | requer revisão de conteúdo versionado |
+| AJN-SEC-001 | Média | HSTS ausente em GETs HTTPS de produção | EM IMPLEMENTAÇÃO local (300s) | depende de publicação e GET posterior |
+| AJN-SEC-002 | Média | CSP aceitava qualquer HTTPS para forms/imagens | EM IMPLEMENTAÇÃO local (candidata em Report-Only) | enforced antigo até publicação e revisão de violações |
+| AJN-SEC-003 | Baixa | schema aceitava esquema arbitrário em link editorial | VALIDADO localmente; 6 testes e build | requer revisão de conteúdo versionado |
 | AJN-SEC-004 | Média | privacidade e termos retornam 404 | ABERTO | conteúdo original aprovado não disponível nesta rodada |
 | AJN-SEC-005 | Média | mecanismo de publicação não está no repo; preview inacessível | BLOQUEADO | confirmação Hostinger necessária |
 | AJN-SEC-006 | Média | Actions referenciadas por tag major e settings externos não verificados | ABERTO/mitigado | revisar pinning e settings GitHub |
 | AJN-SEC-007 | Baixa | Google Fonts e canais externos expõem metadados aos provedores | NECESSITA VERIFICAÇÃO | atualizar aviso de privacidade com base legal/processamento aprovado |
 | AJN-SEC-008 | Baixa | CSP permite atributo style inline exigido por componentes atuais | ACEITO com justificativa | remover apenas em mudança de apresentação planejada |
+| AJN-SEC-009 | Baixa | `www` retorna 200 com canonical apex, sem redirect de host | EM IMPLEMENTAÇÃO local | validar regra 301 após publicação autorizada |
 
-Contagens de severidade: **5 Média, 3 Baixa; 0 Crítica/Alta**. Evidência: 6 confirmados (001–004, 006, 008), 1 provável (007), 1 bloqueado (005). Estado: 3 corrigidos localmente (001–003); 2 abertos (004, 006); 1 bloqueado (005); 1 necessita verificação (007); 1 risco residual aceito (008). Não há finding crítico/alto confirmado. A classificação de risco é contextual e não prova ausência de vulnerabilidades.
+Contagens de severidade: **5 Média, 4 Baixa; 0 Crítica/Alta**. Evidência: 7 confirmados (001–004, 006, 008–009), 1 provável (007), 1 bloqueado (005). Estado: 1 validado localmente (003); 3 em implementação local/QA (001–002, 009); 2 abertos (004, 006); 1 bloqueado (005); 1 necessita verificação (007); 1 risco residual aceito (008). A correção local de headers/redirect não confirma runtime no host.
 
 ## 3. Correções
 
-- `.htaccess`: HSTS de um ano e CSP com destinos de forms/imagens restritos.
-- `content.config.ts` + `safe-content-href.mjs`: validação de links relativos locais e HTTPS sem credenciais.
-- `test-safe-content-links.mjs`, `audit-security.mjs`, `package.json`, `quality.yml`: regressão automatizada local e no Quality Gate.
+- `keyword-map.ts`: títulos/descrições explícitos de PGR e LTCAT, sem afrouxar os limites dos audits.
+- `audit-editorial.mjs`/`audit-sst-seo.mjs`: exigem origin e indexing explícitos; verificam canonical e `noindex` por rota.
+- `.htaccess`: mantém CSP vigente enforced, põe candidata mais restrita em Report-Only, HSTS inicial 300s e prepara 301 de `www` para apex.
+- `site.ts`/`json-ld.mjs`, `content.config.ts`/`safe-content-href.mjs`: serialização testável contra injeção HTML e validação de links restrita a root-relative/HTTPS sem credenciais.
+- `test-safe-content-links.mjs`, `audit-security.mjs`, `quality.yml`: testes de inputs, auditoria de HTML/JSON-LD buildado e gates duplicados para preview/produção.
 - Nenhuma dependência nova; nenhuma URL/página existente foi removida; nenhum texto legal foi fabricado.
 
 ## 4. Camadas
@@ -40,26 +43,27 @@ Contagens de severidade: **5 Média, 3 Baixa; 0 Crítica/Alta**. Evidência: 6 c
 
 ## 5. Validação
 
-Resultados detalhados e limitações em `09-TESTES-E-VALIDACAO.md`. Check, builds de preview e produção indexável e checks focados passaram. `npm run validate` **falhou** no gate editorial por título SEO de 23 caracteres em `/elaboracao-pgr/`. `npm run audit:sst-seo` com origin de produção falhou pelo título de 22 caracteres em `/emissao-ltcat/`; no build de preview, cinco canonicals também divergem do origin de preview esperado. Esses achados editoriais preexistentes não foram alterados nesta auditoria de segurança; publicação deve aguardar validação editorial separada. `npm audit --audit-level=high` passou com zero vulnerabilidades conhecidas.
+`npm run validate` passou integralmente nos perfis de produção indexável e preview `noindex`; `npm run check` standalone também passou em produção. Os dois builds produziram 144 páginas, com 145 documentos HTML auditados. Causa dos títulos: `getMarketingSeo` gerava título a partir de `heading` e ignorava os títulos completos do conteúdo; keyword map agora tem entradas explícitas. Causa dos canonicals: o build e a auditoria standalone usavam `PUBLIC_SITE_ORIGIN` diferente/ausente; os audits agora exigem ambiente explícito e verificam indexabilidade por rota. `npm audit --audit-level=high`: zero vulnerabilidades conhecidas. Evidências e comandos em `09-TESTES-E-VALIDACAO.md`.
 
 ## 6. Impacto
 
-- **Segurança:** reduz fontes CSP amplas, ativa HSTS no arquivo de hospedagem e bloqueia esquemas perigosos no conteúdo.
+- **Segurança:** restringe links editoriais; CSP restrita está em Report-Only, ainda não enforced; HSTS curto e redirect www estão só preparados no arquivo.
 - **Manutenção:** o mesmo helper de URL é exercitado por teste Node nativo.
 - **Performance/SEO/acessibilidade:** sem dependências adicionadas; build manteve 144 páginas, canonical e geração do sitemap. Nenhuma navegação visual foi executada nesta rodada.
 - **Compatibilidade:** integração futura de formulário externo exigirá allowlist explícita na CSP; o estado atual de contato permanece inalterado.
 
 ## 7. Pendências
 
-1. Recuperar conteúdo jurídico aprovado e restaurar as URLs legais.
-2. Publicar a revisão pelo processo autorizado e confirmar HSTS/CSP em apex e `www`.
-3. Confirmar Hostinger/staging e settings GitHub com operadores administrativos.
-4. Validar UX/browser, teclado e formulários se um endpoint for habilitado.
+1. Recuperar e aprovar conteúdo jurídico AJN e restaurar as rotas legais.
+2. Confirmar plano/document root e processo Hostinger; fazer preview controlado e validar headers/redirects antes de promover.
+3. CSP Report-Only não possui collector; decidir se QA manual de console é suficiente ou se serviço de reports será aprovado.
+4. Confirmar configurações administrativas GitHub e aguardar CI remoto Node 22/Actions após PR.
+5. Fazer browser/teclado QA; formulário segue desativado, sem endpoint.
 
 ## 8. Estado Git
 
-Branch: `security/auditoria-hardening-2026-10-08`, base `5a5edaf`. Commits locais: `608a24e` (hardening) e commit de documentação desta auditoria. Arquivos alterados: `.github/workflows/quality.yml`, `package.json`, `public/.htaccess`, `scripts/audit-security.mjs`, `scripts/test-safe-content-links.mjs`, `src/content.config.ts`, `src/utils/safe-content-href.mjs`, `src/utils/safe-content-href.d.mts` e os 11 relatórios em `docs/security/`. Nenhuma mudança em `main`; sem PR, push, merge ou deploy.
+Branch: `security/auditoria-hardening-2026-10-08`, base `5a5edaf`. Commits das rodadas anteriores: `608a24e`, `ea10b65`; os commits desta segunda rodada serão registrados após a revisão final. Não alterar `main`. Push/PR dependem da verificação de `gh` auth e sincronização segura; sem merge ou deploy.
 
 ## 9. Classificação final
 
-**GO CONDICIONAL** para revisão local: patches e documentação estão implementados, mas a publicação segura depende da confirmação do host e as rotas legais indisponíveis continuam abertas. Não é garantia de ausência de vulnerabilidades e não representa autorização de deploy.
+**GO CONDICIONAL** para revisão por PR local/remoto após CI: gates obrigatórios passaram nos dois ambientes locais. Não é prontidão para produção: CSP restrita segue apenas Report-Only, redirect/HSTS ainda não observados no host, plano/document root Hostinger não confirmados e rotas legais seguem 404. Não representa autorização de deploy nem garantia de ausência de vulnerabilidades.

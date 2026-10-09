@@ -26,8 +26,8 @@ flowchart LR
 - `astro.config.mjs`: saída estática padrão, integração sitemap, canonical pelo `site` e redirecionamento Astro para `/informacoes`.
 - `README.md`: declara `output: 'static'`, sem banco/API/SSR/ISR/CMS/painel.
 - `src/pages/`: páginas estáticas e endpoint de build `robots.txt.ts` com `prerender = true`; nenhum endpoint de aplicação.
-- `.github/workflows/quality.yml`: valida preview com `PUBLIC_ALLOW_INDEXING=false` e executa build separado com domínio de produção e indexação ligada. Não contém upload, deploy, FTP ou SSH.
-- `public/.htaccess`: redirecionamento de `/informacoes` e headers para hospedagem Apache-compatible.
+- `.github/workflows/quality.yml`: valida preview com `PUBLIC_ALLOW_INDEXING=false` e build de produção com origin apex/indexação ligada; não contém upload/deploy.
+- `public/.htaccess`: redirecionamento de `/informacoes`, regra preparada `www`→apex, CSP atual enforced + candidata Report-Only, HSTS inicial curto. Aplicação no hPanel ainda não comprovada para esta revisão.
 - Runtime local observado: Node `v24.13.0`, npm `11.12.1`, Astro `7.3.6`, TypeScript `6.0.3`, Zod `4.6.5`, `@astrojs/sitemap` `3.7.4`.
 
 ## Fronteiras de confiança e entradas

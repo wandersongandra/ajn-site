@@ -9,6 +9,7 @@ Manifest direto: `astro@^7.3.6`, `@astrojs/sitemap@^3.7.4`, `zod@^4.6.5`; desenv
 ## Auditoria
 
 - `npm audit --audit-level=high`: **0 vulnerabilidades** no lockfile, incluindo dependências de desenvolvimento, na data desta análise.
+- Reexecução no fechamento da segunda rodada: `npm audit --audit-level=high` retornou `found 0 vulnerabilities`; `npm audit --omit=dev --audit-level=high` também passou sem vulnerabilidades conhecidas.
 - `npm audit --omit=dev --audit-level=high`: comando de release existente; deve continuar rodando por separar a árvore de produção.
 - `npm ci` está configurado na CI para instalar a partir do lockfile.
 - `npm ls --depth=0` listou dois pacotes extraneous no `node_modules` local (`@img/sharp-wasm32` e `@napi-rs/wasm-runtime`); isso pode refletir estado local e não foi usado como prova de dependência comprometida. Não foi feita limpeza/reinstalação do diretório.

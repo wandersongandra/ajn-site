@@ -18,6 +18,8 @@ O formulário de produção está desativado; o site apresenta links diretos par
 
 GET read-only em 2026-10-08 retornou **404** para `https://ajnengenharia.com.br/politica-de-privacidade/` e `/termos-de-uso/`. As rotas são relevantes para transparência do visitante e continuidade da migração. O conteúdo jurídico aprovado e sua proveniência não foram localizados nesta rodada; não foram redigidos textos inventados. Status: `ABERTO`, severidade média, responsável: AJN/operador do conteúdo.
 
+Na segunda rodada, a busca no checkout confirmou que não há páginas/arquivos legais correspondentes nem links para essas rotas; não há redirect configurado para elas. O status e a decisão permanecem inalterados: AJN precisa fornecer/revisar/aprovar o conteúdo antes da publicação.
+
 ## Limitações
 
 Não foram inspecionados painel Hostinger, caixa de e-mail, CRM, WhatsApp Business, logs administrativos ou registros do provedor. Não se afirma ausência de cookies/retensão fora do código do repositório; observações do site foram GET pontual e sem browser/storage inspection.
