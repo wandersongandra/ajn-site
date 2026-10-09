@@ -136,9 +136,8 @@ if (report.articles !== 28) failures.push('Esperados 28 artigos HTML gerados, en
 // Exercita a pesquisa, os filtros e a expansão usando o script entregue ao navegador.
 if (archiveHtml) {
 	const script = await readFile('public/scripts/blog-index.js', 'utf8');
-	const decode = (value) => value.replaceAll('&amp;', '&').replaceAll('&quot;', '"').replaceAll('&#39;', "'");
 	const cards = [...archiveHtml.matchAll(/<article\b[^>]*data-blog-card[^>]*data-blog-searchable="([^"]*)"[^>]*data-blog-category="([^"]*)"[^>]*>/g)]
-		.map((match) => ({ dataset: { blogSearchable: decode(match[1]), blogCategory: decode(match[2]) }, hidden: false }));
+		.map((match) => ({ dataset: { blogSearchable: match[1], blogCategory: match[2] }, hidden: false }));
 	const validTopics = new Set([
 		'Gestão de SST', 'Saúde ocupacional', 'Laudos e avaliações técnicas', 'Normas regulamentadoras',
 		'eSocial e obrigações', 'Segurança operacional', 'Treinamentos e prevenção', 'SST por setor', 'Institucional',
