@@ -1,7 +1,5 @@
 ---
 import { site } from '../data/home';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 
 // Seleção editorial: somente publicações públicas conferidas e vinculadas ao perfil AJN.
 // Links indisponíveis ficam fora do site até nova verificação.
@@ -14,7 +12,6 @@ const posts = [
     description: 'Como a análise das condições de exposição ajuda a orientar medidas de prevenção.',
     href: 'https://www.instagram.com/reel/DUagMmhkTBG/',
     cover: '/images/social/DUagMmhkTBG.webp',
-    illustration: '/images/social/DUagMmhkTBG.svg',
   },
   {
     kind: 'Reel',
@@ -23,7 +20,6 @@ const posts = [
     description: 'Acompanhamento de uma operação de içamento e análise do plano de rigging.',
     href: 'https://www.instagram.com/reel/DSKuL-yEXrF/',
     cover: '/images/social/DSKuL-yEXrF.webp',
-    illustration: '/images/social/DSKuL-yEXrF.svg',
   },
   {
     kind: 'Reel',
@@ -32,7 +28,6 @@ const posts = [
     description: 'Atos, condições e desvios operacionais que merecem correção antes de um acidente.',
     href: 'https://www.instagram.com/reel/DTxR39Yjky3/',
     cover: '/images/social/DTxR39Yjky3.webp',
-    illustration: '/images/social/DTxR39Yjky3.svg',
   },
   {
     kind: 'Publicação',
@@ -41,7 +36,6 @@ const posts = [
     description: 'Registro da capacitação em segurança para atividades em altura.',
     href: 'https://www.instagram.com/p/DUJRrqxkbkI/',
     cover: '/images/social/DUJRrqxkbkI.webp',
-    illustration: '/images/social/DUJRrqxkbkI.svg',
   },
   {
     kind: 'Publicação',
@@ -50,7 +44,6 @@ const posts = [
     description: 'Visita técnica, conferência documental e orientações de prevenção em campo.',
     href: 'https://www.instagram.com/p/DSmc5DGjiQW/',
     cover: '/images/social/DSmc5DGjiQW.webp',
-    illustration: '/images/social/DSmc5DGjiQW.svg',
   },
   {
     kind: 'Publicação',
@@ -59,18 +52,15 @@ const posts = [
     description: 'Sinalização e organização das áreas de trabalho no Shopping Tatuapé.',
     href: 'https://www.instagram.com/p/DRnThhXEhtu/',
     cover: '/images/social/DRnThhXEhtu.webp',
-    illustration: '/images/social/DRnThhXEhtu.svg',
   },
 ] as const;
 
-// Capas locais, sem links efêmeros do CDN do Instagram.
-// Sem arquivo correspondente, o cartão editorial continua acessível e funcional.
+// Fotografias do acervo AJN, otimizadas e armazenadas no próprio site.
+// São contexto editorial: podem não coincidir com a capa original do post.
 const availablePosts = posts.map((post) => ({
   ...post,
   id: post.href.match(/\/(?:reel|p)\/([^/]+)\//)?.[1] ?? '',
-  // Se a AJN enviar a capa real do vídeo, ela substitui automaticamente a arte ilustrativa.
-  localCover: existsSync(join(process.cwd(), 'public', post.cover.slice(1))) ? post.cover : post.illustration,
-  illustrative: !existsSync(join(process.cwd(), 'public', post.cover.slice(1))),
+  localCover: post.cover,
 }));
 ---
 
@@ -97,7 +87,6 @@ const availablePosts = posts.map((post) => ({
             {post.localCover && (
               <div class="instagram-highlights__media">
                 <img src={post.localCover} alt="" width="600" height="750" loading="lazy" decoding="async" />
-                {post.illustrative && <span class="instagram-highlights__illustrative">Imagem ilustrativa</span>}
               </div>
             )}
             <div class="instagram-highlights__top">
@@ -114,7 +103,7 @@ const availablePosts = posts.map((post) => ({
         </article>
       ))}
     </div>
-    <p class="instagram-highlights__note">Deslize para ver outras publicações. Os conteúdos abrem diretamente no Instagram. As imagens ilustrativas são criações digitais e não representam registros fotográficos dos trabalhos.</p>
+    <p class="instagram-highlights__note">Deslize para ver outras publicações. As fotografias são do acervo AJN e contextualizam os temas; não são necessariamente as capas originais dos posts vinculados.</p>
   </div>
 </section>
 
@@ -139,7 +128,6 @@ const availablePosts = posts.map((post) => ({
   .instagram-highlights__link:hover { transform: translateY(-3px); }
   .instagram-highlights__link:focus-visible { outline: 3px solid #276e3f; outline-offset: 3px; }
   .instagram-highlights__media { position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 7px; background: #e7eee5; margin-bottom: 1.1rem; }
-  .instagram-highlights__illustrative { position: absolute; inset: auto .55rem .55rem auto; z-index: 1; padding: .3rem .5rem; border-radius: 4px; background: rgb(12 37 34 / 91%); color: #f1f7ee; font-size: .7rem; font-weight: 650; line-height: 1.25; }
   .instagram-highlights__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .instagram-highlights__top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #edf0eb; padding-bottom: 1.1rem; }
   .instagram-highlights__index { font-size: 1.8rem; font-weight: 700; letter-spacing: -.06em; color: #aac0ac; }

@@ -1,4 +1,4 @@
-import image from '../../assets/blog/editorial-esocial.webp';
+import image from '../../assets/blog/ajn/eventos-esocial-sst.webp';
 import type { BlogContentData } from '../types';
 
 export const blogEventosEsocialSst = {
@@ -10,7 +10,7 @@ export const blogEventosEsocialSst = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'eSocial e obrigações',
-  image: { src: image, alt: 'Ilustração editorial dos três eventos de Segurança e Saúde no Trabalho do eSocial' },
+  image: { src: image, alt: 'Profissional da AJN conferindo documentação de trabalho' },
   categories: ['eSocial e obrigações'],
   tags: ['eSocial SST', 'S-2210', 'S-2220', 'S-2240'],
   gallery: [],

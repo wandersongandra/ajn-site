@@ -1,4 +1,4 @@
-import image from '../../assets/blog/editorial-gestao-residuos.webp';
+import image from '../../assets/blog/ajn/gestao-de-residuos-na-operacao.webp';
 import type { BlogContentData } from '../types';
 
 export const blogGestaoDeResiduosNaOperacao = {
@@ -10,7 +10,7 @@ export const blogGestaoDeResiduosNaOperacao = {
 	pubDate: '2026-10-09',
 	author: 'AJN Consultoria e Engenharia',
 	topic: 'Gestão ambiental e qualidade',
-	image: { src: image, alt: 'Ilustração editorial sobre segregação e fluxo de resíduos na operação' },
+	image: { src: image, alt: 'Pontos de coleta de resíduos identificados em canteiro de obras' },
 	categories: ['Gestão ambiental e qualidade'],
 	tags: ['gestão de resíduos', 'meio ambiente', 'segregação', 'rotina operacional'],
 	gallery: [],

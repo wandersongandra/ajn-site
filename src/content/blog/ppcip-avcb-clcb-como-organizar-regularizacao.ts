@@ -1,4 +1,4 @@
-import image from '../../assets/blog/editorial-incendio-regularizacao.webp';
+import image from '../../assets/blog/ajn/ppcip-avcb-clcb-como-organizar-regularizacao.webp';
 import type { BlogContentData } from '../types';
 
 export const blogPpcipAvcbClcbComoOrganizarRegularizacao = {
@@ -10,7 +10,7 @@ export const blogPpcipAvcbClcbComoOrganizarRegularizacao = {
 	pubDate: '2026-10-09',
 	author: 'AJN Consultoria e Engenharia',
 	topic: 'Engenharia e prevenção contra incêndio',
-	image: { src: image, alt: 'Ilustração editorial de rotas e sistemas de proteção contra incêndio em uma edificação' },
+	image: { src: image, alt: 'Tubulação e hidrante de combate a incêndio em instalação industrial' },
 	categories: ['Engenharia e prevenção contra incêndio'],
 	tags: ['PPCIP', 'AVCB', 'CLCB', 'prevenção contra incêndio', 'regularização de imóveis'],
 	gallery: [],
