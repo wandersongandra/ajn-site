@@ -31,6 +31,8 @@ export const navigation: NavigationItem[] = [
 			{ label: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' },
 			{ label: 'Projetos de Combate a Incêndio e Pânico - PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
 			{ label: 'Projetos Elétricos Residenciais, Comerciais e Prediais', href: '/projetos-eletricos-prediais' },
+			{ label: 'Projetos de SPDA', href: '/projetos-spda' },
+			{ label: 'Projetos de Cabeamento Estruturado', href: '/projetos-cabeamento-estruturado' },
 			{ label: 'Regularização de imóveis junto ao corpo de bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
 			{ label: 'Treinamento de NRs', href: '/servicos/treinamento-de-nrs' },
 		],
