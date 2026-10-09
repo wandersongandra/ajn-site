@@ -4,7 +4,7 @@ O aviso permite Aceitar análise, Rejeitar opcionais ou Personalizar. A categori
 
 ## Ativação pela AJN, após criar GA4
 1. Criar propriedade GA4 e fluxo de dados web para `https://ajnengenharia.com.br`; copiar o ID no formato `G-XXXXXXXXXX`.
-2. No ambiente de **build** da Hostinger, configurar `PUBLIC_GA4_MEASUREMENT_ID=G-XXXXXXXXXX`. O valor é público, não é segredo. Recompilar e publicar o Astro. Não é necessário alterar DNS, e-mail, hPanel de correio ou credenciais.
+2. O ID `G-N6L406K645` já foi configurado como fallback no código Astro e documentado em `.env.example`; basta publicar o build atualizado. O valor é público, não é segredo. Caso o ambiente Hostinger defina `PUBLIC_GA4_MEASUREMENT_ID`, esse valor tem precedência; conferir que não aponta a outra propriedade. Não é necessário alterar DNS, e-mail, hPanel de correio ou credenciais.
 3. Abrir site em janela anônima, confirmar **nenhuma requisição** a `googletagmanager.com` ou `google-analytics.com` antes do consentimento; confirmar que rejeitar não carrega GA; aceitar deve carregar uma tag e registrar page_view. Reabrir pelo rodapé e revogar, garantindo que não haja novas medições após recarga.
 4. Conferir Realtime no GA4 e relatórios de país, região e cidade (estimativas, sujeitos a limiares de privacidade). O GA4 não fornece localização precisa e não mede visitantes que recusam analytics nesta implementação.
 
@@ -15,4 +15,4 @@ O aviso permite Aceitar análise, Rejeitar opcionais ou Personalizar. A categori
 - Testes unitários validam bloqueio prévio, aceite, rejeição, personalização e revogação; auditoria de CI detecta novos rastreadores fora do módulo de consentimento.
 - Antes de ativar o ID real, realizar QA de navegador e revisar eventuais cookies gerados pelo provedor Hostinger. Uma revisão jurídica final é recomendada.
 
-**Sem ID válido**, o banner pode registrar escolhas, mas **nenhum script GA4 será carregado**. A ativação de um ID novo exige nova escolha.
+**ID do fluxo AJN confirmado em 09/10/2026:** `G-N6L406K645`. O site usa esse ID como fallback de build; `PUBLIC_GA4_MEASUREMENT_ID` pode substituí-lo. Sem consentimento afirmativo, **nenhum script GA4 será carregado**. Alterar o ID exige nova escolha.

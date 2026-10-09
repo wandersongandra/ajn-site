@@ -32,7 +32,7 @@ const title = seo.title;
 const description = seo.description;
 const canonicalUrl = absoluteSiteUrl(normalizedPath);
 const imageUrl = absoluteSiteUrl(ogImage);
-const ga4Candidate = (import.meta.env.PUBLIC_GA4_MEASUREMENT_ID ?? '').trim().toUpperCase();
+const ga4Candidate = (import.meta.env.PUBLIC_GA4_MEASUREMENT_ID ?? 'G-N6L406K645').trim().toUpperCase();
 const ga4MeasurementId = /^G-[A-Z0-9]{6,20}$/.test(ga4Candidate) ? ga4Candidate : '';
 const allowIndexing = import.meta.env.PUBLIC_ALLOW_INDEXING === 'true';
 const robotsDirective = allowIndexing && !noindex
