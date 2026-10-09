@@ -54,6 +54,14 @@ for (const width of widths) {
           catch { return false; }
         });
         assert(loaded, `Medições: imagem de modalidade não carregou em ${width}px`);
+        const rendered = await img.evaluate(el => {
+          const r = el.getBoundingClientRect();
+          const style = getComputedStyle(el);
+          return r.width >= 100 && r.height >= 100 &&
+            style.contentVisibility === 'visible' && style.visibility !== 'hidden' &&
+            Number(style.opacity) > 0;
+        });
+        assert(rendered, `Medições: imagem de modalidade não está visível em ${width}px`);
       }
       await page.evaluate(() => window.scrollTo(0, 0));
     }
