@@ -44,3 +44,13 @@ export function extractScriptElements(html) {
 	}
 	return scripts;
 }
+
+export function hasExactHtmlAttribute(attributes, name) {
+	if (!/^[a-z][a-z0-9-]*$/i.test(name)) throw new Error('Nome de atributo inválido');
+	return new RegExp('(?:^|\\s)' + name + '\\s*=', 'i').test(attributes);
+}
+
+export function isJsonLdScript(attributes) {
+	const match = /(?:^|\s)type\s*=\s*(["'])([^"']+)\1/i.exec(attributes);
+	return match?.[2].toLowerCase() === 'application/ld+json';
+}
