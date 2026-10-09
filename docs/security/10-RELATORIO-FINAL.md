@@ -33,9 +33,9 @@ Contagens de severidade: **5 Média, 4 Baixa; 0 Crítica/Alta**. Evidência: 7 c
 | HSTS inicial e rollback | Proposta de infraestrutura | `max-age=300`, sem subdomínios/preload; rollback e expiração cacheada documentados | Estado HSTS pode persistir até expirar | Documentado em PR #51 draft | configuração local; headers live inalterados |
 | Páginas legais e conteúdo confiável | checkout, histórico e fonte WordPress | Relatório de 07/10 cita 200 no WordPress, sem texto integral; checkout/quarentena/histórico não contêm cópia; GET mais recente é 404 | AJN precisa fornecer/aprovar conteúdo jurídico | Investigado; sem fonte para restauração | buscas read-only; nenhum texto inventado |
 | Expandir testes de URLs | helper, auditoria SEO e testes | controles C0/C1/Unicode, CR/LF/tab, percent decoding, esquemas não autorizados, credenciais, `vbscript`, URLs malformadas e normalização | revisão de conteúdo por commit continua necessária | Implementado | 9 testes locais; execução de CI do novo SHA pendente |
-| Alerta CodeQL de protocolo incompleto na auditoria SEO | `scripts/audit-seo.mjs` | reutiliza política explícita de URL; HTTP, esquemas executáveis e URLs malformadas deixam de ser confundidos com links internos | alerta na análise de segurança do default branch só poderá ser encerrado após novo scan elegível | Implementado localmente | testes de links 9/9 e auditoria de segurança passam; scan do SHA novo pendente |
-| Alerta CodeQL de Action não imutável | `.github/workflows/gitleaks.yml` | fixa Gitleaks no commit `e0c47f4...`, resolvido do tag publicado `v3` no repositório oficial | atualização/rollback da Action passa a exigir alteração deliberada do SHA | Implementado localmente | novo Quality Gate/CodeQL/Secret Scan pendente após push |
-| CodeRabbit pulou revisão automática por PR draft | PR #50 | Aviso operacional sem finding técnico | Nenhum risco direto | Observado | manter draft até review humano/checks dos novos SHAs |
+| Alerta CodeQL de protocolo incompleto na auditoria SEO | `scripts/audit-seo.mjs` | reutiliza política explícita de URL; HTTP, esquemas executáveis e URLs malformadas deixam de ser confundidos com links internos | alertas no default branch dependem da atualização do scan após merge autorizado | Implementado e validado na PR | testes 9/9; CodeQL passou no SHA `ed87c66` |
+| Alerta CodeQL de Action não imutável | `.github/workflows/gitleaks.yml` | fixa Gitleaks no commit `e0c47f4...`, resolvido do tag publicado `v3` no repositório oficial | alertas no default branch dependem da atualização do scan após merge autorizado | Implementado e validado na PR | Quality Gate, CodeQL e Secret Scan passaram no SHA `ed87c66` |
+| CodeRabbit requer revisão manual | PR #50 | Aviso operacional sem finding técnico | Aprovação humana da PR ainda pendente | Observado | PR marcada ready; aguarda revisão humana |
 
 ## 3. Correções
 
@@ -77,8 +77,8 @@ Contagens de severidade: **5 Média, 4 Baixa; 0 Crítica/Alta**. Evidência: 7 c
 
 ## 8. Estado Git
 
-Branch: `security/auditoria-hardening-2026-10-08`, base `5a5edaf`, sincronizada com `origin/main` na abertura da PR. Commits nesta rodada: `ec1fe43` (código/testes) e `301001e` (documentação). PR draft [#50](https://github.com/wandersongandra/ajn-site/pull/50) aberta para aprovação. Sem merge ou deploy; `main` não foi alterada.
+Branch: `security/auditoria-hardening-2026-10-08`, base `5a5edaf`. Commits de implementação desta continuação: `4974469`, `5da3877` e `4987adc`; `ed87c66` registra a revisão final e os checks. PR [#50](https://github.com/wandersongandra/ajn-site/pull/50) marcada ready for review. Sem merge ou deploy; `main` não foi alterada.
 
 ## 9. Classificação final
 
-**GO** para aprovação da parcela de código: os workflows da PR #50 no SHA `4987adc` passaram, as duas threads CodeQL estão resolvidas, e produção/preview locais validaram canonicals e indexação. Isso não é autorização de merge nem prontidão da infraestrutura. A PR #51 segue draft, depende da correção PGR ainda não integrada em `main`, e Hostinger permanece não validada; páginas legais aguardam texto aprovado.
+**GO** para aprovação da parcela de código: os workflows da PR #50 no SHA `ed87c66` passaram, as duas threads CodeQL estão resolvidas, e produção/preview locais validaram canonicals e indexação. Isso não é autorização de merge nem prontidão da infraestrutura. A PR #51 segue draft, depende da correção PGR ainda não integrada em `main`, e Hostinger permanece não validada; páginas legais aguardam texto aprovado.

@@ -26,7 +26,7 @@ Proteção de branch, checks obrigatórios, bloqueio de force-push, revisão mí
 
 ## Estado da PR #50 nesta revisão
 
-No SHA remoto `4987adc`, Quality Gate (`validate`), os dois jobs CodeQL, Secret Leak Scan, Dependency Security e o status agregado CodeQL passaram. As duas threads inline CodeQL foram respondidas e resolvidas. O extrator HTML agora percorre abertura/fechamento delimitados e cobre whitespace/atributos inesperados; a auditoria SEO reutiliza a política segura de URLs; Gitleaks foi fixado no commit imutável do tag v3 (`e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e`). A revisão automática CodeRabbit estava ignorada enquanto draft; a PR será marcada ready para solicitar revisão.
+No SHA remoto `ed87c66`, Quality Gate (`validate`), os dois jobs CodeQL, Secret Leak Scan, Dependency Security e o status agregado CodeQL passaram. As duas threads inline CodeQL foram respondidas e resolvidas. O extrator HTML agora percorre abertura/fechamento delimitados e cobre whitespace/atributos inesperados; a auditoria SEO reutiliza a política segura de URLs; Gitleaks foi fixado no commit imutável do tag v3 (`e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e`). A PR #50 está ready for review; CodeRabbit requer revisão manual neste repositório OSS, portanto a revisão humana segue pendente.
 
 A PR #51, baseada diretamente na `main`, mantém a configuração Hostinger isolada e draft. Seu Quality Gate falha porque a `main` ainda tem o título PGR de 23 caracteres, corrigido apenas na PR #50; os demais workflows observados passaram. Não se deve tratar esse resultado como validado nem mesclar a PR de infraestrutura antes da dependência ser resolvida e dos checks serem repetidos. Nenhuma PR foi mesclada e nenhum deploy foi executado.
 
