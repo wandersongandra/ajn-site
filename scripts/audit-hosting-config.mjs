@@ -44,6 +44,17 @@ for (const path of artifacts) {
 		}
 		continue;
 	}
+	for (const [, attributes, scriptBody] of body.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
+		if (/\btype=["']application\/ld\+json["']/i.test(attributes)) {
+			try {
+				JSON.parse(scriptBody);
+			} catch {
+				failures.push(`${path}: JSON-LD inválido ou não escapado corretamente.`);
+			}
+		} else if (!/\bsrc\s*=/.test(attributes) && scriptBody.trim()) {
+			failures.push(`${path}: script inline executável incompatível com a candidata CSP.`);
+		}
+	}
 	for (const [, tag] of body.matchAll(/<(?:script|img|source|link)\b[^>]*>/gi)) {
 		const isScript = /^<script\b/i.test(tag);
 		const isImage = /^(?:<img|<source)\b/i.test(tag);
