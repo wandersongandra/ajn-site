@@ -19,7 +19,7 @@ O código tem campos de nome, e-mail, telefone, origem, mensagem e anexo com `ac
 
 ## Pendências
 
-- Restaurar URLs públicas `/politica-de-privacidade/` e `/termos-de-uso/` com conteúdo aprovado. GET de produção retornou 404 em ambas. Não há texto legal novo escrito nesta auditoria.
-- Busca no checkout AJN e no diretório pai por arquivos/rotas de privacidade/termos não encontrou conteúdo-fonte; os componentes Astro também não contêm links para essas URLs. Assim, não há link de rodapé quebrado no HTML do checkout, mas as páginas continuam ausentes no domínio público.
-- O texto aprovado pode estar em fonte externa/legada não disponível nesta rodada. Restaurar somente após aprovação da AJN sobre conteúdo, URLs e práticas descritas; não copiar texto jurídico genérico.
+- As rotas `/politica-de-privacidade/` e `/termos-de-uso/` foram criadas nesta rodada a partir dos textos legados fornecidos e aprovados pela AJN; links foram adicionados ao rodapé. O build local contém ambas no sitemap e os canonicals/noindex foram validados separadamente em produção e preview. As respostas públicas ainda precisam ser verificadas após publicação.
+- O texto de privacidade não afirma uso de AdSense, DoubleClick, anúncios comportamentais ou rastreamento afiliado: esses recursos não foram encontrados no código analisado. O formulário continua ausente no HTML de produção consultado; se isso mudar, a política e os controles do provedor devem ser revistos.
+- A redação foi adaptada para refletir o site e o material fornecido; não representa parecer jurídico nem validação independente das práticas internas de retenção e proteção. Revisão jurídica/operacional pela AJN permanece recomendada.
 - Antes de ativar formulário: confirmar controlador, base legal, campos mínimos, retenção, canal seguro para anexos, limites e política do provedor, validação server-side, antiabuso e resposta de erro.
