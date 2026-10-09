@@ -2,17 +2,17 @@
 
 ## Situação
 
-A Home exibe uma seleção de seis publicações públicas verificadas do perfil oficial @ajnengenharia. Os cartões funcionam sem imagens e levam diretamente aos Reels ou posts originais. Eles **não carregam scripts, iframes ou cookies do Instagram automaticamente**.
+A Home exibe uma seleção de seis publicações públicas identificadas do perfil @ajnengenharia. Os cartões têm **capas editoriais ilustrativas, criadas digitalmente** e identificadas visualmente como tal. Essas artes não representam registros fotográficos da execução dos serviços, da equipe ou de clientes. Os links abrem as publicações originais, sem carregar scripts, iframes ou cookies do Instagram automaticamente.
 
-As capas originais devem ser fornecidas pela própria AJN em arquivos locais WebP. Não copie URLs temporárias de CDN do Instagram: essas URLs expiram e podem quebrar a apresentação.
+As seis capas ilustrativas estão em `public/images/social/<id>.svg`, são leves e não dependem do Instagram. Se a AJN fornecer capas reais com direito de uso, adicione os respectivos arquivos WebP e o componente passa a utilizá-los automaticamente. Não copie URLs temporárias do CDN do Instagram.
 
-Uma tentativa controlada de obter as imagens automaticamente em GitHub Actions foi bloqueada pela resposta pública do Instagram: o HTML retornado ao servidor não permitiu verificar a autoria. Nenhuma imagem duvidosa foi publicada; o importador temporário foi retirado da branch.
+Uma tentativa controlada de recuperar automaticamente as miniaturas reais pelo GitHub Actions não obteve metadados suficientes para validar a autoria e foi encerrada. As imagens utilizadas agora são ilustrações originais, sem alegação de retratar eventos reais.
 
-## Adicionar capas reais
+## Capas artificiais implementadas e substituição opcional
 
-Exporte a capa original do post a partir dos arquivos de mídia da AJN ou do fluxo oficial da conta, com permissão para uso institucional. Para imagens com colaboradores/clientes, valide as autorizações aplicáveis.
+O site já possui seis artes ilustrativas próprias nos arquivos `.svg`. Para substituí-las por fotografias reais, exporte a capa de cada publicação a partir dos arquivos da AJN ou do perfil oficial, com permissão de uso. Valide as autorizações aplicáveis para imagens com colaboradores e clientes.
 
-Salve os arquivos nas seguintes rotas, sem trocar os identificadores:
+Arquivos WebP opcionais para substituir automaticamente cada arte ilustrativa correspondente:
 
 | Tema | Caminho local esperado | Publicação original |
 |---|---|---|
@@ -31,7 +31,7 @@ Salve os arquivos nas seguintes rotas, sem trocar os identificadores:
 - Corte exibido: 4:5 com `object-fit: cover`; mantenha textos e pessoas dentro da área central.
 - Não grave imagens médicas, dados pessoais sensíveis, nomes de terceiros sem autorização, documentos ou endereços privados visíveis.
 
-O componente `src/components/InstagramHighlights.astro` identifica quais arquivos existem **durante o build estático**. Quando o arquivo da capa passa a existir e um novo build é executado, a imagem aparece automaticamente. Se a capa não existir, o cartão permanece como texto e link funcional. Não há dependência de API do Instagram.
+O componente `src/components/InstagramHighlights.astro` verifica os arquivos **durante o build estático**. Usa a fotografia WebP real se disponível; caso contrário, mostra a arte digital SVG com o selo **Imagem ilustrativa** e explicação no rodapé da seção. Não há dependência de API do Instagram.
 
 ## Publicações ainda pendentes
 
@@ -44,14 +44,14 @@ Verifique manualmente a disponibilidade no perfil da AJN antes de adicionar ao c
 
 ## Medição de resultado
 
-A seção pode gerar tráfego **do site para o Instagram**, mas um clique não equivale necessariamente a uma reprodução do Reel. O melhor é medir: cliques de saída consentidos no GA4, alcance/reproduções no Instagram Insights e origem do público quando disponível.
+A seção pode gerar tráfego **do site para o Instagram**, mas um clique não equivale necessariamente a uma reprodução do Reel. Os eventos `instagram_outbound_click` só são encaminhados pelo módulo central `privacy-notice.js` ao GA4 quando existe consentimento válido. Compare os cliques com alcance/reproduções no Instagram Insights, quando disponível.
 
 A medição deve respeitar o gerenciamento atual de consentimento. Não adicionar Pixel do Meta ou outros rastreadores sem revisão técnica/jurídica.
 
 ## Verificação antes de publicar
 
-1. Conferir os arquivos e seus direitos de uso.
+1. Conferir se os seis arquivos ilustrativos e os selos de transparência aparecem corretamente.
 2. Executar `npm run check`, `npm run build` e `npm run audit:social`.
-3. Inspecionar desktop e mobile (320 px, 390 px e 1440 px), inclusive foco pelo teclado e rolagem horizontal.
+3. Inspecionar desktop e mobile (320 px, 390 px e 1440 px), inclusive foco pelo teclado, controles de navegação e rolagem horizontal.
 4. Conferir que todos os links levam à publicação certa, inclusive sem aceitar cookies.
 5. Somente após revisão técnica, considerar o merge na `main`.
