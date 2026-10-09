@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/apr-e-permissao-de-trabalho.webp';
 import image from '../../assets/blog/editorial-apr-pt.webp';
 import type { BlogContentData } from '../types';
 
@@ -10,7 +11,7 @@ export const blogAprEPermissaoDeTrabalho = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Segurança operacional',
-  image: { src: image, alt: 'Ilustração editorial de planejamento de risco seguido por autorização de trabalho' },
+  image: { src: ajnEditorial, alt: 'Equipe em diálogo sobre prevenção durante rotina de campo' },
   categories: ['Segurança operacional'],
   tags: ['APR', 'Permissão de Trabalho', 'análise de risco', 'planejamento'],
   gallery: [],
