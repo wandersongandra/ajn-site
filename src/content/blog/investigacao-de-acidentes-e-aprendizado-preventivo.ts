@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/investigacao-de-acidentes-e-aprendizado-preventivo.webp';
 import image from '../../assets/blog/editorial-investigacao.webp';
 import type { BlogContentData } from '../types';
 
@@ -10,7 +11,7 @@ export const blogInvestigacaoDeAcidentesEAprendizadoPreventivo = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Segurança operacional',
-  image: { src: image, alt: 'Ilustração editorial de etapas de investigação, análise e prevenção de acidentes' },
+  image: { src: ajnEditorial, alt: 'Profissionais equipados em área escavada durante atividade de campo' },
   categories: ['Segurança operacional'],
   tags: ['investigação de acidentes', 'análise de causas', 'prevenção', 'NR-1'],
   gallery: [],
