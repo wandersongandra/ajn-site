@@ -2,11 +2,12 @@
 // Inspeciona as seis opções reais geradas pelo Astro, sem solicitar páginas externas.
 import { readFile, stat } from 'node:fs/promises';
 
-const [html, style, motion, motionJs] = await Promise.all([
+const [html, style, motion, motionJs, tokens] = await Promise.all([
 	readFile('dist/index.html', 'utf8'),
 	readFile('src/styles/home-editorial.css', 'utf8'),
 	readFile('src/styles/home-motion.css', 'utf8'),
 	readFile('public/scripts/home.js', 'utf8'),
+	readFile('src/styles/global.css', 'utf8'),
 ]);
 
 const issues = [];
@@ -83,8 +84,11 @@ check(!section.includes('solutions-carousel') && !section.includes('01 / 06'),
 check(style.includes('grid-template-columns: minmax(0, 1.1fr) minmax(280px, .74fr)'),
 	'Cabeçalho editorial não tem organização no desktop.');
 check(style.includes('aspect-ratio: 16 / 10'), 'Fotografias devem ter proporção controlada.');
-check(style.includes('.home-page .solutions .service-card h3') && style.includes('font-size: clamp(19px, 1.7vw, 22px)'),
-	'Títulos de serviço permanecem pequenos.');
+// Os títulos dos cards agora usam o H3 compartilhado (20–24px) em vez do clamp local de 19–22px.
+check(style.includes('.home-page .solutions .service-card h3') && style.includes('font-size: var(--type-h3)') &&
+	style.includes('font-weight: var(--font-weight-emphasis)') &&
+	tokens.includes('--type-h3: clamp(1.25rem, calc(1.5vw + 1rem), 1.5rem)'),
+	'Títulos de serviço devem usar a escala compartilhada; a escala garante o mínimo de 20px.');
 check(style.includes('.home-page .solutions .service-card p') && style.includes('font-size: 15px'),
 	'Descrições dos cards permanecem pequenas.');
 check(style.includes('.home-page .home-service-card__link:focus-visible'),

@@ -31,8 +31,9 @@ for (const label of ['Indústria', 'Construção civil', 'Comércio e serviços'
 check((section.match(/data-reveal/g) ?? []).length === 5, 'Cabeçalho e quatro cards precisam de entrada progressiva.');
 check(section.includes('--reveal-delay: 255ms'), 'Sequência da animação não foi aplicada.');
 
-check(styles.includes('font-size: 14.5px') && styles.includes('.home-page .home-sector-card p'),
-	'Texto dos cards não foi ampliado de 13 px.');
+// 15px substitui o valor anterior de 14,5px para cumprir o mínimo de leitura dos cards.
+check(styles.includes('font-size: 15px') && styles.includes('.home-page .home-sector-card p'),
+	'Texto dos cards deve permanecer no mínimo em 15px.');
 check(styles.includes('background: linear-gradient(110deg, #f0f5ef'),
 	'Fundo e tons da seção não foram aplicados.');
 check(styles.includes('.home-page .home-sectors__link:focus-visible'),

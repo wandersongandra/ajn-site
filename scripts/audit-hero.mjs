@@ -2,11 +2,12 @@
 // Inspeciona HTML gerado e salvaguardas de tipografia, responsividade e movimento.
 import { readFile } from 'node:fs/promises';
 
-const [html, styles, motion, homeStyle] = await Promise.all([
+const [html, styles, motion, homeStyle, tokens] = await Promise.all([
 	readFile('dist/index.html', 'utf8'),
 	readFile('src/styles/home-editorial.css', 'utf8'),
 	readFile('src/styles/home-motion.css', 'utf8'),
 	readFile('src/styles/home.css', 'utf8'),
+	readFile('src/styles/global.css', 'utf8'),
 ]);
 
 const issues = [];
@@ -37,9 +38,9 @@ check(!aside.includes('✓') && !aside.includes('hero__panel a'),
 	'O painel não deve ter checkmarks decorativos ou CTA duplicado.');
 
 check(styles.includes('.home-page .hero__content h1') &&
-	styles.includes('font-weight: 800') &&
-	styles.includes('letter-spacing: -.047em'),
-	'H1 precisa de hierarquia tipográfica própria.');
+	styles.includes('font-weight: var(--font-weight-heading)') &&
+	styles.includes('letter-spacing: var(--tracking-display)'),
+	'H1 precisa consumir os tokens tipográficos compartilhados.');
 check(styles.includes('background-image:') &&
 	styles.includes('linear-gradient(100deg') &&
 	styles.includes('var(--hero-image)'),
@@ -47,8 +48,10 @@ check(styles.includes('background-image:') &&
 check(styles.includes('.home-page .hero__panel::before { display: none; }') &&
 	styles.includes('border-left: 3px solid #a2cba4'),
 	'Painel editorial não deve recuperar a bolinha falsa de status.');
+// A escala H1 compartilhada substitui intencionalmente o clamp mobile 34–42px e o tracking apertado.
 check(styles.includes('minmax(254px, .72fr)') &&
-	styles.includes('font-size: clamp(34px, 9vw, 42px)') &&
+	styles.includes('font-size: var(--type-h1)') &&
+	tokens.includes('--type-h1: clamp(2.25rem, calc(4vw + 1rem), 3.5rem)') &&
 	styles.includes('.home-page .hero__panel { display: none; }'),
 	'Desktop, tablet e mobile precisam de layout e tipografia próprios.');
 check(styles.includes('min-height: 54px') &&
