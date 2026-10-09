@@ -2700,3 +2700,30 @@ h3 { font-size: 24px; }
   .legal-document__contents { padding: 1rem; }
   .legal-document .content-section { scroll-margin-top: 110px; }
 }
+
+/* Aviso institucional de privacidade. Não é banner de consentimento para rastreadores. */
+.privacy-notice[hidden] { display: none !important; }
+.privacy-notice {
+  position: fixed; z-index: 1050; left: max(16px, env(safe-area-inset-left)); right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom)); max-width: 960px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 22px;
+  padding: 20px 24px; background: #fff; color: #19312b;
+  border: 1px solid #cadbd2; border-radius: 14px; box-shadow: 0 12px 42px rgb(0 0 0 / 20%);
+}
+.privacy-notice__copy { min-width: 0; }
+.privacy-notice h2 { margin: 0 0 5px; color: #19312b; font-size: 1rem; line-height: 1.4; }
+.privacy-notice p { margin: 0; max-width: 68ch; font-size: .86rem; line-height: 1.55; }
+.privacy-notice__actions { display: flex; flex-shrink: 0; align-items: center; gap: 12px; }
+.privacy-notice__actions a { color: #225d42; font-size: .88rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.privacy-notice__actions button { min-height: 44px; padding: 9px 18px; border: 1px solid #225d42; border-radius: 7px; background: #225d42; color: #fff; font: inherit; font-size: .88rem; font-weight: 700; cursor: pointer; }
+.privacy-notice__actions button:hover { background: #18442f; }
+.privacy-notice :is(a, button):focus-visible, .site-footer .footer__privacy-control:focus-visible { outline: 3px solid #f0b341; outline-offset: 3px; }
+.site-footer .footer__privacy-control { padding: 0; border: 0; background: transparent; color: #c9d7cb; font: inherit; font-size: .78rem; text-align: left; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.site-footer .footer__privacy-control:hover { color: #fff; }
+@media (max-width: 700px) {
+  .privacy-notice { flex-direction: column; align-items: stretch; gap: 14px; padding: 17px; max-height: min(75dvh, 480px); overflow-y: auto; }
+  .privacy-notice__actions { justify-content: space-between; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .privacy-notice, .privacy-notice * { transition: none !important; animation: none !important; }
+}

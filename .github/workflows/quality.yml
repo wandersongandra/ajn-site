@@ -59,6 +59,9 @@ jobs:
       - name: Privacy, cookies and terms audit
         run: npm run audit:legal
 
+      - name: Privacy notice behavior tests
+        run: npm run test:privacy-notice
+
       - name: SST landing pages and Blog service link audit
         run: npm run audit:sst-seo
 

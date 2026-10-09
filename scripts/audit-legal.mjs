@@ -36,6 +36,11 @@ for (const [label, filename, route] of pages) {
 }
 const home = await readFile('dist/index.html', 'utf8');
 expect(home.includes('href="/politica-de-privacidade/#cookies"'), 'rodapé precisa disponibilizar seção de cookies.');
+expect(home.includes('id="ajn-privacy-notice"') && home.includes('data-privacy-acknowledge'), 'aviso de privacidade ausente do layout.');
+expect(home.includes('data-privacy-open'), 'rodapé sem controle para rever aviso.');
+expect(home.includes('/scripts/privacy-notice.js'), 'script de aviso ausente.');
+const policyHtml = await readFile('dist/politica-de-privacidade/index.html', 'utf8');
+expect(policyHtml.includes('armazenamento local (localStorage)') && policyHtml.includes('180 dias'), 'Política não explica armazenamento de preferência.');
 const contactTemplate = await readFile('src/components/ContactPage.astro', 'utf8');
 expect(contactTemplate.includes('href="/politica-de-privacidade/"'), 'futuro formulário deve fornecer link para privacidade.');
 const executablePaths = ['public/scripts', 'src'];
@@ -55,7 +60,11 @@ const cookieWrite = /\bdocument\s*\.\s*cookie\b|\blocalStorage\b|\bsessionStorag
 const trackers = /\bgtag\s*\(|\bfbq\s*\(|googletagmanager\.com|google-analytics\.com|connect\.facebook\.net|doubleclick\.net|hotjar\.com|clarity\.ms|adsbygoogle/i;
 for (const filename of ownScripts) {
 	const content = await readFile(filename, 'utf8');
-	expect(!cookieWrite.test(content), filename + ': armazenamento/cookies encontrados; reavaliar consentimento e política.');
+	if (filename.replaceAll('\\', '/').endsWith('/scripts/privacy-notice.js')) {
+    expect(content.includes("ajn-privacy-notice-ack-v1") && content.includes('localStorage.setItem(key, String(Date.now()))') && !/document\\s*\\.\\s*cookie/i.test(content), 'Aviso de privacidade: armazenamento não corresponde ao uso informado.');
+  } else {
+    expect(!cookieWrite.test(content), filename + ': armazenamento/cookies encontrados; reavaliar consentimento e política.');
+  }
 	expect(!trackers.test(content), filename + ': possível rastreamento encontrado; reavaliar antes de ativar.');
 }
 const externalScripts = /<script\b[^>]*\ssrc\s*=\s*["']https?:\/\//i;

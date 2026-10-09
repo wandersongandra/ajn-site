@@ -106,6 +106,17 @@ const websiteSchema = {
 		<Header />
 		<main id="conteudo-principal"><slot /></main>
 		<Footer />
+		<aside id="ajn-privacy-notice" class="privacy-notice" aria-labelledby="ajn-privacy-title" aria-describedby="ajn-privacy-description" hidden>
+			<div class="privacy-notice__copy">
+				<h2 id="ajn-privacy-title">Privacidade na AJN</h2>
+				<p id="ajn-privacy-description">Utilizamos recursos necessários para disponibilizar o site e serviços externos, como fontes. Não identificamos cookies de publicidade ou análise no código atual. Consulte como seus dados podem ser tratados.</p>
+			</div>
+			<div class="privacy-notice__actions">
+				<a href="/politica-de-privacidade/#cookies">Ver detalhes</a>
+				<button type="button" data-privacy-acknowledge>Entendi</button>
+			</div>
+		</aside>
+		<script is:inline src="/scripts/privacy-notice.js" defer></script>
 		<SocialFloat />
 	</body>
 </html>
