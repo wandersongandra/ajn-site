@@ -1,5 +1,6 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { isSafeContentHref } from '../src/utils/safe-content-href.mjs';
 
 const distDir = path.resolve('dist');
 const failures = [];
@@ -24,8 +25,9 @@ function routeFromHtml(file) {
 }
 
 function normalizeInternalHref(href) {
-	if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return null;
-	if (/^https?:\/\//i.test(href)) return null;
+	if (!href || href.startsWith('#') || /^(mailto|tel):/i.test(href)) return null;
+	if (!isSafeContentHref(href)) return null;
+	if (/^https:\/\//i.test(href)) return null;
 	const clean = href.split('#')[0].split('?')[0];
 	if (!clean) return '/';
 	if (clean.startsWith('/images/') || clean.startsWith('/assets/') || clean.startsWith('/favicon')) return null;

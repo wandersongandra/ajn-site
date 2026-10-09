@@ -38,6 +38,20 @@ export const keywordMap = {
 		title: 'Contato e orçamento | AJN Consultoria e Engenharia',
 		description: 'Fale com a AJN Consultoria e Engenharia para explicar sua demanda, solicitar orientação técnica ou pedir um orçamento em segurança do trabalho e engenharia.',
 	},
+	'/elaboracao-pgr': {
+		primaryKeyword: 'elaboração de PGR',
+		secondaryKeywords: ['gerenciamento de riscos ocupacionais', 'inventário de riscos', 'plano de ação'],
+		intent: 'comercial',
+		title: 'Elaboração de PGR e gestão de riscos ocupacionais | AJN',
+		description: 'Elaboração de PGR com inventário de riscos ocupacionais e plano de ação conforme a NR-1. Entenda o escopo e solicite uma avaliação da AJN.',
+	},
+	'/emissao-ltcat': {
+		primaryKeyword: 'emissão de LTCAT',
+		secondaryKeywords: ['avaliação previdenciária', 'agentes de exposição', 'responsabilidade técnica'],
+		intent: 'comercial',
+		title: 'Emissão de LTCAT | AJN Consultoria e Engenharia',
+		description: 'Entenda o que o LTCAT avalia, quem pode assiná-lo e quais informações sua empresa deve reunir. Solicite uma avaliação de escopo à AJN.',
+	},
 	'/blog': {
 		primaryKeyword: 'blog de segurança do trabalho',
 		secondaryKeywords: ['saúde ocupacional', 'PGR', 'PCMSO', 'LTCAT', 'gestão de riscos'],

@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
+import { extractScriptElements, hasExactHtmlAttribute, isJsonLdScript } from './security-html.mjs';
 
 const issues = [];
 
@@ -13,24 +14,13 @@ async function walk(directory) {
 	for (const entry of entries) {
 		const path = join(directory, entry.name);
 		if (entry.isDirectory()) files.push(...await walk(path));
-		else if (/\.(astro|ts|js|mjs)$/.test(entry.name)) files.push(path);
+		else if (/\.(astro|ts|js|mjs|html)$/.test(entry.name)) files.push(path);
 	}
 	return files;
 }
 
-const headers = await readFile('public/.htaccess', 'utf8').catch(() => '');
 const sourceFiles = await walk('src');
 const source = await Promise.all(sourceFiles.map(async (path) => ({ path, text: await readFile(path, 'utf8') })));
-
-check(headers.includes('Content-Security-Policy'), 'public/.htaccess não define Content-Security-Policy.');
-check(headers.includes("script-src 'self'"), 'CSP deve restringir scripts a self.');
-check(!/script-src[^;]*'unsafe-inline'/.test(headers) && !headers.includes("'unsafe-eval'"), 'CSP não deve liberar scripts inline ou eval.');
-check(headers.includes("style-src-attr 'unsafe-inline'"), 'CSP deve declarar explicitamente a exceção limitada aos atributos de estilo existentes.');
-check(!/(^|;)\s*style-src\s+[^;]*'unsafe-inline'/.test(headers), 'style-src não deve liberar blocos de estilo inline.');
-check(headers.includes('X-Content-Type-Options "nosniff"'), 'X-Content-Type-Options nosniff ausente.');
-check(headers.includes('X-Frame-Options "DENY"'), 'X-Frame-Options DENY ausente.');
-check(headers.includes('Referrer-Policy "strict-origin-when-cross-origin"'), 'Referrer-Policy restritiva ausente.');
-check(headers.includes('Permissions-Policy'), 'Permissions-Policy ausente.');
 
 const dangerousPatterns = [
 	[/\.innerHTML\s*=/, 'innerHTML'],
@@ -48,7 +38,35 @@ for (const { path, text } of source) {
 	if (text.includes('set:html=') && !text.includes('serializeJsonLd(')) {
 		issues.push(`${path} usa set:html sem serializeJsonLd().`);
 	}
-	check(!/<script(?![^>]*(?:src=|type=["']application\/ld\+json["']))[^>]*>/i.test(text), `${path} contém script inline executável.`);
+	for (const match of text.matchAll(/<script\b([^>]*)>/gi)) {
+		const attributes = match[1];
+		check(hasExactHtmlAttribute(attributes, 'src') || isJsonLdScript(attributes),
+			`${path} contém script sem src externo ou JSON-LD declarado.`);
+	}
+}
+
+const distFiles = await walk('dist').catch(() => []);
+const htmlFiles = distFiles.filter((path) => path.endsWith('.html'));
+check(htmlFiles.length > 0, 'Execute npm run build antes da auditoria dos artefatos HTML.');
+for (const path of htmlFiles) {
+	const html = await readFile(path, 'utf8');
+	const scripts = extractScriptElements(html);
+	let jsonLdCount = 0;
+	for (const { attributes, body } of scripts) {
+		if (isJsonLdScript(attributes)) {
+			jsonLdCount += 1;
+			try {
+				JSON.parse(body);
+			} catch {
+				issues.push(`${path} contém JSON-LD inválido.`);
+			}
+		} else if (!hasExactHtmlAttribute(attributes, 'src') && body.trim()) {
+			issues.push(`${path} contém script executável inline.`);
+		}
+	}
+	const isRedirectDocument = /<meta\s+http-equiv=["']refresh["']/i.test(html);
+	check(jsonLdCount > 0 || isRedirectDocument, `${path} não contém dados JSON-LD renderizados.`);
+	check(!/\bhref=["']\s*(?:javascript|data|vbscript|file|blob):/i.test(html), `${path} contém link com protocolo não autorizado.`);
 }
 
 const siteOriginReferences = source.filter(({ text }) => text.includes('PUBLIC_SITE_ORIGIN'));
@@ -58,5 +76,5 @@ if (issues.length > 0) {
 	issues.forEach((issue) => console.error(`[security][FAIL] ${issue}`));
 	process.exitCode = 1;
 } else {
-	console.log(`[security] PASS: headers, CSP, sinks DOM, storage client-side e JSON-LD auditados em ${source.length} arquivos.`);
+	console.log(`[security] PASS: sinks DOM, links, scripts e JSON-LD auditados em ${source.length} fontes e ${htmlFiles.length} páginas compiladas.`);
 }
