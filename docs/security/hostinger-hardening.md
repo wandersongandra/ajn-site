@@ -23,7 +23,7 @@ Hostinger documenta `.htaccess` em planos de hospedagem compatíveis, com limita
 
 ## Plano de rollout
 
-1. Manter esta PR em draft até confirmar com o operador o plano, document root, versão/configuração do LiteSpeed e como validar uma cópia de preview sem substituir o site. O Quality Gate desta PR falhou por a branch base `main` ainda conter o title SEO PGR com 23 caracteres; correção está na PR #50. Repetir os checks depois que a dependência for resolvida. Não mesclar nem disparar publicação sem autorização específica.
+1. Manter esta PR em draft até confirmar com o operador o plano, document root, versão/configuração do LiteSpeed e como validar uma cópia de preview sem substituir o site. Após a integração da PR #50, esta branch recebeu a nova `main` via merge sem reescrever histórico; os testes de SEO e segurança serão reexecutados no SHA atualizado. Não mesclar nem disparar publicação sem autorização específica.
 2. Em preview isolado, testar páginas representativas, todos os recursos no console, headers HTTP, redirect 302, certificado TLS, caminhos codificados e query strings. Confirmar ausência de loop e comportamento de `/informacoes`.
 3. Revisar os eventos CSP manualmente; como não há collector, registrar URLs/recursos legítimos observados sem dados pessoais. Não promover CSP enquanto houver violações não explicadas.
 4. Só após aprovação explícita, aplicar/publicar a alteração em janela controlada. Repetir GET dos headers e `www` para apex. Não executar pelo agente.
@@ -41,3 +41,7 @@ Hostinger documenta `.htaccess` em planos de hospedagem compatíveis, com limita
 
 - Apache [`mod_rewrite` e escaping de URI](https://httpd.apache.org/docs/2.4/en/rewrite/tech.html) e [flag `NE`](https://httpd.apache.org/docs/2.4/rewrite/flags.html#flag_ne).
 - Hostinger [uso de `.htaccess`](https://support.hostinger.com/en/articles/1583307-how-to-create-an-htaccess-file-at-hostinger), [limitações em Agency](https://www.hostinger.com/support/how-to-enable-htaccess-on-agency-plans/) e [redirects no hPanel](https://www.hostinger.com/support/1583406-how-to-set-up-a-redirect-in-hostinger/).
+
+## Revisão dos alertas CodeQL
+
+O auditor foi reforçado para comparar tokens completos das diretivas CSP e origens exatas por URL, sem aceitar domínios sósia, subtítulos em outros atributos ou strings maliciosas. A detecção de scripts usa o scanner compartilhado de HTML da PR #50 e não um regex de tag de fechamento. Testes de regressão em `npm run test:hosting-policy` cobrem origens adulteradas, `data-src`, `data-type` e encerramentos com whitespace. A conclusão depende da passagem de CI no commit atualizado, não apenas da alteração do código.
