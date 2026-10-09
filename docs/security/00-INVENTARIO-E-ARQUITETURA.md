@@ -27,7 +27,7 @@ flowchart LR
 - `README.md`: declara `output: 'static'`, sem banco/API/SSR/ISR/CMS/painel.
 - `src/pages/`: páginas estáticas e endpoint de build `robots.txt.ts` com `prerender = true`; nenhum endpoint de aplicação.
 - `.github/workflows/quality.yml`: valida preview com `PUBLIC_ALLOW_INDEXING=false` e build de produção com origin apex/indexação ligada; não contém upload/deploy.
-- `public/.htaccess`: redirecionamento de `/informacoes`, regra preparada `www`→apex, CSP atual enforced + candidata Report-Only, HSTS inicial curto. Aplicação no hPanel ainda não comprovada para esta revisão.
+- `public/.htaccess`: redirecionamento existente de `/informacoes` e headers do baseline. A PR #50 preserva exatamente esse arquivo; alterações propostas de CSP/HSTS/host estão separadas em PR de infraestrutura draft e não estão ativas.
 - Runtime local observado: Node `v24.13.0`, npm `11.12.1`, Astro `7.3.6`, TypeScript `6.0.3`, Zod `4.6.5`, `@astrojs/sitemap` `3.7.4`.
 
 ## Fronteiras de confiança e entradas

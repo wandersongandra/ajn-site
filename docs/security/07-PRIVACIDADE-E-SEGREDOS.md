@@ -16,9 +16,9 @@ O formulário de produção está desativado; o site apresenta links diretos par
 
 ## Páginas legais
 
-GET read-only em 2026-10-08 retornou **404** para `https://ajnengenharia.com.br/politica-de-privacidade/` e `/termos-de-uso/`. As rotas são relevantes para transparência do visitante e continuidade da migração. O conteúdo jurídico aprovado e sua proveniência não foram localizados nesta rodada; não foram redigidos textos inventados. Status: `ABERTO`, severidade média, responsável: AJN/operador do conteúdo.
+GETs read-only em 2026-10-08 e novamente em 2026-10-09 retornaram **404** para `https://ajnengenharia.com.br/politica-de-privacidade/` e `/termos-de-uso/`. As rotas são relevantes para transparência do visitante e continuidade da migração. Status: `ABERTO`, severidade média, responsável: AJN/operador do conteúdo.
 
-Na segunda rodada, a busca no checkout confirmou que não há páginas/arquivos legais correspondentes nem links para essas rotas; não há redirect configurado para elas. O status e a decisão permanecem inalterados: AJN precisa fornecer/revisar/aprovar o conteúdo antes da publicação.
+O checkout, o histórico Git disponível, o diretório `_QUARENTENA-SITE-2026-10-08` e a documentação acessível não forneceram o texto integral dessas páginas. `docs/AUDITORIA-PRODUCAO-2026-10-07.md` registra que ambas respondiam 200 no WordPress naquela data, mas não contém o conteúdo jurídico. A evidência mais recente documentada em 2026-10-08 é 404 no domínio público. Não há conteúdo a restaurar sem fonte aprovada; AJN deve fornecer/revisar/aprovar o original.
 
 ## Limitações
 

@@ -22,7 +22,11 @@
 
 ## Não verificável pelo checkout
 
-Proteção de branch, checks obrigatórios, bloqueio de force-push, revisão mínima, secret scanning/push protection, alertas Dependabot, Dependency Graph, lista de Actions permitidas e configurações de ambiente dependem de GitHub Settings/admin. **NÃO VERIFICADO** nesta execução. O status dos runs remotos não foi consultado.
+Proteção de branch, checks obrigatórios, bloqueio de force-push, revisão mínima, secret scanning/push protection, alertas Dependabot, Dependency Graph, lista de Actions permitidas e configurações de ambiente dependem de GitHub Settings/admin. **NÃO VERIFICADO** nesta execução.
+
+## Estado da PR #50 nesta revisão
+
+No commit remoto `db53cc0`, Quality Gate, CodeQL Security Analysis, Secret Leak Scan e Dependency Security concluíram com sucesso. CodeQL apontou a regex de fechamento `</script>` que não reconhecia `</script >`; há comentário inline e correção/teste local nesta rodada. Essa execução de CI não vale para os novos commits. CodeRabbit marcou o review automático como pulado por a PR estar em draft. Os checks precisam ser reexecutados nos SHAs após a separação do `.htaccess`.
 
 ## Recomendação
 

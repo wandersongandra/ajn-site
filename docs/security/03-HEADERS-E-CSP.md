@@ -1,6 +1,6 @@
 # Headers HTTP e CSP
 
-**Data:** 2026-10-08 · **Produção:** somente GET passivo; sem POST, scan ou alteração externa.
+**Data:** 2026-10-09 · **Produção:** somente GET passivo; sem POST, scan ou alteração externa.
 
 ## Evidência pública
 
@@ -8,27 +8,27 @@ GETs em `https://ajnengenharia.com.br/`, `/sobre-nos/`, `/contato/`, `/servicos/
 
 `https://www.ajnengenharia.com.br/` responde 200 e usa canonical do apex, sem redirecionar. GET em HTTP apex e `www` retorna 301 para a mesma variante HTTPS solicitada. As rotas `/politica-de-privacidade/` e `/termos-de-uso/` retornam 404. A raiz do host de preview falhou; `/robots.txt` respondeu por `hcdn` sem os headers deste repositório, portanto o preview não é atribuível e está bloqueado para QA de headers.
 
-## Política encontrada e ajuste
+## Política encontrada e estado da PR de código
 
-Fonte local: `public/.htaccess`. O artefato Astro copia esse arquivo para `dist/.htaccess`. Aplicação no ambiente de publicação ainda não foi validada.
+Fonte versionada: `public/.htaccess`; o build copia-o para `dist/.htaccess`. A configuração atual deste arquivo foi preservada na PR #50; essa PR não altera headers nem regras de servidor.
 
 - A CSP enforced atual permanece igual à política já observada: `form-action 'self' https:` e `img-src 'self' data: https:`. Foi mantida durante a primeira etapa para evitar regressão sem QA de browser no preview.
-- A política mais restritiva foi adicionada como `Content-Security-Policy-Report-Only`: `form-action 'self'`, `img-src 'self' data:`, `script-src 'self'`, `object-src 'none'`, `base-uri 'self'`, `frame-ancestors 'none'` e `connect-src 'self'`.
+- Uma política candidata Report-Only, HSTS curto e redirect `www` foram separados da PR de código. Permanecem propostas sem efeito na produção; a avaliação e checklist estão em [PR de infraestrutura #51](https://github.com/wandersongandra/ajn-site/pull/51).
 - Recursos externos encontrados: Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`) para CSS/fontes; scripts do site são same-origin; dados JSON-LD são blocos `application/ld+json` escapados, não JavaScript executável; imagens dos artefatos são locais/data. Links externos normais não carregam recursos por si só e não precisam ser adicionados às fontes de `img-src`/`script-src`.
 - `style-src-attr 'unsafe-inline'` segue na candidata por estilos de apresentação dinâmicos do código. Não há `unsafe-inline` em `script-src` nem `unsafe-eval`.
-- Não existe endpoint/backend de coleta CSP. O Report-Only não envia relatórios centralizados; violações ficam visíveis no console do browser de QA. Logo, a fase é operacional apenas para inspeção manual, e não para telemetria de visitantes. Não adicionar `report-uri` apontando para rota inexistente nem serviço externo sem aprovação.
-- HSTS local foi reduzido para `max-age=300` (5 minutos), sem `includeSubDomains`/`preload`. Aumentar em etapas somente depois de observar TLS e redirects no host.
-- Regra 301 de `www` para o apex HTTPS foi preparada sob `mod_rewrite.c`; não está ativa na produção observada até publicação. Path e query são preservados pela regra, mas isso precisa ser confirmado por GET depois do deploy.
+- Não existe endpoint/backend de coleta CSP. Sem collector, Report-Only permitiria apenas inspeção manual via console de QA, não telemetria de visitantes. Não há política nova enviada nesta PR.
+- HSTS permanece ausente na resposta pública observada; a PR de código não o habilita. `includeSubDomains`/`preload` continuam fora de escopo.
+- `www` permanece respondendo 200 sem redirect ao apex, conforme a evidência pública anterior. Nenhuma regra nova foi mantida na PR #50.
 
 ## Estado e validação
 
-`npm run audit:security` passou: verifica política Report-Only, ausência de `unsafe-inline` em scripts/`unsafe-eval`, HSTS de 300 segundos, ausência de `includeSubDomains`/`preload`, redirect configurado, sinks e artefatos HTML/JSON-LD compilados. A política restritiva não está enforced e nenhum header novo foi confirmado após publicação.
+`npm run audit:security` cobre sinks do frontend, links e JSON-LD nos artefatos compilados. Não valida configuração de servidor. Nenhum header ou redirect é alterado pela PR #50; checks locais e CI não provam configuração efetiva do Hostinger.
 
 ## Dependência do servidor
 
 Documentação Hostinger informa que `.htaccess` existe em planos Web/Cloud/Agency, mas em Agency pode estar desativado para sites não WordPress; o plano desta conta e o document root não foram verificados. As respostas Live Server são compatíveis com a política antiga, sem provar que o futuro deploy incluirá o arquivo ou que painel/CDN não sobrescreverá headers. Confirmar no hPanel o plano, suporte `.htaccess`, document root e regras de redirect. Se `.htaccess` não for aplicado, usar Redirects do hPanel para 301 `www`→`https://ajnengenharia.com.br`.
 
-Plano de rollout: primeiro aplicar Report-Only num preview acessível e testar home, blog, página de serviço, contato e mobile em browser com console aberto; corrigir qualquer violação de recurso legítimo; em alteração aprovada posterior, promover a política para enforced e validar novamente os headers. Só então elevar HSTS gradualmente (300 s → 1 dia → 1 semana → 1 ano). Sem publicação/autorização, todos os novos headers permanecem locais.
+Plano de rollout e rollback da configuração proposta foram deslocados para PR de infraestrutura independente em draft. Para esta PR, o baseline de `.htaccess` é idêntico ao `main`.
 
 ## Referências técnicas
 

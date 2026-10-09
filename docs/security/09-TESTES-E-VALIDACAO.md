@@ -5,14 +5,14 @@
 | Comando/checagem | Resultado observado | Evidência/limite |
 |---|---|---|
 | `git status --short --branch` pré-alteração | branch de segurança no commit `5a5edaf`, worktree limpo | `main` e `origin/main` no mesmo SHA no início |
-| `npm run test:security-links` | PASS — 6 testes, 0 falhas | links root-relative/HTTPS aceitos; esquemas/códigos, protocolos, relativos suspeitos, barras invertidas e credenciais rejeitados; payload HTML escapado em JSON-LD e válido após parse |
-| `npm run audit:security` | PASS — 189 fontes + 145 HTML compilados | sinks, CSP/HSTS/redirect configurados, scripts, links perigosos e JSON-LD renderizados parseados |
+| `npm run test:security-links` após revisão | PASS — 8 testes, 0 falhas | controles Unicode, tab/newline, percent-encoding malformado/sensível, `vbscript:`, normalização e `</script >` incluídos |
+| `npm run audit:security` após revisão | PASS — 189 fontes + 145 HTML compilados | auditor de frontend não exige configuração `.htaccess`; verifica DOM/HTML/JSON-LD |
 | `npm audit --audit-level=high` | PASS — 0 vulnerabilidades conhecidas | advisories disponíveis ao registry no momento da execução |
-| `npm run check` dentro de `npm run validate` (preview) | PASS — 218 arquivos, 0 erros/avisos/hints | não valida Hostinger nem renderização visual |
-| `npm run validate` com origin preview e `PUBLIC_ALLOW_INDEXING=false` | PASS — build e todos os gates encadeados | 144 páginas; canonical do preview, `noindex`, audits editorial/SST, segurança e regressões passaram |
-| `npm run check` standalone com origin de produção/indexação true | PASS — 218 arquivos, 0 erros/avisos/hints | repetido no perfil de produção |
+| `npm run check` dentro de `npm run validate` (preview) | PASS — 219 arquivos, 0 erros/avisos/hints | não valida Hostinger nem renderização visual |
+| `npm run validate` com origin preview e `PUBLIC_ALLOW_INDEXING=false` após revisão | PASS — build e todos os gates encadeados | 144 páginas; canonical do preview, `noindex`, audits editorial/SST, segurança e regressões passaram |
+| `npm run check` standalone com origin de produção/indexação true | PASS — 219 arquivos, 0 erros/avisos/hints | repetido no perfil de produção após as mudanças |
 | `npm run validate` com origin `https://ajnengenharia.com.br` e `PUBLIC_ALLOW_INDEXING=true` | PASS — build e todos os gates encadeados | 144 páginas; canonical apex e indexação coerentes; inclui editorial/SST e regressões |
-| `npm run validate` final repetido com origin preview e `PUBLIC_ALLOW_INDEXING=false` | PASS — build e todos os gates encadeados | revalidação final após alterações; 144 páginas e `noindex` preservado |
+| `npm run validate` final repetido com origin preview e `PUBLIC_ALLOW_INDEXING=false` | PASS — build e todos os gates encadeados | revalidação após regex, URL helper e remoção da CSP da PR de código; 144 páginas e `noindex` preservado |
 | `npm run audit:editorial` + `npm run audit:sst-seo` no preview | PASS | canonicals usam origin do build e cada página avaliada contém `noindex` |
 | Causa das divergências anteriores de canonical | RESOLVIDA | o auditor standalone defaultava para apex ao comparar um artefato preview; agora exige origin e estado de indexação explícitos |
 | Build de produção + `audit:deploy`, `audit:seo`, `audit:editorial`, `audit:sst-seo`, `audit:security` com apex e indexação true | PASS | 144 páginas; canonical/robots indexáveis coerentes em 145 HTML; títulos PGR/LTCAT dentro dos limites |

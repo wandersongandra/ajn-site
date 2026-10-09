@@ -8,7 +8,7 @@
 
 O código tem campos de nome, e-mail, telefone, origem, mensagem e anexo com `accept` limitado por extensão. Esse atributo do navegador não é validação de MIME/tamanho. Como não existe endpoint no projeto e o formulário não está ativo na produção observada, processamento, upload, retenção, rate limit, validação server-side, antispam, CSRF/CORS e entrega são **NÃO APLICÁVEIS ao runtime atual**; seriam requisitos obrigatórios antes de habilitar um provedor.
 
-`PUBLIC_CONTACT_ENDPOINT` é variável pública de build e pode aparecer no HTML. Ela não pode conter token, segredo nem URL assinada com credenciais. A CSP passou a bloquear `form-action` externo. Ao aprovar um provedor futuro, configurar sua origem exata em conjunto com revisão da CSP e controles do serviço; não reabrir todos os hosts HTTPS.
+`PUBLIC_CONTACT_ENDPOINT` é variável pública de build e pode aparecer no HTML. Ela não pode conter token, segredo nem URL assinada com credenciais. A PR #50 preserva o `.htaccess` existente; a política atual observada ainda aceita `form-action https:`. Uma futura integração deve autorizar a origem exata em alteração de infraestrutura separada, junto à revisão dos controles do provedor.
 
 ## Integrações / terceiros
 
