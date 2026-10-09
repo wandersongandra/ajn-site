@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageShell from '../components/PageShell.astro';
+import { site } from '../data/home';
+
+const heading = 'Política de Privacidade';
+---
+
+<BaseLayout
+	title="Política de Privacidade | AJN Consultoria e Engenharia"
+	description="Saiba como a AJN Consultoria e Engenharia trata informações relacionadas à navegação e aos contatos feitos pelo site."
+	canonicalPath="/politica-de-privacidade"
+>
+	<PageShell heading={heading}>
+		<section class="content-section">
+			<p>Esta Política de Privacidade explica como a AJN Consultoria e Engenharia trata informações relacionadas ao acesso a <a href="https://ajnengenharia.com.br/">ajnengenharia.com.br</a> e aos contatos iniciados por meio dos canais apresentados neste site.</p>
+			<p>O site é institucional. Na versão pública verificada, não há formulário de contato ativo. Você pode falar com a AJN pelo e-mail <a href={`mailto:${site.email}`}>{site.email}</a> ou pelo WhatsApp indicado na página. Ao escolher um desses canais, você decide quais informações incluir na mensagem; o conteúdo será recebido e tratado para compreender e responder à solicitação.</p>
+		</section>
+
+		<section class="content-section">
+			<h2>Informações e finalidade</h2>
+			<p>A AJN solicita informações pessoais somente quando necessárias para atender uma solicitação ou prestar um serviço. As informações fornecidas diretamente são utilizadas para a finalidade informada no contato e não são divulgadas publicamente. O compartilhamento poderá ocorrer quando necessário para atender à solicitação, cumprir obrigação legal ou proteger direitos, observada a legislação aplicável.</p>
+			<p>As mensagens recebidas por e-mail ou WhatsApp também podem ser tratadas pelos respectivos provedores, de acordo com as políticas e configurações desses serviços. O site contém links para serviços e páginas externas, que possuem práticas próprias de privacidade.</p>
+		</section>
+
+		<section class="content-section">
+			<h2>Retenção e proteção</h2>
+			<p>As informações recebidas são mantidas pelo período necessário para responder à solicitação, prestar o serviço ou cumprir obrigações aplicáveis. A AJN adota medidas de proteção compatíveis com a natureza das informações para reduzir riscos de acesso, uso, alteração ou divulgação não autorizados.</p>
+			<p>O site carrega fontes tipográficas do Google Fonts. Essa requisição a um serviço externo é necessária para exibir a tipografia configurada; consulte a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade do Google</a> para informações sobre o tratamento feito pelo provedor.</p>
+		</section>
+
+		<section class="content-section">
+			<h2>Cookies e publicidade</h2>
+			<p>Na versão do código do site analisada, não foram encontrados recursos de publicidade, Google AdSense, DoubleClick, rastreamento de afiliados ou ferramentas de analytics, nem código próprio destinado a gravar cookies. Essa descrição se refere ao site e ao código verificados; provedores de hospedagem, comunicação ou serviços externos podem operar de acordo com suas próprias configurações e políticas.</p>
+		</section>
+
+		<section class="content-section">
+			<h2>Links externos e suas escolhas</h2>
+			<p>Links para outros sites são fornecidos para conveniência. A AJN não controla o conteúdo nem as práticas desses serviços externos e recomenda que você consulte as políticas correspondentes. Você pode optar por não fornecer informações em uma mensagem, entendendo que isso pode limitar a possibilidade de resposta ou atendimento.</p>
+		</section>
+
+		<section class="content-section">
+			<h2>Solicitações e contato</h2>
+			<p>Para dúvidas ou solicitações relacionadas a informações pessoais que você tenha enviado à AJN, entre em contato pelo endereço <a href={`mailto:${site.email}`}>{site.email}</a>. A solicitação será analisada conforme as circunstâncias e a legislação aplicável.</p>
+			<p>Esta política pode ser atualizada para refletir mudanças no site ou em suas práticas. A versão vigente ficará disponível nesta página.</p>
+		</section>
+	</PageShell>
+</BaseLayout>

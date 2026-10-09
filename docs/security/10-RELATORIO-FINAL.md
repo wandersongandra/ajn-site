@@ -2,9 +2,11 @@
 
 **Data:** 2026-10-08 · **Branch:** `security/auditoria-hardening-2026-10-08` · **Base:** `5a5edaf`.
 
+> **Atualização de páginas legais — 2026-10-08:** depois deste snapshot, a AJN forneceu e aprovou os textos legados de privacidade e termos para adaptação. Esta branch adiciona as rotas `/politica-de-privacidade/` e `/termos-de-uso/`, links no rodapé e verificações de sitemap/footer. `npm run validate` passou com origem de produção/indexação habilitada e com origem de preview/indexação desabilitada. As páginas ainda não foram confirmadas por HTTP no domínio público; publicação/deploy e revisão jurídica independente não estão comprovados.
+
 ## 1. Resumo executivo
 
-Arquitetura confirmada: Astro estático, 144 páginas de conteúdo e rota 404, sem API, banco, SSR ou autenticação. Produção responde com HTML Astro em LiteSpeed. A revisão independente identificou o risco de aplicar automaticamente alterações de servidor ao integrar na `main`; por isso a PR #50 agora preserva `.htaccess` e contém apenas código/testes/documentação pertinente. HSTS segue ausente, CSP vigente não é alterada, `www` continua sem redirect e as páginas legais permanecem sem conteúdo aprovado.
+Arquitetura confirmada: Astro estático, sem API, banco, SSR ou autenticação. Produção responde com HTML Astro em LiteSpeed. A revisão independente identificou o risco de aplicar automaticamente alterações de servidor ao integrar na `main`; por isso a PR #50 preserva `.htaccess` e contém apenas código/testes/documentação pertinente. HSTS segue ausente, CSP vigente não é alterada e `www` continua sem redirect. No snapshot desta auditoria, os textos legais ainda aguardavam aprovação; consultar a atualização acima para o estado posterior.
 
 ## 2. Achados consolidados
 

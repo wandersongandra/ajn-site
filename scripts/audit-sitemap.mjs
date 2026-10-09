@@ -65,10 +65,14 @@ check(redirectHtml.includes('/mapa-site') && /http-equiv=["']refresh["']/i.test(
 	'Fallback de /informacoes não aponta para /mapa-site por meta refresh.');
 
 const files=await readdir('dist');
+let sitemapContent = '';
 for(const file of files.filter(x => /^sitemap.*\.xml$/.test(x))) {
 	const sitemap = await readFile(`dist/${file}`, 'utf8');
+	sitemapContent += sitemap;
 	check(!sitemap.includes('/informacoes'), `Rota redirecionada permaneceu no arquivo ${file}`);
 }
+check(sitemapContent.includes('/politica-de-privacidade/'), 'Política de Privacidade ausente do sitemap.');
+check(sitemapContent.includes('/termos-de-uso/'), 'Termos de Uso ausentes do sitemap.');
 
 if(problems.length) {
 	for(const issue of problems) console.error('[sitemap][FAIL]',issue);

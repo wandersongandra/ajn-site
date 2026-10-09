@@ -18,7 +18,10 @@ async function htmlFiles(dir) {
 }
 
 const files = await htmlFiles(root);
-const requiredLinks = ['/', '/sobre-nos', '/servicos', '/blog', '/contato', '/mapa-site'];
+const requiredLinks = [
+	'/', '/sobre-nos', '/servicos', '/blog', '/contato', '/mapa-site',
+	'/politica-de-privacidade/', '/termos-de-uso/',
+];
 const legacy = [
 	'A empresa se destaca na prestação de serviços',
 	'com atendimento personalizado e atuação preventiva',
