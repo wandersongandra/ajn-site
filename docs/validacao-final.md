@@ -13,6 +13,8 @@ Esta rodada acrescentou serviços a páginas existentes, três artigos e categor
 - `npm audit --omit=dev --audit-level=high`: 0 vulnerabilidades.
 - Playwright CLI: catálogo em 390×844; busca PGR anunciou 1 resultado e ocultou os grupos sem resultados. Artigo PPCIP em 390×844 apresentou H1, sumário, links oficiais, links de serviço e CTA. `document.documentElement.scrollWidth` e `clientWidth` foram ambos 390 px na página do artigo, sem overflow horizontal observado.
 - Capturas locais, ignoradas pelo Git: `output/playwright/local-services-catalog-390x844.png` e `output/playwright/local-blog-ppcip-390x844.png`.
+- GitHub: PR #58 permanece aberto contra `main`, branch `modernization/ajn-site-2026-10-09`, SHA `9b3bedeb51a461aeb58aa8fa5b1517b5bd7ea74f`; Quality Gate, CodeQL JavaScript/Actions, Dependency audit e Secret Leak Scan passaram.
+- Publicação: commit e push realizados na branch de revisão; merge e deploy não realizados.
 
 Lighthouse, CrUX/RUM, axe-core e teste manual completo com teclado/leitor de tela não foram executados nesta rodada. Os testes live-security do pacote são unitários com fetch mockado; não representam uma nova consulta ao servidor de produção.
 
