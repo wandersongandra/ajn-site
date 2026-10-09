@@ -31,7 +31,14 @@ import { blogGestaoDeResiduosNaOperacao } from './gestao-de-residuos-na-operacao
 import { blogControleDeQualidadeEmObrasEServicos } from './controle-de-qualidade-em-obras-e-servicos';
 import { blogPpcipAvcbClcbComoOrganizarRegularizacao } from './ppcip-avcb-clcb-como-organizar-regularizacao';
 
+import { blogRuidoOcupacional } from './medicao-de-ruido-ocupacional-dosimetria-e-planejamento';
+import { blogCalorOcupacional } from './avaliacao-de-calor-ocupacional-ibutg-e-atividade';
+import { blogIluminamento } from './avaliacao-de-iluminamento-posto-de-trabalho-nho-11';
+
 export const blogPages = [
+	validateBlogContent(blogRuidoOcupacional),
+	validateBlogContent(blogCalorOcupacional),
+	validateBlogContent(blogIluminamento),
 	validateBlogContent(blogArticle),
 	validateBlogContent(blogGestaoDeTerceirosEmSst),
 	validateBlogContent(blogEventosEsocialSst),

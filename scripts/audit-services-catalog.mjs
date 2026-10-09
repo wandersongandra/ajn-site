@@ -85,13 +85,14 @@ check(run('pcmso') === 1, 'Pesquisa por PCMSO deve mostrar exatamente 1 serviço
 check(run('GESTÃO') > 0, 'Pesquisa com acento e letras maiúsculas deve funcionar.');
 check(run('e-social') === 1 && run('esocial') === 1, 'E-Social e esocial devem encontrar o mesmo serviço.');
 check(run('incêndio') >= 1 && run('incendio') >= 1, 'Pesquisa com e sem acento deve funcionar.');
+check(run('medicoes') === 1 && run('ruído') === 1, 'Pesquisa por medições e ruído deve encontrar o novo serviço.');
 check(run('periculosidade') === 1, 'Pesquisa de perícias não encontra o termo.');
 check(run('pgr') === 1, 'Pesquisa de PGR não encontra o serviço dedicado.');
 check(run('mobilização') === 1, 'Pesquisa de mobilização não encontra o acompanhamento técnico.');
 check(run('resíduos') === 1, 'Pesquisa ambiental não encontra o serviço correspondente.');
 check(run('qualidade') === 1 && groups[0].hidden && groups[1].hidden && !groups[2].hidden, 'Pesquisa deve esconder grupos sem resultados.');
 check(run('texto inexistente') === 0 && empty.hidden === false, 'Estado vazio do catálogo não aparece.');
-check(run('') === 13 && empty.hidden === true && groups.every((group) => !group.hidden), 'Limpar a busca deve recuperar os 13 serviços e os três grupos.');
+check(run('') === 13 && empty.hidden === true && groups.every((group) => !group.hidden), 'Limpar a busca deve recuperar os 14 serviços e os três grupos.');
 check(results.textContent === '13 serviços encontrados', 'Contagem de serviços visíveis incorreta.');
 
 if (failures.length) {

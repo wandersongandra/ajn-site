@@ -440,3 +440,6 @@
 @media (max-width: 480px) {
   .blog-hub .blog-hub__starting-points ul { display: grid; gap: 0; }
 }
+
+/* Transparência editorial em capas ilustrativas: legível também em mobile. */
+.blog-reading .blog-article__illustration-note { margin: .45rem 0 1.6rem; color: #526452; font-size: .74rem; line-height: 1.5; }

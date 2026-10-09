@@ -1,4 +1,4 @@
-import image from '../../assets/blog/editorial-higiene.webp';
+import image from '../../assets/blog/medicoes/hero-medicoes-ocupacionais.webp';
 import type { BlogContentData } from '../types';
 
 export const blogHigieneOcupacionalPlanejamentoDeAvaliacoes = {
@@ -10,7 +10,7 @@ export const blogHigieneOcupacionalPlanejamentoDeAvaliacoes = {
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Laudos e avaliações técnicas',
-  image: { src: image, alt: 'Ilustração de medição e análise de exposição ocupacional ao longo de uma atividade' },
+  image: { src: image, alt: 'Imagem ilustrativa digital de profissional junto a instrumentos de medição em área industrial' },
   categories: ['Laudos e avaliações técnicas'],
   tags: ['higiene ocupacional', 'avaliação de exposição', 'Fundacentro', 'agentes ocupacionais'],
   gallery: [],
@@ -34,6 +34,7 @@ export const blogHigieneOcupacionalPlanejamentoDeAvaliacoes = {
     { heading: 'Referências oficiais', paragraphs: [
       { segments: [{ text: 'Fundacentro — Normas de Higiene Ocupacional', href: 'https://www.gov.br/fundacentro/pt-br/centrais-de-conteudo/biblioteca/normas-de-higiene-ocupacional' }] },
       { segments: [{ text: 'MTE — NR-9, avaliação e controle das exposições ocupacionais', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-9-nr-9' }] },
+      { segments: [{ text: 'AJN — Medições ambientais ocupacionais', href: '/medicoes-ambientais-ocupacionais' }] },
       { segments: [{ text: 'AJN — perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }] }
     ] }
   ]

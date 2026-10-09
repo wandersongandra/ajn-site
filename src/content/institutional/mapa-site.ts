@@ -29,7 +29,7 @@ function category(path: string): GroupId {
 	if (/incendio|bombeiro|avcb|clcb/.test(path)) return 'incendio';
 	if (/elevador|escada-rolante|plataforma|elevacao-vertical|acessibilidade/.test(path)) return 'elevacao';
 	if (/eletric|instalac|spda|cabeamento/.test(path)) return 'eletrica';
-	if (/pgr|pcmso|ltcat|e-?social|sst|seguranca|saude|inspec|pericia|laudo|consultoria|qualidade|mobiliz|ppp/.test(path)) return 'sst';
+	if (/medic|ruido|calor|iluminamento|dosimetria|pgr|pcmso|ltcat|e-?social|sst|seguranca|saude|inspec|pericia|laudo|consultoria|qualidade|mobiliz|ppp/.test(path)) return 'sst';
 	return 'outros';
 }
 

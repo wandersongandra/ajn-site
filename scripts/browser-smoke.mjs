@@ -9,7 +9,7 @@ const output = path.resolve('artifacts/browser-smoke');
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const widths = [320, 390, 768, 1440];
-const routes = ['/', '/servicos/', '/projetos-spda/', '/projetos-cabeamento-estruturado/', '/projetos-eletricos-prediais/'];
+const routes = ['/', '/servicos/', '/projetos-spda/', '/projetos-cabeamento-estruturado/', '/projetos-eletricos-prediais/', '/medicoes-ambientais-ocupacionais/'];
 const failures = [];
 let assertions = 0;
 
@@ -43,6 +43,11 @@ for (const width of widths) {
     assert(measurements.h1 === 1, `H1 count ${route} at ${width}px: ${measurements.h1}`);
     assert(pageErrors.length === 0, `JS errors ${route} at ${width}px: ${pageErrors.join('; ')}`);
 
+    if (route === '/medicoes-ambientais-ocupacionais/') {
+      assert(await page.locator('.ajn-measure__card').count() === 3, `Medições: cartões de avaliação em ${width}px`);
+      assert(await page.locator('.ajn-measure__faq-list details').count() === 4, `Medições: FAQ em ${width}px`);
+      assert(await page.getByRole('link', { name: /Solicitar orçamento/ }).count() >= 1, `Medições: CTA em ${width}px`);
+    }
     if (route === '/') {
       // O painel de privacidade é fixo e corretamente intercepta cliques até a escolha;
       // testar o feed depois de rejeitar opcionais, sem iniciar rastreamento.
@@ -83,4 +88,4 @@ if (failures.length) {
   for (const f of failures) console.error('[browser][FAIL]', f);
   console.error(`Browser smoke FAILED: ${failures.length} issue(s) / ${assertions} assertions.`);
   process.exitCode = 1;
-} else console.log(`Browser smoke PASS: ${assertions} assertions, 5 routes x 4 viewports. Screenshots at ${output}`);
+} else console.log(`Browser smoke PASS: ${assertions} assertions, ${routes.length} routes x 4 viewports. Screenshots at ${output}`);

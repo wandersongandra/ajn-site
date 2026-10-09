@@ -73,7 +73,10 @@ const relatedServicesBySlug: Record<string, readonly { title: string; href: stri
   'esocial-sst-diferencas-entre-s2210-s2220-e-s2240': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
   'apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' }],
   'nr-10-documentacao-capacitacao-e-transicao-regulatoria': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
-  'higiene-ocupacional-como-planejar-avaliacoes-de-exposicao': [{ title: 'Perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }],
+  'higiene-ocupacional-como-planejar-avaliacoes-de-exposicao': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }, { title: 'Perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }],
+  'medicao-de-ruido-ocupacional-dosimetria-e-planejamento': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
+  'avaliacao-de-calor-ocupacional-ibutg-e-atividade': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
+  'avaliacao-de-iluminamento-posto-de-trabalho-nho-11': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
   'investigacao-de-acidentes-como-transformar-registros-em-prevencao': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }],
   'gestao-de-residuos-como-organizar-a-rotina-da-operacao': [{ title: 'Gestão ambiental', href: '/servicos/gestao-ambiental' }],
   'controle-de-qualidade-em-obras-registros-inspecoes-e-desvios': [{ title: 'Gestão da qualidade', href: '/servicos/gestao-da-qualidade' }],
@@ -144,6 +147,7 @@ const galleryRemaining = galleryImages.slice(3);
 					decoding="async"
 					fetchpriority="high"
 				/>
+				{post.image.alt.startsWith("Imagem ilustrativa digital") && <p class="blog-article__illustration-note">Imagem ilustrativa criada digitalmente, não representa serviço realizado ou equipamento específico da AJN.</p>}
 
 				{toc.length > 1 ? (
 					<nav class="blog-article__toc" aria-label="Nesta publicação">
