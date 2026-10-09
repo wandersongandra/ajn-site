@@ -72,6 +72,16 @@ Não foi confirmado overflow horizontal nas larguras auditadas. Capturas prelimi
 - O catálogo de serviços já tem pesquisa e dez entradas; os testes de SEO e conteúdo verificaram as rotas e a presença dos elementos definidos pelas auditorias.
 - Contato e políticas legais responderam HTTP 200. A auditoria de contato passou; não foi enviado formulário nem confirmada a entrega de lead a um destino externo.
 
+## Complemento de escopo — relatório de serviços recebido em 2026-10-09
+
+A AJN forneceu relatório institucional com 13 ofertas/frentes públicas, incluindo consultoria ocupacional, gestão ambiental e qualidade, eSocial, PCMSO/ASOs, perícias, PPCIP, projetos elétricos, regularização de imóveis, treinamentos, PGR, LTCAT e mobilização/acompanhamento técnico. Esse relatório resolve a pendência de confirmação da amplitude geral do catálogo observada em AJN-04.
+
+A implementação agrupa os 13 serviços em SST/saúde ocupacional, treinamentos/operação e engenharia/ambiente/qualidade. Foram aproveitadas as páginas existentes para PGR, LTCAT e mobilização, preservando os URLs. A página de mobilização foi revisada para remover alegações de experiência, equipe qualificada, eficiência garantida e telefone que não tinham fonte confirmada no relatório.
+
+Três pautas originais complementam as lacunas editoriais sobre resíduos, controle de qualidade em obras e PPCIP/regularização. As afirmações normativas remetem à Lei nº 12.305/2010 e a páginas oficiais do CBMMG; requisitos de imóvel permanecem condicionados à jurisdição e classificação. Os textos distinguem educação geral de contratação e escopo.
+
+Continuam NÃO VERIFICADOS: credenciais e responsáveis individuais, disponibilidade/região por serviço, modalidade por curso, contratos e limites ambientais específicos, permissões para divulgar clientes/cases, e entregáveis de cada proposta. O relatório confirma o portfólio informado, sem provar capacidade ou habilitação individual.
+
 ## Plano de correção e critérios de aceite
 
 1. Não alterar o layout com base nas capturas inválidas; manter a evidência válida e ampliar os fluxos de teclado/menu.

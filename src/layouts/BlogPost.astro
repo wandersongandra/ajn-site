@@ -75,6 +75,12 @@ const relatedServicesBySlug: Record<string, readonly { title: string; href: stri
   'nr-10-documentacao-capacitacao-e-transicao-regulatoria': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
   'higiene-ocupacional-como-planejar-avaliacoes-de-exposicao': [{ title: 'Perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }],
   'investigacao-de-acidentes-como-transformar-registros-em-prevencao': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }],
+  'gestao-de-residuos-como-organizar-a-rotina-da-operacao': [{ title: 'Gestão ambiental', href: '/servicos/gestao-ambiental' }],
+  'controle-de-qualidade-em-obras-registros-inspecoes-e-desvios': [{ title: 'Gestão da qualidade', href: '/servicos/gestao-da-qualidade' }],
+  'ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel': [
+    { title: 'Projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+    { title: 'Regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+  ],
 };
 const relatedServices = relatedServicesBySlug[post.slug] ?? [];
 const contextualCta: Record<string, string> = {
@@ -85,6 +91,8 @@ const contextualCta: Record<string, string> = {
   'eSocial e obrigações': 'Precisa revisar a organização dos registros de SST enviados ao eSocial? Converse com a AJN sobre a sua rotina documental.',
   'Segurança operacional': 'Quer estruturar uma atividade ou rotina preventiva? Converse com a AJN sobre o cenário e os controles necessários.',
   'Institucional': 'Se quiser conhecer as frentes de atendimento da AJN, fale com a equipe pelo canal de contato.',
+  'Gestão ambiental e qualidade': 'Precisa organizar requisitos ambientais ou de qualidade em uma operação ou obra? Converse com a AJN sobre o escopo aplicável.',
+  'Engenharia e prevenção contra incêndio': 'Precisa analisar um projeto ou a situação documental de uma edificação? Converse com a AJN sobre os próximos passos possíveis.',
 };
 const ctaDescription = contextualCta[self?.topic ?? ''] ?? 'Converse com a equipe da AJN sobre as necessidades de SST da sua empresa.';
 

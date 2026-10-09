@@ -18,7 +18,7 @@ const section = start >= 0 && end >= 0 ? html.slice(start, end) : '';
 check(section.length > 0 && section.includes('id="solucoes"'), 'Seção Serviços com âncora ausente.');
 check(section.includes('id="solutions-title"'), 'Falta título associado à seção.');
 check(section.includes('Segurança do trabalho e engenharia'), 'Novo título editorial ausente.');
-check(section.includes('Consultoria em SST, saúde ocupacional, perícias'), 'Descrição técnica da seção ausente.');
+check(section.includes('Da gestão de SST e saúde ocupacional a treinamentos, meio ambiente, qualidade e projetos de engenharia.'), 'Descrição técnica da seção ausente.');
 
 const cards = [...section.matchAll(/<article\b[^>]*class="service-card"[^>]*>[\s\S]*?<\/article>/g)].map(m => m[0]);
 check(cards.length === 6, `Esperados seis cards de serviço, encontrados ${cards.length}.`);

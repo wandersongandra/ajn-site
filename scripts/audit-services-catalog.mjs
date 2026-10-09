@@ -16,15 +16,16 @@ const check = (condition, detail) => { if (!condition) failures.push(detail); };
 // Mantenibilidade: o mesmo item contém título, descrição, URL e imagem.
 // Evita lookup por texto exibido, código redundante e arquivos de estilo órfãos.
 const catalogImages = [...catalogSource.matchAll(/\bimage:\s*'([^']+)'/g)].map(match => match[1]);
-check(catalogImages.length === 10, `Catálogo: esperadas 10 imagens definidas no próprio dado, encontradas ${catalogImages.length}.`);
-check(new Set(catalogImages).size === 10, 'Catálogo: recursos de imagem repetidos.');
+check(catalogImages.length === 13, `Catálogo: esperadas 13 imagens definidas no próprio dado, encontradas ${catalogImages.length}.`);
+check(new Set(catalogImages).size === 13, 'Catálogo: recursos de imagem repetidos.');
 check(componentSource.includes('src={service.image}') && !componentSource.includes('serviceImages['),
   'O componente deve usar imagem do objeto de serviço, sem lookup por título.');
 check(!globalCss.includes('/* Services index */') && !globalCss.includes('/* Catálogo de serviços — leitura e pesquisa'),
   'Estilos de catálogo antigos não devem voltar para global.css.');
 const cards = [...html.matchAll(/<article\b[^>]*data-service-card\b[^>]*>[\s\S]*?<\/article>/g)].map(m => m[0]);
 
-check(cards.length === 10, `Deveria haver 10 cartões de serviço; encontrados ${cards.length}.`);
+check(cards.length === 13, `Deveria haver 13 cartões de serviço; encontrados ${cards.length}.`);
+check((html.match(/data-service-group\b/g) ?? []).length === 3, 'Catálogo deve agrupar os serviços em três áreas de atendimento.');
 check(html.includes('aria-label="Laudos e programas mais procurados"'), 'Links para PGR e LTCAT ausentes.');
 check(html.includes('href="/elaboracao-pgr"') && html.includes('href="/emissao-ltcat"'), 'Acesso direto a PGR/LTCAT ausente.');
 check(html.includes('data-service-results') && html.includes('role="status"'), 'Contador acessível ausente.');
@@ -44,7 +45,7 @@ for (const [i, card] of cards.entries()) {
   check(Boolean(link) && link.startsWith('/'), `Card ${i+1}: o cartão inteiro deve ser um link.`);
   check(!seenLinks.has(link), `Card ${i+1}: link duplicado.`);
   seenLinks.add(link);
-  check(/<h2\b/.test(card), `Card ${i+1}: H2 semântico ausente.`);
+  check(/<h3\b/.test(card), `Card ${i+1}: H3 semântico ausente.`);
   check(/<p\b/.test(card), `Card ${i+1}: descrição ausente.`);
   check(/aria-label="Conhecer o serviço: /.test(card), `Card ${i+1}: link sem nome acessível.`);
   check(/alt=""/.test(image) && /decoding="async"/.test(image), `Card ${i+1}: imagem decorativa não otimizada para acessibilidade.`);
@@ -53,8 +54,12 @@ for (const [i, card] of cards.entries()) {
     try { optimizedBytes += (await stat(path.join('dist', src.replace(/^\//, '')))).size; }
     catch { failures.push(`Card ${i+1}: imagem ausente no build: ${src}`); }
   }
-  snapshots.push({ dataset: { serviceSearchable: text }, hidden: false });
+  snapshots.push({ dataset: { serviceSearchable: text }, hidden: false, groupIndex: i < 6 ? 0 : i < 8 ? 1 : 2 });
 }
+const groups = [0, 1, 2].map((groupIndex) => ({
+  hidden: false,
+  querySelector: () => snapshots.some((card) => card.groupIndex === groupIndex && !card.hidden) ? {} : null,
+}));
 check(optimizedBytes > 0 && optimizedBytes < 400 * 1024, `Imagens do catálogo acima do orçamento de 400 KiB: ${Math.round(optimizedBytes/1024)} KiB.`);
 
 // Executa o JS real do catálogo sobre um DOM mínimo. Não depende de navegador.
@@ -68,7 +73,7 @@ const document = {
     '[data-service-empty]': empty,
     '[data-service-results]': results,
   }[selector] ?? null),
-  querySelectorAll: (selector) => selector === '[data-service-card]' ? snapshots : [],
+  querySelectorAll: (selector) => selector === '[data-service-card]' ? snapshots : selector === '[data-service-group]' ? groups : [],
 };
 vm.runInNewContext(js, { document });
 const run = (query) => {
@@ -81,13 +86,17 @@ check(run('GESTÃO') > 0, 'Pesquisa com acento e letras maiúsculas deve funcion
 check(run('e-social') === 1 && run('esocial') === 1, 'E-Social e esocial devem encontrar o mesmo serviço.');
 check(run('incêndio') >= 1 && run('incendio') >= 1, 'Pesquisa com e sem acento deve funcionar.');
 check(run('periculosidade') === 1, 'Pesquisa de perícias não encontra o termo.');
+check(run('pgr') === 1, 'Pesquisa de PGR não encontra o serviço dedicado.');
+check(run('mobilização') === 1, 'Pesquisa de mobilização não encontra o acompanhamento técnico.');
+check(run('resíduos') === 1, 'Pesquisa ambiental não encontra o serviço correspondente.');
+check(run('qualidade') === 1 && groups[0].hidden && groups[1].hidden && !groups[2].hidden, 'Pesquisa deve esconder grupos sem resultados.');
 check(run('texto inexistente') === 0 && empty.hidden === false, 'Estado vazio do catálogo não aparece.');
-check(run('') === 10 && empty.hidden === true, 'Limpar a busca deve recuperar todos os 10 serviços.');
-check(results.textContent === '10 serviços encontrados', 'Contagem de serviços visíveis incorreta.');
+check(run('') === 13 && empty.hidden === true && groups.every((group) => !group.hidden), 'Limpar a busca deve recuperar os 13 serviços e os três grupos.');
+check(results.textContent === '13 serviços encontrados', 'Contagem de serviços visíveis incorreta.');
 
 if (failures.length) {
   for (const f of failures) console.error('[catalogo][FAIL]', f);
   process.exitCode = 1;
 } else {
-  console.log(`[catalogo] PASS: 10 cartões clicáveis, imagens existentes (${Math.round(optimizedBytes/1024)} KiB no total), pesquisa e mobile.`);
+  console.log(`[catalogo] PASS: 13 cartões clicáveis em três grupos, imagens existentes (${Math.round(optimizedBytes/1024)} KiB no total), pesquisa e mobile.`);
 }

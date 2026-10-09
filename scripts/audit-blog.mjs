@@ -54,7 +54,7 @@ for (const file of htmlFiles) {
 		}
 		report.archiveCards = (html.match(/class=["']blog-card["']/g) ?? []).length;
 		report.responsiveImages = (html.match(/\bsrcset=["']/g) ?? []).length;
-		if (report.archiveCards !== 28) failures.push('Arquivo do blog: esperados 28 cards; obtidos ' + report.archiveCards);
+		if (report.archiveCards !== 31) failures.push('Arquivo do blog: esperados 31 cards; obtidos ' + report.archiveCards);
 		if (report.responsiveImages < 10) failures.push('Arquivo do blog: imagens responsivas insuficientes; confira widths/sizes.');
 		if (h1Count !== 1) failures.push('Arquivo do blog: esperado um H1, encontrado ' + h1Count);
 		continue;
@@ -106,7 +106,7 @@ for (const file of htmlFiles) {
 	if (!/["']dateModified["']\s*:/.test(html)) {
 		failures.push(route + ': data de revisão ausente no BlogPosting');
 	}
-	if (!route.includes('um-pouco-sobre-nos') && !/href=["']https:\/\/(?:www\.)?(?:gov\.br|planalto\.gov\.br)/.test(html)) {
+	if (!route.includes('um-pouco-sobre-nos') && !/href=["']https:\/\/(?:www\.)?(?:gov\.br|planalto\.gov\.br|bombeiros\.mg\.gov\.br)/.test(html)) {
 		failures.push(route + ': fontes oficiais não encontradas no corpo do artigo');
 	}
 	if (h1Count !== 1) failures.push(route + ': esperado um H1, encontrado ' + h1Count);
@@ -131,7 +131,7 @@ for (const file of htmlFiles) {
 	}
 }
 
-if (report.articles !== 28) failures.push('Esperados 28 artigos HTML gerados, encontrados ' + report.articles);
+if (report.articles !== 31) failures.push('Esperados 31 artigos HTML gerados, encontrados ' + report.articles);
 
 // Exercita a pesquisa, os filtros e a expansão usando o script entregue ao navegador.
 if (archiveHtml) {
@@ -140,7 +140,8 @@ if (archiveHtml) {
 		.map((match) => ({ dataset: { blogSearchable: match[1], blogCategory: match[2] }, hidden: false }));
 	const validTopics = new Set([
 		'Gestão de SST', 'Saúde ocupacional', 'Laudos e avaliações técnicas', 'Normas regulamentadoras',
-		'eSocial e obrigações', 'Segurança operacional', 'Treinamentos e prevenção', 'SST por setor', 'Institucional',
+		'eSocial e obrigações', 'Segurança operacional', 'Treinamentos e prevenção', 'SST por setor',
+		'Gestão ambiental e qualidade', 'Engenharia e prevenção contra incêndio', 'Institucional',
 	]);
 	if (cards.some((card) => !validTopics.has(card.dataset.blogCategory))) failures.push('Blog: artigo contém categoria editorial não reconhecida.');
 	const handlers = {};
@@ -180,7 +181,7 @@ if (archiveHtml) {
 	};
 	vm.runInNewContext(script, { document, window, URL, URLSearchParams });
 	const visibleCount = () => cards.filter((card) => !card.hidden).length;
-	if (cards.length !== 28 || visibleCount() !== 9) failures.push('Busca do Blog: carregamento inicial não limita a 9 de 28 artigos.');
+	if (cards.length !== 31 || visibleCount() !== 9) failures.push('Busca do Blog: carregamento inicial não limita a 9 de 31 artigos.');
 	search.value = 'PERMISSÃO';
 	handlers['search:input']();
 	if (visibleCount() !== 1 || cards.find((card) => card.dataset.blogSearchable.includes('Permissão'))?.hidden !== false)
@@ -198,7 +199,7 @@ if (archiveHtml) {
 	handlers['topic::click']?.({ preventDefault() {}, metaKey: false, ctrlKey: false, shiftKey: false, altKey: false });
 	if (visibleCount() !== 9 || moreWrap.hidden) failures.push('Paginação do Blog: botão de expansão não aparece após resetar o tema.');
 	handlers['more:click']?.();
-	if (visibleCount() !== 18 || !results.textContent.includes('18 de 28')) failures.push('Paginação do Blog: “Mostrar mais” não revela o próximo grupo de cards.');
+	if (visibleCount() !== 18 || !results.textContent.includes('18 de 31')) failures.push('Paginação do Blog: “Mostrar mais” não revela o próximo grupo de cards.');
 	search.value = 'termo inexistente';
 	handlers['search:input']();
 	if (empty.hidden || visibleCount() !== 0 || !results.textContent.includes('Nenhum artigo')) failures.push('Busca do Blog: estado vazio não é anunciado.');

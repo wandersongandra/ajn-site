@@ -9,6 +9,7 @@
 - `src/pages/blog/index.astro` renderiza a busca local, categorias, destaques, cards e estado vazio.
 - `src/assets/blog/` guarda imagens fonte/derivadas; `public/images/og/` contém as capas públicas de compartilhamento.
 - `src/content/route-catalog.ts` lista as rotas para sitemap, navegação e auditorias.
+- `src/content/blog/topics.ts` é a enumeração única de categorias; `BlogPost.astro` associa artigos a páginas de serviço existentes por slug.
 
 ## Contratos editoriais
 
@@ -30,6 +31,8 @@ Os 20 artigos existentes mantêm as URLs. O campo `topic` é explícito nos novo
 ## Pesquisa, filtros e acessibilidade
 
 A busca usa índice de texto local no browser; categorias são links/filtros navegáveis. O botão de expansão do grid declara `aria-controls`, a contagem usa região de status e o estado vazio é explícito. Preservar comportamento de teclado, foco e movimento reduzido ao ampliar a interface.
+
+O catálogo de serviços tem modelo próprio em `src/content/services/catalog.ts`: entradas com título, descrição, rota, imagem e grupo. Os grupos organizam SST/saúde ocupacional, treinamentos/operação e engenharia/ambiente/qualidade. A busca do catálogo pesquisa as descrições e oculta grupos sem resultados; não deve duplicar conteúdo nem gerar rotas automaticamente.
 
 ## Decisão sobre Markdown/Content Collections
 

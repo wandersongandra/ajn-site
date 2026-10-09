@@ -1,12 +1,36 @@
-export const serviceIndexItems = [
-  { title: 'Assessoria e consultoria em saúde ocupacional', description: 'Identificação de perigos, avaliação de riscos e orientação sobre medidas de prevenção nas atividades da empresa.', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional', image: '/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp' },
-  { title: 'Gestão Ambiental', description: 'Apoio à organização de resíduos e aos procedimentos de gestão ambiental conforme as necessidades da operação.', href: '/servicos/gestao-ambiental', image: '/images/content/services/gestao-ambiental.webp' },
-  { title: 'Gestão da Qualidade', description: 'Planejamento, documentação e acompanhamento de requisitos de qualidade em obras e serviços contratados.', href: '/servicos/gestao-da-qualidade', image: '/images/content/services/gestao-da-qualidade.webp' },
-  { title: 'Gestão do E-Social', description: 'Organização das informações de SST e apoio aos eventos ocupacionais enviados ao eSocial.', href: '/servicos/gestao-do-e-social', image: '/images/content/services/gestao-do-e-social.webp' },
-  { title: 'PCMSO e ASOs', description: 'Acompanhamento documental do PCMSO e organização dos exames ocupacionais e atestados de saúde ocupacional.', href: '/servicos/pcmso-e-asos', image: '/images/content/services/pcmso-e-asos.jpg' },
-  { title: 'Perícias em Periculosidade e Insalubridade', description: 'Avaliações técnicas das condições de exposição para subsidiar perícias e laudos trabalhistas.', href: '/servicos/pericias-em-periculosidade-e-insalubridade', image: '/images/content/services/pericias-em-periculosidade-e-insalubridade.webp' },
-  { title: 'Projetos de Combate a Incêndio e Pânico - PPCIP', description: 'Projetos e documentação de prevenção e combate a incêndio conforme o tipo de edificação e as exigências aplicáveis.', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip', image: '/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp' },
-  { title: 'Projetos Elétricos Residenciais, Comerciais e Prediais com Foco em Qualidade, Prazo e Economia', description: 'Projetos elétricos para diferentes tipos de edificação, com escopo e documentação técnica definidos para cada demanda.', href: '/projetos-eletricos-prediais', image: '/images/featured/orcamento-projeto-eletrico-01.webp' },
-  { title: 'Regularização de imóveis junto ao corpo de bombeiros', description: 'Análise da situação da edificação e elaboração dos projetos e documentos de prevenção contra incêndio necessários.', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros', image: '/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp' },
-  { title: 'Treinamento de NRs', description: 'Treinamentos relacionados às Normas Regulamentadoras, conforme a atividade, os riscos e os requisitos aplicáveis.', href: '/servicos/treinamento-de-nrs', image: '/images/content/services/treinamento-de-nrs.webp' },
+export type ServiceGroupKey = 'sst' | 'operations' | 'engineering';
+
+export interface ServiceIndexItem {
+	title: string;
+	description: string;
+	href: string;
+	image: string;
+	group: ServiceGroupKey;
+}
+
+export const serviceGroups: readonly { key: ServiceGroupKey; title: string; description: string }[] = [
+	{ key: 'sst', title: 'Segurança e saúde ocupacional', description: 'Consultoria, programas, avaliações técnicas e organização das informações de SST.' },
+	{ key: 'operations', title: 'Treinamentos e operação', description: 'Capacitação e apoio técnico às rotinas de campo, mobilização e acompanhamento de atividades.' },
+	{ key: 'engineering', title: 'Engenharia, ambiente e qualidade', description: 'Projetos, regularização e suporte a requisitos ambientais e de qualidade conforme cada escopo.' },
+];
+
+export const serviceIndexItems: readonly ServiceIndexItem[] = [
+	{ group: 'sst', title: 'Assessoria e consultoria em saúde ocupacional', description: 'Identificação de perigos, avaliação de riscos e orientação sobre medidas de prevenção nas atividades da empresa.', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional', image: '/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp' },
+	{ group: 'sst', title: 'Elaboração de PGR', description: 'Inventário de riscos e plano de ação organizados a partir das atividades e condições reais de trabalho.', href: '/elaboracao-pgr', image: '/images/content/marketing/elaboracao-pgr/elaboracao-pgr-02.webp' },
+	{ group: 'sst', title: 'Emissão de LTCAT', description: 'Documento previdenciário baseado na caracterização técnica dos ambientes, atividades e exposições ocupacionais.', href: '/emissao-ltcat', image: '/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-01.webp' },
+	{ group: 'sst', title: 'Gestão do eSocial SST', description: 'Organização de informações e apoio aos eventos S-2210, S-2220 e S-2240, sem substituir os documentos de origem.', href: '/servicos/gestao-do-e-social', image: '/images/content/services/gestao-do-e-social.webp' },
+	{ group: 'sst', title: 'PCMSO e ASOs', description: 'Acompanhamento documental do PCMSO e organização dos exames e atestados ocupacionais, preservado o acesso clínico restrito.', href: '/servicos/pcmso-e-asos', image: '/images/content/services/pcmso-e-asos.jpg' },
+	{ group: 'sst', title: 'Perícias em periculosidade e insalubridade', description: 'Avaliações técnicas das condições de exposição para subsidiar laudos e perícias conforme o escopo aplicável.', href: '/servicos/pericias-em-periculosidade-e-insalubridade', image: '/images/content/services/pericias-em-periculosidade-e-insalubridade.webp' },
+	{ group: 'operations', title: 'Treinamento de Normas Regulamentadoras', description: 'Capacitações relacionadas às NRs e integração de novos funcionários, conforme atividade, modalidade e requisitos aplicáveis.', href: '/servicos/treinamento-de-nrs', image: '/images/content/services/treinamento-de-nrs.webp' },
+	{ group: 'operations', title: 'Mobilização e acompanhamento técnico', description: 'Apoio à mobilização de equipes e equipamentos, organização documental, inspeções e acompanhamento técnico em campo conforme contrato.', href: '/mobilizacao-pessoal-equipamentos', image: '/images/content/marketing/mobilizacao-pessoal-equipamentos/mobilizacao-pessoal-equipamentos-01.webp' },
+	{ group: 'engineering', title: 'Gestão ambiental', description: 'Apoio à organização de resíduos e a procedimentos ambientais definidos conforme as necessidades de cada operação.', href: '/servicos/gestao-ambiental', image: '/images/content/services/gestao-ambiental.webp' },
+	{ group: 'engineering', title: 'Gestão da qualidade', description: 'Planejamento, registros e acompanhamento de requisitos de qualidade em obras e serviços contratados; não inclui certificação.', href: '/servicos/gestao-da-qualidade', image: '/images/content/services/gestao-da-qualidade.webp' },
+	{ group: 'engineering', title: 'Projetos de combate a incêndio e pânico — PPCIP', description: 'Projetos e documentação de prevenção contra incêndio conforme a edificação e os requisitos da autoridade competente.', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip', image: '/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp' },
+	{ group: 'engineering', title: 'Projetos elétricos residenciais, comerciais e prediais', description: 'Projetos elétricos para diferentes tipos de edificação, com escopo e documentação técnica definidos para cada demanda.', href: '/projetos-eletricos-prediais', image: '/images/featured/orcamento-projeto-eletrico-01.webp' },
+	{ group: 'engineering', title: 'Regularização de imóveis junto ao Corpo de Bombeiros', description: 'Análise da situação da edificação e apoio à elaboração de projetos e documentos para regularização e licenciamento.', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros', image: '/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp' },
 ] as const;
+
+export const serviceIndexGroups = serviceGroups.map((group) => ({
+	...group,
+	services: serviceIndexItems.filter((service) => service.group === group.key),
+}));

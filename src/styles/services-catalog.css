@@ -92,6 +92,22 @@
   align-items: stretch;
   gap: clamp(14px, 1.8vw, 22px);
 }
+.service-catalog .service-index-group + .service-index-group { margin-top: clamp(38px, 5vw, 64px); }
+.service-catalog .service-index-group__header {
+  max-width: 76ch;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #dde6dc;
+}
+.service-catalog .service-index-group__header h2 {
+  margin: 0 0 7px;
+  color: #25352a;
+  font-size: clamp(23px, 2.2vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+.service-catalog .service-index-group__header p { margin: 0; color: #5b695e; line-height: 1.6; }
+.service-catalog [data-service-group][hidden] { display: none; }
 .service-catalog .service-index-card {
   display: block;
   position: relative;

@@ -7,8 +7,8 @@
 - HTML público observado com `index,follow`; `PUBLIC_ALLOW_INDEXING=true` no build institucional; preview deve definir explicitamente falso conforme `scripts/audit-deploy.mjs`.
 - Sitemap e catálogo de rotas conferidos por `audit:sitemap`; sitemap resultante inclui novas URLs sem retirar as atuais.
 - Auditoria do build após as alterações: 156 arquivos HTML (incluindo 404), canonicals/robots coerentes, sem fragmentos locais quebrados.
-- `audit:blog`: 28 páginas com títulos, descrições únicas, uma H1, BlogPosting JSON-LD, imagem OG existente e referências oficiais nos artigos técnicos.
-- Capas WebP são processadas pelo Astro, com dimensões/srcset/sizes no HTML; oito capas OG dedicadas são arquivos JPEG 1200×630.
+- Na revisão anterior, `audit:blog` encontrou 28 páginas. A atualização baseada no relatório da empresa adiciona três artigos, preservando os slugs existentes; o novo build deve confirmar 31 páginas, títulos/descrições únicas, uma H1, BlogPosting JSON-LD e imagem OG.
+- Capas WebP são processadas pelo Astro, com dimensões/srcset/sizes no HTML; 11 capas OG dedicadas para artigos recentes são arquivos JPEG 1200×630.
 
 ## Indexação e deploy
 
@@ -23,7 +23,7 @@ Canonical usa URLs existentes com barra final e respeita a origem configurada. N
 ## Intenções e links internos
 
 - **Informacional:** artigos explicam procedimentos, documentos e NRs com referências oficiais.
-- **Comercial:** catálogo existente e páginas de serviço preservadas; novas ofertas aguardam confirmação.
+- **Comercial:** relatório da AJN confirmou 13 frentes/ofertas para o catálogo atual; cada card usa uma página já existente. A disponibilidade, habilitação e escopo específico continuam sujeitos à avaliação de cada contrato.
 - **Local:** não expandir páginas por cidade sem comprovar atendimento e conteúdo substantivo local.
 
 Links do blog só apontam para artigos ou páginas que existem. As ligações comerciais são por slug e oferta confirmada no código, não por categoria ampla.

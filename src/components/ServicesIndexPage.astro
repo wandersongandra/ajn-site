@@ -1,12 +1,12 @@
 ---
 import '../styles/services-catalog.css';
 import PageShell from './PageShell.astro';
-import { serviceIndexItems } from '../content/services/catalog';
+import { serviceIndexGroups } from '../content/services/catalog';
 ---
 
 <PageShell heading="Serviços">
   <div class="service-catalog">
-    <p class="service-index-intro">Conheça as áreas de atendimento da AJN em segurança do trabalho, saúde ocupacional, laudos e projetos técnicos. Consulte o escopo de cada serviço antes de solicitar uma proposta.</p>
+    <p class="service-index-intro">Consulte as frentes da AJN em segurança e saúde ocupacional, treinamentos e operação, engenharia, meio ambiente e qualidade. Cada página descreve um escopo específico para orientar a solicitação de atendimento.</p>
     <nav class="service-catalog__documents" aria-label="Laudos e programas mais procurados">
       <span>Procurando um documento específico?</span>
       <a href="/elaboracao-pgr">Elaboração de PGR <span aria-hidden="true">↗</span></a>
@@ -16,32 +16,42 @@ import { serviceIndexItems } from '../content/services/catalog';
       <label class="service-search" for="service-catalog-search">Pesquisar serviços</label>
       <div class="service-catalog__search-row">
         <input id="service-catalog-search" type="search" data-service-search aria-controls="service-catalog-grid" placeholder="Ex.: PCMSO, treinamento, incêndio" autocomplete="off" />
-        <p class="service-catalog__count" data-service-results role="status" aria-live="polite" aria-atomic="true">10 serviços</p>
+        <p class="service-catalog__count" data-service-results role="status" aria-live="polite" aria-atomic="true">13 serviços</p>
       </div>
     </div>
 
-    <div class="service-index-grid" id="service-catalog-grid" data-service-grid>
-      {serviceIndexItems.map((service, index) => (
-        <article class="service-index-card" data-service-card data-service-searchable={[service.title, service.description].join(' ')}>
-          <a class="service-index-card__link" href={service.href} aria-label={`Conhecer o serviço: ${service.title}`}>
-            <img
-              class="service-index-card__image"
-              src={service.image}
-              alt=""
-              width="600"
-              height="800"
-              loading={index === 0 ? 'eager' : 'lazy'}
-              fetchpriority={index === 0 ? 'high' : 'low'}
-              decoding="async"
-            />
-            <span class="service-index-card__overlay" aria-hidden="true"></span>
-            <div class="service-index-card__content">
-              <h2 class="service-index-card__title">{service.title}</h2>
-              <p class="service-index-card__description">{service.description}</p>
-              <span class="service-index-card__cta">Ver detalhes <span aria-hidden="true">↗</span></span>
-            </div>
-          </a>
-        </article>
+    <div id="service-catalog-grid" data-service-grid>
+      {serviceIndexGroups.map((group) => (
+        <section class="service-index-group" data-service-group aria-labelledby={`service-group-${group.key}`}>
+          <header class="service-index-group__header">
+            <h2 id={`service-group-${group.key}`}>{group.title}</h2>
+            <p>{group.description}</p>
+          </header>
+          <div class="service-index-grid">
+            {group.services.map((service, index) => (
+              <article class="service-index-card" data-service-card data-service-searchable={[service.title, service.description].join(' ')}>
+                <a class="service-index-card__link" href={service.href} aria-label={`Conhecer o serviço: ${service.title}`}>
+                  <img
+                    class="service-index-card__image"
+                    src={service.image}
+                    alt=""
+                    width="600"
+                    height="800"
+                    loading={group.key === 'sst' && index === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={group.key === 'sst' && index === 0 ? 'high' : 'low'}
+                    decoding="async"
+                  />
+                  <span class="service-index-card__overlay" aria-hidden="true"></span>
+                  <div class="service-index-card__content">
+                    <h3 class="service-index-card__title">{service.title}</h3>
+                    <p class="service-index-card__description">{service.description}</p>
+                    <span class="service-index-card__cta">Ver detalhes <span aria-hidden="true">↗</span></span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
       ))}
     </div>
     <p class="service-index-empty" data-service-empty role="status" hidden>

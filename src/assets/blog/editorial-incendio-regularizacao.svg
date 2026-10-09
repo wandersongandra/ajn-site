@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" fill="none">
+  <rect width="1200" height="675" fill="#ECEFEA"/>
+  <path d="M0 508h1200v167H0z" fill="#D9E1D8"/>
+  <path d="M212 506V174h420v332" fill="#F8F9F6" stroke="#AEBCAE" stroke-width="8"/>
+  <path d="M276 235h291M276 291h291M276 347h190M276 403h236" stroke="#BAC8BA" stroke-width="11" stroke-linecap="round"/>
+  <path d="M720 507V277h252v230" fill="#CFDACE" stroke="#92A892" stroke-width="8"/>
+  <path d="M780 332h133M780 378h133M780 424h88" stroke="#68856B" stroke-width="9" stroke-linecap="round"/>
+  <path d="M599 508V423c0-27 21-48 48-48s48 21 48 48v85" fill="#C16F3A"/>
+  <path d="M632 484c-17-22 8-43 12-61 21 21 32 38 19 61-7 12-23 12-31 0Z" fill="#F5E0A3"/>
+  <path d="M1037 207v227m-23-204 23-23 23 23" stroke="#315B3D" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M1023 434h28" stroke="#315B3D" stroke-width="9" stroke-linecap="round"/>
+  <path d="M133 540h885" stroke="#A8B8A8" stroke-width="2"/>
+  <text x="70" y="84" fill="#213C2A" font-family="Arial,sans-serif" font-size="30" font-weight="700" letter-spacing="3">PROJETO E REGULARIZAÇÃO</text>
+</svg>

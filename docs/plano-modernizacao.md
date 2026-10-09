@@ -13,6 +13,14 @@ Trabalho local na branch `modernization/ajn-site-2026-10-09`, baseada em `origin
 5. **Engenharia:** diretório local `output/` excluído do `astro check`; teste do mock de consentimento corrigido.
 6. **Documentação:** relatório crítico, arquitetura, estratégia editorial, matriz de conteúdo/ofertas, SEO e validação.
 
+### Atualização baseada no relatório de serviços de 2026-10-09
+
+- Catálogo organizado em 13 ofertas/páginas existentes, agrupadas em três frentes. PGR, LTCAT e mobilização foram expostos diretamente; nenhuma nova rota comercial foi criada.
+- Conteúdo da página de mobilização revisado para retirar alegações sem suporte sobre tempo de mercado, equipe e resultados garantidos.
+- Página inicial passou a resumir também ambiente, qualidade e engenharia.
+- Três artigos originais publicados no código para gestão de resíduos, qualidade em obras e PPCIP/regularização; ilustrações vetoriais próprias rasterizadas para o Blog e OG.
+- A amplitude comercial foi confirmada pelo relatório fornecido pela empresa. Profissionais, regiões, modalidade por treinamento e serviços ambientais condicionais seguem com escopo a validar por contrato.
+
 ## Sequência para a próxima rodada
 
 1. Revisão técnica por profissional responsável da AJN dos artigos normativos, especialmente os que mencionam vigência e escopo legal.

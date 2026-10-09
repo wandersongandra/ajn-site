@@ -7,6 +7,8 @@ export const BLOG_TOPICS = [
 	'Segurança operacional',
 	'Treinamentos e prevenção',
 	'SST por setor',
+	'Gestão ambiental e qualidade',
+	'Engenharia e prevenção contra incêndio',
 	'Institucional',
 ] as const;
 

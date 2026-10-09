@@ -155,5 +155,8 @@ export const routeCatalog: readonly RouteCatalogEntry[] = [
 	{ path: "/blog/higiene-ocupacional-como-planejar-avaliacoes-de-exposicao", title: "Higiene ocupacional: como planejar avaliações de exposição - AJN Consultoria e Engenharia" },
 	{ path: "/blog/aep-e-aet-diferencas-e-quando-aplicar-cada-avaliacao", title: "AEP e AET: diferenças e aplicações da ergonomia no trabalho - AJN Consultoria e Engenharia" },
 	{ path: "/blog/investigacao-de-acidentes-como-transformar-registros-em-prevencao", title: "Investigação de acidentes: dos registros às medidas preventivas - AJN Consultoria e Engenharia" },
+	{ path: "/blog/gestao-de-residuos-como-organizar-a-rotina-da-operacao", title: "Gestão de resíduos: como organizar a rotina da operação - AJN Consultoria e Engenharia" },
+	{ path: "/blog/controle-de-qualidade-em-obras-registros-inspecoes-e-desvios", title: "Qualidade em obras: como organizar verificações e desvios - AJN Consultoria e Engenharia" },
+	{ path: "/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel", title: "PPCIP, AVCB e CLCB: organize a regularização do imóvel - AJN Consultoria e Engenharia" },
 ] as const;
 

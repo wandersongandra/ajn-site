@@ -1,6 +1,7 @@
 (() => {
   const search = document.querySelector('[data-service-search]');
   const cards = [...document.querySelectorAll('[data-service-card]')];
+  const groups = [...document.querySelectorAll('[data-service-group]')];
   const empty = document.querySelector('[data-service-empty]');
   const results = document.querySelector('[data-service-results]');
 
@@ -26,6 +27,9 @@
       const matches = terms.every((term) => item.text.includes(term));
       item.card.hidden = !matches;
       if (matches) shown += 1;
+    }
+    for (const group of groups) {
+      group.hidden = !group.querySelector('[data-service-card]:not([hidden])');
     }
     if (empty) empty.hidden = shown > 0;
     if (results) results.textContent = shown === 1 ? '1 serviço encontrado' : `${shown} serviços encontrados`;

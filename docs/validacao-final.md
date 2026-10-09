@@ -1,5 +1,21 @@
 # Validação final — modernização AJN
 
+## Complemento de validação — catálogo e blog, 2026-10-09
+
+Esta rodada acrescentou serviços a páginas existentes, três artigos e categorias; não publicou em produção.
+
+- `npm run validate`: PASS com `PUBLIC_SITE_ORIGIN=https://ajnengenharia.com.br` e `PUBLIC_ALLOW_INDEXING=true`. Astro check: 241 arquivos, 0 erros, 0 warnings e 0 hints. Build: 158 páginas estáticas.
+- SEO: 159 HTML auditados; âncoras: 159 páginas/338 referências. Sitemap: 154 rotas. Auditoria de segurança: 202 fontes e 159 páginas compiladas.
+- Blog: 31 artigos, 31 cards, descrições e srcsets; imagens OG presentes; nenhuma URL anterior foi removida.
+- Catálogo: 13 cartões em três grupos; busca/filtros funcionais no script e auditoria; 328 KiB somados pelas imagens carregadas diretamente no catálogo.
+- Auditorias de Home, contato, setores, workflow, rodapé, Sobre, sitemap, editorial/legal, cookies, SEO SST e CSS morto: PASS.
+- Testes: links seguros 12/12; live-security mockado 4/4; consentimento 10/10; testes do auditor de âncoras passaram.
+- `npm audit --omit=dev --audit-level=high`: 0 vulnerabilidades.
+- Playwright CLI: catálogo em 390×844; busca PGR anunciou 1 resultado e ocultou os grupos sem resultados. Artigo PPCIP em 390×844 apresentou H1, sumário, links oficiais, links de serviço e CTA. `document.documentElement.scrollWidth` e `clientWidth` foram ambos 390 px na página do artigo, sem overflow horizontal observado.
+- Capturas locais, ignoradas pelo Git: `output/playwright/local-services-catalog-390x844.png` e `output/playwright/local-blog-ppcip-390x844.png`.
+
+Lighthouse, CrUX/RUM, axe-core e teste manual completo com teclado/leitor de tela não foram executados nesta rodada. Os testes live-security do pacote são unitários com fetch mockado; não representam uma nova consulta ao servidor de produção.
+
 ## Ambiente
 
 - Data: 2026-10-09.

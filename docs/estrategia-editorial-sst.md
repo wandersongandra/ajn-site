@@ -25,7 +25,9 @@ Construir uma biblioteca útil para gestores e profissionais, diversificando tem
 6. Segurança operacional
 7. Treinamentos e prevenção
 8. SST por setor
-9. Institucional (uso restrito ao conteúdo institucional)
+9. Gestão ambiental e qualidade
+10. Engenharia e prevenção contra incêndio
+11. Institucional (uso restrito ao conteúdo institucional)
 
 As categorias temáticas maiores são arquitetura editorial, não declaração de escopo comercial.
 
@@ -33,12 +35,18 @@ As categorias temáticas maiores são arquitetura editorial, não declaração d
 
 Gestão de terceiros; eventos S-2210/S-2220/S-2240; APR e Permissão de Trabalho; NR-10 e transição publicada; NR-12 e análise de riscos; planejamento de avaliações de higiene ocupacional; diferenças entre AEP/AET; investigação de acidentes. Oito pautas originais foram adicionadas após comparação com o conteúdo existente. A página isolada de LTCAT foi integrada ao modelo comum, sem criar outra URL.
 
+Em 2026-10-09 foram adicionadas três pautas decorrentes das frentes confirmadas pela AJN: organização da gestão de resíduos; controle de qualidade em obras; PPCIP e regularização do imóvel. Os textos usam ilustrações editoriais originais, ligam para serviços existentes e explicitam limites de escopo. O blog agora contém 31 artigos; os slugs anteriores foram mantidos.
+
+Fontes oficiais nas pautas novas: Lei nº 12.305/2010 no Planalto para resíduos; páginas vigentes do CBMMG para normas e serviços de segurança contra incêndio. A pauta de qualidade descreve práticas de gestão de contrato e cita a oferta institucional da AJN, sem apresentar certificação não confirmada.
+
 ## Backlog priorizado
 
 | Prioridade | Tema | Motivo | Condição antes de publicar |
 |---|---|---|---|
 | Alta | EPI: seleção, fornecimento, orientação e registros | Lacuna operacional transversal | Conferir NR-6 vigente e oferta ligada, se houver |
 | Alta | Segurança na construção civil e PGR da obra | Busca setorial e riscos de coordenação | Revisão da NR-18 e confirmação de atendimento ao setor |
+| Alta | Gestão de terceiros e mobilização em campo | Frente comercial confirmada, com potencial de orientar contratantes e prestadores | Reaproveitar o artigo existente e expandir após confirmar entregáveis, regiões e responsabilidades |
+| Média | PPCIP, renovação e documentação de imóveis | Oferta confirmada e relevância comercial | Confirmar jurisdição e processo aplicável para cada conteúdo |
 | Alta | Ruído ocupacional: estratégia de avaliação | Complementa higiene ocupacional | Revisão por higienista e método/fonte vigente |
 | Média | Calor e estresse térmico | Relevância de exposição e prevenção | Critério técnico atual e distinção de finalidade da avaliação |
 | Média | Inspeções e planos de ação de SST | Aplicação prática de gestão | Diferenciar rotina interna de auditoria contratada |

@@ -27,6 +27,9 @@ import { blogNr12AnaliseDeRiscosDeMaquinas } from './nr-12-analise-de-riscos-de-
 import { blogHigieneOcupacionalPlanejamentoDeAvaliacoes } from './higiene-ocupacional-planejamento-de-avaliacoes';
 import { blogAepEAetDiferencasEAplicacoes } from './aep-e-aet-diferencas-e-aplicacoes';
 import { blogInvestigacaoDeAcidentesEAprendizadoPreventivo } from './investigacao-de-acidentes-e-aprendizado-preventivo';
+import { blogGestaoDeResiduosNaOperacao } from './gestao-de-residuos-na-operacao';
+import { blogControleDeQualidadeEmObrasEServicos } from './controle-de-qualidade-em-obras-e-servicos';
+import { blogPpcipAvcbClcbComoOrganizarRegularizacao } from './ppcip-avcb-clcb-como-organizar-regularizacao';
 
 export const blogPages = [
 	validateBlogContent(blogArticle),
@@ -57,4 +60,7 @@ export const blogPages = [
 	validateBlogContent(blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe),
 	validateBlogContent(blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosParaSuaEquipe),
 	validateBlogContent(blogNr35TrabalhoEmAlturaESeguranca),
+	validateBlogContent(blogGestaoDeResiduosNaOperacao),
+	validateBlogContent(blogControleDeQualidadeEmObrasEServicos),
+	validateBlogContent(blogPpcipAvcbClcbComoOrganizarRegularizacao),
 ] as const;
