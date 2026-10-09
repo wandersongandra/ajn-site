@@ -29,7 +29,7 @@ for (const width of widths) {
     const page = await context.newPage();
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
-    const response = await page.goto(base + route.replace(/^\//, ''), { waitUntil: 'domcontentloaded', timeout: 45000 });
+    const response = await page.goto(new URL(route, base).href, { waitUntil: 'domcontentloaded', timeout: 45000 });
     assert(response?.ok(), `HTTP ${route} at ${width}px: ${response?.status() ?? 'offline'}`);
     await page.locator('main').waitFor({ timeout: 15000 });
     const measurements = await page.evaluate(() => ({
