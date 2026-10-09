@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/nr-35-trabalho-em-altura-e-seguranca.webp';
 import image3 from '../../assets/blog/blog-nr-35-trabalho-em-altura-e-seguranca-617cbcb850.jpg';
 import image4 from '../../assets/blog/blog-nr-35-trabalho-em-altura-e-seguranca-fc3004f67a.jpg';
 import image5 from '../../assets/blog/blog-nr-35-trabalho-em-altura-e-seguranca-c4468ddb3e.jpg';
@@ -13,10 +14,10 @@ export const blogNr35TrabalhoEmAlturaESeguranca = {
 	pubDate: "2025-01-24",
 	updatedAt: "2026-10-07",
 	author: "Admin",
-	image: { src: image3, alt: "NR-35: Trabalho em Altura e Segurança" },
+	image: { src: ajnEditorial, alt: 'Trabalhador em plataforma elevatória durante atividade industrial' },
 	categories: ['Blog'],
 	tags: ["NR-35","trabalho em altura","treinamento presencial","escadas"],
-	gallery: [{ src: image3, alt: "NR-35: Trabalho em Altura e Segurança" }, { src: image4, alt: "NR-35: Trabalho em Altura e Segurança" }, { src: image5, alt: "NR-35: Trabalho em Altura e Segurança" }],
+	gallery: [],
 	sections: [
   {
     "heading": "",
