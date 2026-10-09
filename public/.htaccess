@@ -1,4 +1,10 @@
 # Runtime hardening for Apache-compatible static hosting.
+# Candidate only: keep this redirect temporary until it is validated on a staging host.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::[0-9]+)?$ [NC]
+    RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=302,L,NE]
+</IfModule>
 # Redirecionamento permanente de Informações; ocorre no servidor antes do fallback Astro.
 <IfModule mod_alias.c>
     RedirectMatch 301 ^/informacoes/?$ /mapa-site
@@ -6,6 +12,8 @@
 # Keep this file in the published output; verify the headers on the real host.
 <IfModule mod_headers.c>
     Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https:; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; media-src 'self'; worker-src 'self'; manifest-src 'self'"
+	Header always set Content-Security-Policy-Report-Only "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; media-src 'self'; worker-src 'self'; manifest-src 'self'"
+	Header always set Strict-Transport-Security "max-age=300"
 	Header always set X-Content-Type-Options "nosniff"
 	Header always set X-Frame-Options "DENY"
 	Header always set Referrer-Policy "strict-origin-when-cross-origin"
