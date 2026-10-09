@@ -27,6 +27,7 @@
     "test:audits": "node scripts/test-audit-fragments.mjs",
     "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:security && npm run test:security-links && npm run test:live-security && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run audit:home-services && npm run audit:footer && npm run audit:about && npm run audit:sitemap && npm run test:audits && npm run audit:editorial && npm run audit:legal && npm run test:privacy-notice && npm run audit:sst-seo && npm run audit:services-catalog && npm run audit:dead-css",
     "audit:editorial": "node scripts/audit-editorial.mjs",
+    "audit:social": "node scripts/audit-social.mjs",
     "audit:sst-seo": "node scripts/audit-sst-seo.mjs",
     "audit:services-catalog": "node scripts/audit-services-catalog.mjs",
     "audit:dead-css": "node scripts/audit-dead-css.mjs",
