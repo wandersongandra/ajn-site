@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/um-pouco-sobre-nos.webp';
 import type { BlogContentData } from '../types';
 import image0 from '../../assets/blog/blog-um-pouco-sobre-nos-8c632fd360.webp';
 
@@ -9,7 +10,7 @@ export const blogUmPoucoSobreNos = {
 	 pubDate: "2024-11-19",
 	updatedAt: "2026-10-07",
 	 author: "AJN Consultoria e Engenharia",
-	 image: { src: image0, alt: "Um pouco sobre nós" },
+	 image: { src: ajnEditorial, alt: 'Profissionais da AJN com uniformes e capacetes em visita a área técnica' },
 	 categories: ['Blog'],
 	 tags: ["AJN","consultoria","engenharia","segurança do trabalho"],
 	 gallery: [],
