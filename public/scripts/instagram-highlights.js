@@ -32,21 +32,19 @@
   window.addEventListener('resize', syncControls, { passive: true });
   syncControls();
 
-  // Não coleta dados antes do aceite no banner. Sem cookies próprios.
+  // Apenas comunica a interação ao gestor de consentimento (privacy-notice.js).
+  // Este módulo não carrega tag analítica, não persiste dados e não faz requisições.
   section.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
     const link = target.closest('a[data-ig-outbound]');
     if (!link || !section.contains(link)) return;
-    const gtag = window.gtag;
-    if (typeof gtag !== 'function') return;
-    try {
-      gtag('event', 'instagram_outbound_click', {
-        content_id: link.dataset.instagramId || 'profile',
-        content_type: link.dataset.instagramKind === 'Reel' ? 'reel' : 'post',
-        page_location: window.location.pathname,
+    window.dispatchEvent(new CustomEvent('ajn:instagram-outbound', {
+      detail: {
+        contentId: link.dataset.instagramId || 'profile',
+        contentType: link.dataset.instagramKind === 'Reel' ? 'reel' : 'post',
         placement: 'home_editorial',
-      });
-    } catch { /* A navegação para o Instagram nunca depende do analytics. */ }
+      },
+    }));
   });
 })();
