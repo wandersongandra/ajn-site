@@ -30,7 +30,7 @@ function setup({ id = '', choice = null, blocked = false } = {}) {
   };
   const storage = { getItem(k) { if(blocked) throw Error('blocked'); return map.get(k) || null; },
     setItem(k,v) { if(blocked) throw Error('blocked'); map.set(k,v); } };
-  const window = { localStorage: storage, location: { hostname:'ajnengenharia.com.br', reload(){this.reloaded=true;} } };
+  const window = { localStorage: storage, location: { hostname:'ajnengenharia.com.br', reloaded:false, reload(){this.reloaded=true;} } };
   vm.runInNewContext(code, { document, window, Date: class extends Date { static now() { return now; } } });
   return { notice, controls, handlers, inserted, map, window, cookies };
 }
