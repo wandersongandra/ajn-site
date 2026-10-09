@@ -25,7 +25,7 @@
     "audit:about": "node scripts/audit-about.mjs",
     "audit:sitemap": "node scripts/audit-sitemap.mjs",
     "test:audits": "node scripts/test-audit-fragments.mjs",
-    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:security && npm run test:security-links && npm run test:live-security && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run audit:home-services && npm run audit:footer && npm run audit:about && npm run audit:sitemap && npm run test:audits && npm run audit:editorial && npm run audit:legal && npm run test:privacy-notice && npm run audit:blog && npm run audit:sst-seo && npm run audit:services-catalog && npm run audit:dead-css",
+    "validate": "npm run check && npm run build && npm run audit:seo && npm run audit:fragments && npm run audit:deploy && npm run audit:security && npm run test:security-links && npm run test:live-security && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run audit:home-services && npm run audit:footer && npm run audit:about && npm run audit:sitemap && npm run test:audits && npm run audit:editorial && npm run audit:legal && npm run test:privacy-notice && npm run audit:blog && npm run audit:sst-seo && npm run audit:services-catalog && npm run audit:dead-css && npm run audit:social && npm run audit:engineering",
     "audit:editorial": "node scripts/audit-editorial.mjs",
     "audit:sst-seo": "node scripts/audit-sst-seo.mjs",
     "audit:blog": "node scripts/audit-blog.mjs",
@@ -38,7 +38,9 @@
     "test:live-security": "node --test scripts/test-live-security.mjs",
     "audit:live-security": "node scripts/audit-live-security.mjs",
     "audit:legal": "node scripts/audit-legal.mjs",
-    "test:privacy-notice": "node --test scripts/test-privacy-notice.mjs"
+    "test:privacy-notice": "node --test scripts/test-privacy-notice.mjs",
+    "audit:social": "node scripts/audit-social.mjs",
+    "audit:engineering": "node scripts/audit-engineering.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

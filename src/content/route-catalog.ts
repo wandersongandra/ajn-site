@@ -92,6 +92,8 @@ export const routeCatalog: readonly RouteCatalogEntry[] = [
 	{ path: "/consultoria-seguranca-do-trabalho", title: "Consultoria segurança do trabalho - AJN Consultoria e Engenharia" },
 	{ path: "/elaboracao-projeto-combate-incendio", title: "Elaboração de projeto de combate a incêndio - AJN Consultoria e Engenharia" },
 	{ path: "/projetos-eletricos-prediais", title: "Projetos elétricos prediais - AJN Consultoria e Engenharia" },
+	{ path: "/projetos-spda", title: "Projetos de SPDA - AJN Consultoria e Engenharia" },
+	{ path: "/projetos-cabeamento-estruturado", title: "Projetos de cabeamento estruturado - AJN Consultoria e Engenharia" },
 	{ path: "/servicos/gestao-da-qualidade", title: "Gestão da Qualidade - AJN Consultoria e Engenharia" },
 	{ path: "/preco-projetos-eletricos", title: "Preço de projetos eletricos - AJN Consultoria e Engenharia" },
 	{ path: "/projeto-eletrico-preco", title: "Projeto elétrico preço - AJN Consultoria e Engenharia" },

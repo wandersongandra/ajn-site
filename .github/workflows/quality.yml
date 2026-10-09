@@ -68,6 +68,12 @@ jobs:
       - name: Services catalog image weight and search behavior
         run: npm run audit:services-catalog
 
+      - name: Original Instagram post feed, media fallback and outbound links
+        run: npm run audit:social
+
+      - name: Engineering service standards and canonical regression
+        run: npm run audit:engineering
+
       - name: Dead CSS and active sections regression audit
         run: npm run audit:dead-css
 

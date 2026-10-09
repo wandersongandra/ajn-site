@@ -16,8 +16,12 @@ export const getStaticPaths: GetStaticPaths = () =>
 	}));
 
 const { page } = Astro.props;
+// A rota antiga permanece acessível, mas não concorre com a landing principal de projetos elétricos.
+const canonicalPath = page.slug === 'projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia'
+  ? '/projetos-eletricos-prediais'
+  : page.path;
 ---
 
-<BaseLayout title={page.title} description={page.description} canonicalPath={page.path}>
+<BaseLayout title={page.title} description={page.description} canonicalPath={canonicalPath}>
 	<ServiceDetailPage page={page} />
 </BaseLayout>
