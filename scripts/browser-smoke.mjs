@@ -9,7 +9,7 @@ const output = path.resolve('artifacts/browser-smoke');
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const widths = [320, 390, 768, 1440];
-const routes = ['/', '/servicos/', '/projetos-spda/', '/projetos-cabeamento-estruturado/', '/projetos-eletricos-prediais/'];
+const routes = ['/', '/servicos/', '/projetos-spda/', '/projetos-cabeamento-estruturado/', '/projetos-eletricos-prediais/', '/medicoes-ambientais-ocupacionais/'];
 const failures = [];
 let assertions = 0;
 
@@ -43,6 +43,33 @@ for (const width of widths) {
     assert(measurements.h1 === 1, `H1 count ${route} at ${width}px: ${measurements.h1}`);
     assert(pageErrors.length === 0, `JS errors ${route} at ${width}px: ${pageErrors.join('; ')}`);
 
+    if (route === '/medicoes-ambientais-ocupacionais/') {
+      // Trigger lazy images during normal scrolling before screenshots.
+      const instruments = page.locator('.ajn-measure__card img, .ajn-measure__custom img');
+      assert(await instruments.count() === 4, `Medições: quatro fotos de modalidade em ${width}px`);
+      for (const img of await instruments.all()) {
+        await img.scrollIntoViewIfNeeded();
+        const loaded = await img.evaluate(async (el) => {
+          try { await el.decode(); return el.naturalWidth > 0 && el.naturalHeight > 0; }
+          catch { return false; }
+        });
+        assert(loaded, `Medições: imagem de modalidade não carregou em ${width}px`);
+        const rendered = await img.evaluate(el => {
+          const r = el.getBoundingClientRect();
+          const style = getComputedStyle(el);
+          return r.width >= 100 && r.height >= 100 &&
+            style.contentVisibility === 'visible' && style.visibility !== 'hidden' &&
+            Number(style.opacity) > 0;
+        });
+        assert(rendered, `Medições: imagem de modalidade não está visível em ${width}px`);
+      }
+      await page.evaluate(() => window.scrollTo(0, 0));
+    }
+    if (route === '/medicoes-ambientais-ocupacionais/') {
+      assert(await page.locator('.ajn-measure__card').count() === 3, `Medições: cartões de avaliação em ${width}px`);
+      assert(await page.locator('.ajn-measure__faq-list details').count() === 4, `Medições: FAQ em ${width}px`);
+      assert(await page.getByRole('link', { name: /Solicitar orçamento/ }).count() >= 1, `Medições: CTA em ${width}px`);
+    }
     if (route === '/') {
       // O painel de privacidade é fixo e corretamente intercepta cliques até a escolha;
       // testar o feed depois de rejeitar opcionais, sem iniciar rastreamento.
@@ -83,4 +110,4 @@ if (failures.length) {
   for (const f of failures) console.error('[browser][FAIL]', f);
   console.error(`Browser smoke FAILED: ${failures.length} issue(s) / ${assertions} assertions.`);
   process.exitCode = 1;
-} else console.log(`Browser smoke PASS: ${assertions} assertions, 5 routes x 4 viewports. Screenshots at ${output}`);
+} else console.log(`Browser smoke PASS: ${assertions} assertions, ${routes.length} routes x 4 viewports. Screenshots at ${output}`);

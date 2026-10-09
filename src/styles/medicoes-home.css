@@ -1,0 +1,13 @@
+.ajn-measure-home{padding-block:clamp(3.5rem,6vw,5.5rem);background:#eef4ed}
+.ajn-measure-home__layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(2rem,5vw,5rem)}
+.ajn-measure-home__photo{position:relative;overflow:hidden;border-radius:10px;aspect-ratio:4/3;background:#234930}
+.ajn-measure-home__photo img{display:block;width:100%;height:100%;object-fit:cover}
+.ajn-measure-home__photo small{position:absolute;bottom:.65rem;right:.7rem;background:rgba(4,25,16,.8);color:#fff;font-size:.68rem;border-radius:3px;padding:.25rem .5rem}
+.ajn-measure-home__copy>span{display:block;color:#397145;font-size:.75rem;letter-spacing:.09em;font-weight:800;text-transform:uppercase;margin-bottom:1rem}
+.ajn-measure-home__copy h2{font-size:clamp(1.8rem,3vw,3rem);color:#223c2a;letter-spacing:-.045em;line-height:1.17;margin:0 0 1.2rem}
+.ajn-measure-home__copy p{line-height:1.75;color:#526357;margin:0;max-width:58ch}
+.ajn-measure-home__links{display:flex;gap:.9rem 1.6rem;flex-wrap:wrap;align-items:center;margin-top:1.6rem}
+.ajn-measure-home__links a{color:#246238;font-size:.9rem;font-weight:800;text-underline-offset:.3em;min-height:42px;display:inline-flex;align-items:center}
+.ajn-measure-home__links a:first-child{background:#23753d;color:#fff;padding:.8rem 1rem;border-radius:5px;text-decoration:none}
+.ajn-measure-home__links a:focus-visible{outline:3px solid #368647;outline-offset:3px}
+@media(max-width:760px){.ajn-measure-home__layout{grid-template-columns:1fr}.ajn-measure-home__photo{aspect-ratio:16/10}}

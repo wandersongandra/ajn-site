@@ -16,15 +16,15 @@ const check = (condition, detail) => { if (!condition) failures.push(detail); };
 // Mantenibilidade: o mesmo item contém título, descrição, URL e imagem.
 // Evita lookup por texto exibido, código redundante e arquivos de estilo órfãos.
 const catalogImages = [...catalogSource.matchAll(/\bimage:\s*'([^']+)'/g)].map(match => match[1]);
-check(catalogImages.length === 13, `Catálogo: esperadas 13 imagens definidas no próprio dado, encontradas ${catalogImages.length}.`);
-check(new Set(catalogImages).size === 13, 'Catálogo: recursos de imagem repetidos.');
+check(catalogImages.length === 14, `Catálogo: esperadas 14 imagens definidas no próprio dado, encontradas ${catalogImages.length}.`);
+check(new Set(catalogImages).size === 14, 'Catálogo: recursos de imagem repetidos.');
 check(componentSource.includes('src={service.image}') && !componentSource.includes('serviceImages['),
   'O componente deve usar imagem do objeto de serviço, sem lookup por título.');
 check(!globalCss.includes('/* Services index */') && !globalCss.includes('/* Catálogo de serviços — leitura e pesquisa'),
   'Estilos de catálogo antigos não devem voltar para global.css.');
 const cards = [...html.matchAll(/<article\b[^>]*data-service-card\b[^>]*>[\s\S]*?<\/article>/g)].map(m => m[0]);
 
-check(cards.length === 13, `Deveria haver 13 cartões de serviço; encontrados ${cards.length}.`);
+check(cards.length === 14, `Deveria haver 14 cartões de serviço; encontrados ${cards.length}.`);
 check((html.match(/data-service-group\b/g) ?? []).length === 3, 'Catálogo deve agrupar os serviços em três áreas de atendimento.');
 check(html.includes('aria-label="Laudos e programas mais procurados"'), 'Links para PGR e LTCAT ausentes.');
 check(html.includes('href="/elaboracao-pgr"') && html.includes('href="/emissao-ltcat"'), 'Acesso direto a PGR/LTCAT ausente.');
@@ -54,7 +54,7 @@ for (const [i, card] of cards.entries()) {
     try { optimizedBytes += (await stat(path.join('dist', src.replace(/^\//, '')))).size; }
     catch { failures.push(`Card ${i+1}: imagem ausente no build: ${src}`); }
   }
-  snapshots.push({ dataset: { serviceSearchable: text }, hidden: false, groupIndex: i < 6 ? 0 : i < 8 ? 1 : 2 });
+  snapshots.push({ dataset: { serviceSearchable: text }, hidden: false, groupIndex: i < 7 ? 0 : i < 9 ? 1 : 2 });
 }
 const groups = [0, 1, 2].map((groupIndex) => ({
   hidden: false,
@@ -85,18 +85,19 @@ check(run('pcmso') === 1, 'Pesquisa por PCMSO deve mostrar exatamente 1 serviço
 check(run('GESTÃO') > 0, 'Pesquisa com acento e letras maiúsculas deve funcionar.');
 check(run('e-social') === 1 && run('esocial') === 1, 'E-Social e esocial devem encontrar o mesmo serviço.');
 check(run('incêndio') >= 1 && run('incendio') >= 1, 'Pesquisa com e sem acento deve funcionar.');
+check(run('medicoes') === 1 && run('ruído') === 1, 'Pesquisa por medições e ruído deve encontrar o novo serviço.');
 check(run('periculosidade') === 1, 'Pesquisa de perícias não encontra o termo.');
 check(run('pgr') === 1, 'Pesquisa de PGR não encontra o serviço dedicado.');
 check(run('mobilização') === 1, 'Pesquisa de mobilização não encontra o acompanhamento técnico.');
 check(run('resíduos') === 1, 'Pesquisa ambiental não encontra o serviço correspondente.');
 check(run('qualidade') === 1 && groups[0].hidden && groups[1].hidden && !groups[2].hidden, 'Pesquisa deve esconder grupos sem resultados.');
 check(run('texto inexistente') === 0 && empty.hidden === false, 'Estado vazio do catálogo não aparece.');
-check(run('') === 13 && empty.hidden === true && groups.every((group) => !group.hidden), 'Limpar a busca deve recuperar os 13 serviços e os três grupos.');
-check(results.textContent === '13 serviços encontrados', 'Contagem de serviços visíveis incorreta.');
+check(run('') === 14 && empty.hidden === true && groups.every((group) => !group.hidden), 'Limpar a busca deve recuperar os 14 serviços e os três grupos.');
+check(results.textContent === '14 serviços encontrados', 'Contagem de serviços visíveis incorreta.');
 
 if (failures.length) {
   for (const f of failures) console.error('[catalogo][FAIL]', f);
   process.exitCode = 1;
 } else {
-  console.log(`[catalogo] PASS: 13 cartões clicáveis em três grupos, imagens existentes (${Math.round(optimizedBytes/1024)} KiB no total), pesquisa e mobile.`);
+  console.log(`[catalogo] PASS: 14 cartões clicáveis em três grupos, imagens existentes (${Math.round(optimizedBytes/1024)} KiB no total), pesquisa e mobile.`);
 }

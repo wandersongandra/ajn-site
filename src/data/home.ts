@@ -28,6 +28,7 @@ export const navigation: NavigationItem[] = [
 			{ label: 'Gestão da Qualidade', href: '/servicos/gestao-da-qualidade' },
 			{ label: 'Gestão do E-Social', href: '/servicos/gestao-do-e-social' },
 			{ label: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+			{ label: 'Avaliações e Medições Ambientais', href: '/medicoes-ambientais-ocupacionais' },
 			{ label: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' },
 			{ label: 'Projetos de Combate a Incêndio e Pânico - PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
 			{ label: 'Projetos Elétricos Residenciais, Comerciais e Prediais', href: '/projetos-eletricos-prediais' },

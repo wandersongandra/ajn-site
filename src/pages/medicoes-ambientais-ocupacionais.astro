@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/medicoes-ambientais.css';
+import { absoluteSiteUrl, serializeJsonLd } from '../utils/site';
+
+const whatsapp = 'https://wa.me/5531984734644?text=' + encodeURIComponent('Olá! Gostaria de solicitar um orçamento para avaliações e medições ambientais ocupacionais da AJN. Nossa empresa atua no segmento de: . A unidade fica em: . Precisamos avaliar: .');
+const modalidades = [
+  { number: '01', title: 'Ruído ocupacional', lead: 'Avaliação da exposição ao ruído conforme as tarefas e a jornada.', image: '/images/medicoes/medicao-ruido-dosimetria.webp', alt: 'Imagem ilustrativa digital de uma profissional posicionando um dosímetro de ruído no trabalhador', details: 'Planejamento da estratégia de dosimetria e interpretação dos resultados considerando as condições de exposição e os critérios aplicáveis da NHO 01 e NR-15.' },
+  { number: '02', title: 'Calor e sobrecarga térmica', lead: 'Levantamento do ambiente e das condições efetivas da atividade.', image: '/images/medicoes/medicao-calor-ibutg.webp', alt: 'Imagem ilustrativa digital de medição de calor por instrumento com globo negro em instalação industrial', details: 'Medição de IBUTG e registro de variáveis relevantes à atividade, pausas e organização do trabalho, quando o método e o escopo permitirem, com referência à NHO 06 e NR-15.' },
+  { number: '03', title: 'Iluminamento em postos de trabalho', lead: 'Verificação das condições de iluminação onde a atividade acontece.', image: '/images/medicoes/medicao-iluminamento.webp', alt: 'Imagem ilustrativa digital de técnico utilizando luxímetro em uma bancada industrial', details: 'Avaliação de níveis de iluminamento e condições do posto, segundo critérios pertinentes da NHO 11 e NR-17. Não equivale, por si só, à caracterização de insalubridade.' },
+] as const;
+const stages = [
+  { id: '01', title: 'Entender o processo', text: 'Conhecemos o local, os setores, turnos, tarefas e a pergunta técnica a ser respondida. Isso define o que realmente precisa ser medido.' },
+  { id: '02', title: 'Planejar a campanha', text: 'Selecionamos metodologia, pontos ou grupos de exposição, condições de representatividade e instrumentação pertinente ao escopo contratado.' },
+  { id: '03', title: 'Realizar a avaliação', text: 'Registramos medições, condições operacionais, verificações instrumentais e eventuais limitações do levantamento em campo.' },
+  { id: '04', title: 'Interpretar e apresentar', text: 'Organizamos dados e critérios técnicos em relatório, incluindo recomendações e próximos encaminhamentos quando cabíveis.' },
+] as const;
+const faqs = [
+  { q: 'Uma medição ambiental substitui o LTCAT ou o PGR?', a: 'Não. A avaliação quantitativa fornece informações que podem subsidiar o LTCAT, o PGR ou outros documentos, conforme a finalidade e as exigências de cada um. A emissão de documentos e a responsabilidade técnica são serviços definidos separadamente.' },
+  { q: 'Toda medição exige que o trabalhador pare a atividade?', a: 'Não necessariamente. Diversas avaliações ocupacionais precisam observar as condições normais de execução e a exposição durante tarefas representativas. A estratégia é definida pelo método e pela operação.' },
+  { q: 'O resultado define automaticamente insalubridade?', a: 'Não. É necessário considerar o agente, o método, os critérios legais aplicáveis, a representatividade do levantamento e a análise técnica específica. Iluminamento, por exemplo, não constitui automaticamente hipótese de insalubridade.' },
+  { q: 'Quais informações são necessárias para solicitar orçamento?', a: 'Informe localidade, tipo de atividade, setores, turnos, agentes de interesse e quantidade aproximada de funções ou pontos. A AJN avalia a viabilidade técnica e detalha o escopo antes de confirmar instrumentos e procedimentos.' },
+] as const;
+
+const serviceSchema = {
+  '@context': 'https://schema.org', '@type': 'Service',
+  name: 'Avaliações e medições ambientais ocupacionais',
+  serviceType: 'Higiene ocupacional e avaliação de agentes no ambiente de trabalho',
+  provider: { '@type': 'Organization', name: 'AJN Consultoria e Engenharia', url: absoluteSiteUrl('/') },
+  url: absoluteSiteUrl('/medicoes-ambientais-ocupacionais'),
+  description: 'Avaliações instrumentais de agentes ocupacionais conforme demanda e escopo técnico definido previamente.',
+};
+---
+<BaseLayout title="Medições Ambientais Ocupacionais | AJN Engenharia" description="Avaliações de ruído, calor e iluminamento ocupacional conforme o escopo e critérios técnicos aplicáveis. Consulte as modalidades e solicite orçamento à AJN." canonicalPath="/medicoes-ambientais-ocupacionais" ogImage="/images/medicoes/hero-medicoes-ocupacionais.webp">
+  <div class="ajn-measure">
+    <nav class="ajn-measure__breadcrumb site-shell" aria-label="Navegação estrutural"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/servicos">Serviços</a><span aria-hidden="true">/</span><span aria-current="page">Medições ambientais</span></nav>
+    <section class="ajn-measure__hero" aria-labelledby="medicoes-titulo">
+      <div class="ajn-measure__hero-picture">
+        <img src="/images/medicoes/hero-medicoes-ocupacionais.webp" width="1500" height="844" alt="Cena ilustrativa digital de profissional de segurança junto a instrumentos de avaliação ocupacional em instalação industrial" fetchpriority="high" decoding="async" />
+      </div>
+      <div class="ajn-measure__hero-shade" aria-hidden="true"></div>
+      <div class="site-shell ajn-measure__hero-content">
+        <p class="ajn-measure__eyebrow">Higiene ocupacional / Instrumentação em campo</p>
+        <h1 id="medicoes-titulo">Medições ambientais para decisões de SST mais fundamentadas.</h1>
+        <p>Avaliar a exposição exige mais do que registrar um número. É preciso compreender o trabalho, aplicar o método adequado e interpretar o resultado em seu contexto.</p>
+        <div class="ajn-measure__actions">
+          <a class="ajn-measure__button ajn-measure__button--primary" href={whatsapp} target="_blank" rel="noopener noreferrer">Solicitar orçamento <span aria-hidden="true">↗</span></a>
+          <a class="ajn-measure__button ajn-measure__button--ghost" href="#modalidades">Conhecer avaliações <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <small class="ajn-measure__photo-label">Imagem ilustrativa criada digitalmente</small>
+    </section>
+
+    <section class="ajn-measure__introduction site-shell" aria-labelledby="medicoes-introducao">
+      <div><p class="ajn-measure__kicker">Levantamentos instrumentais</p><h2 id="medicoes-introducao">Resultados que precisam representar a realidade do trabalho.</h2></div>
+      <div><p>Ambientes semelhantes podem produzir exposições diferentes. Mudanças de processo, duração da tarefa, jornada, fonte geradora e medidas de controle fazem diferença na avaliação.</p><p>A AJN estrutura a demanda e define o procedimento de acordo com a finalidade: gestão de riscos, verificação de condições de trabalho ou suporte técnico a documentos ocupacionais.</p></div>
+    </section>
+
+    <section id="modalidades" class="ajn-measure__services" aria-labelledby="medicoes-modalidades">
+      <div class="site-shell">
+        <div class="ajn-measure__section-heading"><p class="ajn-measure__kicker">Frentes de avaliação</p><h2 id="medicoes-modalidades">O agente determina o método.</h2><p>As avaliações abaixo são referências de atendimento. Instrumentos, parâmetros, abrangência e entregáveis são confirmados na proposta de cada serviço.</p></div>
+        <div class="ajn-measure__cards">
+          {modalidades.map((item) => (
+            <article class="ajn-measure__card">
+              <figure><img src={item.image} alt={item.alt} width="910" height="683" loading="lazy" decoding="async" /><figcaption>Imagem ilustrativa digital</figcaption></figure>
+              <div class="ajn-measure__card-copy"><span>{item.number} / Avaliação ocupacional</span><h3>{item.title}</h3><strong>{item.lead}</strong><p>{item.details}</p></div>
+            </article>
+          ))}
+        </div>
+        <div class="ajn-measure__custom">
+          <div><p class="ajn-measure__kicker">Outras exposições</p><h3>Agentes químicos, particulados e demandas específicas</h3><p>Campanhas de amostragem, poeiras, vapores, vibração e outras avaliações exigem equipamentos, metodologia e, por vezes, análise laboratorial próprios. A disponibilidade e o arranjo técnico são avaliados caso a caso; não integram automaticamente o escopo de ruído, calor ou iluminamento.</p><a href={whatsapp} target="_blank" rel="noopener noreferrer">Consultar viabilidade técnica <span aria-hidden="true">↗</span></a></div>
+          <figure><img src="/images/medicoes/avaliacao-agentes-aereos.webp" alt="Cena ilustrativa digital de profissional verificando equipamento de amostragem em ambiente industrial" width="910" height="683" loading="lazy" decoding="async" /><figcaption>Imagem ilustrativa criada digitalmente</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="ajn-measure__method site-shell" aria-labelledby="medicoes-metodo">
+      <div class="ajn-measure__section-heading"><p class="ajn-measure__kicker">Procedimento</p><h2 id="medicoes-metodo">Da demanda à interpretação dos resultados.</h2><p>Uma sequência transparente permite relacionar as medições às condições efetivamente observadas.</p></div>
+      <ol>{stages.map(step=><li><span>{step.id}</span><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}</ol>
+      <div class="ajn-measure__deliverables"><div><p class="ajn-measure__kicker">Entregáveis</p><h3>Relatório com método, contexto e limitações.</h3></div><p>Quando previsto em contrato, a entrega identifica objetivos, locais e tarefas avaliadas, método, instrumentação e registros instrumentais pertinentes, resultados, critérios de interpretação, limitações e conclusões. Laudos de insalubridade, LTCAT e outros documentos possuem finalidades e responsabilidades próprias.</p></div>
+    </section>
+
+    <section class="ajn-measure__faq" aria-labelledby="medicoes-perguntas">
+      <div class="site-shell ajn-measure__faq-grid">
+        <div><p class="ajn-measure__kicker">Dúvidas frequentes</p><h2 id="medicoes-perguntas">O que considerar antes de contratar?</h2><p>O escopo da avaliação é mais importante do que uma lista genérica de instrumentos.</p></div>
+        <div class="ajn-measure__faq-list">{faqs.map(faq=><details><summary>{faq.q}</summary><p>{faq.a}</p></details>)}</div>
+      </div>
+    </section>
+
+    <section class="ajn-measure__closing" aria-labelledby="medicoes-contato"><div class="site-shell ajn-measure__closing-inner"><div><p class="ajn-measure__kicker">Vamos avaliar sua demanda</p><h2 id="medicoes-contato">Conte qual processo precisa ser avaliado.</h2><p>Descreva a unidade, atividades, agentes de interesse e o prazo. A AJN analisa as informações e define a proposta de atendimento.</p></div><div class="ajn-measure__closing-actions"><a class="ajn-measure__button ajn-measure__button--light" href={whatsapp} target="_blank" rel="noopener noreferrer">Solicitar orçamento por WhatsApp ↗</a><a href="/contato">Outros canais de atendimento →</a></div></div></section>
+
+    <nav class="ajn-measure__related site-shell" aria-label="Serviços e conteúdos relacionados"><span>Você também pode consultar</span><a href="/elaboracao-pgr">Elaboração de PGR ↗</a><a href="/emissao-ltcat">Emissão de LTCAT ↗</a><a href="/servicos/pericias-em-periculosidade-e-insalubridade">Perícias técnicas ↗</a><a href="/blog/higiene-ocupacional-como-planejar-avaliacoes-de-exposicao">Planejamento das avaliações ↗</a></nav>
+  </div>
+  <script type="application/ld+json" set:html={serializeJsonLd(serviceSchema)} />
+</BaseLayout>

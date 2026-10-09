@@ -160,5 +160,9 @@ export const routeCatalog: readonly RouteCatalogEntry[] = [
 	{ path: "/blog/gestao-de-residuos-como-organizar-a-rotina-da-operacao", title: "Gestão de resíduos: como organizar a rotina da operação - AJN Consultoria e Engenharia" },
 	{ path: "/blog/controle-de-qualidade-em-obras-registros-inspecoes-e-desvios", title: "Qualidade em obras: como organizar verificações e desvios - AJN Consultoria e Engenharia" },
 	{ path: "/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel", title: "PPCIP, AVCB e CLCB: organize a regularização do imóvel - AJN Consultoria e Engenharia" },
+	{ path: "/medicoes-ambientais-ocupacionais", title: "Avaliações e Medições Ambientais Ocupacionais | AJN" },
+	{ path: "/blog/medicao-de-ruido-ocupacional-dosimetria-e-planejamento", title: "Medição de ruído ocupacional: como planejar a dosimetria | AJN" },
+	{ path: "/blog/avaliacao-de-calor-ocupacional-ibutg-e-atividade", title: "Avaliação de calor ocupacional: IBUTG, atividade e jornada | AJN" },
+	{ path: "/blog/avaliacao-de-iluminamento-posto-de-trabalho-nho-11", title: "Iluminamento no trabalho: avaliação do posto e NHO 11 | AJN" },
 ] as const;
 

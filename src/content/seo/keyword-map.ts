@@ -45,6 +45,13 @@ export const keywordMap = {
 		title: 'Elaboração de PGR e gestão de riscos ocupacionais | AJN',
 		description: 'Elaboração de PGR com inventário de riscos ocupacionais e plano de ação conforme a NR-1. Entenda o escopo e solicite uma avaliação da AJN.',
 	},
+	'/medicoes-ambientais-ocupacionais': {
+		primaryKeyword: 'medições ambientais ocupacionais',
+		secondaryKeywords: ['avaliação de ruído ocupacional', 'IBUTG', 'iluminamento', 'higiene ocupacional', 'Belo Horizonte'],
+		intent: 'comercial',
+		title: 'Medições Ambientais Ocupacionais | AJN Engenharia',
+		description: 'Avaliações de ruído, calor e iluminamento ocupacional conforme o escopo e critérios técnicos aplicáveis. Consulte as modalidades e solicite orçamento à AJN.',
+	},
 	'/emissao-ltcat': {
 		primaryKeyword: 'emissão de LTCAT',
 		secondaryKeywords: ['avaliação previdenciária', 'agentes de exposição', 'responsabilidade técnica'],
