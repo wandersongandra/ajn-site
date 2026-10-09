@@ -1,3 +1,4 @@
+import ajnEditorial from '../../assets/blog/ajn/controle-de-qualidade-em-obras-e-servicos.webp';
 import image from '../../assets/blog/editorial-qualidade-obras.webp';
 import type { BlogContentData } from '../types';
 
@@ -10,7 +11,7 @@ export const blogControleDeQualidadeEmObrasEServicos = {
 	pubDate: '2026-10-09',
 	author: 'AJN Consultoria e Engenharia',
 	topic: 'Gestão ambiental e qualidade',
-	image: { src: image, alt: 'Ilustração editorial de inspeção e registro de etapas de uma obra' },
+	image: { src: ajnEditorial, alt: 'Estruturas e formas em etapa de execução em obra civil' },
 	categories: ['Gestão ambiental e qualidade'],
 	tags: ['qualidade em obras', 'FVS', 'materiais', 'não conformidade', 'contratos'],
 	gallery: [],
