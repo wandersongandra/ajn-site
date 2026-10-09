@@ -1,0 +1,29 @@
+# GitHub e CI/CD
+
+**Data:** 2026-10-08 · **Escopo:** workflows e configuração versionada; sem alterar settings administrativos.
+
+## Fluxo confirmado
+
+- `.github/workflows/quality.yml` executa em `push` e `pull_request` direcionados a `main`. Faz `npm ci`, check/build, auditorias, audit de dependências e build separado com indexação pública.
+- `.github/workflows/gitleaks.yml` executa em push/PR para `main`, semanalmente e por dispatch manual. Checkout integral desabilita persistência de credenciais; Gitleaks recebe `GITHUB_TOKEN`.
+- `.github/workflows/codeql.yml` executa em push/PR/agendamento; permissões específicas por job incluem `security-events: write`.
+- `.github/workflows/dependency-review.yml` analisa PRs; a ação nativa só roda se `ENABLE_DEPENDENCY_REVIEW=true`, pois o comentário do repositório registra Dependency Graph desabilitado.
+- `.github/dependabot.yml` agenda atualizações de npm e Actions semanalmente.
+- Os workflows usam tags de versão major (`actions/checkout@v7`, `setup-node@v7`, `github/codeql-action@v4`, entre outras), não SHA imutável.
+- Não há workflow de deploy, uso de FTP/SSH, publicação de artefato, nem credencial de deploy no YAML consultado.
+
+## Controles confirmados
+
+- Quality Gate declara `permissions: contents: read` no nível do workflow.
+- CodeQL concede `actions: read`, `contents: read` e `security-events: write` apenas ao job de análise.
+- Gitleaks usa checkout com `persist-credentials: false`.
+- O workflow de qualidade constrói preview com `noindex` e realiza build indexável separado, sem publicar o artefato.
+- Ações de terceiros não são pinadas por SHA; isso é risco residual de supply chain, não prova de comprometimento.
+
+## Não verificável pelo checkout
+
+Proteção de branch, checks obrigatórios, bloqueio de force-push, revisão mínima, secret scanning/push protection, alertas Dependabot, Dependency Graph, lista de Actions permitidas e configurações de ambiente dependem de GitHub Settings/admin. **NÃO VERIFICADO** nesta execução. O status dos runs remotos não foi consultado.
+
+## Recomendação
+
+Administrador deve confirmar branch protection e secret scanning. Avaliar pin de Actions por SHA com atualização automatizada e revisão do SHA upstream. O deploy Hostinger permanece fora da CI versionada e seu gatilho operacional não está confirmado.
