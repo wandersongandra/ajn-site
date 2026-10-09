@@ -61,6 +61,7 @@ const posts = [
 // Sem arquivo correspondente, o cartão editorial continua acessível e funcional.
 const availablePosts = posts.map((post) => ({
   ...post,
+  id: post.href.match(/\/(?:reel|p)\/([^/]+)\//)?.[1] ?? '',
   localCover: existsSync(join(process.cwd(), 'public', post.cover.slice(1))) ? post.cover : null,
 }));
 ---
@@ -73,12 +74,18 @@ const availablePosts = posts.map((post) => ({
         <h2 id="instagram-highlights-title">Acompanhe a AJN na prática</h2>
         <p>Treinamentos, visitas técnicas e orientações sobre segurança do trabalho publicados em nosso Instagram.</p>
       </div>
-      <a class="instagram-highlights__profile" href={site.instagram} target="_blank" rel="noopener noreferrer">Conhecer o perfil <span aria-hidden="true">↗</span></a>
+      <div class="instagram-highlights__tools">
+        <div class="instagram-highlights__controls" role="group" aria-label="Navegar pelas publicações">
+          <button type="button" data-ig-scroll="previous" aria-controls="ajn-instagram-posts" aria-label="Ver publicações anteriores">←</button>
+          <button type="button" data-ig-scroll="next" aria-controls="ajn-instagram-posts" aria-label="Ver próximas publicações">→</button>
+        </div>
+        <a class="instagram-highlights__profile" data-ig-outbound data-instagram-id="profile" href={site.instagram} target="_blank" rel="noopener noreferrer">Conhecer o perfil <span aria-hidden="true">↗</span></a>
+      </div>
     </div>
-    <div class="instagram-highlights__rail" role="region" aria-label="Publicações selecionadas do Instagram da AJN" tabindex="0">
+    <div class="instagram-highlights__rail" id="ajn-instagram-posts" role="region" aria-label="Publicações selecionadas do Instagram da AJN" tabindex="0">
       {availablePosts.map((post, index) => (
         <article class="instagram-highlights__card">
-          <a href={post.href} class="instagram-highlights__link" target="_blank" rel="noopener noreferrer" aria-label={`Abrir no Instagram: ${post.title}`}>
+          <a href={post.href} class="instagram-highlights__link" data-ig-outbound data-instagram-id={post.id} data-instagram-kind={post.kind} target="_blank" rel="noopener noreferrer" aria-label={`Abrir no Instagram: ${post.title}`}>
             {post.localCover && (
               <div class="instagram-highlights__media">
                 <img src={post.localCover} alt="" width="600" height="750" loading="lazy" decoding="async" />
@@ -102,12 +109,20 @@ const availablePosts = posts.map((post) => ({
   </div>
 </section>
 
+<script src="/scripts/instagram-highlights.js" is:inline defer></script>
+
 <style>
   .instagram-highlights { padding-block: clamp(3.5rem, 6vw, 5.5rem); background: #f6f8f5; }
   .instagram-highlights__heading { display: flex; justify-content: space-between; align-items: end; gap: 1.5rem; margin-bottom: 1.5rem; }
   .instagram-highlights__eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #49664b; font-weight: 700; margin-bottom: .65rem; }
   .instagram-highlights__heading h2 { font-size: clamp(1.7rem, 3vw, 2.5rem); color: #204a2b; margin: 0 0 .7rem; line-height: 1.12; }
   .instagram-highlights__heading p:not(.instagram-highlights__eyebrow) { max-width: 65ch; color: #475249; margin: 0; line-height: 1.65; }
+  .instagram-highlights__tools { display: flex; align-items: center; gap: 1.15rem; }
+  .instagram-highlights__controls { display: flex; align-items: center; gap: .5rem; }
+  .instagram-highlights__controls button { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid #9db7a0; background: #fff; border-radius: 50%; color: #1e5130; font-size: 1.25rem; cursor: pointer; }
+  .instagram-highlights__controls button:hover { border-color: #256438; background: #edf4ed; }
+  .instagram-highlights__controls button:focus-visible { outline: 3px solid #276e3f; outline-offset: 3px; }
+  .instagram-highlights__controls button:disabled { opacity: .42; cursor: not-allowed; }
   .instagram-highlights__profile { flex-shrink: 0; font-weight: 700; color: #205633; text-decoration: underline; text-underline-offset: .25em; padding: .7rem .2rem; }
   .instagram-highlights__rail { display: grid; grid-auto-columns: minmax(255px, 31%); grid-auto-flow: column; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; gap: 1rem; padding: .2rem .1rem 1.1rem; scrollbar-width: thin; scrollbar-color: #7d987d transparent; }
   .instagram-highlights__card { min-width: 0; border: 1px solid #d8e1d6; background: #fff; border-radius: 12px; scroll-snap-align: start; }
@@ -126,6 +141,6 @@ const availablePosts = posts.map((post) => ({
   .instagram-highlights__action { color: #245b37; font-weight: 700; font-size: .83rem; display: flex; justify-content: space-between; gap: .5rem; padding-top: 1rem; border-top: 1px solid #edf0eb; }
   .instagram-highlights__note { color: #536356; font-size: .78rem; margin: .35rem 0 0; }
   @media (max-width: 850px) { .instagram-highlights__rail { grid-auto-columns: minmax(255px, 54%); } }
-  @media (max-width: 600px) { .instagram-highlights__heading { align-items: start; flex-direction: column; } .instagram-highlights__rail { grid-auto-columns: minmax(255px, 88%); } .instagram-highlights__link { min-height: 285px; } }
+  @media (max-width: 600px) { .instagram-highlights__heading { align-items: start; flex-direction: column; } .instagram-highlights__tools { width: 100%; justify-content: space-between; } .instagram-highlights__rail { grid-auto-columns: minmax(255px, 88%); } .instagram-highlights__link { min-height: 285px; } }
   @media (prefers-reduced-motion: reduce) { .instagram-highlights__rail { scroll-behavior: auto; } .instagram-highlights__link { transition: none; } .instagram-highlights__link:hover { transform: none; } }
 </style>
