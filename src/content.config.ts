@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import type { BlogImageMetadata } from './content/types';
+import { isSafeContentHref } from './utils/safe-content-href.mjs';
 
 const contentLinkSegmentSchema = z.object({
 	text: z.string().min(1),
-	href: z.string().min(1),
+	href: z.string().min(1).refine(isSafeContentHref, 'Links de conteúdo devem ser locais ou HTTPS sem credenciais.'),
 }).strict();
 
 const contentBoldSegmentSchema = z.object({

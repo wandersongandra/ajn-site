@@ -65,6 +65,9 @@ jobs:
       - name: Security baseline audit
         run: npm run audit:security
 
+      - name: Content link scheme regression test
+        run: npm run test:security-links
+
       - name: Audit regression fixtures
         run: npm run test:audits
 
@@ -113,3 +116,5 @@ jobs:
           npm run build
           npm run audit:deploy
           npm run audit:seo
+          npm run audit:editorial
+          npm run audit:sst-seo
