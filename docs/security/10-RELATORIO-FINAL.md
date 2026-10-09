@@ -81,4 +81,4 @@ Branch: `security/auditoria-hardening-2026-10-08`, base `5a5edaf`, sincronizada 
 
 ## 9. Classificação final
 
-**GO CONDICIONAL** para revisão da parcela de código: os workflows da PR #50 no SHA `4974469` passaram, exceto o contexto legado `CodeQL`, associado a alertas no default branch; a anotação inline de regex foi respondida. As correções locais dos alertas de URL e Action imutável exigem novo push/scan. Não é prontidão para produção: headers/redirect estão em proposta independente, Hostinger não foi validada e páginas legais precisam de texto aprovado.
+**GO** para aprovação da parcela de código: os workflows da PR #50 no SHA `4987adc` passaram, as duas threads CodeQL estão resolvidas, e produção/preview locais validaram canonicals e indexação. Isso não é autorização de merge nem prontidão da infraestrutura. A PR #51 segue draft, depende da correção PGR ainda não integrada em `main`, e Hostinger permanece não validada; páginas legais aguardam texto aprovado.
