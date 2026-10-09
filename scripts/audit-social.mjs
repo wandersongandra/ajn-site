@@ -13,6 +13,7 @@ check(section.includes('aria-label="Publicações selecionadas do Instagram da A
 check(section.includes('tabindex="0"'), 'Área horizontal não oferece navegação pelo teclado.');
 check(!/<iframe\b|<script\b/i.test(section), 'Embeds e scripts de Instagram não devem carregar na Home.');
 check(component.includes('existsSync(') && component.includes('post.localCover'), 'As capas precisam de fallback local seguro.');
+check(section.includes('Imagem ilustrativa') && section.includes('criações digitais'), 'As imagens digitais devem ser declaradas ilustrativas.');
 check(component.includes('prefers-reduced-motion: reduce'), 'Falta suporte a movimento reduzido.');
 
 const known = [
@@ -27,10 +28,11 @@ for (const [id, kind] of known) {
   const url = `https://www.instagram.com/${kind}/${id}/`;
   check(component.includes(`href: '${url}'`), `Publicação oficial ausente do componente: ${id}`);
   check(component.includes(`cover: '/images/social/${id}.webp'`), `Capa esperada não mapeada: ${id}`);
+  check(component.includes(`illustration: '/images/social/${id}.svg'`), `Ilustração local ausente do mapeamento: ${id}`);
   check(section.includes(`href="${url}"`), `O link público para ${id} não foi renderizado.`);
 }
 
-for (const [, src] of section.matchAll(/src="(\/images\/social\/[^"]+\.webp)"/g)) {
+for (const [, src] of section.matchAll(/src="(\/images\/social\/[^"]+\.(?:webp|svg))"/g)) {
   const local = path.join('dist', src.slice(1));
   try {
     const data = await stat(local);
@@ -44,5 +46,5 @@ if (errors.length) {
   errors.forEach(message => console.error('[social][FAIL]', message));
   process.exitCode = 1;
 } else {
-  console.log('[social] PASS: 6 publicações originais, links, fallback de mídia, sem embeds externos.');
+  console.log('[social] PASS: 6 publicações originais, capas locais ilustrativas com rótulo, links e sem embeds externos.');
 }
