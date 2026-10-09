@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageShell from '../components/PageShell.astro';
+import { site } from '../data/home';
+
+const heading = 'Política de Cookies';
+---
+
+<BaseLayout
+	title="Política de Cookies | AJN Consultoria e Engenharia"
+	description="Conheça as categorias de cookies, o uso opcional do Google Analytics 4 e como aceitar, rejeitar ou rever suas preferências no site da AJN."
+	canonicalPath="/politica-de-cookies"
+>
+	<PageShell heading={heading}>
+		<article class="legal-document legal-document--cookies" aria-label="Política de Cookies da AJN">
+			<div class="legal-document__eyebrow"><span class="legal-document__eyebrow-line" aria-hidden="true"></span> Controle de navegação <span class="legal-document__edition">Revisão: outubro de 2026</span></div>
+			<div class="legal-document__introduction">
+				<p>Você pode conhecer os serviços da AJN sem aceitar a medição de audiência. As tecnologias necessárias mantêm o site acessível; o Google Analytics 4 só é carregado pelo código da AJN quando você autoriza essa finalidade.</p>
+				<p>Esta página explica as categorias usadas, o que pode ser registrado e como mudar de ideia. Ela complementa a <a href="/politica-de-privacidade/">Política de Privacidade</a>.</p>
+				<div class="legal-document__quicklinks" aria-label="Acessos rápidos"><a href="#preferencias">Alterar preferências <span aria-hidden="true">↗</span></a><a href="#categorias">Ver categorias <span aria-hidden="true">↗</span></a></div>
+			</div>
+			<nav class="legal-document__contents" aria-label="Nesta Política de Cookies">
+				<strong>Nesta página</strong>
+				<ul>
+					<li><a href="#entenda">O que são cookies</a></li>
+					<li><a href="#categorias">Categorias e fornecedores</a></li>
+					<li><a href="#medicao">Como funciona a medição</a></li>
+					<li><a href="#preferencias">Aceitar, rejeitar ou revogar</a></li>
+					<li><a href="#duracao">Prazo e armazenamento</a></li>
+					<li><a href="#contato">Contato e documentos</a></li>
+				</ul>
+			</nav>
+			<section id="entenda" class="content-section">
+				<h2>O que são cookies e tecnologias semelhantes</h2>
+				<p>Cookies são pequenos registros que um site ou serviço pode armazenar no navegador. Há também preferências guardadas no próprio dispositivo e registros técnicos de conexão mantidos por provedores. Essas tecnologias não são todas equivalentes e nem sempre dependem de cookies.</p>
+			</section>
+			<section id="categorias" class="content-section">
+				<h2>Categorias de navegação</h2>
+				<p>As categorias abaixo descrevem o que foi identificado no código do site e as possibilidades da infraestrutura. Cookies operacionais específicos da hospedagem devem ser conferidos na configuração efetiva do provedor.</p>
+				<div class="legal-document__data-table" role="region" aria-label="Tabela de categorias de cookies" tabindex="0">
+					<table>
+						<thead><tr><th scope="col">Categoria</th><th scope="col">Finalidade e tecnologia</th><th scope="col">Escolha</th></tr></thead>
+						<tbody>
+							<tr><th scope="row">Operação e segurança</th><td>Registros técnicos de servidor, proteção e eventuais identificadores da hospedagem; dependem da configuração do provedor.</td><td>Necessários quando aplicáveis</td></tr>
+							<tr><th scope="row">Preferência de privacidade</th><td>Registro local da escolha sobre análise de audiência, com data e identificador do fluxo, por até 180 dias.</td><td>Funcional</td></tr>
+							<tr><th scope="row">Análise de audiência</th><td>Google Analytics 4; pode definir cookies como <code>_ga</code> e <code>_ga_*</code> e medir visualizações e origem geográfica aproximada.</td><td>Opcional — somente após aceite</td></tr>
+							<tr><th scope="row">Publicidade</th><td>O código da AJN não inclui Meta Pixel, remarketing ou tag de anúncios.</td><td>Não utilizada nesta integração</td></tr>
+						</tbody>
+					</table>
+				</div>
+				<p>O site também solicita arquivos de tipografia ao Google Fonts, o que envolve dados técnicos de conexão, independentemente do aceite para Analytics.</p>
+			</section>
+			<section id="medicao" class="content-section">
+				<h2>O que medimos com autorização</h2>
+				<p>O Google Analytics 4 ajuda a AJN a compreender quais páginas recebem visitas, de onde chegam os acessos e, quando os relatórios permitem, quais cidades ou estados concentram audiência. A localização é aproximada, sujeita a agregação e limitações de privacidade; não se trata de localização exata de pessoas.</p>
+				<p>O fluxo de medição do site oficial utiliza o ID público <code>G-N6L406K645</code>. Não configuramos publicidade personalizada nem Google Signals nessa integração. Para conhecer as práticas do fornecedor, consulte a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade do Google</a>.</p>
+			</section>
+			<section id="preferencias" class="content-section">
+				<h2>Você decide sobre a análise</h2>
+				<p>No primeiro acesso, o aviso oferece <strong>Aceitar análise</strong>, <strong>Rejeitar opcionais</strong> e <strong>Personalizar</strong>. A opção de análise não vem previamente marcada. Rejeitar não impede o acesso às páginas ou aos canais de contato.</p>
+				<p>Para mudar a escolha, use o controle abaixo ou o link <strong>Preferências de cookies</strong> no rodapé. Ao revogar, o código deixa de carregar a tag em novas visitas, tenta remover cookies próprios de análise conhecidos e recarrega a página. A revogação não apaga dados já enviados ao Google nem necessariamente cookies definidos por outros domínios.</p>
+				<div class="legal-document__preference-panel">
+					<div><strong>Controle de privacidade</strong><p>Abra as preferências para permitir ou interromper a medição opcional.</p></div>
+					<button type="button" data-privacy-open>Rever minhas preferências <span aria-hidden="true">↗</span></button>
+				</div>
+			</section>
+			<section id="duracao" class="content-section">
+				<h2>Armazenamento e duração</h2>
+				<p>A escolha fica guardada localmente no navegador por até <strong>180 dias</strong>, vinculada à versão do aviso e ao identificador de medição. Se a configuração mudar, uma nova escolha poderá ser solicitada. Cookies do GA4 podem ter prazos diferentes, conforme as configurações e atualizações do Google.</p>
+				<p>Você também pode remover cookies e dados locais pelas configurações do navegador. Bloqueios de armazenamento ou extensões de privacidade podem alterar o funcionamento dessas preferências.</p>
+			</section>
+			<section id="contato" class="content-section">
+				<h2>Dúvidas e direitos</h2>
+				<p>Para solicitar informações sobre o tratamento de dados, escreva para <a href={`mailto:${site.email}`}>{site.email}</a>. Conheça seus direitos na <a href="/politica-de-privacidade/#direitos">Política de Privacidade</a> e as condições de navegação nos <a href="/termos-de-uso/">Termos de Uso</a>.</p>
+			</section>
+		</article>
+	</PageShell>
+</BaseLayout>
