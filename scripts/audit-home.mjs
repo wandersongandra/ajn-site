@@ -104,7 +104,7 @@ check(motionJs.includes("home.classList.add('motion-ready')") &&
 // A scroll listener is permitted only when it schedules a single rAF sweep;
 // synchronous scroll geometry reads used to cause costly reflow. Keep this
 // guard explicit so a future direct callback cannot silently regress UX.
-const scrollListeners = (motionJs.match(/addEventListener\\(['"]scroll['"]/g) ?? []).length;
+const scrollListeners = motionJs.split("addEventListener('scroll'").length - 1;
 check(scrollListeners === 1 &&
 	motionJs.includes("window.addEventListener('scroll', scheduleSweep, { passive: true })") &&
 	motionJs.includes('window.requestAnimationFrame(sweepPassedSections)') &&
