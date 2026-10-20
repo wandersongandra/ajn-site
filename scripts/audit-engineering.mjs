@@ -1,5 +1,6 @@
 // Regressão do novo núcleo de serviços de engenharia da AJN.
 import { readFile } from 'node:fs/promises';
+import { stripScriptElements } from './security-html.mjs';
 
 const failures = [];
 const check = (pass, message) => { if (!pass) failures.push(message); };
@@ -14,7 +15,7 @@ for (const [name, route, word, norm] of cases) {
   const html = await readFile(`dist${route}/index.html`, 'utf8');
   const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? '';
   const canonical = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/)?.[1] ?? '';
-  const body = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+  const body = stripScriptElements(html);
   check(title.toLowerCase().includes(word.toLowerCase()), `${name}: title relevante ausente.`);
   check(canonical.endsWith(route + '/'), `${name}: canonical primário incorreto.`);
   check(body.includes(norm), `${name}: norma técnica necessária não mencionada.`);
