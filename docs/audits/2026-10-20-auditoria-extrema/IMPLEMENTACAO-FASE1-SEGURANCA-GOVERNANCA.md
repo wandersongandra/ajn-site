@@ -12,7 +12,7 @@ A Fase 1 tratou os pontos implementáveis de AJN-011 e AJN-012 sem alterar a hos
 
 Foram confirmados: `main` sem branch protection (`404 Branch not protected`), nenhum ruleset, Dependabot security updates desabilitado, permissões globais do Actions permitindo todas as ações e sem exigência administrativa de SHA, e dois alertas CodeQL históricos ainda abertos no filtro regex de `scripts/audit-engineering.mjs`. Secret scanning e push protection permanecem ativos; não foram retornados alertas de secret scanning.
 
-As correções versionadas substituem a remoção de `<script>` por um scanner delimitado reutilizável, adicionam regressões adversariais, alinham o smoke público a redirects permanentes `301`, validam todos os saltos e introduzem auditoria preventiva dos workflows. O `live-security` passou a ter agendamento semanal GET-only, sem qualquer passo de publicação.
+As correções versionadas substituem a remoção de `<script>` por um scanner delimitado reutilizável, adicionam regressões adversariais, alinham o smoke público a redirects permanentes `301`, validam todos os saltos e introduzem auditoria preventiva dos workflows. A revisão corretiva desta PR também fechou os três apontamentos P2 do auditor de Actions com parsing YAML estrutural, validação de Docker por digest e política fail-closed para segredos. O `live-security` passou a ter agendamento semanal GET-only, sem qualquer passo de publicação.
 
 As proteções administrativas da organização/repositório continuam pendentes de aprovação do proprietário. Portanto, o código está pronto para revisão, mas o estado de governança não deve ser classificado como protegido até que branch protection/rulesets e Dependabot security updates sejam efetivamente habilitados.
 
@@ -102,16 +102,27 @@ O workflow CodeQL permanece com `security-extended`, matriz para JavaScript/Type
 
 ## CI/CD e GitHub Actions
 
-Foram analisados os seis workflows versionados: Browser Smoke, CodeQL, Dependency Security, Secret Leak Scan, Live Security Smoke Test e Quality Gate. A nova auditoria `scripts/audit-workflows.mjs` é executada em `validate` e no Quality Gate e verifica:
+Foram analisados os seis workflows versionados: Browser Smoke, CodeQL, Dependency Security, Secret Leak Scan, Live Security Smoke Test e Quality Gate. A auditoria `scripts/audit-workflows.mjs` é executada em `validate` e no Quality Gate e usa o parser YAML `yaml` para verificar:
 
 - ausência de `pull_request_target`;
-- `permissions` global com `contents: read`;
-- rejeição de `write-all`, `contents/actions/id-token: write` não revisados;
-- Actions externas fixadas em SHA completo de 40 caracteres;
+- `permissions` global e de cada job, inclusive mapas inline, com rejeição de writes fora da exceção CodeQL;
+- Actions normais externas fixadas em SHA completo de 40 caracteres, Actions locais preservadas e imagens `docker://` exigindo digest SHA-256 de 64 caracteres;
 - `timeout-minutes` para cada job;
-- ausência de segredos além do `GITHUB_TOKEN` necessário ao Gitleaks.
+- ausência de segredos além do `GITHUB_TOKEN` necessário ao Gitleaks, reconhecendo ponto, colchetes com aspas/espaços e rejeitando acessos dinâmicos sem classificação segura.
 
-O resultado local foi `PASS: 6 workflows`. Todos usam `npm ci`, Node 22, concorrência onde há execução repetível e `persist-credentials: false` nos checkouts. Não há workflow de deploy versionado nesta árvore; a integração real com Hostinger permanece **NÃO VERIFICADA** e não foi alterada.
+`scripts/test-audit-workflows.mjs` cobre regressões negativas para os três P2, a exceção CodeQL, referências `GITHUB_TOKEN` em ambas as notações e os seis workflows legítimos. O resultado local foi `PASS: 6 workflows`. Todos usam `npm ci`, Node 22, concorrência onde há execução repetível e `persist-credentials: false` nos checkouts. Não há workflow de deploy versionado nesta árvore; a integração real com Hostinger permanece **NÃO VERIFICADA** e não foi alterada.
+
+### Revisão corretiva dos três comentários P2
+
+Os comentários de revisão abertos na PR #75 foram tratados no código, sem alterar regras de consentimento, carregamento do GA4, conteúdo comercial, SEO, Hostinger, DNS ou redirecionamentos:
+
+| Comentário | Lacuna | Correção e regressão |
+|---|---|---|
+| `4330169071` | `docker://...` sem `@` era ignorado e tags mutáveis passavam | Parser estrutural coleta `uses`; Docker só passa com `@sha256:` + 64 hex; teste rejeita tag e aceita digest, Action SHA e Action local |
+| `4330169079` | mapa inline `permissions: { contents: write }` escapava da regex | `yaml` inspeciona permissões globais e de jobs; teste rejeita write inline e mantém `security-events: write` apenas no job CodeQL `analyze` |
+| `4330169082` | acesso `secrets[...]` escapava da notação de ponto | scanner de expressões aceita ponto/colchetes com aspas e espaços, permite somente `GITHUB_TOKEN` e falha fechado em acesso dinâmico; testes cobrem dot, aspas simples/duplas e dynamic |
+
+Foi adicionada a dependência direta de desenvolvimento `yaml@^2.9.1`, já presente transitivamente no lockfile, porque regex não consegue distinguir mapas YAML flow-style, jobs e valores escalares com segurança. O `package-lock.json` foi atualizado e as auditorias de dependências permaneceram sem vulnerabilidades.
 
 ## Matriz de resultados
 
@@ -135,6 +146,7 @@ O resultado local foi `PASS: 6 workflows`. Todos usam `npm ci`, Node 22, concorr
 - `npm run test:hosting-policy` — 5/5.
 - `npm run test:live-security` — 4/4.
 - `npm run audit:workflows` — PASS, 6 workflows.
+- `npm run test:audit-workflows` — 5/5 regressões PASS, incluindo os três P2 e os seis workflows legítimos.
 - `npm run audit:engineering` — PASS.
 - `npm run audit:live-security` — PASS contra produção, 13 observações GET, sem loop.
 - `npm audit --audit-level=high` — 0 vulnerabilidades.
@@ -142,6 +154,7 @@ O resultado local foi `PASS: 6 workflows`. Todos usam `npm ci`, Node 22, concorr
 - Browser smoke local — 1.457 assertions; reduced motion 9 rotas × 10 larguras, default 4 × 2 e save-data 4 × 2.
 - Browser regression Fase 0 — 84 assertions PASS.
 - Testes de privacidade durante `validate` — 23/23 PASS.
+- `npm run test:hosting-policy` — 5/5; `npm run test:live-security` — 4/4; `npm run audit:security` — PASS.
 - `gh pr checks 74` — PR #74 já integrada; checks históricos verdes, sem confundir isso com proteção administrativa.
 - `gh pr checks 75` — CodeQL, Dependency Security, Gitleaks, browser smoke e validate PASS; PR aberta, estado `CLEAN`, sem merge.
 
