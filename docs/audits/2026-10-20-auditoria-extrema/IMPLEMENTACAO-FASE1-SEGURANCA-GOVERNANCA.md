@@ -116,11 +116,11 @@ Foram analisados os seis workflows versionados: Browser Smoke, CodeQL, Dependenc
 
 Os comentários de revisão abertos na PR #75 foram tratados no código, sem alterar regras de consentimento, carregamento do GA4, conteúdo comercial, SEO, Hostinger, DNS ou redirecionamentos:
 
-| Comentário | Lacuna | Correção e regressão |
+| Comentário | Lacuna | Correção e regressão | Estado remoto |
 |---|---|---|
-| `4330169071` | `docker://...` sem `@` era ignorado e tags mutáveis passavam | Parser estrutural coleta `uses`; Docker só passa com `@sha256:` + 64 hex; teste rejeita tag e aceita digest, Action SHA e Action local |
-| `4330169079` | mapa inline `permissions: { contents: write }` escapava da regex | `yaml` inspeciona permissões globais e de jobs; teste rejeita write inline e mantém `security-events: write` apenas no job CodeQL `analyze` |
-| `4330169082` | acesso `secrets[...]` escapava da notação de ponto | scanner de expressões aceita ponto/colchetes com aspas e espaços, permite somente `GITHUB_TOKEN` e falha fechado em acesso dinâmico; testes cobrem dot, aspas simples/duplas e dynamic |
+| `4330169071` | `docker://...` sem `@` era ignorado e tags mutáveis passavam | Parser estrutural coleta `uses`; Docker só passa com `@sha256:` + 64 hex; teste rejeita tag e aceita digest, Action SHA e Action local | RESOLVIDO após resposta `4330345738` |
+| `4330169079` | mapa inline `permissions: { contents: write }` escapava da regex | `yaml` inspeciona permissões globais e de jobs; teste rejeita write inline e mantém `security-events: write` apenas no job CodeQL `analyze` | RESOLVIDO após resposta `4330346067` |
+| `4330169082` | acesso `secrets[...]` escapava da notação de ponto | scanner de expressões aceita ponto/colchetes com aspas e espaços, permite somente `GITHUB_TOKEN` e falha fechado em acesso dinâmico; testes cobrem dot, aspas simples/duplas e dynamic | RESOLVIDO após resposta `4330346398` |
 
 Foi adicionada a dependência direta de desenvolvimento `yaml@^2.9.1`, já presente transitivamente no lockfile, porque regex não consegue distinguir mapas YAML flow-style, jobs e valores escalares com segurança. O `package-lock.json` foi atualizado e as auditorias de dependências permaneceram sem vulnerabilidades.
 
@@ -158,8 +158,15 @@ Foi adicionada a dependência direta de desenvolvimento `yaml@^2.9.1`, já prese
 - `gh pr checks 74` — PR #74 já integrada; checks históricos verdes, sem confundir isso com proteção administrativa.
 - `gh pr checks 75` — CodeQL, Dependency Security, Gitleaks, browser smoke e validate PASS; PR aberta, estado `CLEAN`, sem merge.
 
+### Evidência remota desta revisão corretiva
+
+- Commit publicado: `80c1912c1bc5dfa91be7fb91db625729dee1ce81` (`fix(security): close workflow audit review findings`).
+- `gh pr checks 75` no commit acima: `validate`, `browser-smoke`, `Dependency audit (high+)`, `Gitleaks`, `CodeQL (actions)`, `CodeQL (javascript-typescript)` e `CodeQL` concluíram com `SUCCESS` (há execuções duplicadas push/PR, todas verdes).
+- PR #75 permanece `OPEN`, `CLEAN`, base `main`; nenhum merge ou deploy foi executado.
+- Os três review threads `PRRT_kwDOU-t_pM6uhQI1`, `PRRT_kwDOU-t_pM6uhQI5` e `PRRT_kwDOU-t_pM6uhQI6` foram respondidos com evidência e marcados `isResolved=true` somente após os checks verdes.
+
 ## Veredicto
 
-**APPROVED WITH RESTRICTIONS** para revisão e eventual integração do código desta Fase 1.
+**APPROVED FOR MERGE** para o código corretivo da PR #75.
 
-As correções locais, testes de regressão, análise pública dos redirects e hardening versionado estão prontos e sem regressão observada. A aprovação é restrita porque branch protection/rulesets, Dependabot alerts/security updates, restrição global de Actions e mecanismo real de deploy continuam externos e não foram alterados nesta missão. Não houve merge, deploy, alteração de produção, alteração de DNS/SSL ou dismiss de alerta CodeQL.
+Os três P2 foram corrigidos, os testes locais e checks remotos passaram, e os threads foram respondidos e resolvidos somente após a evidência. Branch protection/rulesets, Dependabot alerts/security updates, restrição global de Actions e mecanismo real de deploy continuam controles administrativos externos, preservados e fora desta correção; exigem acompanhamento separado, mas não criam pendência bloqueadora nova para o código da PR. Não houve merge, deploy, alteração de produção, alteração de DNS/SSL ou dismiss de alerta CodeQL.
