@@ -1,9 +1,9 @@
 /* Cabeçalho AJN — regras isoladas dos estilos legados do site. */
 #site-header {
-	--header-ink: #333c34;
-	--header-muted: #556057;
-	--header-green: #3b9d45;
-	--header-green-deep: #247437;
+	--header-ink: var(--ink);
+	--header-muted: var(--text-soft);
+	--header-green: var(--brand-action);
+	--header-green-deep: var(--brand-action-hover);
 	--header-border: #e6eae5;
 	position: sticky;
 	top: 0;
@@ -68,9 +68,9 @@
 	background: transparent;
 	white-space: nowrap;
 	font-size: 14px;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1.25;
-	letter-spacing: -.012em;
+	letter-spacing: 0;
 	text-decoration: none;
 	transition: color .18s ease;
 }
@@ -174,10 +174,10 @@
 	min-height: 42px;
 	padding: 11px 13px;
 	border-radius: 4px;
-	color: #3c4940;
+	color: var(--ink);
 	background: #fff;
 	white-space: normal;
-	font-size: 13px;
+	font-size: 14px;
 	font-weight: 600;
 	line-height: 1.45;
 }
@@ -185,7 +185,7 @@
 #site-header .submenu > li > a:focus-visible,
 #site-header .submenu > li > a[aria-current='page'] {
 	background: #eaf4e9;
-	color: #205f2d;
+	color: var(--brand-action);
 }
 #site-header .navigation-list__action {
 	margin-left: clamp(6px, 1vw, 18px);
@@ -199,11 +199,11 @@
 	margin: 0;
 	border: 1px solid var(--header-green);
 	border-radius: 6px;
-	color: #fff !important;
+	color: var(--text-on-action) !important;
 	background: var(--header-green);
 	box-shadow: none;
-	font-size: 13.5px;
-	font-weight: 800;
+	font-size: 14px;
+	font-weight: 600;
 	white-space: nowrap;
 	line-height: 1.3;
 	transition: background .18s ease, border-color .18s ease;
@@ -212,7 +212,7 @@
 #site-header .navigation-list__action > a.training-link:focus-visible {
 	background: var(--header-green-deep);
 	border-color: var(--header-green-deep);
-	color: #fff !important;
+	color: var(--text-on-action) !important;
 }
 #site-header a:focus-visible,
 #site-header button:focus-visible {
@@ -305,7 +305,7 @@
 		padding: 11px 13px;
 		border-radius: 5px;
 		font-size: 15px;
-		font-weight: 700;
+		font-weight: 600;
 	}
 	#site-header .navigation-list > li > a:not(.training-link):hover,
 	#site-header .navigation-list > li > a[aria-current='page'],
@@ -346,7 +346,7 @@
 	#site-header .submenu > li > a {
 		padding: 12px;
 		background: transparent;
-		font-size: 13px;
+		font-size: 14px;
 	}
 	#site-header .navigation-list__action {
 		margin: 10px 0 0;

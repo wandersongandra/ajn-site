@@ -41,8 +41,9 @@ check((ordered.match(/data-reveal/g) ?? []).length === 4,
 	'As quatro etapas precisam de animação progressiva sem JS obrigatório.');
 check(ordered.includes('--reveal-delay: 270ms'), 'Última etapa deve ter progressão de 90ms.');
 
-check(css.includes('font-size: 14.5px') && css.includes('.home-page .workflow__step p'),
-	'Tipografia dos parágrafos deve ter no mínimo 14,5 px nesta seção.');
+// 15px atende o mínimo de texto de card; antes a auditoria aceitava 14,5px.
+check(css.includes('font-size: 15px') && css.includes('.home-page .workflow__step p'),
+	'Tipografia das etapas deve manter o mínimo de 15px.');
 check(css.includes('grid-template-columns: repeat(4, minmax(0, 1fr))') &&
 	css.includes('grid-template-columns: repeat(2, minmax(0, 1fr))') &&
 	css.includes('grid-template-columns: 1fr'),

@@ -4,14 +4,12 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'src/components/InstagramHighlights.astro'
-      - 'src/pages/index.astro'
-      - 'src/pages/projetos-spda.astro'
-      - 'src/pages/projetos-cabeamento-estruturado.astro'
-      - 'src/content/marketing/projetos-eletricos-prediais.ts'
-      - 'src/content/services/**'
-      - 'public/scripts/instagram-highlights.js'
+      - 'src/**'
+      - 'public/scripts/**'
       - 'scripts/browser-smoke.mjs'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/browser-smoke.yml'
 
 permissions:
@@ -60,7 +58,7 @@ jobs:
           cat /tmp/ajn-preview.log
           exit 1
 
-      - name: Browser smoke 320 / 390 / 768 / 1440
+      - name: Browser smoke reduced 320 / 360 / 375 / 390 / 430 / 768 / 1024 / 1440 / 1920 plus default and saveData representatives
         run: node scripts/browser-smoke.mjs
 
       - name: Upload screenshot evidence
@@ -68,6 +66,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ajn-browser-smoke
-          path: artifacts/browser-smoke/
+          path: output/playwright/browser-smoke/
           retention-days: 7
           if-no-files-found: warn

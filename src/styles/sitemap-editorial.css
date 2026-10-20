@@ -1,6 +1,6 @@
 /* Índice do mapa do site: escopo exclusivo da rota /mapa-site. */
 .inner-page .site-index {
-	color: #193729;
+	color: var(--brand-dark);
 }
 .inner-page .site-index__intro {
 	display: flex;
@@ -13,14 +13,14 @@
 .inner-page .site-index__intro > p {
 	max-width: 65ch;
 	margin: 0;
-	color: #516557;
+	color: var(--ink);
 	font-size: 16px;
 	line-height: 1.75;
 }
 .inner-page .site-index__total {
-	color: #54715d;
-	font-size: 12px;
-	font-weight: 700;
+	color: var(--brand-dark);
+	font-size: 14px;
+	font-weight: 600;
 	letter-spacing: .015em;
 	white-space: nowrap;
 }
@@ -39,10 +39,10 @@
 	padding: 14px 17px;
 	border: 1px solid #dae6da;
 	border-radius: 7px;
-	color: #205638;
+	color: var(--brand-action);
 	background: #f8faf7;
-	font-size: 13.5px;
-	font-weight: 750;
+	font-size: 14px;
+	font-weight: 600;
 	line-height: 1.35;
 	text-decoration: none;
 	transition: border-color 180ms ease, background-color 180ms ease;
@@ -50,14 +50,14 @@
 .inner-page .site-index__nav > a:hover {
 	border-color: #9cbd9f;
 	background: #edf4ed;
-	color: #19462b;
+	color: var(--brand-action);
 }
 .inner-page .site-index__count {
 	flex: 0 0 auto;
-	color: #5c7763;
-	font-size: 12px;
+	color: var(--text-soft);
+	font-size: 14px;
 	font-variant-numeric: tabular-nums;
-	font-weight: 700;
+	font-weight: 600;
 }
 .inner-page .site-index__sections {
 	display: grid;
@@ -77,18 +77,18 @@
 }
 .inner-page .site-index__heading h2 {
 	margin: 0 0 8px;
-	color: #173c29;
-	font-size: clamp(24px, 2.7vw, 35px);
-	font-weight: 800;
-	letter-spacing: -.034em;
+	color: var(--brand-dark);
+	font-size: var(--type-h2);
+	font-weight: var(--font-weight-heading);
+	letter-spacing: var(--tracking-display);
 	line-height: 1.2;
 	text-wrap: balance;
 }
 .inner-page .site-index__heading p {
 	max-width: 64ch;
 	margin: 0;
-	color: #596b5f;
-	font-size: 14px;
+	color: var(--text-soft);
+	font-size: 16px;
 	line-height: 1.6;
 }
 .inner-page .site-index__back {
@@ -98,9 +98,9 @@
 	gap: 6px;
 	min-height: 40px;
 	padding: 5px 0;
-	color: #34724a;
-	font-size: 12px;
-	font-weight: 700;
+	color: var(--brand-dark);
+	font-size: 14px;
+	font-weight: 600;
 	text-decoration: none;
 }
 .inner-page .site-index__back:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -126,7 +126,7 @@
 	gap: 12px;
 	min-height: 49px;
 	padding: 11px 2px;
-	color: #365542;
+	color: var(--brand-action);
 	font-size: 14px;
 	font-weight: 600;
 	line-height: 1.55;
@@ -135,11 +135,11 @@
 }
 .inner-page .site-index__links a span {
 	flex: 0 0 auto;
-	color: #6a946f;
+	color: var(--brand-action);
 	font-size: 15px;
 }
 .inner-page .site-index__links a:hover {
-	color: #1b6834;
+	color: var(--brand-action);
 	text-decoration: underline;
 	text-underline-offset: 3px;
 }
@@ -156,13 +156,13 @@
 	.inner-page .site-index__links { grid-template-columns: 1fr; }
 }
 @media (max-width: 440px) {
-	.inner-page .site-index__intro > p { font-size: 15px; }
+	.inner-page .site-index__intro > p { font-size: 16px; }
 	.inner-page .site-index__total { white-space: normal; }
 	.inner-page .site-index__nav { gap: 8px; }
-	.inner-page .site-index__nav > a { min-height: 70px; padding: 11px; font-size: 12px; gap: 6px; }
+	.inner-page .site-index__nav > a { min-height: 70px; padding: 11px; font-size: 14px; gap: 6px; }
 	.inner-page .site-index__heading { display: block; }
 	.inner-page .site-index__back { margin-top: 6px; }
-	.inner-page .site-index__links a { font-size: 13.5px; }
+	.inner-page .site-index__links a { font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
 	.inner-page .site-index__nav > a { transition: none; }

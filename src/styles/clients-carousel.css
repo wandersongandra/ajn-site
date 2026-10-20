@@ -84,18 +84,18 @@
 	padding: 9px 11px;
 	border: 0;
 	border-radius: 6px;
-	color: #426149;
+	color: var(--brand-dark);
 	background: transparent;
 	font: inherit;
-	font-size: 12px;
-	font-weight: 700;
+	font-size: 14px;
+	font-weight: 600;
 	cursor: pointer;
 }
 .home-page .home-clients-pause[hidden] { display: none; }
 .home-page .home-clients-pause:hover,
 .home-page .home-clients-pause:focus-visible {
 	background: #f0f6ef;
-	color: #245d33;
+	color: var(--brand-dark);
 }
 .home-page .home-clients-pause__symbol {
 	display: inline-block;

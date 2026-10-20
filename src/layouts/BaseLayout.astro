@@ -80,6 +80,9 @@ const websiteSchema = {
 		<meta name="theme-color" content="#4CAF50" />
 		<meta name="author" content={site.name} />
 		<link rel="canonical" href={canonicalUrl} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
@@ -96,9 +99,6 @@ const websiteSchema = {
 
 		<link rel="icon" type="image/webp" href="/images/icons/logo-icon.webp" />
 		{normalizedPath === '/' ? <link rel="preload" as="image" href="/images/hero/banner.webp" fetchpriority="high" /> : null}
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
 		<script type="application/ld+json" set:html={serializeJsonLd([organizationSchema, websiteSchema])} />
 		<title>{title}</title>

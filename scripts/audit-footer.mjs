@@ -78,10 +78,12 @@ check(css.includes('grid-template-columns: minmax(215px, 1.18fr)') &&
 check(css.includes('.site-footer .footer__menu a:focus-visible') &&
 	css.includes('.site-footer .footer__social a:focus-visible'),
 	'Navegação de teclado precisa de foco visível');
+// O texto do rodapé usa o token sólido; o CTA adota o verde de ação para atingir contraste AA.
 check(css.includes('font-size: 14px') &&
-	css.includes('color: #c9d7cb') &&
+	css.includes('color: var(--text-inverse)') &&
+	css.includes('background: var(--brand-action)') &&
 	css.includes('min-height: 48px'),
-	'Legibilidade e alvo de toque do rodapé não foram assegurados');
+	'Legibilidade, contraste e alvo de toque do rodapé não foram assegurados');
 check(css.includes('prefers-reduced-motion: reduce'),
 	'Efeitos do rodapé precisam respeitar redução de movimento');
 if (problems.length) {
