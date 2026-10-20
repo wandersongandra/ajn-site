@@ -18,7 +18,15 @@ function setup({ responseOk = true, responseStatus, file = null, endpoint = 'htt
     focus() { this.focused = true; },
   };
   const submit = { disabled: false, textContent: 'Enviar mensagem' };
-  const attachment = { files: file ? [file] : [], focus() { this.focused = true; } };
+  const attachment = { name: 'anexo', type: 'file', value: '', files: file ? [file] : [], disabled: false, focus() { this.focused = true; } };
+  const controls = [
+    { name: 'nome', type: 'text', value: 'Pessoa', disabled: false },
+    { name: 'email', type: 'email', value: 'pessoa@example.test', disabled: false },
+    { name: 'telefone', type: 'tel', value: '31999999999', disabled: false },
+    { name: 'como_nos_conheceu', type: 'select-one', value: 'Busca do Google', disabled: false },
+    attachment,
+    { name: 'mensagem', type: 'textarea', value: 'Mensagem de teste', disabled: false },
+  ];
   const honeypot = { value: honeypotValue };
   const form = {
     dataset: { contactEndpoint: endpoint },
@@ -30,6 +38,9 @@ function setup({ responseOk = true, responseStatus, file = null, endpoint = 'htt
       if (selector === 'input[type="file"]') return attachment;
       if (selector === 'input[name="website"]') return honeypot;
       return null;
+    },
+    querySelectorAll(selector) {
+      return selector === 'input, textarea, select' ? controls : [];
     },
     setAttribute(name, value) { this[name] = value; },
     removeAttribute(name) { delete this[name]; },
@@ -52,7 +63,8 @@ function setup({ responseOk = true, responseStatus, file = null, endpoint = 'htt
     return Promise.resolve({ ok: statusCode >= 200 && statusCode < 300, status: statusCode });
   };
   class FormData {
-    constructor(value) { this.form = value; }
+    constructor(value) { this.form = value; this.fields = []; }
+    append(name, value) { this.fields.push([name, value]); }
   }
   class CustomEvent {
     constructor(type) { this.type = type; }
@@ -184,4 +196,23 @@ test('aborta receptor travado e devolve o formulário para nova tentativa', asyn
   assert.equal(state.status.dataset.state, 'error');
   assert.equal(state.submit.disabled, false);
   assert.equal(state.form['aria-busy'], undefined);
+});
+
+test('reutiliza o identificador ao repetir o mesmo envio após timeout', async () => {
+  const state = setup({ pendingFetch: true, fakeTimeout: true });
+  const first = state.handlers.submit({ preventDefault() {} });
+  await Promise.resolve();
+  state.triggerTimeout();
+  await first;
+
+  const second = state.handlers.submit({ preventDefault() {} });
+  await Promise.resolve();
+  const fetchBodies = state.calls
+    .filter(([type]) => type === 'fetch')
+    .map(([, , options]) => options.body.fields);
+  assert.equal(fetchBodies.length, 2);
+  assert.equal(fetchBodies[0][0][0], 'submission_id');
+  assert.equal(fetchBodies[0][0][1], fetchBodies[1][0][1]);
+  state.resolveFetch({ ok: true });
+  await second;
 });

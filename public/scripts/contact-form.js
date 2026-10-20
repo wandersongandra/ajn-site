@@ -22,6 +22,13 @@
     }
   }
 
+  function createSubmissionId() {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    return `ajn-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+
   function setStatus(status, message, state) {
     status.textContent = message;
     status.dataset.state = state;
@@ -33,6 +40,8 @@
     const submit = form.querySelector('button[type="submit"]');
     const attachment = form.querySelector('input[type="file"]');
     let submitting = false;
+    let retrySubmissionId = '';
+    let retrySnapshot = '';
 
     if (!status || !submit) return;
 
@@ -66,9 +75,24 @@
       }
 
       event.preventDefault();
+      const formData = new FormData(form);
+      const submissionSnapshot = [...form.querySelectorAll('input, textarea, select')]
+        .map((control) => `${control.name}\u0000${control.type === 'file'
+          ? [...(control.files || [])].map((file) => `${file.name}:${file.size}:${file.lastModified || 0}`).join(',')
+          : control.value}`)
+        .join('\u0001');
+      const submissionId = retrySubmissionId && retrySnapshot === submissionSnapshot
+        ? retrySubmissionId
+        : createSubmissionId();
+      formData.append('submission_id', submissionId);
+      retrySubmissionId = submissionId;
+      retrySnapshot = submissionSnapshot;
+      const controlsToRestore = [...form.querySelectorAll('input, textarea, select')]
+        .filter((control) => !control.disabled);
       submitting = true;
       form.setAttribute('aria-busy', 'true');
       submit.disabled = true;
+      controlsToRestore.forEach((control) => { control.disabled = true; });
       const originalLabel = submit.textContent;
       submit.textContent = 'Enviando…';
       setStatus(status, 'Enviando sua mensagem…', 'pending');
@@ -78,7 +102,7 @@
       try {
         const response = await fetch(endpoint, {
           method: 'POST',
-          body: new FormData(form),
+          body: formData,
           headers: { Accept: 'application/json' },
           credentials: 'omit',
           cache: 'no-store',
@@ -86,6 +110,8 @@
         });
         if (!response.ok) throw new Error('contact endpoint rejected the request');
         form.reset();
+        retrySubmissionId = '';
+        retrySnapshot = '';
         setStatus(status, 'Mensagem enviada. A equipe da AJN responderá pelos canais informados.', 'success');
         window.dispatchEvent(new CustomEvent('ajn:contact-form-submit'));
       } catch {
@@ -95,6 +121,7 @@
         submitting = false;
         form.removeAttribute('aria-busy');
         submit.disabled = false;
+        controlsToRestore.forEach((control) => { control.disabled = false; });
         submit.textContent = originalLabel;
       }
     });

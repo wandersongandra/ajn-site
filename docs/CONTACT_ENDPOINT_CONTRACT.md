@@ -31,6 +31,10 @@ de WhatsApp e e-mail ativos e não promete um envio que não possa ser confirmad
 - o navegador deve abortar uma tentativa que não conclua em tempo razoável e
   devolver o formulário para nova tentativa; isso não substitui timeout e
   limites no receptor.
+- o campo `submission_id` é um identificador opaco por tentativa lógica. O
+  navegador o reutiliza ao repetir o mesmo conteúdo após timeout ou falha de
+  resposta; o receptor deve deduplicar esse valor de forma atômica e não
+  encaminhar duas vezes a mesma submissão.
 
 ## Campos enviados
 
@@ -43,6 +47,7 @@ de WhatsApp e e-mail ativos e não promete um envio que não possa ser confirmad
 | `mensagem` | sim | máximo de 4.000 caracteres no cliente e no servidor |
 | `anexo` | não | um arquivo; máximo de 5 MB; inspeção server-side obrigatória |
 | `website` | não | honeypot; qualquer valor deve ser rejeitado ou descartado sem envio |
+| `submission_id` | sim | identificador opaco para deduplicação; não contém dados pessoais |
 
 ## Critério de ativação
 
