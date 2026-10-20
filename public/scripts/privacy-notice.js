@@ -71,15 +71,29 @@
     save.hidden = true;
     accept.hidden = false;
     preferencesOpen = false;
+    let shouldReload = false;
     if (enabled) loadAnalytics();
     else {
       if (id) window['ga-disable-' + id] = true;
       removeKnownAnalyticsCookies();
-      if (previous && loaded) window.location.reload();
+      shouldReload = previous && loaded;
     }
+    focusAfterDecision();
+    if (shouldReload) window.location.reload();
+  }
+  function focusReturnTarget({ allowInsideNotice = false } = {}) {
     const target = returnFocus;
     returnFocus = null;
-    if (target && target.isConnected !== false) target.focus();
+    if (!target || target.isConnected === false) return false;
+    const insideNotice = typeof notice.contains === 'function' && notice.contains(target);
+    if (!allowInsideNotice && insideNotice) return false;
+    target.focus();
+    return true;
+  }
+  function focusAfterDecision() {
+    if (focusReturnTarget()) return;
+    const main = document.getElementById?.('conteudo-principal') ?? document.querySelector?.('main');
+    if (main && typeof main.focus === 'function') main.focus();
   }
   function openPreferences(trigger) {
     if (trigger && typeof trigger.focus === 'function') returnFocus = trigger;
@@ -98,9 +112,7 @@
     accept.hidden = false;
     if (hasStoredChoice) notice.hidden = true;
     preferencesOpen = false;
-    const target = returnFocus;
-    returnFocus = null;
-    if (target && target.isConnected !== false) target.focus();
+    focusReturnTarget({ allowInsideNotice: !hasStoredChoice });
   }
   function focusInitialControl() {
     const active = document.activeElement;
@@ -163,7 +175,7 @@
 
   accept?.addEventListener('click', () => commit(true));
   reject?.addEventListener('click', () => commit(false));
-  customize?.addEventListener('click', openPreferences);
+  customize?.addEventListener('click', (event) => openPreferences(event?.currentTarget));
   save?.addEventListener('click', () => commit(checkbox.checked));
   reopen.forEach((button) => button.addEventListener('click', (event) => openPreferences(event?.currentTarget)));
   document.addEventListener('keydown', (event) => {

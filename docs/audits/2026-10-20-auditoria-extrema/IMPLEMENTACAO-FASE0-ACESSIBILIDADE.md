@@ -45,6 +45,9 @@ Capturas do baseline:
 - trata `Escape` somente nessa área granular: sem escolha mantém o aviso para
   decisão; com escolha anterior cancela a reabertura e oculta o aviso, sem
   alterar consentimento;
+- no primeiro acesso, restaura `Personalizar` após o cancelamento com `Escape`;
+- depois de uma decisão, usa o conteúdo principal como destino visível quando o
+  gatilho de origem está dentro do aviso ocultado;
 - restaura o foco ao controle de preferências do rodapé depois de `Escape` ou
   de uma decisão tomada a partir dele;
 - mantém a regra fail-closed: nenhuma tag GA4 é criada sem aceite explícito.
@@ -74,10 +77,10 @@ hierarquia visual dos quicklinks e botões existentes.
 | Check | Resultado |
 | --- | --- |
 | `npm run check` | `PASS` — 0 erros e 0 warnings; 1 hint preexistente em `scripts/audit-medicoes.mjs` |
-| `npm run test:privacy-notice` | `PASS` — 22 testes, incluindo foco inicial, `Escape` e restauração de foco |
+| `npm run test:privacy-notice` | `PASS` — 23 testes, incluindo primeiro acesso, `Escape`, storage bloqueado e restauração de foco |
 | `npm run build` | `PASS` — 164 páginas estáticas |
 | `npm run validate` | `PASS` — auditorias SEO, segurança, legais, conteúdo, contato e suítes de teste |
-| `node scripts/browser-phase0.mjs` | `PASS` — 19 assertions para os três P1 |
+| `node scripts/browser-phase0.mjs` | `PASS` — 84 assertions nos perfis mobile reduzido e desktop padrão |
 | `node scripts/browser-smoke.mjs` | `PASS` — 1.457 assertions, matrizes reduced/default/save-data |
 | Lighthouse 13.5.0 — Home e política de privacidade, categoria accessibility | `PASS` — score `1.0` em ambas; nenhum audit com score inferior a 1 |
 
@@ -91,6 +94,43 @@ Capturas após a correção:
 O teste de browser foi adicionado ao workflow
 `.github/workflows/browser-smoke.yml`, depois do smoke existente, e é executado
 contra o preview construído no próprio job.
+
+## Revisão corretiva da PR #74 — foco após cancelamento inicial
+
+A revisão final reproduziu a lacuna em um contexto Playwright novo, sem
+consentimento no `localStorage`: clicar em `Personalizar`, pressionar `Escape`
+ocultava `Salvar preferências`, mas deixava `document.activeElement` em
+`BODY`. O aviso permanecia visualmente presente, porém a navegação por teclado
+ficava sem uma referência de foco (`CONFIRMED`, baseline anterior ao patch).
+
+O patch captura o elemento que iniciou a personalização, diferencia o primeiro
+acesso de uma reabertura com escolha já salva e usa `main#conteudo-principal`
+com `tabindex="-1"` como fallback programático para decisões que ocultam o
+aviso. O banner continua não modal: não há `aria-modal`, focus trap ou bloqueio
+do restante da página.
+
+Regressões Playwright executadas em contexto novo por cenário:
+
+- primeiro acesso, `Personalizar → Escape`, aviso ainda visível e foco em
+  `Personalizar`;
+- ordem por teclado (`Personalizar → Rejeitar opcionais → Aceitar análise`);
+- aceite e rejeição diretos, ambos com foco no conteúdo principal;
+- storage bloqueado, sem consentimento e sem inicialização do GA4;
+- reabertura pelo rodapé, `Escape` e decisão, restaurando o gatilho do rodapé;
+- desktop `1440x900` com `no-preference` e mobile `390x844` com
+  `prefers-reduced-motion: reduce`.
+
+Capturas da revisão:
+
+- [Registro da reprodução e resultado](./evidencias/fase0/revisao-foco-privacy.md)
+- [Home mobile reduzido](./evidencias/fase0/after-focus-home-mobile-reduced.png)
+- [Política mobile reduzida](./evidencias/fase0/after-focus-privacy-mobile-reduced.png)
+- [Home desktop padrão](./evidencias/fase0/after-focus-home-desktop-default.png)
+- [Política desktop padrão](./evidencias/fase0/after-focus-privacy-desktop-default.png)
+
+O fluxo de consentimento e as regras de carregamento do GA4 não foram
+alterados: a suíte específica continua verificando que nenhuma tag é criada
+antes do aceite e que rejeição/storage bloqueado permanecem sem `window.gtag`.
 
 ## Limites da evidência
 
