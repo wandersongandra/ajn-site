@@ -106,7 +106,7 @@ const websiteSchema = {
 	<body>
 		<a class="skip-link" href="#conteudo-principal">Ir para o conteúdo principal</a>
 		<Header />
-		<main id="conteudo-principal"><slot /></main>
+		<main id="conteudo-principal" tabindex="-1"><slot /></main>
 		<Footer />
 		<aside id="ajn-privacy-notice" class="privacy-notice" aria-labelledby="ajn-privacy-title" aria-describedby="ajn-privacy-description" data-ga4-id={ga4MeasurementId} hidden>
 			<div class="privacy-notice__copy">

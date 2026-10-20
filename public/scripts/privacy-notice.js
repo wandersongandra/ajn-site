@@ -16,6 +16,8 @@
   let enabled = false;
   let loaded = false;
   let chosen = null;
+  let returnFocus = null;
+  let preferencesOpen = false;
 
   function getChoice() {
     try {
@@ -65,24 +67,62 @@
     chosen = enabled;
     persist(enabled);
     notice.hidden = true;
+    options.hidden = true;
+    save.hidden = true;
+    accept.hidden = false;
+    preferencesOpen = false;
+    let shouldReload = false;
     if (enabled) loadAnalytics();
     else {
       if (id) window['ga-disable-' + id] = true;
       removeKnownAnalyticsCookies();
-      if (previous && loaded) window.location.reload();
+      shouldReload = previous && loaded;
     }
+    focusAfterDecision();
+    if (shouldReload) window.location.reload();
   }
-  function openPreferences() {
+  function focusReturnTarget({ allowInsideNotice = false } = {}) {
+    const target = returnFocus;
+    returnFocus = null;
+    if (!target || target.isConnected === false) return false;
+    const insideNotice = typeof notice.contains === 'function' && notice.contains(target);
+    if (!allowInsideNotice && insideNotice) return false;
+    target.focus();
+    return true;
+  }
+  function focusAfterDecision() {
+    if (focusReturnTarget()) return;
+    const main = document.getElementById?.('conteudo-principal') ?? document.querySelector?.('main');
+    if (main && typeof main.focus === 'function') main.focus();
+  }
+  function openPreferences(trigger) {
+    if (trigger && typeof trigger.focus === 'function') returnFocus = trigger;
     notice.hidden = false;
     options.hidden = false;
     save.hidden = false;
     accept.hidden = true;
     checkbox.checked = chosen === true;
+    preferencesOpen = true;
     save.focus();
+  }
+  function closePreferences() {
+    const hasStoredChoice = chosen !== null;
+    options.hidden = true;
+    save.hidden = true;
+    accept.hidden = false;
+    if (hasStoredChoice) notice.hidden = true;
+    preferencesOpen = false;
+    focusReturnTarget({ allowInsideNotice: !hasStoredChoice });
+  }
+  function focusInitialControl() {
+    const active = document.activeElement;
+    if (active && active !== document.body && active !== document.documentElement) return;
+    reject?.focus();
   }
   const stored = getChoice();
   if (stored === null) {
     notice.hidden = false;
+    focusInitialControl();
   } else {
     chosen = stored;
     enabled = stored;
@@ -135,7 +175,12 @@
 
   accept?.addEventListener('click', () => commit(true));
   reject?.addEventListener('click', () => commit(false));
-  customize?.addEventListener('click', openPreferences);
+  customize?.addEventListener('click', (event) => openPreferences(event?.currentTarget));
   save?.addEventListener('click', () => commit(checkbox.checked));
-  reopen.forEach((button) => button.addEventListener('click', openPreferences));
+  reopen.forEach((button) => button.addEventListener('click', (event) => openPreferences(event?.currentTarget)));
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !preferencesOpen) return;
+    event.preventDefault();
+    closePreferences();
+  });
 })();
