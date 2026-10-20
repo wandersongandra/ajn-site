@@ -2819,6 +2819,8 @@ h3 { font-size: var(--type-h3); font-weight: var(--font-weight-emphasis); letter
   white-space: nowrap !important;
 }
 .contact-form[aria-busy="true"] .button { cursor: wait; opacity: .72; }
-.contact-form__status[data-state="success"] { color: #d9f4c8; }
-.contact-form__status[data-state="error"] { color: #ffd6cc; }
-.contact-form__status[data-state="pending"] { color: var(--text-soft); }
+.contact-form__status { color: #243b2a; }
+.contact-form__status[data-state="success"] { color: #1f5b2a; }
+.contact-form__status[data-state="error"] { color: #842029; }
+.contact-form__status[data-state="pending"] { color: #214e34; }
+.contact-form__status:focus { outline: 3px solid #2f7d35; outline-offset: 2px; }

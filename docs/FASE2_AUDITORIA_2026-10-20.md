@@ -38,12 +38,14 @@ instrumentação apropriada. O GSC/CrUX continua indisponível nesta rodada.
 
 - smoke browser local: 1.457 asserções em 9 rotas, 10 larguras reduzidas,
   cenário padrão e `saveData`;
-- E2E controlado do formulário: endpoint HTTPS simulado, POST multipart,
-  resposta `202`, anexo permitido e estado acessível de sucesso;
+- E2E controlado do formulário em 390 e 1440 px: endpoint HTTPS simulado,
+  POST multipart, anexo DOCX com MIME genérico, estados pending/success/error,
+  respostas `202` e `500`, foco no status acessível e contraste medido de
+  7,55:1 no sucesso e 8,80:1 no erro;
 - `npm run validate`: PASS, com um hint preexistente de import `stat` não usado
   em `scripts/audit-medicoes.mjs`;
 - `npm audit --audit-level=high`: 0 vulnerabilidades;
-- `test:contact-form`: 4/4; `test:privacy-notice`: 18/18;
+- `test:contact-form`: 10/10; `test:privacy-notice`: 19/19;
 - screenshots desktop/mobile do formulário revisadas em browser real.
 
 ## Pendências externas
@@ -55,6 +57,10 @@ instrumentação apropriada. O GSC/CrUX continua indisponível nesta rodada.
    validação server-side, antiabuso, anexo, retenção e destinatário;
 4. após publicação, repetir smoke live, headers, canonical, sitemap, robots e
    teste controlado de submissão sem usar dados pessoais reais;
-5. investigar a divergência entre CSP enforced/report-only que gera alerta de
-   `style-src` em `/contato`; não foi ampliada a política para silenciar o
-   relatório.
+5. CSP: **CONFIRMED** que o alerta `style-src` report-only é provocado por 15
+   atributos `style` dinâmicos na build, usados pela imagem do Hero e pelos
+   atrasos de revelação (`--reveal-delay`) em componentes existentes. A CSP
+   enforced publicada já permite esses atributos; a report-only não permite.
+   Não foi adicionada uma permissão ampla apenas para silenciar o relatório,
+   nem há evidência suficiente para substituir esses valores dinâmicos sem
+   alterar layout/movimento. Reavaliar essa divergência em uma mudança isolada.

@@ -2,7 +2,6 @@ name: Browser smoke — AJN social and engineering
 
 on:
   pull_request:
-    branches: [main]
     paths:
       - 'src/**'
       - 'public/scripts/**'

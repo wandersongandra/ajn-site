@@ -3,21 +3,11 @@
 
   const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
   const allowedExtensions = new Set(['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']);
-  const allowedMimeTypes = new Set([
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'image/jpeg',
-    'image/png',
-  ]);
 
   function getFileError(file) {
     if (!file) return '';
     const extension = file.name?.split('.').pop()?.toLowerCase() || '';
     if (!allowedExtensions.has(extension)) return 'Escolha um arquivo PDF, DOC, DOCX, JPG ou PNG.';
-    if (file.type && !allowedMimeTypes.has(file.type.toLowerCase())) {
-      return 'O tipo do arquivo anexado não é aceito.';
-    }
     if (file.size > MAX_ATTACHMENT_BYTES) return 'O anexo deve ter no máximo 5 MB.';
     return '';
   }
@@ -47,6 +37,13 @@
 
     form.addEventListener('submit', async (event) => {
       if (!form.checkValidity() || submitting) return;
+
+      const honeypot = form.querySelector('input[name="website"]');
+      if (honeypot?.value) {
+        event.preventDefault();
+        setStatus(status, 'Não foi possível enviar agora. Use o WhatsApp ou o e-mail da AJN.', 'error');
+        return;
+      }
 
       const fileError = getFileError(attachment?.files?.[0]);
       if (fileError) {
