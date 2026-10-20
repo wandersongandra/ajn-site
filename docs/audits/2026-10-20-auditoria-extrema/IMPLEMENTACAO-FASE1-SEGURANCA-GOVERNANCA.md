@@ -58,7 +58,7 @@ Os alertas #11 (`js/bad-tag-filter`) e #12 (`js/incomplete-multi-character-sanit
 
 `security-html.mjs` agora expõe `stripScriptElements()`, baseado no scanner existente de abertura/fechamento de tags: respeita maiúsculas/minúsculas, atributos com `>`, whitespace, texto parecido com `<script>` e preserva elementos incompletos em vez de descartá-los silenciosamente. O auditor de engenharia usa essa função; não houve dependência nova nem alteração de regra de consentimento ou carregamento do GA4.
 
-Os testes cobrem tags normais e adversariais, incluindo atributo com `>`, `scripture` e abertura sem fechamento. A confirmação final de encerramento dos alertas no GitHub depende do CodeQL executado na PR desta branch; nenhum alerta foi descartado manualmente.
+Os testes cobrem tags normais e adversariais, incluindo atributo com `>`, `scripture` e abertura sem fechamento. O CodeQL da PR #75 passou para `actions` e `javascript-typescript`; a consulta dos alertas com `ref` da branch não retornou findings, enquanto os dois registros históricos continuam abertos somente na `main`. Nenhum alerta foi descartado manualmente.
 
 ## AJN-012 — redirecionamentos HTTP/HTTPS
 
@@ -121,7 +121,7 @@ O resultado local foi `PASS: 6 workflows`. Todos usam `npm ci`, Node 22, concorr
 | Rulesets | `[]` | Inalterado externamente | `gh api .../rulesets` | REQUER APROVAÇÃO ADMINISTRATIVA |
 | Dependabot security | Desabilitado | Não alterado; procedimento documentado | `security_and_analysis`, API 403 | REQUER APROVAÇÃO ADMINISTRATIVA |
 | Dependabot version | NPM/actions semanais | Mantido; PRs #63–#68 revisadas como pendentes | `.github/dependabot.yml`, `gh pr list` | CONFIGURADO |
-| CodeQL | Dois alertas abertos na regex | Regex removida, scanner e testes adicionados | `audit:engineering`, `test:hosting-policy` | CORRIGIDO NO CÓDIGO; CONFIRMAÇÃO REMOTA PENDENTE |
+| CodeQL | Dois alertas abertos na regex | Regex removida, scanner e testes adicionados | `audit:engineering`, `test:hosting-policy`, CodeQL PR #75 | CORRIGIDO; HISTÓRICO DA `main` PENDENTE DE TRIAGEM |
 | Redirect | Fixture/produção divergiam (`302` vs `301`) | `301` por salto, cadeia e query verificadas | `test:live-security`, `audit:live-security` | CONFIRMADO |
 | GitHub Actions | Pinagem/permissões apenas parcialmente garantidas | Auditor preventivo versionado; live smoke semanal | `audit:workflows`, diffs dos workflows | CONFIGURADO NO CÓDIGO; ADMIN EXTERNO PENDENTE |
 | Headers públicos | HSTS/CSP e demais headers observados | Mantidos; auditor continua exigindo baseline | `audit:live-security` público | CONFIRMADO |
