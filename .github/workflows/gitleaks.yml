@@ -2,7 +2,7 @@ name: Secret Leak Scan
 
 on:
   push:
-    branches: [main]
+
   pull_request:
   schedule:
     - cron: '37 7 * * 2'
