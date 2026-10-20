@@ -15,10 +15,10 @@ function redirectFor(input) {
 	return `${destination[1]}${request.pathname}${request.search}`;
 }
 
-test('uses a host-anchored temporary redirect before existing route redirects', () => {
+test('uses a host-anchored permanent redirect before existing route redirects', () => {
 	assert.match(condition, /^\^www\\\.ajnengenharia\\\.com\\\.br/);
 	assert.match(condition, /\$ \[NC\]$/);
-	assert.equal(destination?.[3], '302');
+	assert.equal(destination?.[3], '301');
 	assert.ok(config.indexOf('RewriteRule') < config.indexOf('RedirectMatch'));
 });
 
@@ -42,5 +42,5 @@ test('does not redirect apex, suffix lookalikes, or unrelated hosts', () => {
 test('keeps the fixed apex origin and does not pass through request host or port', () => {
 	assert.equal(redirectFor('https://www.ajnengenharia.com.br:8443/contato'), 'https://ajnengenharia.com.br/contato');
 	assert.equal(destination?.[1], 'https://ajnengenharia.com.br');
-	assert.match(rule, /\[R=302,L,NE\]$/);
+	assert.match(rule, /\[R=301,L,NE\]$/);
 });
