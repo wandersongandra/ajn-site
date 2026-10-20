@@ -1,6 +1,6 @@
 # AJN — Auditoria e implementação Fase 2
 
-Data: 20/10/2026  
+Data: 20/10/2026
 Escopo: continuidade após a PR #70, com foco em conversão, contato, GA4,
 SEO, browser, performance e segurança.
 
