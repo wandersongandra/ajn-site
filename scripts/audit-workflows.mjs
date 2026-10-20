@@ -90,7 +90,7 @@ function auditPermissions(workflow, file, failures) {
 			inspectPermissionValue(job.permissions, `${file}: job ${jobId}.permissions`, jobFailures);
 			for (const failure of jobFailures) {
 				if (typeof failure === 'object') {
-					const allowed = failure.permission === 'security-events' && jobId === 'analyze'
+					const allowed = failure.permission === 'security-events'
 						&& collectValuesByKey(job, 'uses').some(isCodeqlAnalyzeAction);
 					if (!allowed) {
 						failures.push(`${file}: job ${jobId}.permissions.${failure.permission}: write não é permitido sem exceção CodeQL legítima.`);

@@ -119,7 +119,7 @@ Os comentários de revisão abertos na PR #75 foram tratados no código, sem alt
 | Comentário | Lacuna | Correção e regressão | Estado remoto |
 |---|---|---|
 | `4330169071` | `docker://...` sem `@` era ignorado e tags mutáveis passavam | Parser estrutural coleta `uses`; Docker só passa com `@sha256:` + 64 hex; teste rejeita tag e aceita digest, Action SHA e Action local | RESOLVIDO após resposta `4330345738` |
-| `4330169079` | mapa inline `permissions: { contents: write }` escapava da regex | `yaml` inspeciona permissões globais e de jobs; teste rejeita write inline e mantém `security-events: write` apenas no job CodeQL `analyze` | RESOLVIDO após resposta `4330346067` |
+| `4330169079` | mapa inline `permissions: { contents: write }` escapava da regex | `yaml` inspeciona permissões globais e de jobs; teste rejeita write inline e mantém `security-events: write` somente no job que executa a Action CodeQL `analyze` | RESOLVIDO após resposta `4330346067` |
 | `4330169082` | acesso `secrets[...]` escapava da notação de ponto | scanner de expressões aceita ponto/colchetes com aspas e espaços, permite somente `GITHUB_TOKEN` e falha fechado em acesso dinâmico; testes cobrem dot, aspas simples/duplas e dynamic | RESOLVIDO após resposta `4330346398` |
 
 Foi adicionada a dependência direta de desenvolvimento `yaml@^2.9.1`, já presente transitivamente no lockfile, porque regex não consegue distinguir mapas YAML flow-style, jobs e valores escalares com segurança. O `package-lock.json` foi atualizado e as auditorias de dependências permaneceram sem vulnerabilidades.
