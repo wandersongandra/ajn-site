@@ -1,48 +1,53 @@
 import type { MarketingContent } from '../types';
 
 export const empresaProjetoEletricoBh = {
-	slug: "empresa-projeto-eletrico-bh", path: "/empresa-projeto-eletrico-bh",
-	title: "Empresa de projeto elétrico bh - AJN Consultoria e Engenharia",
-	description: "Empresa de projeto elétrico bh especializada em projetos elétricos seguros, eficientes e em conformidade com as normas técnicas para residências, comércios e.",
-	heading: "Empresa de projeto elétrico bh",
-	images: [
-		{ src: "/images/content/marketing/empresa-projeto-eletrico-bh/empresa-projeto-eletrico-bh-01.webp", alt: "Empresa de projeto elétrico bh" },
-		{ src: "/images/content/marketing/empresa-projeto-eletrico-bh/empresa-projeto-eletrico-bh-02.webp", alt: "Empresa de projeto elétrico bh" },
-		{ src: "/images/content/marketing/empresa-projeto-eletrico-bh/empresa-projeto-eletrico-bh-03.webp", alt: "Empresa de projeto elétrico bh" },
-	],
-	sections: [
-		{ heading: "A empresa de projeto elétrico bh e a Importância da Segurança e Eficiência Energética", paragraphs: [
-			{ segments: ["A", { bold: true, text: "empresa de projeto elétrico bh" }, "é fundamental para promover que as instalações elétricas, sejam elas residenciais, comerciais ou industriais, funcionem de forma segura, eficiente e em conformidade com as normas técnicas, como a ABNT/NR-10."] },
-			"Essas empresas contam com engenheiros qualificados que realizam o planejamento, dimensionamento e detalhamento das instalações elétricas, evitando assim riscos de acidentes, sobrecargas e desperdícios de energia."
-		]
-		},
-		{ heading: "Os Serviços Especializados da AJN Consultoria e Engenharia em Projetos Elétricos", paragraphs: [
-			"A AJN Consultoria e Engenharia oferece serviços especializados em projetos elétricos dentro do contexto de Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA).",
-			{ segments: ["A", { bold: true, text: "empresa de projeto elétrico bh" }, "atua de forma integrada, assegurando que as instalações elétricas projetadas estejam alinhadas com as normativas vigentes e que atendam às necessidades específicas de cada cliente."] },
-			{ segments: ["Para quem busca", { text: "empresa de projeto elétrico", href: "/empresa-projeto-eletrico" }, "com segurança e eficiência, a AJN também oferece soluções completas para projetos residenciais e comerciais."] }
-		]
-		},
-		{ heading: "Vantagens em Contratar uma empresa de projeto elétrico bh:", paragraphs: [
-		]
-, lists: [
-			{ items: [
-				"Segurança: Com um projeto elétrico bem elaborado, os riscos de acidentes são reduzidos, assegurando a proteção das pessoas e do patrimônio;",
-				"Eficiência Energética: Instalações elétricas projetadas adequadamente contribuem para a economia de energia, reduzindo assim os custos com eletricidade;",
-				"Conformidade Técnica: Os projetos elaborados pelas empresas especializadas seguem as normas técnicas, assegurando a conformidade das instalações."
-			] }
-		]
-, subsections: [
-			{ heading: "Conte com a AJN Consultoria e Engenharia para Projetos Elétricos Seguros e Eficientes", paragraphs: [
-				"A AJN Consultoria e Engenharia disponibiliza uma equipe de profissionais altamente qualificados para desenvolver projetos elétricos completos e personalizados, considerando as demandas específicas de cada cliente.",
-				{ segments: ["Com um amplo know-how no mercado, a", { bold: true, text: "empresa de projeto elétrico bh" }, "se destaca por sua excelência na prestação de serviços e pela busca constante pela inovação e qualidade."] },
-				"Se você busca por segurança, eficiência energética e conformidade técnica em seus projetos elétricos, entre em contato conosco e conheça todas as soluções que a AJN Consultoria e Engenharia pode oferecer para o seu negócio."
-			]
-			}
-		]
-		},
-		{ heading: "Para saber mais sobre Empresa de projeto elétrico bh", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
-	],
+  slug: 'empresa-projeto-eletrico-bh',
+  path: '/empresa-projeto-eletrico-bh',
+  title: 'Empresa de projetos elétricos em BH | AJN Engenharia',
+  description: 'Precisa de projeto elétrico em Belo Horizonte? Veja como definir escopo, cargas, circuitos e documentação técnica antes de solicitar uma proposta à AJN.',
+  heading: 'Projetos elétricos em Belo Horizonte para residências e empresas',
+  images: [
+    { src: '/images/content/marketing/empresa-projeto-eletrico-bh/empresa-projeto-eletrico-bh-01.webp', alt: 'Referência visual de projeto elétrico em Belo Horizonte' },
+    { src: '/images/content/marketing/empresa-projeto-eletrico-bh/empresa-projeto-eletrico-bh-02.webp', alt: 'Planejamento técnico de instalações elétricas' },
+    { src: '/images/content/marketing/empresa-projeto-eletrico-bh/empresa-projeto-eletrico-bh-03.webp', alt: 'Detalhamento de projeto de instalações elétricas' },
+  ],
+  sections: [
+    {
+      heading: 'Quando procurar uma empresa de projetos elétricos',
+      paragraphs: [
+        'Construções novas, reformas, ampliações e alterações na utilização de um imóvel podem exigir a revisão do projeto elétrico. Antes de dimensionar circuitos, é necessário entender a finalidade dos ambientes, as cargas previstas e as condições da instalação existente.',
+        'A definição do escopo evita tratar demandas muito diferentes como se fossem o mesmo serviço: uma residência, um estabelecimento comercial e uma instalação predial possuem características próprias.',
+      ],
+    },
+    {
+      heading: 'O que considerar no escopo do projeto',
+      paragraphs: [
+        'Conforme a demanda, o planejamento pode envolver levantamento de cargas, distribuição de pontos elétricos, divisão de circuitos, dimensionamento de condutores e dispositivos de proteção, diagramas e documentação técnica.',
+        'A análise considera as normas técnicas aplicáveis e as informações disponíveis sobre a obra. Vistorias, levantamentos complementares, aprovações e acompanhamento de execução devem constar expressamente da proposta quando necessários.',
+      ],
+      lists: [
+        { items: [
+          'Tipo de imóvel, localização e finalidade de uso.',
+          'Plantas disponíveis, cargas e equipamentos previstos.',
+          'Condições da instalação atual, quando houver reforma ou ampliação.',
+          'Documentos técnicos e entregas esperadas para a etapa da obra.',
+        ] },
+      ],
+    },
+    {
+      heading: 'Como solicitar uma proposta à AJN',
+      paragraphs: [
+        'Informe se o projeto é residencial, comercial ou predial, a cidade, a área aproximada e a etapa da obra. Se houver plantas ou documentação da instalação, indique sua disponibilidade para a avaliação inicial.',
+        'A partir dessas informações, a equipe poderá avaliar o atendimento, esclarecer o escopo e orientar sobre os próximos passos, sem pressupor preço ou prazo antes de conhecer a demanda.',
+        { segments: ['Conheça também a página de ', { text: 'projetos elétricos residenciais, comerciais e prediais', href: '/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia' }, '.'] },
+      ],
+    },
+    {
+      heading: 'Atendimento em Belo Horizonte',
+      paragraphs: [
+        'Precisa conversar sobre um projeto elétrico em BH ou na região? Descreva o tipo de edificação e o objetivo da intervenção. O enquadramento técnico e a disponibilidade do atendimento são avaliados conforme o caso.',
+        { segments: ['Use a ', { text: 'página de contato e orçamento', href: '/contato/' }, ' para encaminhar sua solicitação à AJN.'] },
+      ],
+    },
+  ],
 } as const satisfies MarketingContent;
