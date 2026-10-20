@@ -84,6 +84,13 @@ check(css.includes('font-size: 14px') &&
 	css.includes('background: var(--brand-action)') &&
 	css.includes('min-height: 48px'),
 	'Legibilidade, contraste e alvo de toque do rodapé não foram assegurados');
+// Do not reuse the editorial H2 scale inside the four-column footer: it
+// previously caused “Navegação” to paint across “Contato” at desktop widths.
+const footerTitleRule = css.match(/\.site-footer \.footer__menu h2,\s*\.site-footer \.footer__contact h2,\s*\.site-footer \.footer__social-column h2\s*\{([^}]*)\}/)?.[1] ?? '';
+check(footerTitleRule.includes('font-size: clamp(1.25rem, 1.45vw, 1.375rem)') &&
+	footerTitleRule.includes('overflow-wrap: anywhere') &&
+	!footerTitleRule.includes('font-size: var(--type-h2)'),
+	'Títulos do rodapé não devem usar a escala H2 editorial nem invadir colunas');
 check(css.includes('prefers-reduced-motion: reduce'),
 	'Efeitos do rodapé precisam respeitar redução de movimento');
 if (problems.length) {

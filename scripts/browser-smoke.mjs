@@ -8,7 +8,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:4321';
 const output = path.resolve('output/playwright/browser-smoke');
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const widths = [320, 360, 375, 390, 430, 768, 1024, 1440, 1920];
+const widths = [320, 360, 375, 390, 430, 768, 1024, 1440, 1536, 1920];
 const routes = [
   '/',
   '/sobre-nos/',
@@ -98,6 +98,54 @@ for (const scenario of scenarios) {
       `Overflow ${route} at ${width}px: doc ${measurements.width}px > viewport ${measurements.viewport}px`);
     assert(measurements.h1 === 1, `H1 count ${route} at ${width}px: ${measurements.h1}`);
     assert(pageErrors.length === 0, `JS errors ${route} at ${width}px: ${pageErrors.join('; ')}`);
+
+    // Use text Range geometry, not the h2 element box: overflowing glyphs may
+    // overlap the next grid column without changing document.scrollWidth.
+    const footerGeometry = await page.evaluate(() => {
+      const selectors = ['.footer__menu h2', '.footer__contact h2', '.footer__social-column h2'];
+      const headings = selectors.map(selector => {
+        const heading = document.querySelector('.site-footer ' + selector);
+        if (!heading) return { label: selector, missing: true, inColumn: false, lines: [] };
+        const column = heading.parentElement.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(heading);
+        const lines = [...range.getClientRects()].filter(r => r.width > 0 && r.height > 0)
+          .map(r => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom }));
+        return {
+          label: selector,
+          missing: false,
+          inColumn: lines.length > 0 && lines.every(r => r.left >= column.left - 2 && r.right <= column.right + 2),
+          lines,
+        };
+      });
+      const collisions = [];
+      for (let i = 0; i < headings.length; i++) {
+        for (let j = i + 1; j < headings.length; j++) {
+          for (const a of headings[i].lines) {
+            for (const b of headings[j].lines) {
+              if (a.left < b.right + 4 && a.right + 4 > b.left &&
+                  a.top < b.bottom && a.bottom > b.top) {
+                collisions.push(headings[i].label + ' / ' + headings[j].label);
+              }
+            }
+          }
+        }
+      }
+      return {
+        outside: headings.filter(h => h.missing || !h.inColumn).map(h => h.label),
+        collisions,
+      };
+    });
+    assert(footerGeometry.outside.length === 0,
+      `Footer titles escape grid columns ${route} at ${width}px (${scenario.name}): ${footerGeometry.outside.join(', ')}`);
+    assert(footerGeometry.collisions.length === 0,
+      `Footer heading text overlaps ${route} at ${width}px (${scenario.name}): ${footerGeometry.collisions.join(', ')}`);
+    if (route === '/' && scenario.name === 'reduced' && [390, 1440, 1536].includes(width)) {
+      await page.locator('.site-footer').screenshot({
+        path: path.join(output, `footer-${scenario.name}-${width}.png`),
+        animations: 'disabled',
+      });
+    }
 
 		if (route === '/') {
 			const motion = await page.evaluate(() => {
@@ -223,7 +271,7 @@ for (const scenario of scenarios) {
       assert(!afterPrevious, `Previous control did not enable at ${width}px`);
       const trackerPresent = await page.evaluate(() => Boolean(window.gtag));
       assert(!trackerPresent, `Analytics loaded before cookie consent at ${width}px`);
-    } else if (width === 390 || width === 1440) {
+    } else if (width === 390 || width === 1440 || width === 1536) {
       const name = route.replace(/\W+/g, '-').replace(/^-|-$/g, '');
       await page.screenshot({ path: path.join(output, `${scenario.name}-${name}-${width}.png`), fullPage: true, animations: 'disabled' });
     }
