@@ -44,15 +44,39 @@ export async function auditLiveSecurity({ fetchImpl = fetch, timeoutMs = DEFAULT
 		assert(Boolean(headers.get('referrer-policy')), url + ': Referrer-Policy ausente.');
 		assert(Boolean(headers.get('permissions-policy')), url + ': Permissions-Policy ausente.');
 	}
-	function inspectRedirect(response, from, expected) {
-		if (!response) return;
-		assert(response.status === 302, from + ': redirecionamento temporário deveria ser 302 (observado ' + response.status + ').');
+	function inspectRedirect(response, from) {
+		if (!response) return null;
+		assert(response.status === 301, from + ': redirecionamento permanente deveria ser 301 (observado ' + response.status + ').');
 		const location = response.headers.get('location');
-		if (!location) { errors.push(from + ': Location ausente.'); return; }
-		let actual;
-		try { actual = new URL(location, from).href; }
-		catch { errors.push(from + ': Location inválido.'); return; }
-		assert(actual === expected, from + ': destino, caminho ou query não corresponde ao canonical (' + actual + ').');
+		if (!location) { errors.push(from + ': Location ausente.'); return null; }
+		try { return new URL(location, from).href; }
+		catch { errors.push(from + ': Location inválido.'); return null; }
+	}
+	async function followCanonicalRedirects(start, expected) {
+		const allowedHosts = new Set([new URL(SITE).hostname, new URL(WWW).hostname]);
+		const visited = new Set();
+		let current = start;
+		for (let hop = 0; hop <= 3; hop += 1) {
+			if (visited.has(current)) {
+				errors.push(start + ': loop de redirecionamento detectado em ' + current + '.');
+				return;
+			}
+			visited.add(current);
+			const response = await get(current);
+			if (!response) return;
+			if (response.status === 200) {
+				assert(current === expected, start + ': destino final diferente do canonical (' + current + ').');
+				return;
+			}
+			const next = inspectRedirect(response, current);
+			if (!next) return;
+			const nextUrl = new URL(next);
+			assert(nextUrl.protocol === 'https:' && allowedHosts.has(nextUrl.hostname),
+				current + ': redirecionamento saiu dos hosts HTTPS permitidos (' + next + ').');
+			if (nextUrl.protocol !== 'https:' || !allowedHosts.has(nextUrl.hostname)) return;
+			current = next;
+		}
+		errors.push(start + ': mais de três saltos de redirecionamento.');
 	}
 	for (const path of PATHS) {
 		const url = SITE + path;
@@ -69,17 +93,10 @@ export async function auditLiveSecurity({ fetchImpl = fetch, timeoutMs = DEFAULT
 	}
 	const testPath = '/contato/?from=security-smoke&path=%2Fblog';
 	for (const path of ['/', testPath]) {
-		const from = WWW + path;
-		inspectRedirect(await get(from), from, SITE + path);
+		await followCanonicalRedirects(WWW + path, SITE + path);
 	}
-	const httpUrl = 'http://ajnengenharia.com.br/';
-	const httpResult = await get(httpUrl);
-	if (httpResult) {
-		assert([301, 302, 307, 308].includes(httpResult.status), httpUrl + ': HTTP não redireciona para HTTPS.');
-		const location = httpResult.headers.get('location');
-		assert(Boolean(location) && new URL(location, httpUrl).href === SITE + '/',
-			httpUrl + ': redirecionamento não aponta ao HTTPS canonical.');
-	}
+	await followCanonicalRedirects('http://ajnengenharia.com.br/', SITE + '/');
+	await followCanonicalRedirects('http://www.ajnengenharia.com.br/', SITE + '/');
 	return { ok: errors.length === 0, errors, observations };
 }
 

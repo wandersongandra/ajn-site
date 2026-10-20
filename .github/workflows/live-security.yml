@@ -1,10 +1,16 @@
 name: Live Security Smoke Test
 
 on:
+  schedule:
+    - cron: '17 8 * * 1'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: live-security-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   public-site-audit:

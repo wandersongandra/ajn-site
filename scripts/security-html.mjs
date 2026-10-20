@@ -45,6 +45,24 @@ export function extractScriptElements(html) {
 	return scripts;
 }
 
+// Remove complete script elements without treating arbitrary text as markup.
+// Incomplete elements are preserved so an audit cannot silently hide malformed HTML.
+export function stripScriptElements(html) {
+	const source = String(html);
+	const chunks = [];
+	let cursor = 0;
+	let opening;
+	while ((opening = findScriptTag(source, cursor, false))) {
+		const closing = findScriptTag(source, opening.end + 1, true);
+		if (!closing) break;
+		chunks.push(source.slice(cursor, opening.start));
+		cursor = closing.end + 1;
+	}
+	if (chunks.length === 0) return source;
+	chunks.push(source.slice(cursor));
+	return chunks.join('');
+}
+
 // Read attribute names without treating data-src or quoted strings like " src=x"
 // as real HTML attributes. This is a lightweight audit parser, not a DOM sanitizer.
 export function getHtmlAttributeValue(attributes, expectedName) {

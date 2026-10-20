@@ -138,6 +138,12 @@ jobs:
       - name: Dependency audit
         run: npm audit --omit=dev --audit-level=high
 
+      - name: GitHub Actions audit regression tests
+        run: npm run test:audit-workflows
+
+      - name: GitHub Actions source policy audit
+        run: npm run audit:workflows
+
       # Valida separadamente a build pública: não publicar prévia com noindex.
       - name: Production SEO indexing smoke test
         env:

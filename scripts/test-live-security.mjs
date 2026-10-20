@@ -21,27 +21,30 @@ function mockFetch({ override = {} } = {}) {
 		assert.equal(options.method, 'GET');
 		assert.equal(options.redirect, 'manual');
 		if (override[url]) return override[url];
-		if (pages.some(path => url === base + path)) {
+		if (pages.some(path => url === base + path) || url.startsWith(base + '/contato/?')) {
 			return new Response('<!doctype html><link rel="canonical" href="' + url +
 				'"><meta name="robots" content="index,follow">', { status: 200, headers });
 		}
 		if (url.startsWith(www + '/')) {
 			const path = url.slice(www.length);
-			return new Response('', { status: 302, headers: { location: base + path } });
+			return new Response('', { status: 301, headers: { location: base + path } });
 		}
 		if (url === 'http://ajnengenharia.com.br/') {
 			return new Response('', { status: 301, headers: { location: base + '/' } });
+		}
+		if (url === 'http://www.ajnengenharia.com.br/') {
+			return new Response('', { status: 301, headers: { location: www + '/' } });
 		}
 		throw new Error('Unexpected URL ' + url);
 	}
 	return { fake, calls };
 }
 
-test('audit live: cenário íntegro usa somente GET e não segue redirecionamentos', async () => {
+test('audit live: cenário íntegro usa somente GET e valida cada salto permanente', async () => {
 	const { fake, calls } = mockFetch();
 	const result = await auditLiveSecurity({ fetchImpl: fake });
 	assert.equal(result.ok, true, result.errors.join('\n'));
-	assert.equal(calls.length, 7);
+	assert.equal(calls.length, 13);
 	assert.ok(calls.every(call => call.options.redirect === 'manual' && call.options.method === 'GET'));
 });
 
@@ -59,9 +62,9 @@ test('audit live: falha se o HSTS ou CSP em Report-Only desaparecer', async () =
 
 test('audit live: rejeita redirecionamento para host externo e query perdida', async () => {
 	const { fake } = mockFetch({ override: {
-		[www + '/']: new Response('', { status: 302, headers: { location: 'https://evil.example/' } }),
+		[www + '/']: new Response('', { status: 301, headers: { location: 'https://evil.example/' } }),
 		[www + '/contato/?from=security-smoke&path=%2Fblog']:
-			new Response('', { status: 302, headers: { location: base + '/contato/' } }),
+			new Response('', { status: 301, headers: { location: base + '/contato/' } }),
 	} });
 	const result = await auditLiveSecurity({ fetchImpl: fake });
 	assert.equal(result.ok, false);

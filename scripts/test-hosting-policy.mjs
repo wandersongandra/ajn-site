@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { cspSourcesEqual, cspSourceIsExact, isAllowedResourceUrl } from './hosting-policy.mjs';
-import { extractScriptElements, getHtmlAttributeValue, isJsonLdScript, hasExactHtmlAttribute } from './security-html.mjs';
+import { extractScriptElements, getHtmlAttributeValue, isJsonLdScript, hasExactHtmlAttribute, stripScriptElements } from './security-html.mjs';
 
 const origin = 'https://ajnengenharia.com.br';
 const policy = "style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'";
@@ -37,4 +37,15 @@ test('reconhece fechamentos script estranhos sem confiar em data-src ou data-typ
 	assert.equal(fragments.filter(el => el.body.trim() &&
 		!isJsonLdScript(el.attributes) && !hasExactHtmlAttribute(el.attributes, 'src')).length, 2);
 	assert.equal(isJsonLdScript(fragments[2].attributes), true);
+});
+
+test('remove apenas elementos script completos ao preparar o corpo textual', () => {
+	const html = 'antes <SCRIPT data-note="a > b">alert(1)</SCRIPT> depois ' +
+		'<script type="application/ld+json">{"ok":true}</script> fim';
+	assert.equal(stripScriptElements(html), 'antes  depois  fim');
+});
+
+test('preserva texto parecido com script e elementos incompletos', () => {
+	const html = 'string <scripture>texto</scripture> e <script>incompleto';
+	assert.equal(stripScriptElements(html), html);
 });
