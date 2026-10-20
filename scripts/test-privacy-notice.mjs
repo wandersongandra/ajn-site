@@ -124,6 +124,19 @@ test('com aceite, evento do Instagram é medido sem dados pessoais', () => {
   assert.equal(event[2].placement, 'home_editorial');
   assert.equal(Object.keys(event[2]).length, 3);
 });
+test('envio confirmado do formulário não é medido sem consentimento', () => {
+  const s = setup({ id: 'G-ABCDEF1234' });
+  s.windowHandlers['ajn:contact-form-submit']();
+  assert.equal(s.window.dataLayer, undefined);
+});
+test('envio confirmado do formulário mede somente a página após consentimento', () => {
+  const s = setup({ id: 'G-ABCDEF1234' });
+  s.handlers['accept:click']();
+  s.windowHandlers['ajn:contact-form-submit']();
+  const event = s.window.dataLayer.map(args => [...args]).find(args => args[0] === 'event' && args[1] === 'contact_form_submit');
+  assert.equal(event[2].page_path, '/contato/');
+  assert.deepEqual(Object.keys(event[2]), ['page_path']);
+});
 test('rejeitar e depois aceitar reabilita GA4 na própria página', () => {
   const s = setup({ id:'G-ABCDEF1234' });
   s.handlers['reject:click']();

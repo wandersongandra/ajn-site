@@ -104,6 +104,15 @@
     });
   });
 
+  // Mede somente a confirmação HTTP positiva do receptor, sem dados do formulário.
+  window.addEventListener('ajn:contact-form-submit', () => {
+    if (!enabled || !loaded || !id || window['ga-disable-' + id] === true ||
+        typeof window.gtag !== 'function') return;
+    window.gtag('event', 'contact_form_submit', {
+      page_path: window.location.pathname || '/',
+    });
+  });
+
   // Conta a intenção de contato sem transmitir telefone, e-mail nem URL externa.
   // Links continuam funcionando normalmente, inclusive se a análise for rejeitada.
   document.addEventListener('click', (event) => {
