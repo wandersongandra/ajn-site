@@ -71,7 +71,6 @@ const contactEndpoint = (() => {
 				<form
 					class="contact-form"
 					data-contact-form
-					action={contactEndpoint || undefined}
 					method="post"
 					enctype="multipart/form-data"
 					data-contact-endpoint={contactEndpoint || undefined}
@@ -122,7 +121,7 @@ const contactEndpoint = (() => {
 					</div>
 	
 					<p class="contact-form__privacy">Ao enviar a mensagem, as informações informadas serão utilizadas para responder à solicitação. Consulte a <a href="/politica-de-privacidade/">Política de Privacidade</a> antes do envio.</p>
-					<button class="button" type="submit">Enviar mensagem</button>
+					<button class="button" type="submit" disabled>Enviar mensagem</button>
 					<p id="contact-form-help" class="contact-form__help">* Campos obrigatórios.</p>
 					<p id="contact-form-status" class="contact-form__status" data-contact-status role="status" aria-live="polite" tabindex="-1">
 						Preencha os campos obrigatórios para enviar a mensagem.

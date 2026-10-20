@@ -5,6 +5,9 @@ Status em 20/10/2026: **não configurado em produção**.
 O Astro só renderiza o formulário quando `PUBLIC_CONTACT_ENDPOINT` contém uma
 URL HTTPS sem usuário ou senha. Sem essa variável, `/contato` mantém os canais
 de WhatsApp e e-mail ativos e não promete um envio que não possa ser confirmado.
+Quando o endpoint está configurado, o formulário não expõe `action` para POST
+nativo: o botão começa desabilitado e o JavaScript o habilita apenas para o
+fluxo que cria `submission_id` e envia `FormData` explicitamente.
 
 ## Requisitos mínimos do receptor
 

@@ -44,6 +44,7 @@
     let retrySnapshot = '';
 
     if (!status || !submit) return;
+    submit.disabled = false;
 
     form.addEventListener('submit', async (event) => {
       if (submitting) {
