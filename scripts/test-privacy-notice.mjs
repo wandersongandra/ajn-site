@@ -26,14 +26,14 @@ function setup({ id = '', choice = null, blocked = false } = {}) {
   if (choice !== null) map.set(key, JSON.stringify({ version: 2, ga4Id: id, analytics: choice, at: now - 1000 }));
   const handlers = {};
   const controls = Object.fromEntries(['accept','reject','customize','save','analytics','options'].map(name => [name, {
-    hidden: name === 'save' || name === 'options', checked: false,
+    hidden: name === 'save' || name === 'options', checked: false, focused: false,
     focus() { this.focused = true; },
     addEventListener(event, fn) { handlers[name + ':' + event] = fn; }
   }]));
   const notice = { hidden: true, dataset: { ga4Id: id }, querySelector(selector) {
     return controls[selector.match(/data-privacy-([a-z]+)/)?.[1]];
   }};
-  const links = [{ addEventListener(event, fn) { handlers['reopen:' + event] = fn; } }];
+  const links = [{ focused: false, focus() { this.focused = true; }, addEventListener(event, fn) { handlers['reopen:' + event] = fn; } }];
   const inserted = [];
   const cookies = [];
   const head = { appendChild(tag) { inserted.push(tag); } };
@@ -53,8 +53,12 @@ function setup({ id = '', choice = null, blocked = false } = {}) {
     addEventListener(type, listener) { windowHandlers[type] = listener; },
   };
   vm.runInNewContext(code, { document, window, Date: class extends Date { static now() { return now; } } });
-  return { notice, controls, handlers, inserted, map, window, windowHandlers, cookies };
+  return { notice, controls, handlers, inserted, map, window, windowHandlers, cookies, links };
 }
+test('banner sem consentimento move o foco para a primeira ação de privacidade', () => {
+  const s = setup({ id: 'G-ABCDEF1234' });
+  assert.equal(s.controls.reject.focused, true);
+});
 test('sem ID: não carrega GA4 mesmo com aceite', () => {
   const s=setup();
   assert.equal(s.notice.hidden,false);
@@ -111,6 +115,25 @@ test('revogação desativa GA e recarrega a página', () => {
   s.handlers['save:click']();
   assert.equal(s.window['ga-disable-G-ABCDEF1234'],true);
   assert.equal(s.window.location.reloaded,true);
+});
+test('Escape fecha somente as preferências abertas e devolve o foco ao gatilho', () => {
+  const s = setup({ id:'G-ABCDEF1234' });
+  s.handlers['reopen:click']({ currentTarget: s.links[0] });
+  assert.equal(s.controls.save.focused, true);
+  let prevented = false;
+  s.handlers['document:keydown']({ key: 'Escape', preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.equal(s.controls.options.hidden, true);
+  assert.equal(s.controls.save.hidden, true);
+  assert.equal(s.notice.hidden, false);
+  assert.equal(s.links[0].focused, true);
+});
+test('Escape em preferências já escolhidas cancela a abertura e oculta o aviso', () => {
+  const s = setup({ id:'G-ABCDEF1234', choice: false });
+  s.handlers['reopen:click']({ currentTarget: s.links[0] });
+  s.handlers['document:keydown']({ key: 'Escape', preventDefault() {} });
+  assert.equal(s.notice.hidden, true);
+  assert.equal(s.links[0].focused, true);
 });
 test('storage bloqueado mantém banner e não inicia GA4', () => {
   const s=setup({id:'G-ABCDEF1234',blocked:true});

@@ -16,6 +16,8 @@
   let enabled = false;
   let loaded = false;
   let chosen = null;
+  let returnFocus = null;
+  let preferencesOpen = false;
 
   function getChoice() {
     try {
@@ -65,24 +67,50 @@
     chosen = enabled;
     persist(enabled);
     notice.hidden = true;
+    options.hidden = true;
+    save.hidden = true;
+    accept.hidden = false;
+    preferencesOpen = false;
     if (enabled) loadAnalytics();
     else {
       if (id) window['ga-disable-' + id] = true;
       removeKnownAnalyticsCookies();
       if (previous && loaded) window.location.reload();
     }
+    const target = returnFocus;
+    returnFocus = null;
+    if (target && target.isConnected !== false) target.focus();
   }
-  function openPreferences() {
+  function openPreferences(trigger) {
+    if (trigger && typeof trigger.focus === 'function') returnFocus = trigger;
     notice.hidden = false;
     options.hidden = false;
     save.hidden = false;
     accept.hidden = true;
     checkbox.checked = chosen === true;
+    preferencesOpen = true;
     save.focus();
+  }
+  function closePreferences() {
+    const hasStoredChoice = chosen !== null;
+    options.hidden = true;
+    save.hidden = true;
+    accept.hidden = false;
+    if (hasStoredChoice) notice.hidden = true;
+    preferencesOpen = false;
+    const target = returnFocus;
+    returnFocus = null;
+    if (target && target.isConnected !== false) target.focus();
+  }
+  function focusInitialControl() {
+    const active = document.activeElement;
+    if (active && active !== document.body && active !== document.documentElement) return;
+    reject?.focus();
   }
   const stored = getChoice();
   if (stored === null) {
     notice.hidden = false;
+    focusInitialControl();
   } else {
     chosen = stored;
     enabled = stored;
@@ -137,5 +165,10 @@
   reject?.addEventListener('click', () => commit(false));
   customize?.addEventListener('click', openPreferences);
   save?.addEventListener('click', () => commit(checkbox.checked));
-  reopen.forEach((button) => button.addEventListener('click', openPreferences));
+  reopen.forEach((button) => button.addEventListener('click', (event) => openPreferences(event?.currentTarget)));
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !preferencesOpen) return;
+    event.preventDefault();
+    closePreferences();
+  });
 })();

@@ -83,7 +83,7 @@ const availablePosts = posts.map((post) => ({
     <div class="instagram-highlights__rail" id="ajn-instagram-posts" role="region" aria-label="Publicações selecionadas do Instagram da AJN" tabindex="0">
       {availablePosts.map((post, index) => (
         <article class="instagram-highlights__card">
-          <a href={post.href} class="instagram-highlights__link" data-ig-outbound data-instagram-id={post.id} data-instagram-kind={post.kind} target="_blank" rel="noopener noreferrer" aria-label={`Abrir no Instagram: ${post.title}`}>
+          <a href={post.href} class="instagram-highlights__link" data-ig-outbound data-instagram-id={post.id} data-instagram-kind={post.kind} target="_blank" rel="noopener noreferrer">
             {post.localCover && (
               <div class="instagram-highlights__media">
                 <img src={post.localCover} alt="" width="600" height="750" loading="lazy" decoding="async" />
