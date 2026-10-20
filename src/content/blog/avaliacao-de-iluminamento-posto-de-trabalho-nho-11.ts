@@ -4,9 +4,9 @@ import type { BlogContentData } from '../types';
 export const blogIluminamento = {
   slug: 'avaliacao-de-iluminamento-posto-de-trabalho-nho-11',
   path: '/blog/avaliacao-de-iluminamento-posto-de-trabalho-nho-11',
-  title: 'Iluminamento no trabalho: avaliação do posto e NHO 11 | AJN',
-  description: 'Avaliação do iluminamento nos postos de trabalho: atividades visuais, luxímetro, NHO 11, NR-17 e correções possíveis.',
-  heading: 'Iluminamento no trabalho: avaliação do posto e NHO 11',
+  title: 'Avaliação de iluminamento pela NHO 11 | AJN Engenharia',
+  description: 'Saiba como planejar a avaliação de iluminamento em postos de trabalho: uso do luxímetro, tarefas visuais, critérios da NHO 11 e conteúdo do relatório.',
+  heading: 'Avaliação de iluminamento nos postos de trabalho: NHO 11',
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
   topic: 'Laudos e avaliações técnicas',
