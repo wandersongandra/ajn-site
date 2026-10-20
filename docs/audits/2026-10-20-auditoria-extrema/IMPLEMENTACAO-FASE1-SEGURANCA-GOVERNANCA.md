@@ -143,6 +143,7 @@ O resultado local foi `PASS: 6 workflows`. Todos usam `npm ci`, Node 22, concorr
 - Browser regression Fase 0 — 84 assertions PASS.
 - Testes de privacidade durante `validate` — 23/23 PASS.
 - `gh pr checks 74` — PR #74 já integrada; checks históricos verdes, sem confundir isso com proteção administrativa.
+- `gh pr checks 75` — CodeQL, Dependency Security, Gitleaks, browser smoke e validate PASS; PR aberta, estado `CLEAN`, sem merge.
 
 ## Veredicto
 
