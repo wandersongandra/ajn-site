@@ -1,9 +1,9 @@
 # Runtime hardening for Apache-compatible static hosting.
-# Candidate only: keep this redirect temporary until it is validated on a staging host.
+# Canonical domain: redirect www to HTTPS apex permanently after validating on production before merge.
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::[0-9]+)?$ [NC]
-    RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=302,L,NE]
+    RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
 </IfModule>
 # Redirecionamento permanente de Informações; ocorre no servidor antes do fallback Astro.
 <IfModule mod_alias.c>
