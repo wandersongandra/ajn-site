@@ -8,7 +8,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:4321';
 const output = path.resolve('output/playwright/browser-smoke');
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const widths = [360, 375, 390, 430, 768, 1024, 1440, 1920];
+const widths = [320, 360, 375, 390, 430, 768, 1024, 1440, 1920];
 const routes = [
   '/',
   '/sobre-nos/',
@@ -20,6 +20,29 @@ const routes = [
   '/projetos-eletricos-prediais/',
   '/medicoes-ambientais-ocupacionais/',
 ];
+const scenarios = [
+	{
+		name: 'reduced',
+		reducedMotion: 'reduce',
+		saveData: false,
+		widths,
+		routes,
+	},
+	{
+		name: 'default',
+		reducedMotion: 'no-preference',
+		saveData: false,
+		widths: [390, 1440],
+		routes: ['/', '/servicos/', '/contato/', '/medicoes-ambientais-ocupacionais/'],
+	},
+	{
+		name: 'save-data',
+		reducedMotion: 'no-preference',
+		saveData: true,
+		widths: [390, 1440],
+		routes: ['/', '/servicos/', '/contato/', '/medicoes-ambientais-ocupacionais/'],
+	},
+];
 const failures = [];
 let assertions = 0;
 
@@ -28,15 +51,38 @@ function assert(ok, description) {
   if (!ok) failures.push(description);
 }
 
-for (const width of widths) {
-  const context = await browser.newContext({
-    viewport: { width, height: 850 },
-    reducedMotion: 'reduce',
-    deviceScaleFactor: 1,
-    locale: 'pt-BR',
-  });
-  for (const route of routes) {
+async function waitForRailScroll(page, before) {
+	await page.waitForFunction((previous) => {
+		const rail = document.querySelector('#ajn-instagram-posts');
+		return Boolean(rail && rail.scrollLeft > previous);
+	}, before, { timeout: 2000 });
+}
+
+for (const scenario of scenarios) {
+	const context = await browser.newContext({
+		viewport: { width: scenario.widths[0], height: 850 },
+		reducedMotion: scenario.reducedMotion,
+		deviceScaleFactor: 1,
+		locale: 'pt-BR',
+	});
+	if (scenario.saveData) {
+		await context.addInitScript(() => {
+			const connection = navigator.connection;
+			if (connection) {
+				try {
+					Object.defineProperty(connection, 'saveData', { configurable: true, get: () => true });
+					return;
+				} catch {}
+			}
+			try {
+				Object.defineProperty(navigator, 'connection', { configurable: true, value: { saveData: true } });
+			} catch {}
+		});
+	}
+	for (const width of scenario.widths) {
+		for (const route of scenario.routes) {
     const page = await context.newPage();
+    await page.setViewportSize({ width, height: 850 });
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
     const response = await page.goto(new URL(route, base).href, { waitUntil: 'domcontentloaded', timeout: 45000 });
@@ -52,6 +98,47 @@ for (const width of widths) {
       `Overflow ${route} at ${width}px: doc ${measurements.width}px > viewport ${measurements.viewport}px`);
     assert(measurements.h1 === 1, `H1 count ${route} at ${width}px: ${measurements.h1}`);
     assert(pageErrors.length === 0, `JS errors ${route} at ${width}px: ${pageErrors.join('; ')}`);
+
+		if (route === '/') {
+			const motion = await page.evaluate(() => {
+				const home = document.querySelector('.home-page');
+				const hero = document.querySelector('.hero');
+				const heroElements = document.querySelectorAll('.hero__eyebrow, .hero__content h1, .hero__lead, .hero__actions, .hero__panel');
+				return {
+					saver: home?.classList.contains('motion-saver') ?? false,
+					enabled: home?.classList.contains('motion-enabled') ?? false,
+					revealsReady: home?.classList.contains('motion-ready') ?? false,
+					animations: [...heroElements].map(element => {
+						const style = getComputedStyle(element);
+						return { name: style.animationName, duration: style.animationDuration };
+					}),
+					backgroundAnimation: hero ? getComputedStyle(hero, '::before').animationName : 'missing',
+				};
+			});
+			if (scenario.saveData) {
+				assert(motion.saver && !motion.enabled, `saveData class state at ${width}px`);
+				assert(motion.animations.every(({ name }) => name === 'none') && motion.backgroundAnimation === 'none',
+					`Decorative hero animation not disabled for saveData at ${width}px`);
+			} else if (scenario.reducedMotion === 'reduce') {
+				assert(!motion.enabled && motion.animations.every(({ name }) => name === 'none') && motion.backgroundAnimation === 'none',
+					`Reduced-motion hero animation not disabled at ${width}px`);
+			} else {
+				assert(motion.enabled && !motion.saver, `Default motion class state at ${width}px`);
+				assert(motion.animations.some(({ name, duration }) => name === 'hero-rise' && duration !== '0s') && motion.backgroundAnimation === 'ajn-hero-image-enter',
+					`Default hero animation not enabled at ${width}px`);
+			}
+			const preload = page.locator('link[rel="preload"][as="image"][fetchpriority="high"]');
+			assert(await preload.count() === 1, `Critical hero image preload missing at ${width}px`);
+			const heroLoaded = await page.evaluate(async () => {
+				const href = document.querySelector('link[rel="preload"][as="image"]')?.getAttribute('href');
+				if (!href) return false;
+				const image = new Image();
+				image.src = href;
+				try { await image.decode(); return image.naturalWidth > 0 && image.naturalHeight > 0; }
+				catch { return false; }
+			});
+			assert(heroLoaded, `Critical hero image did not decode at ${width}px`);
+		}
 
     const skipLink = page.locator('.skip-link');
     await skipLink.focus();
@@ -126,10 +213,10 @@ for (const width of widths) {
       const controls = section.locator('[data-ig-scroll]');
       assert(await controls.count() === 2, `Scroll controls missing at ${width}px`);
       await rail.scrollIntoViewIfNeeded();
-      await section.screenshot({ path: path.join(output, `instagram-${width}.png`), animations: 'disabled' });
+      await section.screenshot({ path: path.join(output, `instagram-${scenario.name}-${width}.png`), animations: 'disabled' });
       const before = await rail.evaluate(el => el.scrollLeft);
       await section.locator('[data-ig-scroll="next"]').click();
-      await page.waitForTimeout(120);
+      await waitForRailScroll(page, before);
       const after = await rail.evaluate(el => el.scrollLeft);
       assert(after > before, `Next button does not move the feed at ${width}px (before=${before}, after=${after})`);
       const afterPrevious = await section.locator('[data-ig-scroll="previous"]').isDisabled();
@@ -138,15 +225,16 @@ for (const width of widths) {
       assert(!trackerPresent, `Analytics loaded before cookie consent at ${width}px`);
     } else if (width === 390 || width === 1440) {
       const name = route.replace(/\W+/g, '-').replace(/^-|-$/g, '');
-      await page.screenshot({ path: path.join(output, `${name}-${width}.png`), fullPage: true, animations: 'disabled' });
+      await page.screenshot({ path: path.join(output, `${scenario.name}-${name}-${width}.png`), fullPage: true, animations: 'disabled' });
     }
     await page.close();
-  }
-  await context.close();
+		}
+	}
+	await context.close();
 }
 await browser.close();
 if (failures.length) {
   for (const f of failures) console.error('[browser][FAIL]', f);
   console.error(`Browser smoke FAILED: ${failures.length} issue(s) / ${assertions} assertions.`);
   process.exitCode = 1;
-} else console.log(`Browser smoke PASS: ${assertions} assertions, ${routes.length} routes x ${widths.length} viewports. Screenshots at ${output}`);
+} else console.log(`Browser smoke PASS: ${assertions} assertions, ${scenarios.map(({ name, routes: scenarioRoutes, widths: scenarioWidths }) => `${name}=${scenarioRoutes.length} routes x ${scenarioWidths.length} viewports`).join(', ')}. Screenshots at ${output}`);

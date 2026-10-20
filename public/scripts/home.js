@@ -1,7 +1,11 @@
 (() => {
 	const home = document.querySelector('.home-page');
 	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	const saveData = navigator.connection?.saveData;
+	const saveData = navigator.connection?.saveData === true;
+	if (home) {
+		if (saveData) home.classList.add('motion-saver');
+		if (!reducedMotion && !saveData) home.classList.add('motion-enabled');
+	}
 
 	if (home && 'IntersectionObserver' in window && !reducedMotion && !saveData) {
 		const targets = Array.from(home.querySelectorAll('[data-reveal]'));
