@@ -5,10 +5,12 @@ import vm from 'node:vm';
 
 const code = await readFile('public/scripts/contact-form.js', 'utf8');
 
-function setup({ responseOk = true, responseStatus, file = null, endpoint = 'https://forms.example.test/contact', honeypotValue = '', pendingFetch = false } = {}) {
+function setup({ responseOk = true, responseStatus, file = null, endpoint = 'https://forms.example.test/contact', honeypotValue = '', pendingFetch = false, fakeTimeout = false } = {}) {
   const handlers = {};
   const calls = [];
   let resolveFetch;
+  let rejectFetch;
+  let timeoutCallback;
   const status = {
     dataset: {},
     textContent: '',
@@ -40,7 +42,11 @@ function setup({ responseOk = true, responseStatus, file = null, endpoint = 'htt
   const fetch = (...args) => {
     calls.push(['fetch', ...args]);
     if (pendingFetch) {
-      return new Promise((resolve) => { resolveFetch = resolve; });
+      return new Promise((resolve, reject) => {
+        resolveFetch = resolve;
+        rejectFetch = reject;
+        args[1]?.signal?.addEventListener?.('abort', () => reject(new Error('request timed out')));
+      });
     }
     const statusCode = responseStatus ?? (responseOk ? 202 : 500);
     return Promise.resolve({ ok: statusCode >= 200 && statusCode < 300, status: statusCode });
@@ -51,8 +57,26 @@ function setup({ responseOk = true, responseStatus, file = null, endpoint = 'htt
   class CustomEvent {
     constructor(type) { this.type = type; }
   }
-  vm.runInNewContext(code, { document, window, fetch, FormData, CustomEvent, URL, Set });
-  return { handlers, calls, status, submit, form, honeypot, resolveFetch: (value = { ok: responseOk }) => resolveFetch?.(value) };
+  class AbortController {
+    constructor() {
+      this.signal = { addEventListener: (...listeners) => { this.abortListener = listeners[1]; } };
+    }
+    abort() { this.abortListener?.(); }
+  }
+  const setTimeoutImpl = fakeTimeout ? (callback) => { timeoutCallback = callback; return 1; } : setTimeout;
+  const clearTimeoutImpl = fakeTimeout ? () => {} : clearTimeout;
+  vm.runInNewContext(code, { document, window, fetch, FormData, CustomEvent, URL, Set, AbortController, setTimeout: setTimeoutImpl, clearTimeout: clearTimeoutImpl });
+  return {
+    handlers,
+    calls,
+    status,
+    submit,
+    form,
+    honeypot,
+    resolveFetch: (value = { ok: responseOk }) => resolveFetch?.(value),
+    triggerTimeout: () => timeoutCallback?.(),
+    rejectFetch,
+  };
 }
 
 test('envia multipart apenas para endpoint HTTPS e confirma resposta 2xx', async () => {
@@ -146,4 +170,15 @@ test('impede dois envios concorrentes enquanto o primeiro aguarda o receptor', a
   await first;
   await second;
   assert.equal(state.form.wasReset, true);
+});
+
+test('aborta receptor travado e devolve o formulário para nova tentativa', async () => {
+  const state = setup({ pendingFetch: true, fakeTimeout: true });
+  const first = state.handlers.submit({ preventDefault() {} });
+  await Promise.resolve();
+  state.triggerTimeout();
+  await first;
+  assert.equal(state.status.dataset.state, 'error');
+  assert.equal(state.submit.disabled, false);
+  assert.equal(state.form['aria-busy'], undefined);
 });

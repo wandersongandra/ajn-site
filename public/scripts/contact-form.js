@@ -2,6 +2,7 @@
   'use strict';
 
   const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+  const REQUEST_TIMEOUT_MS = 15 * 1000;
   const allowedExtensions = new Set(['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']);
 
   function getFileError(file) {
@@ -68,6 +69,8 @@
       submit.textContent = 'Enviando…';
       setStatus(status, 'Enviando sua mensagem…', 'pending');
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
       try {
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -75,6 +78,7 @@
           headers: { Accept: 'application/json' },
           credentials: 'omit',
           cache: 'no-store',
+          signal: controller.signal,
         });
         if (!response.ok) throw new Error('contact endpoint rejected the request');
         form.reset();
@@ -83,6 +87,7 @@
       } catch {
         setStatus(status, 'Não foi possível enviar agora. Seus dados permaneceram no formulário; tente o WhatsApp ou o e-mail da AJN.', 'error');
       } finally {
+        clearTimeout(timeoutId);
         submitting = false;
         form.removeAttribute('aria-busy');
         submit.disabled = false;

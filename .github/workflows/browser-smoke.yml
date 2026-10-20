@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: browser-smoke-${{ github.event.pull_request.number }}
+  group: browser-smoke-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:

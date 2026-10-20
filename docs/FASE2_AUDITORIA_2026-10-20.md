@@ -45,7 +45,7 @@ instrumentação apropriada. O GSC/CrUX continua indisponível nesta rodada.
 - `npm run validate`: PASS, com um hint preexistente de import `stat` não usado
   em `scripts/audit-medicoes.mjs`;
 - `npm audit --audit-level=high`: 0 vulnerabilidades;
-- `test:contact-form`: 10/10; `test:privacy-notice`: 19/19;
+- `test:contact-form`: 11/11; `test:privacy-notice`: 19/19;
 - screenshots desktop/mobile do formulário revisadas em browser real.
 
 ## Pendências externas

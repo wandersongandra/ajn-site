@@ -28,6 +28,9 @@ de WhatsApp e e-mail ativos e não promete um envio que não possa ser confirmad
   e-mail, mensagem, anexo ou URL completa do link de contato;
 - definir retenção, destinatário e base legal para os dados antes de ativar o
   endpoint em ambiente público.
+- o navegador deve abortar uma tentativa que não conclua em tempo razoável e
+  devolver o formulário para nova tentativa; isso não substitui timeout e
+  limites no receptor.
 
 ## Campos enviados
 
