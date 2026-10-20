@@ -33,8 +33,8 @@ check(!/(?:^|;)\s*report-(?:uri|to)\s/i.test(reportOnly), 'Não declare collecto
 check(/Strict-Transport-Security "max-age=300"/.test(config), 'HSTS candidate deve começar em 300 segundos.');
 check(!/Strict-Transport-Security[^\r\n]*(?:includeSubDomains|preload)/i.test(config),
 	'Não usar includeSubDomains/preload sem auditoria específica.');
-check(/RewriteRule \^ https:\/\/ajnengenharia\.com\.br%\{REQUEST_URI\} \[R=302,L,NE\]/.test(config),
-	'O redirect deve ser temporário durante o teste controlado.');
+check(/RewriteRule \^ https:\/\/ajnengenharia\.com\.br%\{REQUEST_URI\} \[R=301,L,NE\]/.test(config),
+	'O redirecionamento de www para o host canônico deve ser permanente após homologação.');
 
 async function walk(directory) {
 	const entries = await readdir(directory, { withFileTypes: true });

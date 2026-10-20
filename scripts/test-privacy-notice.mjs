@@ -24,6 +24,7 @@ function setup({ id = '', choice = null, blocked = false } = {}) {
   const head = { appendChild(tag) { inserted.push(tag); } };
   const document = {
     head, getElementById() { return notice; }, querySelectorAll() { return links; },
+    addEventListener(type, listener) { handlers['document:' + type] = listener; },
     createElement() { return { async: false, src: '' }; },
     get cookie() { return cookies.join('; '); },
     set cookie(value) { cookies.push(value); }
@@ -33,7 +34,7 @@ function setup({ id = '', choice = null, blocked = false } = {}) {
   const windowHandlers = {};
   const window = {
     localStorage: storage,
-    location: { hostname:'ajnengenharia.com.br', reloaded:false, reload(){this.reloaded=true;} },
+    location: { hostname:'ajnengenharia.com.br', pathname:'/contato/', reloaded:false, reload(){this.reloaded=true;} },
     addEventListener(type, listener) { windowHandlers[type] = listener; },
   };
   vm.runInNewContext(code, { document, window, Date: class extends Date { static now() { return now; } } });
@@ -136,4 +137,48 @@ test('rejeitar e depois aceitar reabilita GA4 na própria página', () => {
   const event = s.window.dataLayer.map(args => [...args]).find(args => args[0] === 'event');
   assert.ok(event);
   assert.equal(event[2].content_id, 'profile');
+});
+
+function clickContact(s, href) {
+  s.handlers['document:click']({
+    target: { closest(selector) {
+      assert.equal(selector, 'a[href]');
+      return { getAttribute(name) { assert.equal(name, 'href'); return href; } };
+    } }
+  });
+}
+
+test('sem consentimento, cliques de contato não ativam eventos nem tags', () => {
+  const s = setup({ id: 'G-ABCDEF1234' });
+  clickContact(s, 'https://web.whatsapp.com/send?phone=5531999999999');
+  clickContact(s, 'mailto:cliente@example.org');
+  assert.equal(s.window.dataLayer, undefined);
+  assert.equal(s.inserted.length, 0);
+});
+
+test('com consentimento, mede canais de contato sem transmitir dados pessoais', () => {
+  const s = setup({ id: 'G-ABCDEF1234' });
+  s.handlers['accept:click']();
+  clickContact(s, 'https://web.whatsapp.com/send?phone=5531999999999');
+  clickContact(s, 'https://wa.me/5531999999999');
+  clickContact(s, 'tel:+5531988888888');
+  clickContact(s, 'mailto:cliente@example.org?subject=orcamento');
+  clickContact(s, 'https://example.org/um-link');
+  const events = s.window.dataLayer.map(args => [...args]).filter(args => args[0] === 'event' && args[1] === 'contact_channel_click');
+  assert.deepEqual(events.map(args => args[2].channel).join(','), 'whatsapp,whatsapp,phone,email');
+  for (const event of events) {
+    assert.equal(event[2].page_path, '/contato/');
+    assert.deepEqual(Object.keys(event[2]).sort().join(','), 'channel,page_path');
+    assert.doesNotMatch(JSON.stringify(event), /5531999999999|5531988888888|cliente@example.org/);
+  }
+});
+
+test('revogação bloqueia novos cliques de contato antes do recarregamento', () => {
+  const s = setup({ id: 'G-ABCDEF1234', choice: true });
+  s.handlers['reopen:click']();
+  s.controls.analytics.checked = false;
+  s.handlers['save:click']();
+  clickContact(s, 'tel:+5531988888888');
+  const events = s.window.dataLayer.map(args => [...args]).filter(args => args[0] === 'event');
+  assert.equal(events.length, 0);
 });

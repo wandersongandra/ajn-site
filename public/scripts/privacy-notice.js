@@ -104,6 +104,26 @@
     });
   });
 
+  // Conta a intenção de contato sem transmitir telefone, e-mail nem URL externa.
+  // Links continuam funcionando normalmente, inclusive se a análise for rejeitada.
+  document.addEventListener('click', (event) => {
+    if (!enabled || !loaded || !id || window['ga-disable-' + id] === true ||
+        typeof window.gtag !== 'function') return;
+    const target = event.target;
+    const anchor = target?.closest?.('a[href]') ?? target?.parentElement?.closest?.('a[href]');
+    if (!anchor) return;
+    const href = anchor.getAttribute('href') || '';
+    const channel = /^https:\/\/(?:wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)(?:\/|$)/i.test(href)
+      ? 'whatsapp'
+      : /^tel:/i.test(href) ? 'phone'
+      : /^mailto:/i.test(href) ? 'email' : '';
+    if (!channel) return;
+    window.gtag('event', 'contact_channel_click', {
+      channel,
+      page_path: window.location.pathname || '/',
+    });
+  });
+
   accept?.addEventListener('click', () => commit(true));
   reject?.addEventListener('click', () => commit(false));
   customize?.addEventListener('click', openPreferences);
