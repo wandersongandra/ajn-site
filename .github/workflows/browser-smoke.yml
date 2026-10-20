@@ -8,6 +8,7 @@ on:
       - 'public/scripts/**'
       - 'scripts/browser-smoke.mjs'
       - 'scripts/browser-phase0.mjs'
+      - 'scripts/browser-phase2.mjs'
       - 'astro.config.mjs'
       - 'package.json'
       - 'package-lock.json'
@@ -64,6 +65,9 @@ jobs:
 
       - name: Browser regression — Phase 0 accessibility and privacy P1s
         run: node scripts/browser-phase0.mjs
+
+      - name: Browser regression — Phase 2 mobile, fast-scroll and motion
+        run: node scripts/browser-phase2.mjs
 
       - name: Upload screenshot evidence
         if: always()
