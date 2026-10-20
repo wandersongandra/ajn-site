@@ -2,9 +2,7 @@ name: Quality Gate
 
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
 
 permissions:
   contents: read
@@ -61,6 +59,9 @@ jobs:
 
       - name: Privacy notice behavior tests
         run: npm run test:privacy-notice
+
+      - name: Contact form behavior tests
+        run: npm run test:contact-form
 
       - name: SST landing pages and Blog service link audit
         run: npm run audit:sst-seo

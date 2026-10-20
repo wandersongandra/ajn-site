@@ -2806,3 +2806,21 @@ h3 { font-size: var(--type-h3); font-weight: var(--font-weight-emphasis); letter
  .legal-document .content-section { scroll-margin-top: 105px; }
 }
 @media (prefers-reduced-motion: reduce) { .legal-document__quicklinks a, .legal-document__contents a { transition: none; } }
+
+/* Formulário de contato: o receptor valida novamente tudo no servidor. */
+.contact-form__honeypot {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+.contact-form[aria-busy="true"] .button { cursor: wait; opacity: .72; }
+.contact-form__status { color: #243b2a; }
+.contact-form__status[data-state="success"] { color: #1f5b2a; }
+.contact-form__status[data-state="error"] { color: #842029; }
+.contact-form__status[data-state="pending"] { color: #214e34; }
+.contact-form__status:focus { outline: 3px solid #2f7d35; outline-offset: 2px; }

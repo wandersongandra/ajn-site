@@ -4,8 +4,23 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
 const code = await readFile('public/scripts/privacy-notice.js', 'utf8');
+const baseLayout = await readFile('src/layouts/BaseLayout.astro', 'utf8');
+const cookiesPolicy = await readFile('src/pages/politica-de-cookies.astro', 'utf8');
+const privacyPolicy = await readFile('src/pages/politica-de-privacidade.astro', 'utf8');
 const key = 'ajn-cookie-preferences-v2';
 const now = 1700000000000;
+
+test('disclosure informa o evento do formulário e limita os dados enviados', () => {
+  for (const source of [baseLayout, cookiesPolicy, privacyPolicy]) {
+    assert.match(source, /contact_form_submit/);
+    assert.match(source, /apenas o caminho da página/);
+    assert.match(source, /nome/);
+    assert.match(source, /e-mail/);
+    assert.match(source, /mensagem/);
+    assert.match(source, /anexo/);
+  }
+});
+
 function setup({ id = '', choice = null, blocked = false } = {}) {
   const map = new Map();
   if (choice !== null) map.set(key, JSON.stringify({ version: 2, ga4Id: id, analytics: choice, at: now - 1000 }));
@@ -123,6 +138,19 @@ test('com aceite, evento do Instagram é medido sem dados pessoais', () => {
   assert.equal(event[2].content_type, 'reel');
   assert.equal(event[2].placement, 'home_editorial');
   assert.equal(Object.keys(event[2]).length, 3);
+});
+test('envio confirmado do formulário não é medido sem consentimento', () => {
+  const s = setup({ id: 'G-ABCDEF1234' });
+  s.windowHandlers['ajn:contact-form-submit']();
+  assert.equal(s.window.dataLayer, undefined);
+});
+test('envio confirmado do formulário mede somente a página após consentimento', () => {
+  const s = setup({ id: 'G-ABCDEF1234' });
+  s.handlers['accept:click']();
+  s.windowHandlers['ajn:contact-form-submit']();
+  const event = s.window.dataLayer.map(args => [...args]).find(args => args[0] === 'event' && args[1] === 'contact_form_submit');
+  assert.equal(event[2].page_path, '/contato/');
+  assert.deepEqual(Object.keys(event[2]), ['page_path']);
 });
 test('rejeitar e depois aceitar reabilita GA4 na própria página', () => {
   const s = setup({ id:'G-ABCDEF1234' });

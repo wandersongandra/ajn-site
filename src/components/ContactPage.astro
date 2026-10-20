@@ -71,7 +71,6 @@ const contactEndpoint = (() => {
 				<form
 					class="contact-form"
 					data-contact-form
-					action={contactEndpoint || undefined}
 					method="post"
 					enctype="multipart/form-data"
 					data-contact-endpoint={contactEndpoint || undefined}
@@ -80,18 +79,18 @@ const contactEndpoint = (() => {
 					<div class="contact-form__row">
 						<div class="contact-form__field">
 							<label for="contact-name">Nome <span aria-hidden="true">*</span></label>
-							<input id="contact-name" name="nome" type="text" autocomplete="name" required />
+							<input id="contact-name" name="nome" type="text" autocomplete="name" maxlength="120" required />
 						</div>
 						<div class="contact-form__field">
 							<label for="contact-email">E-mail <span aria-hidden="true">*</span></label>
-							<input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required />
+							<input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required />
 						</div>
 					</div>
 	
 					<div class="contact-form__row">
 						<div class="contact-form__field">
 							<label for="contact-phone">Telefone <span aria-hidden="true">*</span></label>
-							<input id="contact-phone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required />
+							<input id="contact-phone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" required />
 						</div>
 						<div class="contact-form__field">
 							<label for="contact-source">Como nos conheceu <span aria-hidden="true">*</span></label>
@@ -113,11 +112,16 @@ const contactEndpoint = (() => {
 	
 					<div class="contact-form__field">
 						<label for="contact-message">Mensagem <span aria-hidden="true">*</span></label>
-						<textarea id="contact-message" name="mensagem" rows="6" required></textarea>
+						<textarea id="contact-message" name="mensagem" rows="6" maxlength="4000" required></textarea>
+					</div>
+
+					<div class="contact-form__honeypot" aria-hidden="true">
+						<label for="contact-website">Website</label>
+						<input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
 					</div>
 	
 					<p class="contact-form__privacy">Ao enviar a mensagem, as informações informadas serão utilizadas para responder à solicitação. Consulte a <a href="/politica-de-privacidade/">Política de Privacidade</a> antes do envio.</p>
-					<button class="button" type="submit">Enviar mensagem</button>
+					<button class="button" type="submit" disabled>Enviar mensagem</button>
 					<p id="contact-form-help" class="contact-form__help">* Campos obrigatórios.</p>
 					<p id="contact-form-status" class="contact-form__status" data-contact-status role="status" aria-live="polite" tabindex="-1">
 						Preencha os campos obrigatórios para enviar a mensagem.
@@ -139,6 +143,8 @@ const contactEndpoint = (() => {
 		)}
 	</div>
 </PageShell>
+
+<script is:inline src="/scripts/contact-form.js" defer></script>
 
 
 <style>
