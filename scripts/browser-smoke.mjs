@@ -5,11 +5,21 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const base = process.env.BASE_URL || 'http://127.0.0.1:4321';
-const output = path.resolve('artifacts/browser-smoke');
+const output = path.resolve('output/playwright/browser-smoke');
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const widths = [320, 390, 768, 1440];
-const routes = ['/', '/servicos/', '/projetos-spda/', '/projetos-cabeamento-estruturado/', '/projetos-eletricos-prediais/', '/medicoes-ambientais-ocupacionais/'];
+const widths = [360, 375, 390, 430, 768, 1024, 1440, 1920];
+const routes = [
+  '/',
+  '/sobre-nos/',
+  '/servicos/',
+  '/blog/',
+  '/contato/',
+  '/projetos-spda/',
+  '/projetos-cabeamento-estruturado/',
+  '/projetos-eletricos-prediais/',
+  '/medicoes-ambientais-ocupacionais/',
+];
 const failures = [];
 let assertions = 0;
 
@@ -42,6 +52,35 @@ for (const width of widths) {
       `Overflow ${route} at ${width}px: doc ${measurements.width}px > viewport ${measurements.viewport}px`);
     assert(measurements.h1 === 1, `H1 count ${route} at ${width}px: ${measurements.h1}`);
     assert(pageErrors.length === 0, `JS errors ${route} at ${width}px: ${pageErrors.join('; ')}`);
+
+    const skipLink = page.locator('.skip-link');
+    await skipLink.focus();
+    assert(await page.evaluate(() => document.activeElement?.classList.contains('skip-link')),
+      `Skip link cannot receive focus ${route} at ${width}px`);
+
+    const menu = page.locator('[data-menu-toggle]');
+    if (width <= 1100) {
+      await menu.click();
+      assert(await menu.getAttribute('aria-expanded') === 'true',
+        `Mobile menu did not open ${route} at ${width}px`);
+      assert(await page.locator('#primary-navigation.is-open').isVisible(),
+        `Mobile navigation is not visible ${route} at ${width}px`);
+      await page.keyboard.press('Escape');
+      assert(await menu.getAttribute('aria-expanded') === 'false',
+        `Escape did not close mobile menu ${route} at ${width}px`);
+      assert(await page.evaluate(() => document.activeElement?.matches('[data-menu-toggle]')),
+        `Escape did not return focus to menu toggle ${route} at ${width}px`);
+    } else {
+      const submenuToggle = page.locator('[data-submenu-toggle]').first();
+      await submenuToggle.click();
+      assert(await submenuToggle.getAttribute('aria-expanded') === 'true',
+        `Desktop submenu did not open ${route} at ${width}px`);
+      await page.keyboard.press('Escape');
+      assert(await submenuToggle.getAttribute('aria-expanded') === 'false',
+        `Escape did not close desktop submenu ${route} at ${width}px`);
+      assert(await page.evaluate(() => document.activeElement?.matches('[data-submenu-toggle]')),
+        `Escape did not return focus to submenu toggle ${route} at ${width}px`);
+    }
 
     if (route === '/medicoes-ambientais-ocupacionais/') {
       // Trigger lazy images during normal scrolling before screenshots.
@@ -110,4 +149,4 @@ if (failures.length) {
   for (const f of failures) console.error('[browser][FAIL]', f);
   console.error(`Browser smoke FAILED: ${failures.length} issue(s) / ${assertions} assertions.`);
   process.exitCode = 1;
-} else console.log(`Browser smoke PASS: ${assertions} assertions, ${routes.length} routes x 4 viewports. Screenshots at ${output}`);
+} else console.log(`Browser smoke PASS: ${assertions} assertions, ${routes.length} routes x ${widths.length} viewports. Screenshots at ${output}`);

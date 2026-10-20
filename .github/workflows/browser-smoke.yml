@@ -60,7 +60,7 @@ jobs:
           cat /tmp/ajn-preview.log
           exit 1
 
-      - name: Browser smoke 320 / 390 / 768 / 1440
+      - name: Browser smoke 360 / 375 / 390 / 430 / 768 / 1024 / 1440 / 1920
         run: node scripts/browser-smoke.mjs
 
       - name: Upload screenshot evidence
@@ -68,6 +68,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ajn-browser-smoke
-          path: artifacts/browser-smoke/
+          path: output/playwright/browser-smoke/
           retention-days: 7
           if-no-files-found: warn
