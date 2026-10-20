@@ -37,7 +37,11 @@
     if (!status || !submit) return;
 
     form.addEventListener('submit', async (event) => {
-      if (!form.checkValidity() || submitting) return;
+      if (submitting) {
+        event.preventDefault();
+        return;
+      }
+      if (!form.checkValidity()) return;
 
       const honeypot = form.querySelector('input[name="website"]');
       if (honeypot?.value) {

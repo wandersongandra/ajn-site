@@ -161,11 +161,14 @@ test('não envia quando o honeypot foi preenchido', async () => {
 
 test('impede dois envios concorrentes enquanto o primeiro aguarda o receptor', async () => {
   const state = setup({ pendingFetch: true });
-  const event = { preventDefault() {} };
-  const first = state.handlers.submit(event);
+  let secondPrevented = false;
+  const firstEvent = { preventDefault() {} };
+  const secondEvent = { preventDefault() { secondPrevented = true; } };
+  const first = state.handlers.submit(firstEvent);
   await Promise.resolve();
-  const second = state.handlers.submit(event);
+  const second = state.handlers.submit(secondEvent);
   assert.equal(state.calls.filter(([type]) => type === 'fetch').length, 1);
+  assert.equal(secondPrevented, true);
   state.resolveFetch({ ok: true });
   await first;
   await second;
