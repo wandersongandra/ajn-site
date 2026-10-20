@@ -52,6 +52,13 @@ function hasReadContentsPermission(value) {
 	return isPlainObject(value) && value.contents === 'read';
 }
 
+function hasPullRequestTargetTrigger(workflow) {
+	const trigger = workflow.on;
+	if (trigger === 'pull_request_target') return true;
+	if (Array.isArray(trigger)) return trigger.includes('pull_request_target');
+	return isPlainObject(trigger) && Object.hasOwn(trigger, 'pull_request_target');
+}
+
 function isCodeqlAnalyzeAction(value) {
 	return typeof value === 'string' && /^github\/codeql-action\/analyze@[0-9a-f]{40}$/i.test(value);
 }
@@ -166,7 +173,7 @@ export function auditWorkflowSource(source, file = 'workflow.yml') {
 		failures.push(`${file}: workflow YAML deve ter um mapa na raiz.`);
 		return failures;
 	}
-	if (/\bpull_request_target\s*:/i.test(source)) {
+	if (hasPullRequestTargetTrigger(workflow)) {
 		failures.push(`${file}: pull_request_target não é permitido neste repositório.`);
 	}
 

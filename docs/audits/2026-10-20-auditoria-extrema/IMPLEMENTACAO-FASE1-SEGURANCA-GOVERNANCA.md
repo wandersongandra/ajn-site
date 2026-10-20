@@ -146,7 +146,7 @@ Foi adicionada a dependência direta de desenvolvimento `yaml@^2.9.1`, já prese
 - `npm run test:hosting-policy` — 5/5.
 - `npm run test:live-security` — 4/4.
 - `npm run audit:workflows` — PASS, 6 workflows.
-- `npm run test:audit-workflows` — 5/5 regressões PASS, incluindo os três P2 e os seis workflows legítimos.
+- `npm run test:audit-workflows` — 6/6 regressões PASS, incluindo os três P2, a proibição estrutural de `pull_request_target` e os seis workflows legítimos.
 - `npm run audit:engineering` — PASS.
 - `npm run audit:live-security` — PASS contra produção, 13 observações GET, sem loop.
 - `npm audit --audit-level=high` — 0 vulnerabilidades.

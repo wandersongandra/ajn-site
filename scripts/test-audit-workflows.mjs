@@ -25,6 +25,14 @@ test('inspeciona permissões inline em jobs e preserva a exceção CodeQL legít
 	assert.deepEqual(auditWorkflowSource(codeql, 'permissions-codeql.yml'), []);
 });
 
+test('aplica a proibição de pull_request_target na estrutura YAML sem falso positivo textual', () => {
+	const forbidden = `name: fixture\non: [push, pull_request_target]\npermissions: { contents: read }\njobs:\n  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps: []\n`;
+	assert.match(auditWorkflowSource(forbidden, 'pull-request-target.yml').join('\n'), /pull_request_target/);
+
+	const commentOnly = `${baseWorkflow(`  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - run: echo "pull_request_target:"\n`)}\n# pull_request_target: is not enabled\n`;
+	assert.deepEqual(auditWorkflowSource(commentOnly, 'pull-request-target-comment.yml'), []);
+});
+
 test('detecta segredos em notação de ponto, colchetes e referências dinâmicas', () => {
 	for (const [name, expression] of [
 		['dot', '${{ secrets . DEPLOY_TOKEN }}'],
