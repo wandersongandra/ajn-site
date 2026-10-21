@@ -101,8 +101,16 @@ check(motionJs.includes('prefers-reduced-motion') && motionJs.includes('saveData
 check(motionJs.includes("home.classList.add('motion-ready')") &&
 	motionCss.includes('.home-page.motion-ready [data-reveal]'),
 	'No-JS content must remain visible; CSS must depend on script-enabled class');
-check(!/addEventListener\(['"]scroll['"]/.test(motionJs + clientsJs),
-	'Per-frame scroll listener unexpectedly introduced');
+// A scroll listener is permitted only when it schedules a single rAF sweep;
+// synchronous scroll geometry reads used to cause costly reflow. Keep this
+// guard explicit so a future direct callback cannot silently regress UX.
+const scrollListeners = motionJs.split("addEventListener('scroll'").length - 1;
+check(scrollListeners === 1 &&
+	motionJs.includes("window.addEventListener('scroll', scheduleSweep, { passive: true })") &&
+	motionJs.includes('window.requestAnimationFrame(sweepPassedSections)') &&
+	motionJs.includes("window.removeEventListener('scroll', scheduleSweep)") &&
+	!motionJs.includes("addEventListener('scroll', sweepPassedSections"),
+	'Scroll fallback must be passive, rAF-throttled and removed after the reveal lifecycle.');
 check(clientsJs.includes('IntersectionObserver') && clientsJs.includes('visibilitychange'),
 	'Carousel must pause when out of view or when the tab is hidden');
 check(clientsJs.includes('prefers-reduced-motion') && clientsJs.includes('saveData'),

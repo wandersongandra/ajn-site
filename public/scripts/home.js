@@ -7,27 +7,61 @@
 		if (!reducedMotion && !saveData) home.classList.add('motion-enabled');
 	}
 
+	// Content is visible without JavaScript. Only enhance entrances when
+	// IntersectionObserver is available and motion/data preferences permit it.
 	if (home && 'IntersectionObserver' in window && !reducedMotion && !saveData) {
 		const targets = Array.from(home.querySelectorAll('[data-reveal]'));
 		if (targets.length > 0) {
-			const viewportHeight = window.innerHeight;
-			for (const element of targets) {
-				const bounds = element.getBoundingClientRect();
-				if (bounds.top < viewportHeight && bounds.bottom > 0) element.classList.add('is-visible');
-			}
-
+			const pending = new Set(targets);
+			let frameQueued = false;
 			const observer = new IntersectionObserver((entries) => {
 				for (const entry of entries) {
-					if (!entry.isIntersecting) continue;
-					entry.target.classList.add('is-visible');
-					observer.unobserve(entry.target);
+					if (entry.isIntersecting) reveal(entry.target);
 				}
 			}, { rootMargin: '0px 0px -28px 0px', threshold: 0.06 });
 
-			for (const element of targets) {
-				if (!element.classList.contains('is-visible')) observer.observe(element);
+			function cleanup() {
+				observer.disconnect();
+				window.removeEventListener('scroll', scheduleSweep);
+				window.removeEventListener('resize', scheduleSweep);
+				window.removeEventListener('pageshow', scheduleSweep);
+				window.removeEventListener('hashchange', scheduleSweep);
+				home.removeEventListener('focusin', onFocus);
 			}
+			function reveal(element) {
+				if (!pending.delete(element)) return;
+				element.classList.add('is-visible');
+				observer.unobserve(element);
+				if (!pending.size) cleanup();
+			}
+			// The observer alone can miss whole sections after an instant End key,
+			// anchor jump or scroll restoration. Already-passed content must never
+			// remain hidden indefinitely. Layout reads are throttled to one frame.
+			function sweepPassedSections() {
+				frameQueued = false;
+				const cutoff = window.innerHeight + 28;
+				for (const element of pending) {
+					if (element.getBoundingClientRect().top < cutoff) reveal(element);
+				}
+			}
+			function scheduleSweep() {
+				if (frameQueued || !pending.size) return;
+				frameQueued = true;
+				window.requestAnimationFrame(sweepPassedSections);
+			}
+			function onFocus(event) {
+				const element = event.target instanceof Element ? event.target.closest('[data-reveal]') : null;
+				if (element && pending.has(element)) reveal(element);
+			}
+
+			for (const element of targets) observer.observe(element);
+			window.addEventListener('scroll', scheduleSweep, { passive: true });
+			window.addEventListener('resize', scheduleSweep, { passive: true });
+			window.addEventListener('pageshow', scheduleSweep);
+			window.addEventListener('hashchange', scheduleSweep);
+			home.addEventListener('focusin', onFocus);
 			home.classList.add('motion-ready');
+			scheduleSweep();
 		}
 	}
 })();
