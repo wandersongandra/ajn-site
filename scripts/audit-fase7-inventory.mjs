@@ -74,11 +74,30 @@ function editorialArticleHtml(html) {
 	return main.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] ?? main;
 }
 
+// Conta somente links de navegação (<a>), não <link rel="canonical">,
+// preload ou outros hrefs do <head> que não representam inbound.
 function internalTargets(html) {
-	return [...html.matchAll(/\bhref="([^"]+)"/gi)]
+	return [...html.matchAll(/<a\b[^>]*\bhref\s*=\s*"([^"]+)"/gi)]
 		.map((match) => normalizePath(match[1]))
 		.filter(Boolean);
 }
+
+// Fixture executada também pela Quality Gate antes da geração do inventário.
+// Uma canonical isolada jamais transforma uma rota órfã em rota com inbound.
+function assertInternalLinksFixture() {
+	const fixture = '<link rel="canonical" href="https://ajnengenharia.com.br/orfa/">'
+		+ '<a href="/blog/">Blog</a>'
+		+ '<a class="action" href="https://ajnengenharia.com.br/contato/">Contato</a>'
+		+ '<a href="https://example.com/externo/">Externo</a>';
+	const actual = internalTargets(fixture);
+	if (actual.length !== 2 || actual[0] !== '/blog' || actual[1] !== '/contato') {
+		throw new Error('Falha no fixture de links: canonical, link externo ou âncoras internos contados incorretamente.');
+	}
+	if (internalTargets('<link rel="canonical" href="https://ajnengenharia.com.br/orfa/">').length !== 0) {
+		throw new Error('Falha no fixture de órfãs: canonical contada como link interno.');
+	}
+}
+assertInternalLinksFixture();
 
 function routeFromHtmlFile(file) {
 	const relative = path.relative(distRoot, file).replaceAll('\\', '/');
