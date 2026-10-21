@@ -1854,6 +1854,20 @@ h3 { font-size: var(--type-h3); font-weight: var(--font-weight-emphasis); letter
 }
 
 /* Contact page refinement — scoped to /contato */
+.contact-page__alternate-actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px 24px;
+	margin-top: 24px;
+}
+
+.contact-page__alternate-actions .contact-page__email {
+	display: inline-block;
+	padding-block: 12px;
+	overflow-wrap: anywhere;
+}
+
 .contact-layout {
 	grid-template-columns: minmax(280px, .84fr) minmax(0, 1.16fr);
 	gap: clamp(2rem, 5vw, 4.5rem);
