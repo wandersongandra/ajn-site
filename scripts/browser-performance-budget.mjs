@@ -27,8 +27,16 @@ try {
         const eagerBelowFold = imgs.filter(img =>
           img.getBoundingClientRect().top > innerHeight * 2 &&
           img.getAttribute('loading') !== 'lazy').map(img => img.currentSrc);
-        const fontLinks = [...document.querySelectorAll('link[rel="preload"][as="style"]')]
-          .filter(link => link.href.includes('fonts.googleapis.com')).length;
+        const externalFontHosts = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
+        const fontLinks = [...document.querySelectorAll('link[rel="preload"][as="style"][href]')]
+          .filter(link => {
+            try {
+              const url = new URL(link.href);
+              return url.protocol === 'https:' && externalFontHosts.has(url.hostname);
+            } catch {
+              return false;
+            }
+          }).length;
         return { missingDimensions, eagerBelowFold, fontLinks,
           overflow: document.documentElement.scrollWidth > innerWidth + 3 };
       });
