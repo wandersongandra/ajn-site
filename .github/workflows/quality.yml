@@ -144,6 +144,9 @@ jobs:
       - name: GitHub Actions source policy audit
         run: npm run audit:workflows
 
+      - name: Versioned governance controls audit
+        run: npm run audit:governance
+
       # Valida separadamente a build pública: não publicar prévia com noindex.
       - name: Production SEO indexing smoke test
         env:
