@@ -1,9 +1,9 @@
 /* No-JavaScript navigation fallback: keep all links available in document flow. */
 @media (max-width: 1100px) {
-  #site-header { position: static; }
-  #site-header .menu-toggle, #site-header .submenu-toggle { display: none; }
-  #site-header .site-shell.header-main { grid-template-columns: minmax(0, 1fr); }
-  #site-header .primary-navigation {
+  html:not(.js-enabled):not(.js-pending) #site-header { position: static; }
+  html:not(.js-enabled):not(.js-pending) #site-header .menu-toggle, html:not(.js-enabled):not(.js-pending) #site-header .submenu-toggle { display: none; }
+  html:not(.js-enabled):not(.js-pending) #site-header .site-shell.header-main { grid-template-columns: minmax(0, 1fr); }
+  html:not(.js-enabled):not(.js-pending) #site-header .primary-navigation {
     display: block;
     position: static;
     grid-column: 1 / -1;
@@ -17,7 +17,7 @@
     border-radius: 0;
     box-shadow: none;
   }
-  #site-header .has-submenu > .submenu {
+  html:not(.js-enabled):not(.js-pending) #site-header .has-submenu > .submenu {
     display: block;
     position: static;
     width: 100%;
