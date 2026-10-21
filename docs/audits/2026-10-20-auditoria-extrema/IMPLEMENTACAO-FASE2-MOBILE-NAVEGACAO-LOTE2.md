@@ -6,7 +6,7 @@ Branch: `fix/ajn-fase2-mobile-navigation-blog`
 
 ## Contexto
 
-A PR #76 (Fase 2, lote 1: fast-scroll e carrossel) continua aberta. Este lote é independente, originado da `main`, e não integra nem publica as alterações daquela PR.
+O lote 2 começou a partir da `main` no commit `524bd53`. Durante a implementação, a PR #76 (lote 1: fast-scroll e carrossel) foi integrada à `main` por uma ação externa a esta tarefa. Esta branch foi reconciliada sem force push no commit de merge `f4406a6`, preservando os testes e o código dos dois lotes.
 
 ## Ajustes implementados
 
@@ -46,7 +46,7 @@ Arquivo: `scripts/browser-mobile-navigation.mjs`, executado no workflow `.github
 - O teste automatizado usa Chromium com viewport emulando dimensões comuns; não prova o comportamento do teclado virtual de um iPhone físico.
 - A atualização de layout é escopada ao blog e a de foco ao cabeçalho; não há alterações em conteúdo, contratos de formulário, GA4, SEO, Hostinger ou arquivos do lote 1.
 - Verificações de produção só podem ser realizadas após merge e publicação, com autorização do proprietário.
-- A `main` ainda pode precisar ser reconciliada após a integração da PR #76, devido à edição comum do workflow Browser Smoke. Não efetuar merge de nenhuma PR sem revisar a diferença atual.
+- O conflito no workflow Browser Smoke foi reconciliado com a `main` (`6de982b`), mantendo simultaneamente os testes do lote 1 e do lote 2. Conferir novamente o estado de merge e os checks do commit mais recente antes da aprovação.
 
 ## Critérios para revisão
 
