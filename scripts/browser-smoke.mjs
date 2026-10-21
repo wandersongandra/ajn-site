@@ -267,6 +267,12 @@ for (const scenario of scenarios) {
       await waitForRailScroll(page, before);
       const after = await rail.evaluate(el => el.scrollLeft);
       assert(after > before, `Next button does not move the feed at ${width}px (before=${before}, after=${after})`);
+      // Control state is intentionally batched into requestAnimationFrame;
+      // wait for the scheduled update rather than reading before paint.
+      await page.waitForFunction(() => {
+        const previous = document.querySelector('.instagram-highlights [data-ig-scroll="previous"]');
+        return Boolean(previous && !previous.disabled);
+      }, null, { timeout: 3000 });
       const afterPrevious = await section.locator('[data-ig-scroll="previous"]').isDisabled();
       assert(!afterPrevious, `Previous control did not enable at ${width}px`);
       const trackerPresent = await page.evaluate(() => Boolean(window.gtag));
