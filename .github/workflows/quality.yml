@@ -141,6 +141,9 @@ jobs:
       - name: GitHub Actions audit regression tests
         run: npm run test:audit-workflows
 
+      - name: GitHub governance audit negative tests
+        run: npm run test:audit-governance
+
       - name: GitHub Actions source policy audit
         run: npm run audit:workflows
 
