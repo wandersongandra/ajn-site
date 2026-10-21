@@ -46,8 +46,13 @@ for (const filepath of htmlFiles) {
 		const attributes = match[1];
 		if (!/\ssrc="/i.test(attributes)) continue;
 		scriptCount++;
-		check(/\sdefer(?:\s|=|>|$)/i.test(attributes) || /\stype="module"/i.test(attributes),
+		const isEarlyJsDetection = /\bsrc="\/scripts\/enable-js\.js"/i.test(attributes);
+		check(isEarlyJsDetection || /\sdefer(?:\s|=|>|$)/i.test(attributes) || /\stype="module"/i.test(attributes),
 			`${filepath}: script local sem defer/module.`);
+		if (isEarlyJsDetection) {
+			check(html.indexOf(match[0]) < html.indexOf('</head>'),
+				`${filepath}: detector de JS deve executar no head.`);
+		}
 	}
 	if (filepath.includes(`${path.sep}servicos${path.sep}`) && html.includes('service-detail-wp__image')) {
 		const heroImage = html.match(/<div class="service-detail-wp__image">\s*<img\b[^>]*>/i)?.[0] ?? '';

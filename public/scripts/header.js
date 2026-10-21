@@ -1,6 +1,6 @@
 (() => {
 	// CSS keeps the navigation usable if this enhancement is unavailable.
-	document.documentElement.classList.add('js-enabled');
+	// Activate the enhanced navigation only after its controller has loaded.
 	const header = document.querySelector('#site-header');
 	const menuToggle = header?.querySelector('[data-menu-toggle]');
 	const nav = header?.querySelector('#primary-navigation');
@@ -94,4 +94,8 @@
 		if (focusMovesToToggle) menuToggle?.focus({ preventScroll: true });
 		else if (focusMovesToNav) nav?.querySelector('a[href]')?.focus({ preventScroll: true });
 	});
+	if (header && menuToggle && nav) {
+		document.documentElement.classList.add('js-enabled');
+		document.documentElement.classList.remove('js-pending');
+	}
 })();
