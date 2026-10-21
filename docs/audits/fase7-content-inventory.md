@@ -34,6 +34,13 @@ Gerado em 2026-10-21 a partir do build local de `origin/main` e dos arquivos de 
 - Rotas sem link interno encontrado no HTML compilado: 1.
 - O relatório não remove nem redireciona páginas.
 
+## Leitura correta das métricas de links
+
+- **Links internos** na planilha CSV original representam todos os links encontrados no HTML compilado, inclusive navegação principal, menus, rodapé e componentes compartilhados. Não são uma contagem de referências escritas em cada artigo nem links únicos.
+- **Sem inbound** significa ausência de links detectados no HTML compilado por esse método, não necessariamente ausência de descoberta por buscas, sitemaps ou links externos.
+- O gerador `scripts/audit-fase7-inventory.mjs` foi refinado para informar separadamente, quando executado novamente sobre `dist/`, as contagens de links em regiões `<article>` do blog (ou `<main>` como fallback) e de destinos ligados por essas regiões.
+- A classificação dessas regiões é uma aproximação estrutural, não uma análise semântica de links nem uma medição de cliques. Os números já existentes no CSV foram mantidos como baseline global e **não foram reinterpretados retroativamente**.
+
 ## Amostra priorizada de alertas
 
 | URL | Prioridade | Problemas detectados | Evidência |
