@@ -6,6 +6,8 @@ export const servicePage = {
 	"heading": "Gestão da Qualidade",
 	"image": "/images/content/services/gestao-da-qualidade.webp",
 	"imageAlt": "Gestão da Qualidade",
+	"imageWidth": 356,
+	"imageHeight": 500,
 	"sections": [
 		{
 			"heading": "Informações",

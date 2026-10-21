@@ -6,6 +6,8 @@ export const servicePage = {
 	"heading": "Regularização de imóveis junto ao corpo de bombeiros",
 	"image": "/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp",
 	"imageAlt": "Regularização de imóveis junto ao corpo de bombeiros",
+	"imageWidth": 356,
+	"imageHeight": 500,
 	"sections": [
 		{
 			"heading": "Informações",

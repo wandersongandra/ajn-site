@@ -3,6 +3,18 @@ import { join } from 'node:path';
 
 const issues = [];
 const expect = (ok, note) => { if (!ok) issues.push(note); };
+const remoteFontHosts = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
+function containsRemoteFontLink(html) {
+	for (const [, , rawHref] of html.matchAll(/<link\b[^>]*\bhref\s*=\s*(["'])(.*?)\1/gi)) {
+		try {
+			const url = new URL(rawHref, 'https://ajn.invalid');
+			if (url.protocol === 'https:' && remoteFontHosts.has(url.hostname.toLowerCase())) return true;
+		} catch {
+			// Malformed URLs are handled by the other HTML/security audits.
+		}
+	}
+	return false;
+}
 const pages = [
 	['privacidade', 'dist/politica-de-privacidade/index.html', '/politica-de-privacidade/'],
 	['termos', 'dist/termos-de-uso/index.html', '/termos-de-uso/'],
@@ -29,7 +41,7 @@ for (const [label, filename, route] of pages) {
 		for (const key of ['id="responsavel"', 'id="dados-pessoais"', 'id="finalidades"', 'id="compartilhamento"', 'id="retencao"', 'id="cookies"', 'id="direitos"']) {
 			expect(html.includes(key), 'privacidade: seção ausente: ' + key);
 		}
-		expect(html.includes('href="https://policies.google.com/privacy"'), 'privacidade: Google Fonts sem aviso externo.');
+		expect(html.includes('fontes tipográficas locais') && !containsRemoteFontLink(html), 'privacidade: tipografia local não documentada ou Google Fonts ainda carregado.');
 		expect(html.includes('Google Analytics 4') && html.includes('Rejeitar opcionais'), 'privacidade: GA4 e consentimento não explicados.');
 	}
 	if (label === 'cookies') {

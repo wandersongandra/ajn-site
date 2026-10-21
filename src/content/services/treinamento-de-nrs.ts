@@ -6,6 +6,8 @@ export const servicePage = {
 	"heading": "Treinamento de NRs",
 	"image": "/images/content/services/treinamento-de-nrs.webp",
 	"imageAlt": "Treinamento de NRs",
+	"imageWidth": 356,
+	"imageHeight": 500,
 	"sections": [
 		{
 			"heading": "Informações",

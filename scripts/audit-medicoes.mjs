@@ -1,6 +1,6 @@
 // Regressão da nova frente de medições ambientais ocupacionais.
 // Executar após astro build, usando apenas artefatos estáticos publicados.
-import { readFile, stat } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 const issues=[];
 const check=(ok,message)=>{if(!ok)issues.push(message)};
