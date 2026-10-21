@@ -25,6 +25,8 @@ pnpm-debug.log*
 *.bak
 *.backup
 *.log
+# Logs dentro do dossiê de auditoria são evidência técnica intencional.
+!docs/audits/**/*.log
 backups/
 dumps/
 private/
