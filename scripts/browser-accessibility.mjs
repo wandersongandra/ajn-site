@@ -43,30 +43,54 @@ async function load(context, route, label) {
 }
 
 try {
-	const noJsContext = await createContext({ width: 390, noJs: true });
-	for (const route of ['/', '/servicos/', '/blog/', '/contato/']) {
-		const page = await load(noJsContext, route, 'no-js-mobile');
-		const data = await page.evaluate(() => ({
-			navigationVisible: getComputedStyle(document.querySelector('#primary-navigation')).display !== 'none',
-			navigationLinks: document.querySelectorAll('#primary-navigation a[href]').length,
-			serviceCards: document.querySelectorAll('[data-service-card]').length,
-			blogCards: document.querySelectorAll('[data-blog-card]').length,
-			contactAlternatives: document.querySelectorAll('.contact-page__alternate-actions a[href]').length,
-			overflow: document.documentElement.scrollWidth > innerWidth + 3,
-			ariaHiddenTabStops: [...document.querySelectorAll('[aria-hidden="true"]')]
-				.flatMap((node) => [...node.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])')])
-				.length,
-		}));
-		check(data.navigationVisible, `no-js-mobile ${route}: menu principal continua navegável`);
-		check(data.navigationLinks >= 15, `no-js-mobile ${route}: submenu não expõe os destinos (${data.navigationLinks})`);
-		if (route === '/servicos/') check(data.serviceCards === 14, 'no-js-mobile /servicos/: cards não dependem do JS');
-		if (route === '/blog/') check(data.blogCards >= 30, 'no-js-mobile /blog/: artigos não dependem do JS');
-		if (route === '/contato/') check(data.contactAlternatives === 2, 'no-js-mobile /contato/: canais alternativos visíveis');
-		check(!data.overflow, `no-js-mobile ${route}: sem overflow horizontal`);
-		check(data.ariaHiddenTabStops === 0, `no-js-mobile ${route}: foco dentro de aria-hidden`);
-		await page.close();
+	for (const width of [320, 375, 390, 430, 768]) {
+		const noJsContext = await createContext({ width, noJs: true });
+		for (const route of ['/', '/servicos/', '/blog/', '/contato/']) {
+			const page = await load(noJsContext, route, `no-js-${width}`);
+			const data = await page.evaluate(() => {
+				const header = document.querySelector('#site-header');
+				const navigation = document.querySelector('#primary-navigation');
+				const toggle = document.querySelector('[data-menu-toggle]');
+				const main = document.querySelector('main');
+				const headerBox = header?.getBoundingClientRect();
+				const navigationBox = navigation?.getBoundingClientRect();
+				const mainBox = main?.getBoundingClientRect();
+				return {
+					navigationVisible: getComputedStyle(navigation).display !== 'none',
+					navigationLinks: navigation.querySelectorAll('a[href]').length,
+					navigationPosition: getComputedStyle(navigation).position,
+					navigationOverflow: getComputedStyle(navigation).overflowY,
+					navigationMaxHeight: getComputedStyle(navigation).maxHeight,
+					navigationInHeaderFlow: navigationBox.bottom <= headerBox.bottom + 1,
+					mainBelowHeader: mainBox.top >= headerBox.bottom - 1,
+					toggleDisplay: getComputedStyle(toggle).display,
+					toggleVisible: toggle.getClientRects().length > 0,
+					serviceCards: document.querySelectorAll('[data-service-card]').length,
+					blogCards: document.querySelectorAll('[data-blog-card]').length,
+					contactAlternatives: document.querySelectorAll('.contact-page__alternate-actions a[href]').length,
+					overflow: document.documentElement.scrollWidth > innerWidth + 3,
+					ariaHiddenTabStops: [...document.querySelectorAll('[aria-hidden="true"]')]
+						.flatMap((node) => [...node.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])')])
+						.length,
+				};
+			});
+			check(data.navigationVisible, `no-js-${width} ${route}: menu principal continua navegável`);
+			check(data.navigationLinks >= 15, `no-js-${width} ${route}: submenu não expõe os destinos (${data.navigationLinks})`);
+			check(data.navigationPosition === 'static' && data.navigationOverflow === 'visible' && data.navigationMaxHeight === 'none',
+				`no-js-${width} ${route}: fallback não usa overlay/limite de rolagem`);
+			check(data.navigationInHeaderFlow && data.mainBelowHeader,
+				`no-js-${width} ${route}: navegação não cobre o conteúdo`);
+			check(data.toggleDisplay === 'none' && !data.toggleVisible,
+				`no-js-${width} ${route}: botão sem comportamento não está acessível`);
+			if (route === '/servicos/') check(data.serviceCards === 14, `no-js-${width} /servicos/: cards não dependem do JS`);
+			if (route === '/blog/') check(data.blogCards >= 30, `no-js-${width} /blog/: artigos não dependem do JS`);
+			if (route === '/contato/') check(data.contactAlternatives === 2, `no-js-${width} /contato/: canais alternativos visíveis`);
+			check(!data.overflow, `no-js-${width} ${route}: sem overflow horizontal`);
+			check(data.ariaHiddenTabStops === 0, `no-js-${width} ${route}: foco dentro de aria-hidden`);
+			await page.close();
+		}
+		await noJsContext.close();
 	}
-	await noJsContext.close();
 
 	const reducedContext = await createContext({ width: 390, reducedMotion: 'reduce' });
 	const reducedHome = await load(reducedContext, '/', 'reduced-motion');
