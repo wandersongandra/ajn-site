@@ -9,6 +9,8 @@ on:
       - 'scripts/browser-smoke.mjs'
       - 'scripts/browser-phase0.mjs'
       - 'scripts/browser-phase2.mjs'
+      - 'scripts/browser-accessibility.mjs'
+      - 'scripts/browser-route-matrix.mjs'
       - 'scripts/browser-mobile-navigation.mjs'
       - 'astro.config.mjs'
       - 'package.json'
@@ -72,6 +74,12 @@ jobs:
 
       - name: Browser regression — Phase 2 mobile, fast-scroll and motion
         run: node scripts/browser-phase2.mjs
+
+      - name: Browser regression — Phase 4 keyboard, reduced motion and no JavaScript
+        run: node scripts/browser-accessibility.mjs
+
+      - name: Browser acceptance matrix — every generated route at mobile and desktop
+        run: node scripts/browser-route-matrix.mjs
 
       - name: Upload screenshot evidence
         if: always()

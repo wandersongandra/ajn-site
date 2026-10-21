@@ -22,7 +22,7 @@ function check(ok, message) {
   if (!ok) failures.push(message);
 }
 
-async function inspectPage(page, label) {
+function inspectPage(page) {
   return page.evaluate(() => {
     const targets = [...document.querySelectorAll('.home-page [data-reveal]')];
     const cutoff = innerHeight + 28;
@@ -67,7 +67,7 @@ async function exercise(config) {
       const reject = page.locator('[data-privacy-reject]');
       if (await reject.isVisible()) await reject.click();
     }
-    const before = await inspectPage(page, config.name);
+    const before = await inspectPage(page);
     check(before.total >= 12, `${config.name}: reveal sections are present (${before.total})`);
     check(before.width <= before.viewport + 3, `${config.name}: initial horizontal overflow ${before.width}/${before.viewport}`);
     if (config.motion === 'reduce' || config.saveData || config.noJs) {
@@ -97,7 +97,7 @@ async function exercise(config) {
           .every(el => Number(getComputedStyle(el).opacity) >= 0.98);
       }, null, { timeout: 3000 });
     }
-    const after = await inspectPage(page, config.name);
+    const after = await inspectPage(page);
     check(after.scroll > 100, `${config.name}: instant scroll reached lower content`);
     check(after.passed > 0 && after.hiddenPassed === 0,
       `${config.name}: invisible passed content after instant scroll (${after.hiddenPassed}/${after.passed})`);
