@@ -6,7 +6,8 @@ Branch: `security/ajn-fase5-governanca`.
 ## Entregas em código
 
 - `.github/CODEOWNERS` atribui revisão por padrão ao proprietário conhecido do repositório (`@wandersongandra`). Isso só tem efeito operacional quando a proteção de branch exigir review.
-- `scripts/audit-governance.mjs` verifica CODEOWNERS, as instruções existentes em `SECURITY.md`, cobertura semanal do Dependabot, Node mínimo e a política estrutural dos workflows.
+- `scripts/audit-governance.mjs` verifica CODEOWNERS, as instruções existentes em `SECURITY.md`, `version: 2`, alvos, diretórios, agendas, fusos, duplicidades e limites do Dependabot, Node mínimo e a identidade dos workflows de segurança obrigatórios (`codeql.yml`, `gitleaks.yml` e `dependency-review.yml`).
+- `scripts/test-audit-governance.mjs` contém fixtures negativas para remoção/renomeação de cada workflow obrigatório e para campos inválidos do Dependabot.
 - O Quality Gate passa a executar essa auditoria de governança.
 
 ## Validação
@@ -14,9 +15,10 @@ Branch: `security/ajn-fase5-governanca`.
 | Evidência | Resultado |
 | --- | --- |
 | `npm run check` | PASS — 0 erros, 0 warnings, 0 hints |
-| `npm run audit:governance` | PASS — controles do repositório, Dependabot e 6 workflows |
+| `npm run audit:governance` | PASS — controles do repositório, Dependabot estruturado e 6 workflows identificados |
 | `npm run audit:workflows` | PASS — YAML estruturado, permissões mínimas, ações pinadas, timeout e sem `pull_request_target` |
 | `npm run test:audit-workflows` | PASS — fixtures negativos e positivos |
+| `npm run test:audit-governance` | PASS — 2 testes, incluindo remoção/renomeação dos 3 workflows obrigatórios e fixtures negativas do Dependabot |
 
 ## Pendências que exigem ação do proprietário
 
