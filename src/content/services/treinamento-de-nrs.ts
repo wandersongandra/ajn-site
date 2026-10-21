@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "treinamento-de-nrs",
 	"path": "/servicos/treinamento-de-nrs",
 	"title": "Treinamento de NRs - AJN Consultoria e Engenharia",
-	"description": "Treinamento de NRs - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de trabalho, bem como projetos de s...Saiba mais.",
+	"description": "Capacitações relacionadas às NRs e integração de novos funcionários, conforme atividade, modalidade e requisitos aplicáveis.",
 	"heading": "Treinamento de NRs",
 	"image": "/images/content/services/treinamento-de-nrs.webp",
 	"imageAlt": "Treinamento de NRs",

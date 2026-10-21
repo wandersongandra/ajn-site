@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "gestao-da-qualidade",
 	"path": "/servicos/gestao-da-qualidade",
 	"title": "Gestão da Qualidade - AJN Consultoria e Engenharia",
-	"description": "Gestão da Qualidade - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de trabalho, bem como projetos de...Saiba mais.",
+	"description": "Gestão da qualidade em obras com plano de qualidade, fichas de verificação, controle de materiais e acompanhamento técnico no local.",
 	"heading": "Gestão da Qualidade",
 	"image": "/images/content/services/gestao-da-qualidade.webp",
 	"imageAlt": "Gestão da Qualidade",

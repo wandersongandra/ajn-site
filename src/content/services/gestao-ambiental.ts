@@ -2,7 +2,7 @@ export const servicePage = {
 	"slug": "gestao-ambiental",
 	"path": "/servicos/gestao-ambiental",
 	"title": "Gestão Ambiental - AJN Consultoria e Engenharia",
-	"description": "Gestão Ambiental - Especializamo-nos em fornecer medidas abrangentes de saúde e segurança para o seu local de trabalho, bem como projetos de seg...Saiba mais.",
+	"description": "Gestão ambiental para empresas, com orientação sobre segregação, armazenamento, destinação de resíduos e conscientização das equipes.",
 	"heading": "Gestão Ambiental",
 	"image": "/images/content/services/gestao-ambiental.webp",
 	"imageAlt": "Gestão Ambiental",
