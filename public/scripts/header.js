@@ -72,7 +72,14 @@
 		}
 	});
 	compactNav.addEventListener('change', () => {
+		// Breakpoint changes can hide whichever navigation control currently
+		// owns keyboard focus. Move focus to its visible counterpart.
+		const active = document.activeElement;
+		const focusMovesToToggle = compactNav.matches && active && nav?.contains(active);
+		const focusMovesToNav = !compactNav.matches && active === menuToggle;
 		setMenu(false);
 		closeSubmenus();
+		if (focusMovesToToggle) menuToggle?.focus({ preventScroll: true });
+		else if (focusMovesToNav) nav?.querySelector('a[href]')?.focus({ preventScroll: true });
 	});
 })();
