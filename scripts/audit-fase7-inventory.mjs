@@ -55,6 +55,18 @@ function firstMatch(html, expression) {
 	return html.match(expression)?.[1] ? decodeEntities(html.match(expression)[1]) : '';
 }
 
+// Métrica separada para links de artigos: o total do CSV inclui navegação global.
+function editorialArticleHtml(html) {
+	const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] ?? '';
+	return main.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] ?? main;
+}
+
+function internalTargets(html) {
+	return [...html.matchAll(/\bhref="([^"]+)"/gi)]
+		.map((match) => normalizePath(match[1]))
+		.filter(Boolean);
+}
+
 function routeFromHtmlFile(file) {
 	const relative = path.relative(distRoot, file).replaceAll('\\', '/');
 	if (!relative.endsWith('.html')) return null;
@@ -137,9 +149,8 @@ for (const file of htmlFiles) {
 	const h1s = [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)].map((match) => textFromHtml(match[1]));
 	const imageTags = [...html.matchAll(/<img\b[^>]*>/gi)].map((match) => match[0]);
 	const missingAlt = imageTags.filter((tag) => !/\balt(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?(?=\s|\/?>)/i.test(tag)).length;
-	const internalLinks = [...html.matchAll(/\bhref="([^"]+)"/gi)]
-		.map((match) => normalizePath(match[1]))
-		.filter(Boolean);
+	const internalLinks = internalTargets(html);
+	const articleLinks = route.startsWith('/blog/') ? internalTargets(editorialArticleHtml(html)) : [];
 	const words = textFromHtml(html).split(/\s+/).filter(Boolean).length;
 	const metaProblems = [];
 	if (!title) metaProblems.push('title ausente');
@@ -186,19 +197,25 @@ for (const file of htmlFiles) {
 		imageCount: imageTags.length,
 		missingAlt,
 		internalLinks: internalLinks.length,
+		articleLinks: articleLinks.length,
 	});
 }
 
 pages.sort((a, b) => a.route.localeCompare(b.route, 'pt-BR'));
 const routeSet = new Set(pages.map((page) => page.route));
 const inbound = new Map(pages.map((page) => [page.route, 0]));
+const inboundFromArticles = new Map(pages.map((page) => [page.route, 0]));
 for (const file of htmlFiles) {
 	const route = routeFromHtmlFile(file);
 	if (!route || route === '/404') continue;
 	const html = await readFile(file, 'utf8');
-	for (const match of html.matchAll(/\bhref="([^"]+)"/gi)) {
-		const target = normalizePath(match[1]);
-		if (target && routeSet.has(target)) inbound.set(target, (inbound.get(target) ?? 0) + 1);
+	for (const target of internalTargets(html)) {
+		if (routeSet.has(target)) inbound.set(target, (inbound.get(target) ?? 0) + 1);
+	}
+	if (route.startsWith('/blog/')) {
+		for (const target of internalTargets(editorialArticleHtml(html))) {
+			if (routeSet.has(target)) inboundFromArticles.set(target, (inboundFromArticles.get(target) ?? 0) + 1);
+		}
 	}
 }
 const orphanRoutes = [...inbound.entries()].filter(([, count]) => count === 0).map(([route]) => route);
@@ -209,6 +226,12 @@ for (const page of pages) {
 		if (page.action === 'manter e monitorar') page.action = 'revisar arquitetura de links';
 	}
 }
+
+const blogArticleCounts = pages.filter((page) => page.type === 'blog').map((page) => page.articleLinks);
+const blogArticleRange = blogArticleCounts.length
+	? `${Math.min(...blogArticleCounts)} a ${Math.max(...blogArticleCounts)}`
+	: 'não disponível';
+const pagesLinkedFromBlogBodies = [...inboundFromArticles.values()].filter((count) => count > 0).length;
 
 const duplicateTitles = new Map();
 for (const page of pages) {
@@ -252,6 +275,13 @@ ${byPriority}
 - Títulos duplicados exatos: ${duplicateGroups.length} grupos.
 - Rotas sem link interno encontrado no HTML compilado: ${orphanRoutes.length}.
 - O relatório não remove nem redireciona páginas.
+
+## Qualidade da medição de links
+
+- A coluna **Links internos** do CSV conta links em todo o HTML, incluindo menu, rodapé e componentes compartilhados. Não equivale a referências editoriais nem a links únicos.
+- Em separado, links internos extraídos de regiões `<article>` nas páginas de blog (fallback para `<main>`): **${blogArticleRange}** por artigo; componentes dentro do artigo podem ser incluídos e a relevância precisa de revisão contextual.
+- Páginas com ao menos um inbound vindo dessas regiões dos artigos: **${pagesLinkedFromBlogBodies}**. Não representa cliques nem comprova relação semântica.
+- Uma rota sem inbound no HTML não é necessariamente inacessível aos buscadores, e links globais de navegação não provam relação editorial.
 
 ## Amostra priorizada de alertas
 
