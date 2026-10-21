@@ -30,20 +30,24 @@ function normalizePath(value) {
 }
 
 function decodeEntities(value) {
+	const entities = new Map([
+		['&amp;', String.fromCharCode(38)],
+		['&quot;', String.fromCharCode(34)],
+		['&#39;', String.fromCharCode(39)],
+		['&apos;', String.fromCharCode(39)],
+		['&lt;', String.fromCharCode(60)],
+		['&gt;', String.fromCharCode(62)],
+	]);
 	return value
-		.replace(/&amp;/g, '&')
-		.replace(/&quot;/g, '"')
-		.replace(/&#39;|&apos;/g, "'")
-		.replace(/&lt;/g, '<')
-		.replace(/&gt;/g, '>')
+		.replace(/&(?:amp|quot|#39|apos|lt|gt);/g, (entity) => entities.get(entity) ?? entity)
 		.replace(/\s+/g, ' ')
 		.trim();
 }
 
 function textFromHtml(value) {
 	return decodeEntities(value
-		.replace(/<script[\s\S]*?<\/script>/gi, ' ')
-		.replace(/<style[\s\S]*?<\/style>/gi, ' ')
+		.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, ' ')
+		.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, ' ')
 		.replace(/<[^>]+>/g, ' '));
 }
 
