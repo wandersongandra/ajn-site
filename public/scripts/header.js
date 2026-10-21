@@ -81,7 +81,9 @@
 		// Breakpoint changes can hide whichever navigation control currently
 		// owns keyboard focus. Move focus to its visible counterpart.
 		const active = document.activeElement;
-		const focusMovesToToggle = compactNav.matches && active && nav?.contains(active);
+		const focusMovesToToggle = compactNav.matches &&
+			(Boolean(active && nav?.contains(active)) ||
+				(active === document.body && Boolean(lastFocusedControl && nav?.contains(lastFocusedControl))));
 		const focusMovesToNav = !compactNav.matches &&
 			(active === menuToggle ||
 				(active === document.body && lastFocusedControl === menuToggle));
