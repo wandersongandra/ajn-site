@@ -3,7 +3,7 @@
 Data da evidência: 21/10/2026  
 Base: `7691507f75dc5a0a5fc18a3e3b1176633f33a8c6` (main, PR #77 integrada)  
 Branch de entrega: `perf/ajn-fase3-final`  
-PR relacionada: será aberta contra `main`; nenhuma alteração foi integrada ou publicada.
+PR relacionada: [#82](https://github.com/wandersongandra/ajn-site/pull/82), contra `main`; nenhuma alteração foi integrada ou publicada.
 
 ## Escopo concluído
 
