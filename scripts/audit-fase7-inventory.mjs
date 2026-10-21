@@ -279,7 +279,7 @@ ${byPriority}
 ## Qualidade da medição de links
 
 - A coluna **Links internos** do CSV conta links em todo o HTML, incluindo menu, rodapé e componentes compartilhados. Não equivale a referências editoriais nem a links únicos.
-- Em separado, links internos extraídos de regiões `<article>` nas páginas de blog (fallback para `<main>`): **${blogArticleRange}** por artigo; componentes dentro do artigo podem ser incluídos e a relevância precisa de revisão contextual.
+- Em separado, links internos extraídos de regiões \`<article>\` nas páginas de blog (fallback para \`<main>\`): **${blogArticleRange}** por artigo; componentes dentro do artigo podem ser incluídos e a relevância precisa de revisão contextual.
 - Páginas com ao menos um inbound vindo dessas regiões dos artigos: **${pagesLinkedFromBlogBodies}**. Não representa cliques nem comprova relação semântica.
 - Uma rota sem inbound no HTML não é necessariamente inacessível aos buscadores, e links globais de navegação não provam relação editorial.
 
