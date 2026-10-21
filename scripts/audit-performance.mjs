@@ -6,7 +6,7 @@ const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
 const remoteFontHosts = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
 function containsRemoteFontLink(html) {
-	for (const [, quote, rawHref] of html.matchAll(/<link\b[^>]*\bhref\s*=\s*(["'])(.*?)\1/gi)) {
+	for (const [, , rawHref] of html.matchAll(/<link\b[^>]*\bhref\s*=\s*(["'])(.*?)\1/gi)) {
 		try {
 			const url = new URL(rawHref, 'https://ajn.invalid');
 			if (url.protocol === 'https:' && remoteFontHosts.has(url.hostname.toLowerCase())) return true;
