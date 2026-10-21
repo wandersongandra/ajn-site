@@ -1,4 +1,6 @@
 (() => {
+	// CSS keeps the navigation usable if this enhancement is unavailable.
+	document.documentElement.classList.add('js-enabled');
 	const header = document.querySelector('#site-header');
 	const menuToggle = header?.querySelector('[data-menu-toggle]');
 	const nav = header?.querySelector('#primary-navigation');
