@@ -46,8 +46,8 @@ function decodeEntities(value) {
 
 function textFromHtml(value) {
 	return decodeEntities(value
-		.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, ' ')
-		.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, ' ')
+		.replace(/<script\b[^>]*>[\s\S]*?<\/script[^>]*>/gi, ' ')
+		.replace(/<style\b[^>]*>[\s\S]*?<\/style[^>]*>/gi, ' ')
 		.replace(/<[^>]+>/g, ' '));
 }
 
