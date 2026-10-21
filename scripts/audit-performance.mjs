@@ -4,6 +4,18 @@ import path from 'node:path';
 
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
+const remoteFontHosts = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
+function containsRemoteFontLink(html) {
+	for (const [, quote, rawHref] of html.matchAll(/<link\b[^>]*\bhref\s*=\s*(["'])(.*?)\1/gi)) {
+		try {
+			const url = new URL(rawHref, 'https://ajn.invalid');
+			if (url.protocol === 'https:' && remoteFontHosts.has(url.hostname.toLowerCase())) return true;
+		} catch {
+			// Malformed URLs are handled by the hosting/security audits.
+		}
+	}
+	return false;
+}
 const distFiles = [];
 
 async function walk(directory) {
@@ -22,7 +34,7 @@ let imageCount = 0;
 let scriptCount = 0;
 for (const filepath of htmlFiles) {
 	const html = await readFile(filepath, 'utf8');
-	check(!/https:\/\/fonts\.(?:googleapis|gstatic)\.com/i.test(html), `${filepath}: fonte externa encontrada.`);
+	check(!containsRemoteFontLink(html), `${filepath}: fonte externa encontrada.`);
 	for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
 		imageCount++;
 		const tag = match[0];

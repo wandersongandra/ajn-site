@@ -65,6 +65,12 @@ npm run check: 0 errors, 0 warnings, 0 hints
 git diff --check: PASS
 ```
 
+## Reteste após análise de segurança do CI
+
+Depois de abrir a PR, o CodeQL identificou dois alertas de alta severidade nos próprios gates novos: uma verificação por substring em `scripts/audit-legal.mjs` e uma expressão regular não ancorada em `scripts/audit-performance.mjs`. Embora fossem apenas auditorias de artefatos locais, poderiam aceitar uma URL maliciosa contendo o texto de um domínio confiável.
+
+Os dois pontos foram corrigidos para extrair `href` de links, normalizar com `new URL` e comparar o `hostname` com o conjunto exato `fonts.googleapis.com`/`fonts.gstatic.com`, exigindo HTTPS. O `npm run validate` foi executado novamente após a correção e passou integralmente, incluindo `audit:legal`, `audit:performance`, `audit:hosting-config` e `audit:workflows`.
+
 ## Riscos e limitações residuais
 
 - A configuração live da Hostinger, cache, compressão, headers efetivamente entregues e comportamento de redirecionamento ainda precisam ser confirmados após aprovação em uma janela de homologação. O gate local declara explicitamente essa limitação.
