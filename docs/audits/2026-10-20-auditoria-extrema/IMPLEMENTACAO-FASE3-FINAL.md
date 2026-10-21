@@ -71,6 +71,12 @@ Depois de abrir a PR, o CodeQL identificou dois alertas de alta severidade nos p
 
 Os dois pontos foram corrigidos para extrair `href` de links, normalizar com `new URL` e comparar o `hostname` com o conjunto exato `fonts.googleapis.com`/`fonts.gstatic.com`, exigindo HTTPS. O `npm run validate` foi executado novamente após a correção e passou integralmente, incluindo `audit:legal`, `audit:performance`, `audit:hosting-config` e `audit:workflows`.
 
+## Auditoria independente de integração pré-merge
+
+A ordem de integração temporária foi Fase 3 (#82), Fase 4 (#81) e Fase 5 (#80). A primeira execução do `astro check` combinado encontrou dois hints de variável não utilizada (`quote`) nos próprios parsers URL-aware de `audit-legal.mjs` e `audit-performance.mjs`. A causa foi corrigida substituindo a captura sem uso por um grupo ignorado; nenhum teste foi enfraquecido.
+
+Após o reteste, o estado combinado passou com `npm ci`, `npm run check` em 0 erros/0 warnings/0 hints, build de 164 páginas, `npm run validate`, Browser Smoke 1.457, performance budget 54, performance lab 46/12 amostras, acessibilidade 214 e matriz de rotas 164 × 2 com 1.635 asserções. Os checks remotos do HEAD final também passaram: Quality Gate, Browser Smoke, CodeQL, Dependency Security e Secret Leak Scan.
+
 ## Riscos e limitações residuais
 
 - A configuração live da Hostinger, cache, compressão, headers efetivamente entregues e comportamento de redirecionamento ainda precisam ser confirmados após aprovação em uma janela de homologação. O gate local declara explicitamente essa limitação.
