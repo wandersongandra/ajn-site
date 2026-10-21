@@ -8,6 +8,8 @@ export const servicePage = {
   heading: 'PCMSO e ASOs',
   image: '/images/content/services/pcmso-e-asos.jpg',
   imageAlt: 'Documentação de PCMSO e saúde ocupacional',
+  imageWidth: 626,
+  imageHeight: 470,
   sections: [
     {
       heading: 'PCMSO e relação com os riscos da atividade',

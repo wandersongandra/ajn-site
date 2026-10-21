@@ -6,6 +6,8 @@ export const servicePage = {
 	"heading": "Gestão Ambiental",
 	"image": "/images/content/services/gestao-ambiental.webp",
 	"imageAlt": "Gestão Ambiental",
+	"imageWidth": 356,
+	"imageHeight": 500,
 	"sections": [
 		{
 			"heading": "Informações",

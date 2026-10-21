@@ -29,7 +29,7 @@ for (const [label, filename, route] of pages) {
 		for (const key of ['id="responsavel"', 'id="dados-pessoais"', 'id="finalidades"', 'id="compartilhamento"', 'id="retencao"', 'id="cookies"', 'id="direitos"']) {
 			expect(html.includes(key), 'privacidade: seção ausente: ' + key);
 		}
-		expect(html.includes('href="https://policies.google.com/privacy"'), 'privacidade: Google Fonts sem aviso externo.');
+		expect(html.includes('fontes tipográficas locais') && !html.includes('fonts.googleapis.com'), 'privacidade: tipografia local não documentada ou Google Fonts ainda carregado.');
 		expect(html.includes('Google Analytics 4') && html.includes('Rejeitar opcionais'), 'privacidade: GA4 e consentimento não explicados.');
 	}
 	if (label === 'cookies') {

@@ -4,20 +4,21 @@ import { cspSourcesEqual, cspSourceIsExact, isAllowedResourceUrl } from './hosti
 import { extractScriptElements, getHtmlAttributeValue, isJsonLdScript, hasExactHtmlAttribute, stripScriptElements } from './security-html.mjs';
 
 const origin = 'https://ajnengenharia.com.br';
-const policy = "style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'";
+const policy = "style-src 'self'; font-src 'self'; script-src 'self'";
 
 test('CSP aceita somente as origens exatas nas diretivas corretas', () => {
-	assert.equal(cspSourcesEqual(policy, 'style-src', ["'self'", 'https://fonts.googleapis.com']), true);
-	assert.equal(cspSourcesEqual(policy, 'font-src', ["'self'", 'https://fonts.gstatic.com']), true);
+	assert.equal(cspSourcesEqual(policy, 'style-src', ["'self'"]), true);
+	assert.equal(cspSourcesEqual(policy, 'font-src', ["'self'"]), true);
 	assert.equal(cspSourceIsExact(policy, 'style-src', 'https://fonts.googleapis.com.evil.test'), false);
-	assert.equal(cspSourcesEqual("style-src 'self' https://fonts.googleapis.com.evil.test", 'style-src', ["'self'", 'https://fonts.googleapis.com']), false);
-	assert.equal(cspSourcesEqual("style-src 'self' https://evil.test/path/fonts.googleapis.com", 'style-src', ["'self'", 'https://fonts.googleapis.com']), false);
-	assert.equal(cspSourcesEqual("style-src 'self' https://fonts.googleapis.com; style-src https://evil.test", 'style-src', ["'self'", 'https://fonts.googleapis.com']), false);
+	assert.equal(cspSourcesEqual("style-src 'self' https://fonts.googleapis.com", 'style-src', ["'self'"]), false);
+	assert.equal(cspSourcesEqual("style-src 'self' https://evil.test/path/fonts.googleapis.com", 'style-src', ["'self'"]), false);
+	assert.equal(cspSourcesEqual("style-src 'self'; style-src https://evil.test", 'style-src', ["'self'"]), false);
 });
 
 test('recurso permitido depende da própria URL, não dos outros atributos da tag', () => {
 	assert.equal(isAllowedResourceUrl('/assets/site.js', 'script', origin), true);
-	assert.equal(isAllowedResourceUrl('https://fonts.googleapis.com/css2?family=Open+Sans', 'link', origin, true), true);
+	assert.equal(isAllowedResourceUrl('/styles/site.css', 'link', origin, true), true);
+	assert.equal(isAllowedResourceUrl('https://fonts.googleapis.com/css2?family=Open+Sans', 'link', origin, true), false);
 	assert.equal(isAllowedResourceUrl('https://fonts.googleapis.com.evil.test/css', 'link', origin, true), false);
 	assert.equal(isAllowedResourceUrl('https://evil.test/fonts.gstatic.com/file', 'link', origin, true), false);
 	assert.equal(isAllowedResourceUrl('https://evil.test/img.jpg', 'img', origin), false);

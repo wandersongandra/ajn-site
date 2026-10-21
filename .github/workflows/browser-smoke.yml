@@ -9,7 +9,9 @@ on:
       - 'scripts/browser-smoke.mjs'
       - 'scripts/browser-phase0.mjs'
       - 'scripts/browser-phase2.mjs'
+      - 'scripts/browser-performance.mjs'
       - 'scripts/browser-mobile-navigation.mjs'
+      - 'scripts/browser-performance-budget.mjs'
       - 'astro.config.mjs'
       - 'package.json'
       - 'package-lock.json'
@@ -64,6 +66,9 @@ jobs:
       - name: Browser smoke reduced 320 / 360 / 375 / 390 / 430 / 768 / 1024 / 1440 / 1920 plus default and saveData representatives
         run: node scripts/browser-smoke.mjs
 
+      - name: Performance regression — image layout and loading hints
+        run: node scripts/browser-performance-budget.mjs
+
       - name: Browser regression — Phase 2 mobile navigation and blog
         run: node scripts/browser-mobile-navigation.mjs
 
@@ -72,6 +77,9 @@ jobs:
 
       - name: Browser regression — Phase 2 mobile, fast-scroll and motion
         run: node scripts/browser-phase2.mjs
+
+      - name: Browser regression — Phase 3 mobile LCP and image priority
+        run: node scripts/browser-performance.mjs
 
       - name: Upload screenshot evidence
         if: always()
