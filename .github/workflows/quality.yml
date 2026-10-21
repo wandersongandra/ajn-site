@@ -54,6 +54,9 @@ jobs:
       - name: SEO and link audit
         run: npm run audit:seo
 
+      - name: Phase 7 content inventory generation and sanity check
+        run: node scripts/audit-fase7-inventory.mjs
+
       - name: Fase 7 commercial rendered meta audit
         run: npm run audit:fase7-commercial
 
