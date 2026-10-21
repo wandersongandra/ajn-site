@@ -288,7 +288,8 @@
 		box-shadow: 0 14px 32px rgb(15 38 19 / 16%);
 		z-index: 85;
 	}
-	html.js-enabled #site-header .primary-navigation { display: none; }
+	html.js-enabled #site-header .primary-navigation,
+	html.js-pending #site-header .primary-navigation { display: none; }
 	html.js-enabled #site-header .primary-navigation.is-open { display: block; }
 	#site-header .primary-navigation > ul.navigation-list {
 		display: flex;
@@ -344,8 +345,8 @@
 		box-shadow: none;
 	}
 	#site-header .has-submenu.is-expanded > .submenu { display: block; }
-	html:not(.js-enabled) #site-header .submenu-toggle { display: none; }
-	html:not(.js-enabled) #site-header .has-submenu > .submenu { display: block; }
+	html:not(.js-enabled):not(.js-pending) #site-header .submenu-toggle { display: none; }
+	html:not(.js-enabled):not(.js-pending) #site-header .has-submenu > .submenu { display: block; }
 	#site-header .submenu > li > a {
 		padding: 12px;
 		background: transparent;
@@ -379,13 +380,13 @@
    Keep it in document flow so the sticky header cannot cover the page, and
    remove the control that has no behavior in this mode. */
 @media (max-width: 1100px) {
-	html:not(.js-enabled) #site-header {
+	html:not(.js-enabled):not(.js-pending) #site-header {
 		position: static;
 	}
-	html:not(.js-enabled) #site-header .menu-toggle {
+	html:not(.js-enabled):not(.js-pending) #site-header .menu-toggle {
 		display: none;
 	}
-	html:not(.js-enabled) #site-header .primary-navigation {
+	html:not(.js-enabled):not(.js-pending) #site-header .primary-navigation {
 		position: static;
 		grid-column: 1 / -1;
 		display: block;
