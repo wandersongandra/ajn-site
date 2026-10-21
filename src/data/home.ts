@@ -9,7 +9,7 @@ export const site = {
 	address: 'Rua Egeu, 34 - Minaslândia, Belo Horizonte - MG',
 	fullAddress: 'Rua Egeu, 34 - Minaslândia, Belo Horizonte - MG - CEP: 31.812-120',
 	phone: '(31) 98473-4644',
-	phoneHref: 'https://web.whatsapp.com/send?phone=5531984734644&text=Ol%C3%A1%21%20Gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20as%20ofertas%20da%20AJN%20Consultoria%20e%20Engenharia',
+	phoneHref: 'https://wa.me/5531984734644?text=Ol%C3%A1%21%20Gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20as%20ofertas%20da%20AJN%20Consultoria%20e%20Engenharia',
 	email: 'faleconosco@ajnengenharia.com.br',
 	trainingUrl: 'https://ajntreinamentos.formasegnr.com',
 	instagram: 'https://www.instagram.com/ajnengenharia/',

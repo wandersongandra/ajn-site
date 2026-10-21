@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 const html = await readFile('dist/contato/index.html', 'utf8');
 const footer = await readFile('dist/index.html', 'utf8');
 const issues = [];
+const renderedContact = html + footer;
 const configured = (process.env.PUBLIC_CONTACT_ENDPOINT || '').trim();
 let enabled = false;
 try {
@@ -22,6 +23,12 @@ if (enabled) {
 }
 if (footer.includes('>Trabalhe Conosco</a>')) {
   issues.push('CTA de recrutamento ainda leva a canal comercial genérico.');
+}
+if (!renderedContact.includes('https://wa.me/5531984734644?text=')) {
+	issues.push('Canais WhatsApp não usam o link universal esperado.');
+}
+if (renderedContact.includes('https://web.whatsapp.com/send?')) {
+	issues.push('Canais WhatsApp ainda apontam para o endpoint web com falha observada em user-agent móvel.');
 }
 if (issues.length) {
   for (const issue of issues) console.error('[contact][FAIL]', issue);
