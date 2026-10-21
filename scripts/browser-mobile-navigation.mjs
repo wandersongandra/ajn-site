@@ -14,8 +14,10 @@ function check(condition, description) {
   assertions += 1;
   if (!condition) failures.push(description);
 }
-async function load(context, route) {
+async function load(context, route, errors = []) {
   const page = await context.newPage();
+  // Deferred startup scripts run before DOMContentLoaded: subscribe first.
+  page.on('pageerror', error => errors.push(error.message));
   const response = await page.goto(new URL(route, origin).href, {
     waitUntil: 'domcontentloaded', timeout: 45000,
   });
@@ -41,9 +43,8 @@ try {
       viewport: { width, height: 850 }, locale: 'pt-BR', reducedMotion: 'reduce',
     });
     for (const route of routes) {
-      const page = await load(context, route);
       const errors = [];
-      page.on('pageerror', error => errors.push(error.message));
+      const page = await load(context, route, errors);
       const m = await widthMeasurements(page);
       check(m.documentWidth <= m.viewportWidth + 3,
         route + ' at ' + width + ': horizontal overflow ' + m.documentWidth + '/' + m.viewportWidth);
@@ -121,6 +122,14 @@ try {
   await page.waitForFunction(() => document.activeElement?.matches('[data-menu-toggle]') === true);
   check(await focusIs(page, '[data-menu-toggle]'),
     'Wide-to-mobile breakpoint: hidden link focus moves to visible menu toggle');
+  // Regress the browser ordering where CSS blur occurs before matchMedia change.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await firstLink.focus();
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForFunction(() => document.activeElement?.matches('[data-menu-toggle]') === true);
+  check(await focusIs(page, '[data-menu-toggle]'),
+    'Wide-to-mobile breakpoint: remembered navigation focus survives early blur');
   check(await menu.getAttribute('aria-expanded') === 'false',
     'Wide-to-mobile breakpoint: navigation is collapsed');
 
