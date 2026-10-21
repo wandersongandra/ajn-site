@@ -1,5 +1,6 @@
 import { readdir, readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const distRoot = path.join(root, 'dist');
@@ -134,6 +135,19 @@ function sourceFor(route, sourceMap) {
 	return sourceMap.get(route) ?? `dist${route === '/' ? '/index.html' : `${route}/index.html`}`;
 }
 
+function auditedRevision() {
+	try {
+		const sha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+		let ref = 'detached HEAD';
+		try {
+			ref = execFileSync('git', ['symbolic-ref', '--quiet', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+		} catch { /* CI pode usar checkout detached. */ }
+		return ref + ' (' + sha + ')';
+	} catch {
+		return 'checkout sem metadados Git; revisão não verificada';
+	}
+}
+
 function csvCell(value) {
 	return `"${String(value ?? '').replaceAll('"', '""')}"`;
 }
@@ -264,7 +278,7 @@ const byPriority = Object.entries(Object.groupBy(pages, (page) => page.priority)
 const flagged = pages.filter((page) => page.problems).slice(0, 40).map((page) => `| ${page.route} | ${page.priority} | ${page.problems.replaceAll('|', '/')} | ${page.evidence} |`).join('\n');
 const report = `# Inventário editorial e SEO — Fase 7
 
-Gerado em ${new Date().toISOString().slice(0, 10)} a partir do build local de \`origin/main\` e dos arquivos de conteúdo. O CSV anexo contém uma linha por rota HTML auditada.
+Gerado em ${new Date().toISOString().slice(0, 10)} a partir do build local e dos arquivos de conteúdo do checkout **${auditedRevision()}**. Gere o HTML em dist/ após selecionar o checkout para evitar evidência de outra revisão. O CSV anexo contém uma linha por rota HTML auditada.
 
 ## Escopo e critérios
 
