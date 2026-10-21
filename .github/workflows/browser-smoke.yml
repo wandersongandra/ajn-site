@@ -9,6 +9,7 @@ on:
       - 'scripts/browser-smoke.mjs'
       - 'scripts/browser-phase0.mjs'
       - 'scripts/browser-phase2.mjs'
+      - 'scripts/browser-performance.mjs'
       - 'scripts/browser-mobile-navigation.mjs'
       - 'astro.config.mjs'
       - 'package.json'
@@ -72,6 +73,9 @@ jobs:
 
       - name: Browser regression — Phase 2 mobile, fast-scroll and motion
         run: node scripts/browser-phase2.mjs
+
+      - name: Browser regression — Phase 3 mobile LCP and image priority
+        run: node scripts/browser-performance.mjs
 
       - name: Upload screenshot evidence
         if: always()
