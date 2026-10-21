@@ -4,6 +4,12 @@
 	const nav = header?.querySelector('#primary-navigation');
 	const submenuGroups = Array.from(header?.querySelectorAll('.has-submenu') ?? []);
 	const compactNav = window.matchMedia('(max-width: 1100px)');
+	// Browsers can blur a control when CSS switches it to display:none, before
+	// the media query 'change' callback runs. Remember the last real focus target.
+	let lastFocusedControl = null;
+	document.addEventListener('focusin', (event) => {
+		lastFocusedControl = event.target instanceof Element ? event.target : null;
+	});
 
 	function setSubmenu(group, open) {
 		group.classList.toggle('is-expanded', open);
@@ -72,7 +78,18 @@
 		}
 	});
 	compactNav.addEventListener('change', () => {
+		// Breakpoint changes can hide whichever navigation control currently
+		// owns keyboard focus. Move focus to its visible counterpart.
+		const active = document.activeElement;
+		const focusMovesToToggle = compactNav.matches &&
+			(Boolean(active && nav?.contains(active)) ||
+				(active === document.body && Boolean(lastFocusedControl && nav?.contains(lastFocusedControl))));
+		const focusMovesToNav = !compactNav.matches &&
+			(active === menuToggle ||
+				(active === document.body && lastFocusedControl === menuToggle));
 		setMenu(false);
 		closeSubmenus();
+		if (focusMovesToToggle) menuToggle?.focus({ preventScroll: true });
+		else if (focusMovesToNav) nav?.querySelector('a[href]')?.focus({ preventScroll: true });
 	});
 })();

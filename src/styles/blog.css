@@ -320,10 +320,15 @@
 	.blog-hub .blog-sidebar__topics { min-width: 0; }
 	.blog-hub .blog-sidebar__topic-list {
 		display: flex; flex-wrap: nowrap; gap: 8px; max-width: 100%;
-		overflow-x: auto; padding: 2px 0 9px; scrollbar-width: thin;
+		overflow-x: auto; overscroll-behavior-inline: contain;
+		scroll-padding-inline: 10px; -webkit-overflow-scrolling: touch;
+		padding: 3px 3px 11px; scrollbar-width: thin;
 	}
 	.blog-hub .blog-sidebar__topic-list li { flex: 0 0 auto; }
-	.blog-hub .blog-sidebar__topic-list a { gap: 8px; padding: 9px 11px; border: 1px solid var(--blog-stroke); white-space: nowrap; }
+	.blog-hub .blog-sidebar__topic-list a {
+		min-height: 44px; gap: 8px; padding: 9px 11px;
+		border: 1px solid var(--blog-stroke); white-space: nowrap;
+	}
 	.blog-hub .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.blog-reading .blog-article-layout, .blog-legacy .blog-article-layout { grid-template-columns: 1fr; }
 	.blog-reading .blog-article-layout > .blog-article, .blog-legacy .blog-article-layout > .blog-article,
@@ -336,7 +341,10 @@
 	.blog-hub .blog-card__image img { height: 163px; max-height: 163px; }
 	.blog-hub .blog-card__body { padding: 16px 17px; }
 	.blog-hub .blog-archive__heading { align-items: start; flex-direction: column; gap: 8px; }
-	.blog-hub .blog-sidebar__search input { font-size: 16px; }
+	/* Avoid iOS focus auto-zoom in both the archive and individual articles. */
+	.blog-hub .blog-sidebar__search input,
+	.blog-reading .blog-sidebar__search input,
+	.blog-legacy .blog-sidebar__search input { font-size: 16px; }
 	.blog-hub .blog-hub__intro > p:last-child { font-size: 16px; }
 	.blog-reading .blog-article__image, .blog-legacy .blog-article__image { height: 215px; max-height: 215px; }
 	.blog-reading .blog-article__toc, .blog-legacy .blog-article__toc { padding: 18px 17px; }

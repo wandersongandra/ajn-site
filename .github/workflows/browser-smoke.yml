@@ -9,6 +9,7 @@ on:
       - 'scripts/browser-smoke.mjs'
       - 'scripts/browser-phase0.mjs'
       - 'scripts/browser-phase2.mjs'
+      - 'scripts/browser-mobile-navigation.mjs'
       - 'astro.config.mjs'
       - 'package.json'
       - 'package-lock.json'
@@ -62,6 +63,9 @@ jobs:
 
       - name: Browser smoke reduced 320 / 360 / 375 / 390 / 430 / 768 / 1024 / 1440 / 1920 plus default and saveData representatives
         run: node scripts/browser-smoke.mjs
+
+      - name: Browser regression — Phase 2 mobile navigation and blog
+        run: node scripts/browser-mobile-navigation.mjs
 
       - name: Browser regression — Phase 0 accessibility and privacy P1s
         run: node scripts/browser-phase0.mjs
