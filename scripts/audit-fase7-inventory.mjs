@@ -22,11 +22,23 @@ async function walk(directory) {
 	return files;
 }
 
+// Considera URLs absolutas do próprio site além dos links relativos.
+// Previews também reconhecem URLs absolutas do domínio canônico de produção.
+const canonicalSiteOrigin = 'https://ajnengenharia.com.br';
+const configuredSiteOrigin = new URL(process.env.PUBLIC_SITE_ORIGIN || canonicalSiteOrigin).origin;
+const internalOrigins = new Set([configuredSiteOrigin, canonicalSiteOrigin]);
+
 function normalizePath(value) {
-	const pathname = value.split(/[?#]/, 1)[0].replace(/\\+/g, '/');
-	if (!pathname.startsWith('/')) return null;
-	const normalized = pathname.replace(/\/+/g, '/').replace(/\/+$/, '');
-	return normalized || '/';
+	const href = String(value ?? '').trim();
+	if (!href || href.startsWith('#') || href.startsWith('?')) return null;
+	try {
+		const url = new URL(href, configuredSiteOrigin + '/');
+		if (!internalOrigins.has(url.origin)) return null;
+		const normalized = url.pathname.replace(/\/+/g, '/').replace(/\/+$/, '');
+		return normalized || '/';
+	} catch {
+		return null;
+	}
 }
 
 function decodeEntities(value) {
