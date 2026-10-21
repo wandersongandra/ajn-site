@@ -1,3 +1,5 @@
+@import './fonts.css';
+
 :root {
 	--font-display: 'Archivo', 'Arial Narrow', sans-serif;
 	--font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
@@ -1380,9 +1382,11 @@ h3 { font-size: var(--type-h3); font-weight: var(--font-weight-emphasis); letter
 }
 .service-detail-wp__image img {
 	width: 100%;
+	height: auto;
 	max-height: 560px;
 	border-radius: 8px;
-	object-fit: cover;
+	object-fit: contain;
+	background: var(--surface);
 	box-shadow: var(--wp-shadow);
 }
 .service-detail-wp__content .content-section:first-child h2 { margin-top: 0; }

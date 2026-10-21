@@ -12,15 +12,17 @@ const reportOnly = header('Content-Security-Policy-Report-Only');
 
 check(Boolean(enforced), 'A CSP atualmente enforced deve ser preservada.');
 check(Boolean(reportOnly), 'A CSP candidata deve permanecer em Report-Only.');
+check(cspSourcesEqual(enforced, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']),
+	'CSP enforced não deve liberar imagens em qualquer origem HTTPS.');
 check(cspSourcesEqual(reportOnly, 'default-src', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com']), 'CSP candidata deve restringir default/script a self.');
 check(cspSourcesEqual(reportOnly, 'form-action', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']), 'CSP candidata deve restringir forms e imagens.');
 check(cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com']),
   'CSP candidata deve permitir apenas endpoints de medição GA4 conhecidos.');
-check(cspSourcesEqual(reportOnly, 'style-src', ["'self'", 'https://fonts.googleapis.com']) &&
-	cspSourcesEqual(reportOnly, 'font-src', ["'self'", 'https://fonts.gstatic.com']),
-	'CSP candidata deve permitir somente as origens exatas de Google Fonts nos respectivos contextos.');
+check(cspSourcesEqual(reportOnly, 'style-src', ["'self'"]) &&
+	cspSourcesEqual(reportOnly, 'font-src', ["'self'"]),
+	'CSP candidata deve manter estilos e fontes em origem própria.');
 check(cspSourcesEqual(reportOnly, 'base-uri', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'object-src', ["'none'"]) &&
 	cspSourcesEqual(reportOnly, 'frame-ancestors', ["'none'"]), 'CSP candidata deve restringir objetos, frames e base URI.');
@@ -57,7 +59,7 @@ for (const filepath of artifacts) {
 		for (const [, rawUrl] of body.matchAll(/url\(["']?(https?:\/\/[^"')]+)["']?\)/gi)) {
 			try {
 				const origin = new URL(rawUrl).origin;
-				check(origin === 'https://fonts.gstatic.com', filepath + ': origem CSS não permitida pela CSP: ' + origin);
+				check(origin === productionOrigin, filepath + ': origem CSS não permitida pela CSP: ' + origin);
 			} catch {
 				failures.push(filepath + ': URL CSS malformada.');
 			}

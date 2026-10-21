@@ -59,6 +59,8 @@ export interface ServiceContent {
 	heading: string;
 	image: string;
 	imageAlt: string;
+	imageWidth: number;
+	imageHeight: number;
 	sections: readonly ContentSection[];
 }
 

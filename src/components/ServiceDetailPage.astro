@@ -29,7 +29,7 @@ const sections = page.sections.map((section, index) => index === 0 && section.he
 <PageShell heading={page.heading}>
 	<div class="service-detail-wp">
 		<div class="service-detail-wp__image">
-			<img src={page.image} alt={page.imageAlt} width="1000" height="720" loading="eager" />
+			<img src={page.image} alt={page.imageAlt} width={page.imageWidth} height={page.imageHeight} loading="eager" fetchpriority="high" decoding="async" />
 		</div>
 		<div class="service-detail-wp__content">
 			<ContentSections sections={sections} formatHeading={normalizeKeywordTerms} />

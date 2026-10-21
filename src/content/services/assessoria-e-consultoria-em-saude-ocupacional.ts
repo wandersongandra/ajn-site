@@ -6,6 +6,8 @@ export const servicePage = {
 	"heading": "Assessoria e consultoria em saúde ocupacional",
 	"image": "/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp",
 	"imageAlt": "Assessoria e consultoria em saúde ocupacional",
+	"imageWidth": 356,
+	"imageHeight": 500,
 	"sections": [
 		{
 			"heading": "Informações",
