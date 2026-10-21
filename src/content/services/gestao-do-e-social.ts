@@ -8,6 +8,8 @@ export const servicePage = {
   heading: 'Gestão do eSocial SST',
   image: '/images/content/services/gestao-do-e-social.webp',
   imageAlt: 'Organização de registros e documentos de SST para o eSocial',
+  imageWidth: 356,
+  imageHeight: 500,
   sections: [
     {
       heading: 'Quais informações de SST entram no eSocial?',

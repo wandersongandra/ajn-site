@@ -8,6 +8,8 @@ export const servicePage = {
   heading: 'Perícias em insalubridade e periculosidade',
   image: '/images/content/services/pericias-em-periculosidade-e-insalubridade.webp',
   imageAlt: 'Avaliação técnica de condições de segurança e saúde no trabalho',
+  imageWidth: 356,
+  imageHeight: 500,
   sections: [
     {
       heading: 'Insalubridade e periculosidade não são a mesma coisa',

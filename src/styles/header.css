@@ -274,7 +274,7 @@
 		top: 100%;
 		left: 16px;
 		right: 16px;
-		display: none;
+		display: block;
 		width: auto;
 		max-height: min(calc(100dvh - 100px), 740px);
 		overflow-y: auto;
@@ -288,7 +288,8 @@
 		box-shadow: 0 14px 32px rgb(15 38 19 / 16%);
 		z-index: 85;
 	}
-	#site-header .primary-navigation.is-open { display: block; }
+	html.js-enabled #site-header .primary-navigation { display: none; }
+	html.js-enabled #site-header .primary-navigation.is-open { display: block; }
 	#site-header .primary-navigation > ul.navigation-list {
 		display: flex;
 		flex-direction: column;
@@ -343,6 +344,8 @@
 		box-shadow: none;
 	}
 	#site-header .has-submenu.is-expanded > .submenu { display: block; }
+	html:not(.js-enabled) #site-header .submenu-toggle { display: none; }
+	html:not(.js-enabled) #site-header .has-submenu > .submenu { display: block; }
 	#site-header .submenu > li > a {
 		padding: 12px;
 		background: transparent;
@@ -371,6 +374,35 @@
 		padding: 11px 11px 14px;
 	}
 }
+
+/* Without the enhancement script the complete navigation is the fallback.
+   Keep it in document flow so the sticky header cannot cover the page, and
+   remove the control that has no behavior in this mode. */
+@media (max-width: 1100px) {
+	html:not(.js-enabled) #site-header {
+		position: static;
+	}
+	html:not(.js-enabled) #site-header .menu-toggle {
+		display: none;
+	}
+	html:not(.js-enabled) #site-header .primary-navigation {
+		position: static;
+		grid-column: 1 / -1;
+		display: block;
+		width: auto;
+		max-height: none;
+		overflow: visible;
+		overscroll-behavior: auto;
+		margin: 0;
+		padding: 0 0 17px;
+		border: 0;
+		border-top: 3px solid var(--header-green);
+		border-radius: 0;
+		box-shadow: none;
+		z-index: auto;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	#site-header a,
 	#site-header .submenu-toggle__chevron,

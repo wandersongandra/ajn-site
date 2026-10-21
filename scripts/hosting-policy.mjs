@@ -28,5 +28,5 @@ export function isAllowedResourceUrl(rawUrl, kind, productionOrigin, isStyleshee
 	if (url.username || url.password) return false;
 	if (url.protocol !== 'https:') return false;
 	if (url.origin === productionOrigin) return true;
-	return kind === 'link' && isStylesheet && url.origin === 'https://fonts.googleapis.com';
+	return kind === 'link' && isStylesheet && url.origin === productionOrigin;
 }

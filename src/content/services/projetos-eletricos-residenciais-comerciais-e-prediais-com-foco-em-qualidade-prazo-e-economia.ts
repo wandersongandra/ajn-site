@@ -6,6 +6,8 @@ export const servicePage = {
   heading: 'Projetos elétricos residenciais, comerciais e prediais',
   image: '/images/featured/orcamento-projeto-eletrico-01.webp',
   imageAlt: 'Instalações elétricas em edificação',
+  imageWidth: 449,
+  imageHeight: 800,
   sections: [
     {
       heading: 'Projeto elétrico adequado à demanda da obra',

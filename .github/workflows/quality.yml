@@ -39,6 +39,9 @@ jobs:
       - name: Static build
         run: npm run build
 
+      - name: Performance and rendering-safety audit
+        run: npm run audit:performance
+
       - name: Hostinger headers and resource compatibility audit
         run: npm run audit:hosting-config
 

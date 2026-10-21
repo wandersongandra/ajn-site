@@ -6,6 +6,8 @@ export const servicePage = {
 	"heading": "Projetos de Combate a Incêndio e Pânico - PPCIP",
 	"image": "/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp",
 	"imageAlt": "Projetos de Combate a Incêndio e Pânico - PPCIP",
+	"imageWidth": 356,
+	"imageHeight": 500,
 	"sections": [
 		{
 			"heading": "Informações",
