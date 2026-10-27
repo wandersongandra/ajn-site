@@ -7,6 +7,8 @@
 </IfModule>
 # Redirecionamento permanente de Informações; ocorre no servidor antes do fallback Astro.
 <IfModule mod_alias.c>
+    # Compatibilidade com o sitemap legado; enviar crawlers ao índice atual.
+    RedirectMatch 301 ^/sitemap\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml
     RedirectMatch 301 ^/informacoes/?$ /mapa-site
 </IfModule>
 # Keep this file in the published output; verify the headers on the real host.
