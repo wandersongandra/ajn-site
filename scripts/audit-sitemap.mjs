@@ -70,6 +70,8 @@ for(const file of files.filter(x => /^sitemap.*\.xml$/.test(x))) {
 	const sitemap = await readFile(`dist/${file}`, 'utf8');
 	sitemapContent += sitemap;
 	check(!sitemap.includes('/informacoes'), `Rota redirecionada permaneceu no arquivo ${file}`);
+	check(!sitemap.includes('/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia'),
+		`Rota legada canonicalizada permaneceu no arquivo ${file}`);
 }
 check(sitemapContent.includes('/politica-de-privacidade/'), 'Política de Privacidade ausente do sitemap.');
 check(sitemapContent.includes('/termos-de-uso/'), 'Termos de Uso ausentes do sitemap.');
