@@ -116,11 +116,11 @@ export const keywordMap = {
 		description: 'Perícias de insalubridade e periculosidade para avaliar exposições, situações de risco e condições de trabalho com fundamentação técnica.',
 	},
 	'/servicos/projetos-de-combate-a-incendio-e-panico-ppcip': {
-		primaryKeyword: 'projeto de prevenção e combate a incêndio',
+		primaryKeyword: 'PPCIP',
 		secondaryKeywords: ['PPCIP', 'AVCB', 'CLCB', 'segurança contra incêndio'],
 		intent: 'comercial',
-		title: 'Projeto de prevenção e combate a incêndio | AJN',
-		description: 'Projetos e documentação de prevenção contra incêndio conforme a edificação e os requisitos da autoridade competente.',
+		title: 'Projeto PPCIP de combate a incêndio e pânico | AJN',
+		description: 'Projetos PPCIP e documentação de segurança contra incêndio e pânico, incluindo regularização e renovação de AVCB/CLCB conforme a edificação.',
 	},
 	'/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros': {
 		primaryKeyword: 'regularização de imóveis junto ao Corpo de Bombeiros',
