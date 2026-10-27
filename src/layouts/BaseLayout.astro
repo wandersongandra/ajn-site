@@ -97,7 +97,7 @@ const websiteSchema = {
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={imageUrl} />
 
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+		<link rel="icon" type="image/png" href="/favicon.png" sizes="128x128" />
 		{normalizedPath === '/' ? <link rel="preload" as="image" href="/images/hero/banner.webp" fetchpriority="high" /> : null}
 
 		<script type="application/ld+json" set:html={serializeJsonLd([organizationSchema, websiteSchema])} />
