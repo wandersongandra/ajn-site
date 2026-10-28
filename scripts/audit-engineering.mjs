@@ -21,7 +21,7 @@ for (const [name, route, word, marker] of cases) {
   check(canonical.includes(route) || canonical.endsWith(route + '/'), `${name}: canonical incorreto (${canonical}).`);
   check(body.toLowerCase().includes(marker.toLowerCase()), `${name}: marcador técnico necessário não mencionado.`);
   check((body.match(/<h1\b/g) ?? []).length === 1, `${name}: esperado um H1.`);
-  check(body.includes('href="/contato"'), `${name}: CTA para contato ausente.`);
+  check(body.includes('href="/contato/"'), `${name}: CTA para contato ausente.`);
 }
 
 const catalog = await readFile('dist/servicos/index.html', 'utf8');

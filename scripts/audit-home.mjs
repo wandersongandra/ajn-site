@@ -82,7 +82,7 @@ check(!homeHtml.includes('class="home-contact-cta"') &&
 	!homeHtml.includes('id="home-contact-title"') &&
 	!homeHtml.includes('Precisa atualizar um laudo, organizar o SST'),
 	'Removed contact banner must not return.');
-check(footerStart >= 0 && html.slice(footerStart).includes('href="/contato"'),
+check(footerStart >= 0 && html.slice(footerStart).includes('href="/contato/"'),
 	'Footer must retain a path to the contact page.');
 
 check(homeHtml.includes('href="/servicos"'), 'Complete catalog link missing');
