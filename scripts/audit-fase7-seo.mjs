@@ -1,13 +1,14 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
+// Pares remanescentes com risco histórico de título sobreposto (elétrica/elevação removidos).
 const expected = {
-	'/escada-rolante-belo-horizonte': 'Escada rolante em Belo Horizonte | AJN',
-	'/escada-rolante-bh': 'Escada rolante em BH: segurança e operação | AJN',
-	'/plataforma-elevatoria-belo-horizonte': 'Plataforma elevatória em Belo Horizonte | AJN',
-	'/plataforma-elevatoria-bh': 'Plataforma elevatória em BH: usos e segurança | AJN',
-	'/projeto-eletrico-belo-horizonte': 'Projeto elétrico em Belo Horizonte | AJN',
-	'/projeto-eletrico-bh': 'Projeto elétrico em BH: escopo e segurança | AJN',
+	'/empresa-que-elabora-pgr': 'Consultoria para PGR e gerenciamento de riscos | AJN',
+	'/empresa-que-faz-pgr': 'Elaboração de PGR para empresas | AJN Consultoria e Engenharia',
+	'/pcmso-preco': 'Preço de PCMSO: fatores de escopo | AJN',
+	'/preco-pcmso': 'Orçamento de PCMSO para empresas | AJN',
+	'/projeto-prevencao-combate-incendio': 'Projeto de prevenção contra incêndio: orientação | AJN',
+	'/elaboracao-pgr': 'Elaboração de PGR e gestão de riscos ocupacionais | AJN',
 };
 
 const titles = [];
@@ -22,7 +23,7 @@ for (const [route, expectedTitle] of Object.entries(expected)) {
 }
 
 if (new Set(titles).size !== titles.length) {
-	failures.push('os seis títulos explícitos ainda não são únicos');
+	failures.push('os títulos explícitos ainda não são únicos');
 }
 
 if (failures.length > 0) {
