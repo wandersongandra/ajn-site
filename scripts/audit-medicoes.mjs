@@ -47,4 +47,4 @@ for(const file of files){
 }
 check(size<400*1024,'Medições: orçamento da mídia excedido '+size+' bytes.');
 if(issues.length){issues.forEach(m=>console.error('[medicoes][FAIL]',m));process.exitCode=1}
-else console.log('[medicoes] PASS: página, 14 serviços, 3 posts, schema, aviso de imagem e '+Math.round(size/1024)+' KiB de mídia.');
+else console.log('[medicoes] PASS: página, 13 serviços, 3 posts, schema, aviso de imagem e '+Math.round(size/1024)+' KiB de mídia.');
