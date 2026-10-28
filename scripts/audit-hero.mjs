@@ -12,17 +12,21 @@ const [html, styles, motion, homeStyle, tokens] = await Promise.all([
 
 const issues = [];
 const check = (ok, message) => { if (!ok) issues.push(message); };
-const section = html.match(/<section\b[^>]*class="hero"[^>]*>[\s\S]*?<\/section>/)?.[0] ?? '';
+const section = html.match(/<section\b[^>]*class="hero[^"]*"[^>]*>[\s\S]*?<\/section>/)?.[0] ?? '';
 
 check(Boolean(section), 'Hero da home não foi gerado.');
 check((html.match(/<h1\b/g) ?? []).length === 1, 'A página precisa de apenas um H1.');
 check(section.includes('id="hero-title"'), 'H1 do hero sem identificador.');
-check(/Consultoria em segurança do trabalho, laudos e projetos de engenharia\./.test(section),
+check(/Segurança do trabalho e engenharia\./.test(section),
 	'H1 específico de serviços não foi renderizado.');
+check(/segurança do trabalho/i.test(section) && /engenharia/i.test(section),
+	'H1 precisa manter significado de SST e engenharia.');
 check(/PGR, PCMSO, ASOs, eSocial, inspeções e projetos técnicos para empresas\./.test(section),
 	'Texto de apoio deve mencionar serviços documentados.');
 check(!section.includes('Conte com a AJN para avaliar a demanda'),
 	'Copy genérica antiga não pode retornar.');
+check(!/banner\.webp/.test(section),
+	'Hero visual não deve voltar à fotografia de banco.');
 
 const links = [...section.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>/g)].map(match => match[1]);
 check(links.length === 2 && links.includes('/contato') && links.includes('/servicos'),
@@ -41,10 +45,11 @@ check(styles.includes('.home-page .hero__content h1') &&
 	styles.includes('font-weight: var(--font-weight-heading)') &&
 	styles.includes('letter-spacing: var(--tracking-display)'),
 	'H1 precisa consumir os tokens tipográficos compartilhados.');
-check(styles.includes('background-image:') &&
-	styles.includes('linear-gradient(100deg') &&
-	styles.includes('var(--hero-image)'),
-	'Fotografia e gradiente devem continuar presentes.');
+check(styles.includes('hero__stage') &&
+	styles.includes('hero__art') &&
+	section.includes('hero__stage') &&
+	section.includes('<svg'),
+	'Hero surreal precisa de palco SVG/CSS sem fotografia.');
 check(styles.includes('.home-page .hero__panel::before { display: none; }') &&
 	styles.includes('border-left: 3px solid #a2cba4'),
 	'Painel editorial não deve recuperar a bolinha falsa de status.');

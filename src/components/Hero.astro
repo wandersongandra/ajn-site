@@ -2,7 +2,119 @@
 import { hero } from '../data/home';
 ---
 
-<section class="hero" style={`--hero-image: url('${hero.image}')`} aria-labelledby="hero-title">
+<section class="hero hero--surreal" aria-labelledby="hero-title">
+	<div class="hero__stage" aria-hidden="true">
+		<div class="hero__glow hero__glow--core"></div>
+		<div class="hero__glow hero__glow--rim"></div>
+		<div class="hero__glow hero__glow--beam"></div>
+		<div class="hero__grain"></div>
+		<svg class="hero__art" viewBox="0 0 920 720" focusable="false">
+			<defs>
+				<radialGradient id="ajn-orb-fill" cx="48%" cy="40%" r="62%">
+					<stop offset="0%" stop-color="#b6f08a" stop-opacity=".55" />
+					<stop offset="28%" stop-color="#7ecf5a" stop-opacity=".32" />
+					<stop offset="62%" stop-color="#3f7d1a" stop-opacity=".14" />
+					<stop offset="100%" stop-color="#0b1f14" stop-opacity="0" />
+				</radialGradient>
+				<linearGradient id="ajn-arc" x1="0%" y1="0%" x2="100%" y2="100%">
+					<stop offset="0%" stop-color="#f2ffd8" stop-opacity="1" />
+					<stop offset="40%" stop-color="#9ed87a" stop-opacity=".75" />
+					<stop offset="100%" stop-color="#1d4a28" stop-opacity="0" />
+				</linearGradient>
+				<linearGradient id="ajn-plane" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="#b6f08a" stop-opacity=".35" />
+					<stop offset="100%" stop-color="#8fd46a" stop-opacity="0" />
+				</linearGradient>
+				<linearGradient id="ajn-shield" x1="50%" y1="0%" x2="50%" y2="100%">
+					<stop offset="0%" stop-color="#e8ffd4" stop-opacity=".55" />
+					<stop offset="55%" stop-color="#569d21" stop-opacity=".18" />
+					<stop offset="100%" stop-color="#0c2418" stop-opacity="0" />
+				</linearGradient>
+				<filter id="ajn-soft" x="-20%" y="-20%" width="140%" height="140%">
+					<feGaussianBlur stdDeviation="1.4" />
+				</filter>
+				<filter id="ajn-bloom" x="-30%" y="-30%" width="160%" height="160%">
+					<feGaussianBlur stdDeviation="6" />
+				</filter>
+			</defs>
+
+			<!-- Soft aurora band -->
+			<path
+				class="hero__aurora"
+				d="M520 40 C620 120, 760 90, 900 180 C820 260, 640 220, 520 40 Z"
+				fill="#7ecf5a"
+				opacity=".12"
+				filter="url(#ajn-bloom)"
+			/>
+
+			<!-- Dreamlike protective orb + shield -->
+			<g class="hero__orb" transform="translate(430 70)">
+				<circle cx="230" cy="250" r="268" fill="url(#ajn-orb-fill)" />
+				<circle cx="230" cy="250" r="228" fill="none" stroke="url(#ajn-arc)" stroke-width="1.6" opacity=".95" />
+				<circle cx="230" cy="250" r="188" fill="none" stroke="#d7f5c2" stroke-width="1" opacity=".55" />
+				<circle cx="230" cy="250" r="148" fill="none" stroke="#e8ffd4" stroke-width=".8" opacity=".4" />
+				<circle cx="230" cy="250" r="108" fill="none" stroke="#f3ffe8" stroke-width=".6" opacity=".28" />
+
+				<!-- Oversized abstract safety shield -->
+				<path
+					d="M230 62
+						C132 88, 78 158, 78 248
+						C78 352, 142 430, 230 486
+						C318 430, 382 352, 382 248
+						C382 158, 328 88, 230 62 Z"
+					fill="url(#ajn-shield)"
+					stroke="#f0ffd8"
+					stroke-width="1.8"
+					opacity=".85"
+				/>
+				<path
+					d="M230 118
+						C162 138, 124 188, 124 248
+						C124 322, 166 380, 230 424
+						C294 380, 336 322, 336 248
+						C336 188, 298 138, 230 118 Z"
+					fill="none"
+					stroke="#9ed87a"
+					stroke-width="1.1"
+					opacity=".7"
+				/>
+				<!-- Inner gleam -->
+				<path
+					d="M168 178 C204 128, 268 112, 312 148"
+					fill="none"
+					stroke="#ffffff"
+					stroke-width="2"
+					stroke-linecap="round"
+					opacity=".55"
+					filter="url(#ajn-soft)"
+				/>
+			</g>
+
+			<!-- Floating isometric workplace plane -->
+			<g class="hero__plane" transform="translate(400 400)" opacity=".9">
+				<path d="M30 40 L260 0 L490 40 L260 80 Z" fill="url(#ajn-plane)" stroke="#c8f0a8" stroke-width="1" opacity=".7" />
+				<path d="M110 52 L190 36 L270 52 L190 68 Z" fill="none" stroke="#e8ffd4" stroke-width=".8" opacity=".65" />
+				<path d="M260 80 L260 132 L30 92 L30 40" fill="none" stroke="#7ecf5a" stroke-width=".9" opacity=".45" />
+				<path d="M260 80 L260 132 L490 92 L490 40" fill="none" stroke="#7ecf5a" stroke-width=".9" opacity=".35" />
+				<circle cx="190" cy="52" r="3" fill="#f3ffe8" opacity=".9" />
+				<circle cx="340" cy="42" r="2.4" fill="#e8ffd4" opacity=".7" />
+				<circle cx="120" cy="58" r="2" fill="#e8ffd4" opacity=".55" />
+				<path d="M190 52 L190 10" stroke="#e8ffd4" stroke-width=".8" opacity=".55" stroke-dasharray="3 4" />
+				<path d="M340 42 L372 8" stroke="#d5f5b8" stroke-width=".7" opacity=".4" stroke-dasharray="3 4" />
+			</g>
+
+			<!-- Orbiting accents -->
+			<g class="hero__sparks" fill="#f3ffe8">
+				<circle class="hero__spark" cx="640" cy="130" r="2.8" opacity=".85" />
+				<circle class="hero__spark" cx="820" cy="260" r="2.1" opacity=".6" />
+				<circle class="hero__spark" cx="560" cy="300" r="1.8" opacity=".5" />
+				<circle class="hero__spark" cx="860" cy="410" r="2.4" opacity=".45" />
+				<circle class="hero__spark" cx="720" cy="520" r="1.8" opacity=".4" />
+				<circle class="hero__spark" cx="500" cy="180" r="1.6" opacity=".35" />
+			</g>
+		</svg>
+	</div>
+
 	<div class="site-shell hero__content">
 		<div class="hero__main">
 			<p class="hero__eyebrow">{hero.eyebrow}</p>
