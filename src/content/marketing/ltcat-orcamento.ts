@@ -2,59 +2,54 @@ import type { MarketingContent } from '../types';
 
 export const ltcatOrcamento = {
 	slug: "ltcat-orcamento", path: "/ltcat-orcamento",
-	title: "Ltcat orçamento - AJN Consultoria e Engenharia",
-	description: "Ltcat orçamento, as empresas podem contar com uma equipe comprometida em garantir a segurança e saúde dos colaboradores, oferecendo soluções...",
-	heading: "Ltcat orçamento",
+	title: "Como solicitar orçamento de LTCAT | AJN Consultoria e Engenharia",
+	description: "Veja quais informações reunir antes de solicitar orçamento de LTCAT: unidades, funções, agentes nocivos, avaliações existentes e escopo da visita técnica.",
+	heading: "Como solicitar orçamento de LTCAT",
 	images: [
 		{ src: "/images/content/marketing/empresa-ltcat/empresa-ltcat-01.webp", alt: "Ltcat orçamento" },
 		{ src: "/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-02.webp", alt: "Ltcat orçamento" },
 		{ src: "/images/content/marketing/empresa-ltcat/empresa-ltcat-03.webp", alt: "Ltcat orçamento" },
 	],
 	sections: [
-		{ heading: "AJN Consultoria e Engenharia: Especialista em ltcat orçamento", paragraphs: [
-			"A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, é uma empresa especializada em Qualidade, Segurança, Meio Ambiente e Saúde (QSMS), com mais de 08 anos de experiência no mercado de engenharia.",
-			{ segments: ["Localizada em Belo Horizonte, MG, a empresa se destaca pela realização de projetos na área de Segurança contra incêndios, especialmente para obtenção de AVCB/CLCB e", { bold: true, text: "ltcat orçamento" }, "em edificações de diversos portes e segmentos."] },
-			{ segments: ["Além do", { bold: true, text: "ltcat orçamento" }, ", a AJN Consultoria e Engenharia oferece uma gama completa de serviços para garantir medidas abrangentes de saúde e segurança no local de trabalho."] },
-			"Entre os serviços oferecidos estão: prevenção e combate a incêndios, segurança ocupacional, consultoria ambiental, certificações, treinamentos NRs, mobilização de equipe, entre outros."
-		]
+		{
+			heading: "O que reunir antes de pedir orçamento de LTCAT",
+			paragraphs: [
+				"O LTCAT registra informações técnicas sobre condições de exposição a agentes nocivos para fins previdenciários. Antes de solicitar sua elaboração, vale organizar os dados básicos da empresa e identificar os ambientes que precisam ser avaliados.",
+				"Esse levantamento inicial permite discutir o escopo da contratação. A definição final das avaliações e medições depende da análise técnica das atividades e condições de trabalho.",
+			],
 		},
-		{ heading: "O Que é o ltcat orçamento?", paragraphs: [
-			"O Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) é um documento essencial para avaliar os agentes nocivos presentes no ambiente laboral.",
-			"Sua elaboração é crucial para garantir o direito à aposentadoria especial dos trabalhadores, além de assegurar a conformidade legal e a proteção da saúde ocupacional.",
-			{ segments: ["Através do", { bold: true, text: "ltcat orçamento" }, ", empresas e colaboradores têm a garantia de um ambiente de trabalho seguro e saudável."] }
-		]
+		{
+			heading: "Checklist para preparar a solicitação",
+			paragraphs: [
+				"Quanto mais claro for o contexto da operação, mais objetiva poderá ser a proposta. Não é necessário antecipar uma conclusão sobre exposição ou enquadramento previdenciário.",
+			],
+			lists: [{ items: [
+				"Razão social e localização das unidades que serão atendidas;",
+				"Setores, funções, atividades e quantidade aproximada de trabalhadores;",
+				"Descrição dos processos, equipamentos e materiais utilizados;",
+				"Possíveis exposições a agentes físicos, químicos ou biológicos;",
+				"Documentos e medições anteriores, se disponíveis;",
+				"Restrições de acesso, turnos e prazo desejado para o serviço.",
+			] }],
 		},
-		{ heading: "Serviços Especializados da AJN Consultoria e Engenharia em ltcat orçamento", paragraphs: [
-			{ segments: ["A AJN Consultoria e Engenharia oferece serviços especializados na elaboração do", { bold: true, text: "ltcat orçamento" }, ", com análises precisas e relatórios detalhados que atendem às exigências normativas."] },
-			"A empresa se destaca por proporcionar segurança jurídica e saúde para os colaboradores, assegurando que as empresas estejam conforme a legislação trabalhista.",
-			{ segments: ["Os profissionais da AJN são altamente qualificados e experientes em realizar avaliações minuciosas do ambiente de trabalho, identificando os agentes nocivos e elaborando um", { bold: true, text: "ltcat orçamento" }, "completo e preciso."] },
-			"Com a especialização da AJN Consultoria e Engenharia, as empresas podem contar com um serviço de alta qualidade e confiabilidade na elaboração do LTCAT."
-		]
+		{
+			heading: "Como avaliar o escopo recebido",
+			paragraphs: [
+				"Confirme se a proposta contempla as unidades e funções de interesse, visitas técnicas, critérios de medição quando necessários e entrega do laudo com responsável habilitado conforme a legislação aplicável.",
+				"Também devem ficar claros os prazos, as informações que a empresa precisa disponibilizar e como serão tratadas situações que exijam levantamentos complementares.",
+			],
+			lists: [{ items: [
+				"Delimitação dos ambientes e atividades incluídos;",
+				"Condições para avaliações quantitativas e complementações;",
+				"Prazo, entregáveis e responsabilidade técnica.",
+			] }],
 		},
-		{ heading: "Vantagens de Contratar a AJN Consultoria e Engenharia", paragraphs: [
-			{ segments: ["Ao optar pelos serviços da AJN Consultoria e Engenharia para elaboração do", { bold: true, text: "ltcat orçamento" }, ", as empresas podem contar com uma equipe comprometida em garantir a segurança e saúde dos colaboradores, oferecendo soluções personalizadas e eficientes para atender às necessidades específicas de cada cliente."] }
-		]
-, lists: [
-			{ items: [
-				"Equipe especializada em QSMS",
-				"Serviços abrangentes de saúde e segurança no trabalho",
-				"Conformidade legal garantida",
-				"Relatórios detalhados e precisos",
-				"Experiência de mais de 08 anos no mercado"
-			] }
-		]
-, subsections: [
-			{ heading: "Entre em Contato Conosco para Solicitar seu ltcat orçamento", paragraphs: [
-				"Para mais informações sobre os serviços de elaboração do LTCAT oferecidos pela AJN Consultoria e Engenharia, entre em contato conosco.",
-				"Estamos à disposição para esclarecer dúvidas, fornecer orçamentos e auxiliar sua empresa na garantia de um ambiente de trabalho seguro e saudável para todos os colaboradores.",
-				"Conte com a especialização e qualidade da AJN Consultoria e Engenharia para cuidar da segurança do seu negócio."
-			]
-			}
-		]
+		{
+			heading: "Envie os dados iniciais à AJN",
+			paragraphs: [
+				"A AJN Consultoria e Engenharia pode avaliar sua solicitação a partir das informações da operação e orientar os próximos passos para a composição de uma proposta técnica.",
+				{ segments: ["Converse pelo ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "envie os dados para avaliação de escopo", href: "/contato/" }, "."] },
+			],
 		},
-		{ heading: "Para saber mais sobre Ltcat orçamento", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
 	],
 } as const satisfies MarketingContent;

@@ -3,12 +3,40 @@ import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { ServiceContent } from '../content/types';
 import { normalizeKeywordTerms } from '../utils/seo';
+import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
 
 interface Props {
 	page: ServiceContent;
 }
 
 const { page } = Astro.props;
+interface ServiceJsonLd {
+	'@context': 'https://schema.org';
+	'@type': 'Service';
+	'@id': string;
+	name: string;
+	description: string;
+	url: string;
+	provider: {
+		'@type': 'Organization';
+		'@id': string;
+		name: string;
+	};
+}
+const serviceUrl = absoluteSiteUrl(page.path + '/');
+const serviceSchema: ServiceJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Service',
+	'@id': serviceUrl + '#service',
+	name: page.heading,
+	description: page.description,
+	url: serviceUrl,
+	provider: {
+		'@type': 'Organization',
+		'@id': siteOrigin + '/#organization',
+		name: 'AJN Consultoria e Engenharia',
+	},
+};
 const serviceSectionHeadings: Record<string, string> = {
 	'/servicos/assessoria-e-consultoria-em-saude-ocupacional': 'Como funciona a assessoria em saúde ocupacional',
 	'/servicos/gestao-ambiental': 'Gestão de resíduos e práticas ambientais',
@@ -32,7 +60,8 @@ const sections = page.sections.map((section, index) => index === 0 && section.he
 		</div>
 		<div class="service-detail-wp__content">
 			<ContentSections sections={sections} formatHeading={normalizeKeywordTerms} />
-			<p class="page-cta"><a class="button" href="/contato">Entre em contato</a></p>
+			<p class="page-cta"><a class="button" href="/contato/">Entre em contato</a></p>
 		</div>
 	</div>
 </PageShell>
+<script type="application/ld+json" set:html={serializeJsonLd(serviceSchema)} />

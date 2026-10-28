@@ -3,9 +3,11 @@ import '../styles/header.css';
 import { navigation, site } from '../data/home';
 
 const currentPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, '');
-const isCurrent = (href: string) => href === '/'
+const normalizedHref = (href: string) => href === '/' ? '/' : href.replace(/\/+$/, '');
+const isCurrent = (href: string) => normalizedHref(href) === '/'
 	? currentPath === '/'
-	: currentPath === href || currentPath.startsWith(href + '/');
+	: currentPath === normalizedHref(href) || currentPath.startsWith(normalizedHref(href) + '/');
+const submenuId = (href: string) => 'submenu-' + normalizedHref(href).replace(/^\//, '');
 ---
 
 <header class="site-header" id="site-header">
@@ -42,16 +44,16 @@ const isCurrent = (href: string) => href === '/'
 										class="submenu-toggle"
 										type="button"
 										aria-expanded="false"
-										aria-controls={'submenu-' + item.href.slice(1)}
+										aria-controls={submenuId(item.href)}
 										aria-label={'Expandir opções de ' + item.label}
 										data-submenu-toggle
 									>
 										<span class="submenu-toggle__chevron" aria-hidden="true"></span>
 									</button>
 								</div>
-								<ul id={'submenu-' + item.href.slice(1)} class="submenu" aria-label={'Opções de ' + item.label}>
+								<ul id={submenuId(item.href)} class="submenu" aria-label={'Opções de ' + item.label}>
 									{item.children.map((child) => (
-										<li><a href={child.href} aria-current={currentPath === child.href ? 'page' : undefined}>{child.label}</a></li>
+										<li><a href={child.href} aria-current={currentPath === normalizedHref(child.href) ? 'page' : undefined}>{child.label}</a></li>
 									))}
 								</ul>
 							</>

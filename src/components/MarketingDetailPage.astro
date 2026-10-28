@@ -18,24 +18,37 @@ const relatedService = getRelatedService(page.path);
 	<div class="detail-layout">
 		<div class="detail-layout__main reading-surface">
 			<div class="content-gallery">
-				{page.images.map((image) => <a href={image.src}><Image src={image.src} alt={image.alt === page.heading ? heading : normalizeKeywordTerms(image.alt)} width={900} height={600} format="webp" loading="lazy" /></a>)}
+				{page.images.map((image, index) => (
+					<a href={image.src}>
+						<Image
+							src={image.src}
+							alt={image.alt === page.heading ? heading : normalizeKeywordTerms(image.alt)}
+							width={900}
+							height={600}
+							format="webp"
+							loading={index === 0 ? 'eager' : 'lazy'}
+							fetchpriority={index === 0 ? 'high' : 'auto'}
+							sizes="(max-width: 768px) 100vw, 900px"
+						/>
+					</a>
+				))}
 			</div>
 			<p class="gallery-note">Clique nas imagens para ampliar</p>
 			<ContentSections sections={page.sections} formatHeading={normalizeKeywordTerms} />
-			<p class="page-cta"><a class="button" href="/contato">Falar com a AJN</a></p>
+			<p class="page-cta"><a class="button" href="/contato/">Falar com a AJN</a></p>
 		</div>
 		<aside class="detail-sidebar" aria-label="Navegação relacionada">
 			<p class="detail-sidebar__eyebrow">AJN Consultoria e Engenharia</p>
-			<a class="detail-sidebar__cta" href="/contato">Solicite um orçamento</a>
+			<a class="detail-sidebar__cta" href="/contato/">Solicite um orçamento</a>
 			<h2>Explore</h2>
 			<ul>
-				<li><a href="/servicos">Nossos serviços</a></li>
-				{relatedService ? <li><a href={relatedService.href}>{relatedService.label}</a></li> : null}
-				<li><a href="/sobre-nos">Sobre a AJN</a></li>
-				<li><a href="/blog">Conteúdo técnico</a></li>
-				<li><a href="/mapa-site">Mapa do site</a></li>
+				<li><a href="/servicos/">Nossos serviços</a></li>
+				{relatedService ? <li><a href={relatedService.href.endsWith('/') ? relatedService.href : relatedService.href + '/'}>{relatedService.label}</a></li> : null}
+				<li><a href="/sobre-nos/">Sobre a AJN</a></li>
+				<li><a href="/blog/">Conteúdo técnico</a></li>
+				<li><a href="/mapa-site/">Mapa do site</a></li>
 			</ul>
-			<a class="detail-sidebar__all" href="/contato">Entrar em contato →</a>
+			<a class="detail-sidebar__all" href="/contato/">Entrar em contato →</a>
 		</aside>
 	</div>
 </PageShell>
