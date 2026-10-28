@@ -21,10 +21,14 @@ check(/Segurança do trabalho e engenharia\./.test(section),
 	'H1 específico de serviços não foi renderizado.');
 check(/segurança do trabalho/i.test(section) && /engenharia/i.test(section),
 	'H1 precisa manter significado de SST e engenharia.');
-check(/PGR, PCMSO, ASOs, eSocial, inspeções e projetos técnicos para empresas\./.test(section),
+check(/PGR, PCMSO, ASOs, eSocial, laudos e inspeções/.test(section),
 	'Texto de apoio deve mencionar serviços documentados.');
+check(/ficar em dia com as NRs/.test(section),
+	'Lead precisa ser orientado a benefício, sem tom burocrático.');
 check(!section.includes('Conte com a AJN para avaliar a demanda'),
 	'Copy genérica antiga não pode retornar.');
+check(!section.includes('Conte o que precisa'),
+	'Copy burocrática antiga não pode retornar.');
 check(!/banner\.webp/.test(section),
 	'Hero visual não deve voltar à fotografia de banco.');
 
@@ -46,22 +50,25 @@ check(styles.includes('.home-page .hero__content h1') &&
 	styles.includes('letter-spacing: var(--tracking-display)'),
 	'H1 precisa consumir os tokens tipográficos compartilhados.');
 check(styles.includes('hero__stage') &&
+	styles.includes('hero__showcase') &&
 	styles.includes('hero__art') &&
 	section.includes('hero__stage') &&
+	section.includes('hero__showcase') &&
 	section.includes('<svg'),
-	'Hero surreal precisa de palco SVG/CSS sem fotografia.');
+	'Hero surreal precisa de palco SVG/CSS em coluna própria, sem fotografia.');
 check(styles.includes('.home-page .hero__panel::before { display: none; }') &&
-	styles.includes('border-left: 3px solid #a2cba4'),
-	'Painel editorial não deve recuperar a bolinha falsa de status.');
-// A escala H1 compartilhada substitui intencionalmente o clamp mobile 34–42px e o tracking apertado.
-check(styles.includes('minmax(254px, .72fr)') &&
+	styles.includes('grid-template-columns: repeat(3, minmax(0, 1fr))'),
+	'Painel editorial deve ser faixa slim de chips, sem bolinha falsa de status.');
+check(styles.includes('minmax(254px, .95fr)') &&
 	styles.includes('font-size: var(--type-h1)') &&
 	tokens.includes('--type-h1: clamp(2.25rem, calc(4vw + 1rem), 3.5rem)') &&
-	styles.includes('.home-page .hero__panel { display: none; }'),
+	styles.includes('flex-direction: column'),
 	'Desktop, tablet e mobile precisam de layout e tipografia próprios.');
 check(styles.includes('min-height: 54px') &&
 	styles.includes('.home-page .hero__actions > .button:focus-visible'),
 	'CTAs devem ter alvo de toque e foco visível.');
+check(styles.includes('order: 2') && styles.includes('.home-page .hero__showcase'),
+	'No mobile a arte deve ficar em bloco próprio, sem atravessar o texto.');
 check(motion.includes('prefers-reduced-motion: reduce') &&
 	homeStyle.includes('animation: none !important'),
 	'Efeitos da primeira dobra precisam respeitar movimento reduzido.');

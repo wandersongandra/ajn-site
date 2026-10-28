@@ -44,7 +44,7 @@ export const hero = {
 	image: '/images/hero/banner.webp',
 	eyebrow: 'AJN Consultoria e Engenharia',
 	title: 'Segurança do trabalho e engenharia.',
-	description: 'PGR, PCMSO, ASOs, eSocial, inspeções e projetos técnicos para empresas. Conte o que precisa — avaliamos o serviço e o escopo.',
+	description: 'PGR, PCMSO, ASOs, eSocial, laudos e inspeções para sua empresa ficar em dia com as NRs, com acompanhamento técnico do início ao fim.',
 	areas: ['Segurança do Trabalho', 'Engenharia', 'Saúde Ocupacional', 'Treinamentos'],
 } as const;
 

@@ -313,10 +313,10 @@
 }
 @media (max-width: 768px) {
 	.home-page .section { padding-block: 48px; }
-	.home-page .hero { min-height: 520px; }
+	.home-page .hero { min-height: auto; }
 	.home-page .hero__content {
 		width: min(100% - 32px, var(--shell));
-		padding: 64px 0;
+		padding: 36px 0 48px;
 	}
 	.home-page .hero__content h1 { font-size: var(--type-h1); }
 	.home-page .home-clients-grid {
@@ -337,10 +337,10 @@
 	.home-page .home-client-logo img { height: 65px; }
 }
 @media (max-width: 576px) {
-	.home-page .hero { min-height: 480px; }
+	.home-page .hero { min-height: auto; }
 	.home-page .hero__content {
 		width: min(100% - 24px, var(--shell));
-		padding: 58px 0 60px;
+		padding: 28px 0 44px;
 	}
 	.home-page .hero__content h1 {
 		max-width: 16ch;

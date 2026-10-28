@@ -1,13 +1,12 @@
 /* Motion enhancement exclusive to the AJN home.
    The default experience remains completely visible without JavaScript. */
 @media (prefers-reduced-motion: no-preference) {
-	/* Wait for the deferred preference check before starting hero motion.
-	   Without JavaScript the content remains visible and still has no animation. */
 	.home-page .hero__eyebrow,
 	.home-page .hero__content h1,
 	.home-page .hero__lead,
 	.home-page .hero__actions,
 	.home-page .hero__panel,
+	.home-page .hero__showcase,
 	.home-page .hero__art,
 	.home-page .hero__glow {
 		animation: none;
@@ -15,7 +14,8 @@
 	.home-page.motion-enabled .hero__eyebrow,
 	.home-page.motion-enabled .hero__content h1,
 	.home-page.motion-enabled .hero__lead,
-	.home-page.motion-enabled .hero__actions {
+	.home-page.motion-enabled .hero__actions,
+	.home-page.motion-enabled .hero__panel {
 		animation-name: hero-rise;
 		animation-duration: 490ms;
 		animation-timing-function: cubic-bezier(.22, 1, .36, 1);
@@ -24,8 +24,8 @@
 	.home-page.motion-enabled .hero__content h1 { animation-delay: 40ms; }
 	.home-page.motion-enabled .hero__lead { animation-delay: 75ms; }
 	.home-page.motion-enabled .hero__actions { animation-delay: 110ms; }
+	.home-page.motion-enabled .hero__panel { animation-delay: 150ms; }
 
-	/* Keep the first headline fast; scroll effects belong below the fold. */
 	.home-page .hero__eyebrow,
 	.home-page .hero__content h1,
 	.home-page .hero__lead,
@@ -33,29 +33,31 @@
 		animation-duration: 490ms;
 		animation-timing-function: cubic-bezier(.22, 1, .36, 1);
 	}
-	.home-page.motion-enabled .hero__art {
-		animation: ajn-hero-art-enter 1100ms cubic-bezier(.22, 1, .36, 1) both;
+
+	.home-page.motion-enabled .hero__showcase {
+		animation: ajn-hero-art-enter 900ms cubic-bezier(.22, 1, .36, 1) 80ms both;
 	}
 	.home-page.motion-enabled .hero__orb {
-		animation: ajn-hero-orb-float 9s ease-in-out 1.1s infinite alternate;
-		transform-origin: 210px 230px;
+		animation: ajn-hero-orb-float 8.5s ease-in-out 1s infinite alternate;
+		transform-box: fill-box;
+		transform-origin: center;
 	}
 	.home-page.motion-enabled .hero__spark:nth-child(1) { animation: ajn-hero-spark 4.8s ease-in-out infinite; }
 	.home-page.motion-enabled .hero__spark:nth-child(2) { animation: ajn-hero-spark 5.6s ease-in-out .4s infinite; }
 	.home-page.motion-enabled .hero__spark:nth-child(3) { animation: ajn-hero-spark 5.1s ease-in-out .8s infinite; }
 	.home-page.motion-enabled .hero__spark:nth-child(4) { animation: ajn-hero-spark 6.2s ease-in-out 1.1s infinite; }
-	.home-page.motion-enabled .hero__spark:nth-child(5) { animation: ajn-hero-spark 5.4s ease-in-out 1.6s infinite; }
+
 	@keyframes ajn-hero-art-enter {
-		from { opacity: 0; transform: translate3d(18px, calc(-46% + 12px), 0) scale(.97); }
-		to { opacity: .95; transform: translate3d(0, -46%, 0) scale(1); }
+		from { opacity: 0; transform: translate3d(16px, 18px, 0) scale(.96); }
+		to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 	}
 	@keyframes ajn-hero-orb-float {
 		from { transform: translateY(0); }
-		to { transform: translateY(-10px); }
+		to { transform: translateY(-12px); }
 	}
 	@keyframes ajn-hero-spark {
-		0%, 100% { opacity: .25; }
-		50% { opacity: .85; }
+		0%, 100% { opacity: .3; }
+		50% { opacity: .95; }
 	}
 
 	@supports (translate: 0 1px) {
@@ -82,7 +84,6 @@
 		}
 	}
 
-	/* Seis serviços: entrada escalonada sem atrasar hover ou foco. */
 	@supports (translate: 0 1px) {
 		.home-page.motion-ready .solutions .service-card[data-reveal] {
 			transition-property: opacity, translate, transform, border-color, box-shadow;
@@ -98,7 +99,6 @@
 		}
 	}
 
-	/* Entrada dos quatro setores com atraso escalonado; hover sem atraso. */
 	@supports (translate: 0 1px) {
 		.home-page.motion-ready .home-sector-card[data-reveal] {
 			transition-property: opacity, translate, transform, border-color, background-color, box-shadow;
@@ -107,7 +107,6 @@
 			transition-delay: var(--reveal-delay, 0ms), var(--reveal-delay, 0ms), 0ms, 0ms, 0ms, 0ms;
 		}
 	}
-
 	@media (max-width: 640px) {
 		.home-page.motion-ready .home-sector-card[data-reveal] {
 			transition-delay: 0ms, 0ms, 0ms, 0ms, 0ms, 0ms;
@@ -115,7 +114,6 @@
 		}
 	}
 
-	/* Etapas do atendimento: surgimento sutil; a interação não herda o atraso de entrada. */
 	@supports (translate: 0 1px) {
 		.home-page.motion-ready .workflow__step[data-reveal] {
 			transition-property: opacity, translate, background-color, border-color;
@@ -136,10 +134,11 @@
 		to { opacity: 1; transform: translateY(0); }
 	}
 
-	/* The mobile H1 is a likely text LCP candidate. Never hold its first
-	   paint behind the entrance opacity animation; keep surrounding motion. */
 	@media (max-width: 768px) {
 		.home-page.motion-enabled .hero__content h1 {
+			animation: none;
+		}
+		.home-page.motion-enabled .hero__orb {
 			animation: none;
 		}
 	}
@@ -157,13 +156,11 @@
 		.home-page .hero__actions > .button:hover {
 			transform: translateY(-2px);
 		}
-		.home-page .hero__panel a span,
 		.home-page .home-sectors__link span,
 		.home-page .service-card__link span {
 			display: inline-block;
 			transition: transform 220ms ease;
 		}
-		.home-page .hero__panel a:hover span,
 		.home-page .home-sectors__link:hover span,
 		.home-page .home-service-card__link:hover .service-card__link span {
 			transform: translateX(3px);
@@ -185,9 +182,12 @@
 	}
 	.home-page .hero__panel { animation: none !important; }
 	.home-page .hero__art,
+	.home-page .hero__showcase,
 	.home-page .hero__orb,
 	.home-page .hero__spark,
 	.home-page .hero__glow,
+	.home-page .hero__mist,
+	.home-page .hero__layer,
 	.home-page .hero__stage {
 		animation: none !important;
 		transform: none !important;
@@ -200,6 +200,7 @@
 	.home-page.motion-saver .hero__lead,
 	.home-page.motion-saver .hero__actions,
 	.home-page.motion-saver .hero__panel,
+	.home-page.motion-saver .hero__showcase,
 	.home-page.motion-saver .hero__art,
 	.home-page.motion-saver .hero__orb,
 	.home-page.motion-saver .hero__spark,

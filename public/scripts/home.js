@@ -109,25 +109,35 @@
 
 (() => {
 	const hero = document.querySelector('.home-page .hero--surreal');
-	const stage = hero?.querySelector('.hero__stage');
-	if (!hero || !stage) return;
+	if (!hero) return;
 	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+	const desktop = window.matchMedia('(min-width: 769px)').matches;
 	const saveData = navigator.connection?.saveData === true;
-	if (reducedMotion || !finePointer || saveData) return;
+	if (reducedMotion || !finePointer || saveData || !desktop) return;
 
+	const layers = Array.from(hero.querySelectorAll('[data-hero-layer]'));
 	let frame = 0;
 	let targetX = 0;
 	let targetY = 0;
 	let currentX = 0;
 	let currentY = 0;
 
+	const apply = () => {
+		hero.style.setProperty('--hero-parallax-x', `${currentX.toFixed(2)}px`);
+		hero.style.setProperty('--hero-parallax-y', `${currentY.toFixed(2)}px`);
+		for (const layer of layers) {
+			const depth = Number(layer.getAttribute('data-hero-layer')) || 0.3;
+			layer.style.setProperty('--hero-layer-depth', String(depth));
+			layer.style.transform = `translate3d(${(currentX * depth).toFixed(2)}px, ${(currentY * depth).toFixed(2)}px, 0)`;
+		}
+	};
+
 	const tick = () => {
 		frame = 0;
 		currentX += (targetX - currentX) * 0.08;
 		currentY += (targetY - currentY) * 0.08;
-		hero.style.setProperty('--hero-parallax-x', `${currentX.toFixed(2)}px`);
-		hero.style.setProperty('--hero-parallax-y', `${currentY.toFixed(2)}px`);
+		apply();
 		if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
 			frame = window.requestAnimationFrame(tick);
 		}
@@ -137,8 +147,8 @@
 		const rect = hero.getBoundingClientRect();
 		const nx = ((event.clientX - rect.left) / rect.width) - 0.5;
 		const ny = ((event.clientY - rect.top) / rect.height) - 0.5;
-		targetX = nx * -18;
-		targetY = ny * -12;
+		targetX = nx * -22;
+		targetY = ny * -14;
 		if (!frame) frame = window.requestAnimationFrame(tick);
 	}, { passive: true });
 
