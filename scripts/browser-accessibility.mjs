@@ -82,7 +82,7 @@ try {
 				`no-js-${width} ${route}: navegação não cobre o conteúdo`);
 			check(data.toggleDisplay === 'none' && !data.toggleVisible,
 				`no-js-${width} ${route}: botão sem comportamento não está acessível`);
-			if (route === '/servicos/') check(data.serviceCards === 14, `no-js-${width} /servicos/: cards não dependem do JS`);
+			if (route === '/servicos/') check(data.serviceCards === 13, `no-js-${width} /servicos/: cards não dependem do JS`);
 			if (route === '/blog/') check(data.blogCards >= 30, `no-js-${width} /blog/: artigos não dependem do JS`);
 			if (route === '/contato/') check(data.contactAlternatives === 2, `no-js-${width} /contato/: canais alternativos visíveis`);
 			check(!data.overflow, `no-js-${width} ${route}: sem overflow horizontal`);

@@ -35,6 +35,7 @@ for (const file of files) {
 	const route = path.relative(root, file).replaceAll(path.sep, '/');
 	const html = await readFile(file, 'utf8');
 	// O HTML de fallback do redirecionamento não carrega layout global.
+	if (/http-equiv=["']refresh["']/i.test(html) && /<title>\s*Redirecting to:/i.test(html)) continue;
 	if (route === 'informacoes/index.html' || route === 'informacoes.html') continue;
 	const footer = html.match(/<footer\b[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/)?.[0] ?? '';
 	check(Boolean(footer), `${route}: rodapé não encontrado`);

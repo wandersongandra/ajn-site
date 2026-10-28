@@ -60,9 +60,15 @@ for (const file of htmlFiles) {
 	const html = await readFile(file, 'utf8');
 	// O arquivo gerado pelo Astro é apenas o fallback de uma rota HTTP 301 no servidor.
 	// Não deve ter H1/canonical próprios nem ser considerado página indexável.
-	if (route === '/informacoes') {
-		if (!/http-equiv=["']refresh["']/i.test(html) || !html.includes('/mapa-site')) {
+	// Fallbacks HTML gerados pelo Astro para HTTP 301 no servidor (não indexáveis).
+	if (/http-equiv=["']refresh["']/i.test(html) && /<title>\s*Redirecting to:/i.test(html)) {
+		if (route === '/informacoes' && !html.includes('/mapa-site')) {
 			failures.push('/informacoes: fallback de redirect sem destino /mapa-site.');
+		}
+		if (route !== '/informacoes' && !html.includes('/servicos') && !html.includes('url=/servicos')) {
+			// Outros redirects desta remoção apontam para /servicos; /informacoes já coberto acima.
+			const dest = html.match(/url=([^"'>\s]+)/i)?.[1];
+			if (!dest) failures.push(`${route}: fallback de redirect sem destino.`);
 		}
 		continue;
 	}

@@ -8,7 +8,7 @@ export const siteMapPage = {
 	intro: 'Encontre as páginas da AJN por assunto. Para conhecer um serviço, consulte a seção correspondente ou navegue pelos conteúdos técnicos.',
 } as const;
 
-type GroupId = 'institucional' | 'servicos' | 'sst' | 'incendio' | 'eletrica' | 'elevacao' | 'artigos' | 'outros';
+type GroupId = 'institucional' | 'servicos' | 'sst' | 'incendio' | 'artigos' | 'outros';
 
 const primaryPages = new Set(['/', '/sobre-nos', '/servicos', '/blog', '/contato', '/mapa-site']);
 const groups: readonly { id: GroupId; title: string; description: string }[] = [
@@ -16,8 +16,6 @@ const groups: readonly { id: GroupId; title: string; description: string }[] = [
 	{ id: 'servicos', title: 'Serviços', description: 'Serviços e especialidades apresentados no catálogo.' },
 	{ id: 'sst', title: 'Segurança e saúde do trabalho', description: 'PGR, PCMSO, LTCAT, laudos, inspeções e gestão de SST.' },
 	{ id: 'incendio', title: 'Prevenção e combate a incêndio', description: 'Projetos e orientações sobre segurança contra incêndio.' },
-	{ id: 'eletrica', title: 'Projetos e instalações elétricas', description: 'Projetos, instalações e orçamentos relacionados à engenharia elétrica.' },
-	{ id: 'elevacao', title: 'Elevadores e acessibilidade', description: 'Elevadores, escadas rolantes e plataformas de acessibilidade.' },
 	{ id: 'artigos', title: 'Artigos e orientações', description: 'Publicações do blog para aprofundar cada assunto.' },
 	{ id: 'outros', title: 'Outros temas', description: 'Páginas técnicas e temas complementares.' },
 ];
@@ -27,8 +25,6 @@ function category(path: string): GroupId {
 	if (path.startsWith('/servicos/')) return 'servicos';
 	if (path.startsWith('/blog/')) return 'artigos';
 	if (/incendio|bombeiro|avcb|clcb/.test(path)) return 'incendio';
-	if (/elevador|escada-rolante|plataforma|elevacao-vertical|acessibilidade/.test(path)) return 'elevacao';
-	if (/eletric|instalac|spda|cabeamento/.test(path)) return 'eletrica';
 	if (/medic|ruido|calor|iluminamento|dosimetria|pgr|pcmso|ltcat|e-?social|sst|seguranca|saude|inspec|pericia|laudo|consultoria|qualidade|mobiliz|ppp/.test(path)) return 'sst';
 	return 'outros';
 }

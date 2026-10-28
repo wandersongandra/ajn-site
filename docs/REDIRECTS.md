@@ -18,3 +18,10 @@
 ## Histórico de triagem
 
 A reauditoria anterior de 44 páginas comerciais marcou todas para **KEEP**. Nenhuma delas foi redirecionada nem removida nesta mudança. O alias `/ajn-projeto` do app Next.js arquivado continua fora do escopo.
+
+
+## Remoção de serviços (2026-10)
+
+Ver lista completa em [REMOCAO-SERVICOS-2026-10.md](./REMOCAO-SERVICOS-2026-10.md).
+
+Resumo: **49** URLs de projetos elétricos, elevadores/escadas/plataformas, SPDA e cabeamento redirecionam com **HTTP 301** para `/servicos` via `public/.htaccess` (Hostinger) e, no preview Cloudflare, via `_redirects`. O `astro.config.mjs` espelha as mesmas regras como fallback HTML.

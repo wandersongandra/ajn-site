@@ -14,9 +14,10 @@ const [html, catalog, routing, serverRules, headerCheck, footerCheck, style] = a
 ]);
 
 const entries = [...catalog.matchAll(/path:\s*"([^"]+)"\s*,\s*title:/g)].map(m => m[1]);
-check(entries.length >= 140, 'O catálogo perdeu páginas inesperadamente.');
+check(entries.length >= 100, 'O catálogo perdeu páginas inesperadamente.');
 check(new Set(entries).size === entries.length, 'O catálogo possui URLs duplicadas.');
 check(!entries.includes('/informacoes'), 'Rota antiga ainda no catálogo.');
+check(!entries.includes('/projetos-spda') && !entries.includes('/projetos-eletricos-prediais'), 'Serviços removidos ainda no catálogo.');
 check(entries.includes('/mapa-site'), 'Mapa do site precisa constar no catálogo.');
 
 const start = html.indexOf('class="site-index"');
@@ -24,7 +25,7 @@ const end = html.indexOf('</main>', start);
 const content = start >= 0 && end > start ? html.slice(start, end) : '';
 check(Boolean(content), 'Novo mapa do site não foi renderizado.');
 check((html.match(/<h1\b/g) ?? []).length === 1, 'Mapa do site precisa de um único H1.');
-const groups = ['institucional','servicos','sst','incendio','eletrica','elevacao','artigos'];
+const groups = ['institucional','servicos','sst','incendio','artigos'];
 for (const group of groups) {
 	check(content.includes(`href="#${group}"`), `Atalho de grupo ausente: ${group}`);
 	check(content.includes(`id="${group}"`), `Seção de grupo ausente: ${group}`);
@@ -70,6 +71,7 @@ for(const file of files.filter(x => /^sitemap.*\.xml$/.test(x))) {
 	const sitemap = await readFile(`dist/${file}`, 'utf8');
 	sitemapContent += sitemap;
 	check(!sitemap.includes('/informacoes'), `Rota redirecionada permaneceu no arquivo ${file}`);
+	check(!sitemap.includes('/projetos-spda') && !sitemap.includes('/projetos-eletricos-prediais'), `Serviço removido permaneceu no sitemap ${file}`);
 }
 check(sitemapContent.includes('/politica-de-privacidade/'), 'Política de Privacidade ausente do sitemap.');
 check(sitemapContent.includes('/termos-de-uso/'), 'Termos de Uso ausentes do sitemap.');

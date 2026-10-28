@@ -15,9 +15,9 @@ const routes = [
   '/servicos/',
   '/blog/',
   '/contato/',
-  '/projetos-spda/',
-  '/projetos-cabeamento-estruturado/',
-  '/projetos-eletricos-prediais/',
+  '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/',
+  '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/',
+  '/servicos/treinamento-de-nrs/',
   '/medicoes-ambientais-ocupacionais/',
 ];
 const scenarios = [

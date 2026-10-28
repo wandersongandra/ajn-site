@@ -22,7 +22,7 @@ check(!/acreditad[ao]|certificad[ao]|garantia de insalubridade/i.test(source),'M
 check(home.includes('id="ajn-measure-home-title"') && home.includes('href="/'+slug+'"'),'Medições: destaque da Home ausente.');
 check(services.includes('href="/'+slug+'"'),'Medições: serviço ausente do catálogo.');
 check(menu.includes("href: '/"+slug+"'"),'Medições: serviço ausente do menu.');
-check(services.includes('14 serviços'),'Medições: contador do catálogo não foi atualizado.');
+check(services.includes('13 serviços'),'Medições: contador do catálogo não foi atualizado.');
 const articles=[
  'medicao-de-ruido-ocupacional-dosimetria-e-planejamento',
  'avaliacao-de-calor-ocupacional-ibutg-e-atividade',
@@ -47,4 +47,4 @@ for(const file of files){
 }
 check(size<400*1024,'Medições: orçamento da mídia excedido '+size+' bytes.');
 if(issues.length){issues.forEach(m=>console.error('[medicoes][FAIL]',m));process.exitCode=1}
-else console.log('[medicoes] PASS: página, 14 serviços, 3 posts, schema, aviso de imagem e '+Math.round(size/1024)+' KiB de mídia.');
+else console.log('[medicoes] PASS: página, 13 serviços, 3 posts, schema, aviso de imagem e '+Math.round(size/1024)+' KiB de mídia.');

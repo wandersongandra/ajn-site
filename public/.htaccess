@@ -21,3 +21,56 @@
 	Header always set Referrer-Policy "strict-origin-when-cross-origin"
 	Header always set Permissions-Policy "accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()"
 </IfModule>
+
+# Remoção 2026-10: elétrica, elevadores, SPDA e cabeamento
+<IfModule mod_alias.c>
+    RedirectMatch 301 ^/analise-projetos-eletricos-bh/?$ /servicos
+    RedirectMatch 301 ^/elevacao-vertical/?$ /servicos
+    RedirectMatch 301 ^/elevador-bh/?$ /servicos
+    RedirectMatch 301 ^/empresa-elevador/?$ /servicos
+    RedirectMatch 301 ^/empresa-elevador-belo-horizonte/?$ /servicos
+    RedirectMatch 301 ^/empresa-escada-rolante/?$ /servicos
+    RedirectMatch 301 ^/empresa-plataforma-elevatoria/?$ /servicos
+    RedirectMatch 301 ^/empresa-projeto-eletrico/?$ /servicos
+    RedirectMatch 301 ^/empresa-projeto-eletrico-bh/?$ /servicos
+    RedirectMatch 301 ^/empresas-elevadores-bh/?$ /servicos
+    RedirectMatch 301 ^/empresas-manutencao-elevadores-bh/?$ /servicos
+    RedirectMatch 301 ^/escada-rolante/?$ /servicos
+    RedirectMatch 301 ^/escada-rolante-belo-horizonte/?$ /servicos
+    RedirectMatch 301 ^/escada-rolante-bh/?$ /servicos
+    RedirectMatch 301 ^/instalacao-predial-eletrica/?$ /servicos
+    RedirectMatch 301 ^/instalacoes-eletricas-projeto/?$ /servicos
+    RedirectMatch 301 ^/manutencao-elevadores-belo-horizonte/?$ /servicos
+    RedirectMatch 301 ^/manutencao-elevadores-bh/?$ /servicos
+    RedirectMatch 301 ^/orcamento-projeto-eletrico/?$ /servicos
+    RedirectMatch 301 ^/plataforma-acessibilidade/?$ /servicos
+    RedirectMatch 301 ^/plataforma-acessibilidade-bh/?$ /servicos
+    RedirectMatch 301 ^/plataforma-acessibilidade-preco/?$ /servicos
+    RedirectMatch 301 ^/plataforma-elevatoria/?$ /servicos
+    RedirectMatch 301 ^/plataforma-elevatoria-belo-horizonte/?$ /servicos
+    RedirectMatch 301 ^/plataforma-elevatoria-bh/?$ /servicos
+    RedirectMatch 301 ^/plataforma-elevatoria-preco/?$ /servicos
+    RedirectMatch 301 ^/preco-projetos-eletricos/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-belo-horizonte/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-bh/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-comercial/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-industrial/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-industrial-belo-horizonte/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-industrial-preco/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-preco/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-residencial/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-residencial-belo-horizonte/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-residencial-completo/?$ /servicos
+    RedirectMatch 301 ^/projeto-eletrico-residencial-orcamento/?$ /servicos
+    RedirectMatch 301 ^/projeto-instalacao-eletrica-residencial/?$ /servicos
+    RedirectMatch 301 ^/projeto-instalacoes-eletricas/?$ /servicos
+    RedirectMatch 301 ^/projetos-eletricos-orcamento/?$ /servicos
+    RedirectMatch 301 ^/projetos-eletricos-prediais/?$ /servicos
+    RedirectMatch 301 ^/projetos-engenharia-eletrica/?$ /servicos
+    RedirectMatch 301 ^/projetos-instalacoes-eletricas-prediais/?$ /servicos
+    RedirectMatch 301 ^/servico-projeto-eletrico/?$ /servicos
+    RedirectMatch 301 ^/projetos-spda/?$ /servicos
+    RedirectMatch 301 ^/projetos-cabeamento-estruturado/?$ /servicos
+    RedirectMatch 301 ^/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia/?$ /servicos
+</IfModule>
