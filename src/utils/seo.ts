@@ -26,7 +26,6 @@ const relatedServices: readonly {
 	{ pattern: /e-?social/i, href: '/servicos/gestao-do-e-social', label: 'Conheça a gestão do eSocial' },
 	{ pattern: /pcmso|aso/i, href: '/servicos/pcmso-e-asos', label: 'Veja o serviço de PCMSO e ASOs' },
 	{ pattern: /incendio|bombeiro|avcb|clcb/i, href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip', label: 'Veja os projetos contra incêndio' },
-	{ pattern: /eletric|instalac/i, href: '/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia', label: 'Veja os projetos elétricos' },
 	{ pattern: /qualidade/i, href: '/servicos/gestao-da-qualidade', label: 'Veja a gestão da qualidade' },
 	{ pattern: /ambiental|residu/i, href: '/servicos/gestao-ambiental', label: 'Veja a gestão ambiental' },
 	{ pattern: /treinamento|nr-?\d+/i, href: '/servicos/treinamento-de-nrs', label: 'Veja os treinamentos de NRs' },

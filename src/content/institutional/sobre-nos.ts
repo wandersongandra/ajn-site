@@ -10,7 +10,7 @@ export const institutionalPage = {
 	introTitle: 'Nossa atuação',
 	intro: [
 		'A AJN Consultoria e Engenharia atua em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA). Entre os serviços estão consultoria, treinamentos, acompanhamento técnico e gestão de contratos.',
-		'O trabalho também abrange laudos e perícias, projetos de prevenção e combate a incêndio, PMOC e serviços técnicos relacionados a sistemas de climatização, elevadores e escadas rolantes.',
+		'O trabalho também abrange laudos e perícias, projetos de prevenção e combate a incêndio, PMOC e serviços técnicos relacionados a sistemas de climatização.',
 	],
 	areasTitle: 'Áreas de atendimento',
 	areas: [
@@ -20,7 +20,7 @@ export const institutionalPage = {
 		},
 		{
 			title: 'Engenharia e projetos',
-			text: 'Projetos de prevenção e combate a incêndio, avaliações e serviços técnicos em instalações e equipamentos.',
+			text: 'Projetos de prevenção e combate a incêndio, avaliações técnicas e regularização junto ao Corpo de Bombeiros.',
 		},
 		{
 			title: 'Gestão e acompanhamento',
