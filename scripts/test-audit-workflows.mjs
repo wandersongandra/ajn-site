@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { auditWorkflowFiles, auditWorkflowSource } from './audit-workflows.mjs';
 
 const SHA = '0123456789abcdef0123456789abcdef01234567';
@@ -46,8 +47,41 @@ test('detecta segredos em notação de ponto, colchetes e referências dinâmica
 });
 
 test('permite somente GITHUB_TOKEN em ponto e colchetes', () => {
-	const workflow = baseWorkflow(`  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - run: echo \${{ secrets.GITHUB_TOKEN }}\n      - run: echo \${{ secrets [ "GITHUB_TOKEN" ] }}\n      - run: echo \${{ secrets [ 'GITHUB_TOKEN' ] }}\n`);
+	const workflow = baseWorkflow(`  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - run: echo 'variáveis injetadas via env'\n        env:\n          TOKEN_DOT: \${{ secrets.GITHUB_TOKEN }}\n          TOKEN_DOUBLE: \${{ secrets [ "GITHUB_TOKEN" ] }}\n          TOKEN_SINGLE: \${{ secrets [ 'GITHUB_TOKEN' ] }}\n`);
 	assert.deepEqual(auditWorkflowSource(workflow, 'secret-github-token.yml'), []);
+});
+
+test('bloqueia interpolação direta de dados de PR e segredos em comandos shell', () => {
+	for (const expression of ['\${{ github.event.pull_request.title }}', '\${{ secrets.GITHUB_TOKEN }}']) {
+		const unsafe = baseWorkflow(`  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - run: echo ${expression}\n`);
+		assert.match(auditWorkflowSource(unsafe, 'unsafe-run.yml').join('\n'), /diretamente em run/);
+	}
+	const safe = baseWorkflow(`  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - run: printf '%s' "$PR_TITLE"\n        env:\n          PR_TITLE: \${{ github.event.pull_request.title }}\n`);
+	assert.deepEqual(auditWorkflowSource(safe, 'safe-env.yml'), []);
+});
+
+test('impede remover ou limitar verificações obrigatórias de todas as PRs', async () => {
+	for (const file of ['quality.yml', 'codeql.yml', 'gitleaks.yml', 'dependency-review.yml']) {
+		const source = await readFile(`.github/workflows/${file}`, 'utf8');
+		assert.deepEqual(auditWorkflowSource(source, file), []);
+		const removedTrigger = source.replace('  pull_request:\n', '');
+		assert.match(auditWorkflowSource(removedTrigger, file).join('\n'), /precisa executar em pull_request/);
+		const pathsFiltered = source.replace('  pull_request:\n', "  pull_request:\n    paths: ['src/**']\n");
+		assert.match(auditWorkflowSource(pathsFiltered, file).join('\n'), /não pode filtrar pull_request/);
+	}
+	const quality = await readFile('.github/workflows/quality.yml', 'utf8');
+	const branchFiltered = quality.replace('  pull_request:\n', '  pull_request:\n    branches: [staging]\n');
+	assert.match(auditWorkflowSource(branchFiltered, 'quality.yml').join('\n'), /não pode filtrar pull_request/);
+	const conditionalJob = quality.replace('  validate:\n', "  validate:\n    if: github.ref == 'refs/heads/main'\n");
+	assert.match(auditWorkflowSource(conditionalJob, 'quality.yml').join('\n'), /jobs de segurança.*condicionais/);
+	const removedAudit = quality.replace('      - name: Security baseline audit\n        run: npm run audit:security\n', '');
+	assert.match(auditWorkflowSource(removedAudit, 'quality.yml').join('\n'), /etapa obrigatória.*audit:security/);
+	const persistedCheckout = quality.replace('          persist-credentials: false\n', '');
+	assert.match(auditWorkflowSource(persistedCheckout, 'quality.yml').join('\n'), /checkout deve remover credenciais/);
+	const dependency = await readFile('.github/workflows/dependency-review.yml', 'utf8');
+	assert.match(auditWorkflowSource(dependency.replace('        run: npm audit --audit-level=high\n', ''), 'dependency-review.yml').join('\n'), /etapa obrigatória.*npm audit/);
+	const gitleaks = await readFile('.github/workflows/gitleaks.yml', 'utf8');
+	assert.match(auditWorkflowSource(gitleaks.replace(/^\s+uses: gitleaks\/gitleaks-action@.*$/m, ''), 'gitleaks.yml').join('\n'), /ação de segurança obrigatória.*gitleaks/);
 });
 
 test('os seis workflows versionados atuais permanecem válidos', async () => {

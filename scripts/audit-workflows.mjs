@@ -7,6 +7,18 @@ const DEFAULT_DIRECTORY = '.github/workflows';
 const ALLOWED_PERMISSION_VALUES = new Set(['read', 'write', 'none']);
 const READ_ONLY_PERMISSION_VALUES = new Set(['read', 'read-all', 'none']);
 const SECRET_REFERENCE_PATTERN = /\bsecrets\b(?:\s*\.\s*([A-Za-z_][A-Za-z0-9_-]*)|\s*\[\s*(?:"([^"]*)"|'([^']*)'|([^\]]+))\s*\])?/g;
+const REQUIRED_PR_WORKFLOWS = new Set([
+	'quality.yml',
+	'codeql.yml',
+	'dependency-review.yml',
+	'gitleaks.yml',
+]);
+const REQUIRED_SECURITY_STEPS = {
+	'quality.yml': { run: ['npm run check', 'npm run build', 'npm run audit:security', 'npm run audit:workflows', 'npm run audit:governance'] },
+	'codeql.yml': { uses: ['github/codeql-action/init@', 'github/codeql-action/analyze@'] },
+	'dependency-review.yml': { run: ['npm audit --audit-level=high'] },
+	'gitleaks.yml': { uses: ['gitleaks/gitleaks-action@'] },
+};
 
 function isPlainObject(value) {
 	return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -57,6 +69,62 @@ function hasPullRequestTargetTrigger(workflow) {
 	if (trigger === 'pull_request_target') return true;
 	if (Array.isArray(trigger)) return trigger.includes('pull_request_target');
 	return isPlainObject(trigger) && Object.hasOwn(trigger, 'pull_request_target');
+}
+
+function pullRequestTrigger(workflow) {
+	const trigger = workflow.on;
+	if (trigger === 'pull_request') return { enabled: true, options: null };
+	if (Array.isArray(trigger)) return { enabled: trigger.includes('pull_request'), options: null };
+	if (isPlainObject(trigger) && Object.hasOwn(trigger, 'pull_request')) {
+		return { enabled: true, options: trigger.pull_request };
+	}
+	return { enabled: false, options: null };
+}
+
+function auditMandatoryPrCoverage(workflow, file, failures) {
+	if (!REQUIRED_PR_WORKFLOWS.has(file)) return;
+	const trigger = pullRequestTrigger(workflow);
+	if (!trigger.enabled) {
+		failures.push(`${file}: o scanner precisa executar em pull_request.`);
+		return;
+	}
+	if (isPlainObject(trigger.options) &&
+		['paths', 'paths-ignore', 'types', 'branches', 'branches-ignore'].some((key) => Object.hasOwn(trigger.options, key))) {
+		failures.push(`${file}: o scanner não pode filtrar pull_request por caminhos, branches nem por tipos de evento.`);
+	}
+	if (!isPlainObject(workflow.jobs) || Object.values(workflow.jobs).some((job) => isPlainObject(job) && Object.hasOwn(job, 'if'))) {
+		failures.push(`${file}: jobs de segurança em PRs não podem ser condicionais.`);
+	}
+	const steps = Object.values(workflow.jobs ?? {}).flatMap((job) => isPlainObject(job) && Array.isArray(job.steps) ? job.steps : []);
+	if (!steps.some((step) => isPlainObject(step) && typeof step.uses === 'string' &&
+		step.uses.startsWith('actions/checkout@') && step.with?.['persist-credentials'] === false)) {
+		failures.push(`${file}: checkout deve remover credenciais persistidas.`);
+	}
+	const expected = REQUIRED_SECURITY_STEPS[file];
+	for (const command of expected.run ?? []) {
+		if (!steps.some((step) => isPlainObject(step) && !Object.hasOwn(step, 'if') &&
+			typeof step.run === 'string' && step.run.split(/\r?\n/).some((line) => line.trim() === command))) {
+			failures.push(`${file}: etapa obrigatória desativada ou ausente: ${command}.`);
+		}
+	}
+	for (const action of expected.uses ?? []) {
+		if (!steps.some((step) => isPlainObject(step) && !Object.hasOwn(step, 'if') &&
+			typeof step.uses === 'string' && step.uses.startsWith(action))) {
+			failures.push(`${file}: ação de segurança obrigatória desativada ou ausente: ${action}.`);
+		}
+	}
+}
+
+function auditShellExpressions(workflow, file, failures) {
+	if (!isPlainObject(workflow.jobs)) return;
+	for (const [jobId, job] of Object.entries(workflow.jobs)) {
+		if (!isPlainObject(job) || !Array.isArray(job.steps)) continue;
+		for (const [index, step] of job.steps.entries()) {
+			if (isPlainObject(step) && typeof step.run === 'string' && step.run.includes('${{')) {
+				failures.push(`${file}: job ${jobId}, step ${index + 1}: não interpolar expressões diretamente em run; use env.`);
+			}
+		}
+	}
 }
 
 function isCodeqlAnalyzeAction(value) {
@@ -178,6 +246,8 @@ export function auditWorkflowSource(source, file = 'workflow.yml') {
 	}
 
 	auditPermissions(workflow, file, failures);
+	auditMandatoryPrCoverage(workflow, file, failures);
+	auditShellExpressions(workflow, file, failures);
 	for (const value of collectValuesByKey(workflow, 'uses')) auditActionReference(value, file, failures);
 	auditSecrets(workflow, file, failures);
 

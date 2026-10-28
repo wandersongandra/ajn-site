@@ -5,6 +5,7 @@ import { auditWorkflowFiles } from './audit-workflows.mjs';
 
 const EXPECTED_DEPENDABOT = new Set(['npm:/', 'github-actions:/']);
 export const REQUIRED_SECURITY_WORKFLOWS = [
+	'quality.yml',
 	'codeql.yml',
 	'gitleaks.yml',
 	'dependency-review.yml',
