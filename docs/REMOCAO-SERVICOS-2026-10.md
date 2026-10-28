@@ -98,3 +98,12 @@ Branch: `content/remover-servicos-eletricos-elevadores` (a partir de `origin/mai
 Pasta: `/workspace/ajn-audit/cf-preview/` (zip `cf-preview.zip`).
 Inclui `_headers` (`X-Robots-Tag: noindex, nofollow` + headers de segurança) e `_redirects`.
 **Não funciona no preview:** endpoint PHP de contato (Hostinger). Canonicals continuam apontando para `ajnengenharia.com.br`.
+
+## Status de publicação (preview)
+
+- Branch local: `content/remover-servicos-eletricos-elevadores` (7 commits sobre `origin/main`).
+- Push GitHub: **bloqueado (403)** — token sem escrita em `ajn-site`. Bundle: `/workspace/ajn-audit/remover-servicos.bundle` e patch `/workspace/ajn-audit/remover-servicos.patch`.
+- Preview Cloudflare (upload manual): pasta `/workspace/ajn-audit/cf-preview/` e zip `/workspace/ajn-audit/cf-preview.zip` (937 arquivos, ~43 MiB; `_headers` noindex + `_redirects`).
+- `npm run validate` com `PUBLIC_SITE_ORIGIN=https://ajnengenharia.com.br` e `PUBLIC_ALLOW_INDEXING=true`: **PASS**.
+- Smoke Playwright desktop+mobile no preview: **PASS** (13 cards, stubs de redirect, Techsystem mantido, 0 erros de console).
+- Sem merge e sem deploy Hostinger.
