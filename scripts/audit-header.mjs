@@ -5,13 +5,13 @@ import path from 'node:path';
 
 const pages = [
 	['/', 'dist/index.html'],
-	['/sobre-nos', 'dist/sobre-nos/index.html'],
-	['/servicos', 'dist/servicos/index.html'],
-	['/blog', 'dist/blog/index.html'],
-	['/contato', 'dist/contato/index.html'],
-	['/mapa-site', 'dist/mapa-site/index.html'],
+	['/sobre-nos/', 'dist/sobre-nos/index.html'],
+	['/servicos/', 'dist/servicos/index.html'],
+	['/blog/', 'dist/blog/index.html'],
+	['/contato/', 'dist/contato/index.html'],
+	['/mapa-site/', 'dist/mapa-site/index.html'],
 ];
-const links = ['/', '/sobre-nos', '/servicos', '/blog', '/contato'];
+const links = ['/', '/sobre-nos/', '/servicos/', '/blog/', '/contato/'];
 const failures = [];
 let inspected = 0;
 

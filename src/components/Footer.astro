@@ -20,7 +20,7 @@ const copyrightYear = new Date().getFullYear();
 			<h2>Navegação</h2>
 			<ul>
 				{navigation.slice(0, 6).map((item) => <li><a href={item.href}>{item.label}</a></li>)}
-				<li><a href="/mapa-site">Mapa do site</a></li>
+				<li><a href="/mapa-site/">Mapa do site</a></li>
 				<li><a href="/politica-de-privacidade/">Política de Privacidade</a></li>
 				<li><a href="/politica-de-cookies/">Política de Cookies</a></li>
 				<li><button class="footer__privacy-control" type="button" data-privacy-open>Preferências de cookies</button></li>
@@ -34,7 +34,7 @@ const copyrightYear = new Date().getFullYear();
 			<a href={site.phoneHref} rel="nofollow noopener noreferrer" target="_blank">{site.phone}</a>
 			<a href={`mailto:${site.email}`}>{site.email}</a>
 			<div class="footer__actions">
-				<a class="footer__button" href="/contato">Solicitar atendimento <span aria-hidden="true">↗</span></a>
+				<a class="footer__button" href="/contato/">Solicitar atendimento <span aria-hidden="true">↗</span></a>
 			</div>
 		</div>
 

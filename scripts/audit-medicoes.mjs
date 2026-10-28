@@ -21,7 +21,7 @@ check(landing.includes('Imagem ilustrativa criada digitalmente'),'Medições: im
 check(!/acreditad[ao]|certificad[ao]|garantia de insalubridade/i.test(source),'Medições: alegação técnica não fundamentada.');
 check(home.includes('id="ajn-measure-home-title"') && home.includes('href="/'+slug+'"'),'Medições: destaque da Home ausente.');
 check(services.includes('href="/'+slug+'"'),'Medições: serviço ausente do catálogo.');
-check(menu.includes("href: '/"+slug+"'"),'Medições: serviço ausente do menu.');
+check(menu.includes("href: '/"+slug+"/'"),'Medições: serviço ausente do menu.');
 check(services.includes('13 serviços'),'Medições: contador do catálogo não foi atualizado.');
 const articles=[
  'medicao-de-ruido-ocupacional-dosimetria-e-planejamento',

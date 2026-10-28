@@ -19,7 +19,7 @@ async function htmlFiles(dir) {
 
 const files = await htmlFiles(root);
 const requiredLinks = [
-	'/', '/sobre-nos', '/servicos', '/blog', '/contato', '/mapa-site',
+	'/', '/sobre-nos/', '/servicos/', '/blog/', '/contato/', '/mapa-site/',
 	'/politica-de-privacidade/', '/termos-de-uso/',
 ];
 const legacy = [
@@ -59,7 +59,7 @@ for (const file of files) {
 	check(footer.includes('(31) 98473-4644') &&
 		footer.includes('faleconosco@ajnengenharia.com.br'),
 		`${route}: contato real ausente`);
-	check(footer.includes('href="/contato"') &&
+	check(footer.includes('href="/contato/"') &&
 		footer.includes('Solicitar atendimento'),
 		`${route}: CTA de contato ausente`);
 	for (const url of requiredLinks) {

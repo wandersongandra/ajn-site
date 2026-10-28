@@ -12,7 +12,6 @@
 		animation: none;
 	}
 	.home-page.motion-enabled .hero__eyebrow,
-	.home-page.motion-enabled .hero__content h1,
 	.home-page.motion-enabled .hero__lead,
 	.home-page.motion-enabled .hero__actions {
 		animation-name: hero-rise;
@@ -20,13 +19,11 @@
 		animation-timing-function: cubic-bezier(.22, 1, .36, 1);
 		animation-fill-mode: both;
 	}
-	.home-page.motion-enabled .hero__content h1 { animation-delay: 40ms; }
 	.home-page.motion-enabled .hero__lead { animation-delay: 75ms; }
 	.home-page.motion-enabled .hero__actions { animation-delay: 110ms; }
 
-	/* Keep the first headline fast; scroll effects belong below the fold. */
+	/* Keep the first headline visible; only secondary hero content animates. */
 	.home-page .hero__eyebrow,
-	.home-page .hero__content h1,
 	.home-page .hero__lead,
 	.home-page .hero__actions {
 		animation-duration: 490ms;
@@ -116,14 +113,6 @@
 	@keyframes ajn-hero-panel-enter {
 		from { opacity: 0; transform: translateY(14px); }
 		to { opacity: 1; transform: translateY(0); }
-	}
-
-	/* The mobile H1 is a likely text LCP candidate. Never hold its first
-	   paint behind the entrance opacity animation; keep surrounding motion. */
-	@media (max-width: 768px) {
-		.home-page.motion-enabled .hero__content h1 {
-			animation: none;
-		}
 	}
 
 	@media (min-width: 769px) {

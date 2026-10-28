@@ -18,25 +18,25 @@ export const site = {
 
 export const navigation: NavigationItem[] = [
 	{ label: 'Home', href: '/' },
-	{ label: 'Sobre Nós', href: '/sobre-nos' },
+	{ label: 'Sobre Nós', href: '/sobre-nos/' },
 	{
 		label: 'Serviços',
-		href: '/servicos',
+		href: '/servicos/',
 		children: [
-			{ label: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional' },
-			{ label: 'Gestão Ambiental', href: '/servicos/gestao-ambiental' },
-			{ label: 'Gestão da Qualidade', href: '/servicos/gestao-da-qualidade' },
-			{ label: 'Gestão do E-Social', href: '/servicos/gestao-do-e-social' },
-			{ label: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
-			{ label: 'Avaliações e Medições Ambientais', href: '/medicoes-ambientais-ocupacionais' },
-			{ label: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' },
-			{ label: 'Projetos de Combate a Incêndio e Pânico - PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
-			{ label: 'Regularização de imóveis junto ao corpo de bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
-			{ label: 'Treinamento de NRs', href: '/servicos/treinamento-de-nrs' },
+			{ label: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional/' },
+			{ label: 'Gestão Ambiental', href: '/servicos/gestao-ambiental/' },
+			{ label: 'Gestão da Qualidade', href: '/servicos/gestao-da-qualidade/' },
+			{ label: 'Gestão do E-Social', href: '/servicos/gestao-do-e-social/' },
+			{ label: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
+			{ label: 'Avaliações e Medições Ambientais', href: '/medicoes-ambientais-ocupacionais/' },
+			{ label: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade/' },
+			{ label: 'Projetos de Combate a Incêndio e Pânico - PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
+			{ label: 'Regularização de imóveis junto ao corpo de bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' },
+			{ label: 'Treinamento de NRs', href: '/servicos/treinamento-de-nrs/' },
 		],
 	},
-	{ label: 'Blog', href: '/blog' },
-	{ label: 'Contato', href: '/contato' },
+	{ label: 'Blog', href: '/blog/' },
+	{ label: 'Contato', href: '/contato/' },
 ];
 
 export const hero = {
@@ -61,15 +61,15 @@ export const clients = [
 	{ src: '/images/clients/cliente-10-hd.webp', alt: 'Uptec Construção e Tecnologia' },
 ] as const;
 export const services = [
-	{ title: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional', description: 'Apoio à identificação de perigos, avaliação de riscos e definição de medidas de prevenção no ambiente de trabalho.', image: '/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp' },
-	{ title: 'Gestão de E-Social', href: '/servicos/gestao-do-e-social', description: 'Orientação e organização das informações de Saúde e Segurança do Trabalho enviadas ao eSocial.', image: '/images/content/services/gestao-do-e-social.webp' },
-	{ title: 'Gestão de Meio Ambiente', href: '/servicos/gestao-ambiental', description: 'Orientação sobre segregação, armazenamento e destinação de resíduos conforme a operação.', image: '/images/content/services/gestao-ambiental.webp' },
-	{ title: 'Gestão de Qualidade', href: '/servicos/gestao-da-qualidade', description: 'Organização dos critérios e registros de qualidade aplicáveis aos serviços e à execução de obras.', image: '/images/content/services/gestao-da-qualidade.webp' },
-	{ title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos', description: 'Organização do acompanhamento de saúde ocupacional e dos ASOs, conforme os riscos das atividades.', image: '/images/content/services/pcmso-e-asos.jpg' },
-	{ title: 'Perícia em Insalubridade e Periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade', description: 'Avaliações técnicas de condições de exposição para subsidiar perícias e documentos trabalhistas.', image: '/images/content/services/pericias-em-periculosidade-e-insalubridade.webp' },
-	{ title: 'Projetos de Combate a Incêndio', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip', description: 'Projetos e documentação de prevenção e combate a incêndio, conforme as exigências aplicáveis a cada edificação.', image: '/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp' },
-	{ title: 'Regularização de Imóveis - CBM', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros', description: 'Elaboração de projetos conforme normativas para atender às necessidades específicas de segurança contra incêndios de edificações comerciais, residenciais e industriais, de pequeno, médio e grande porte.', image: '/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp' },
-	{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs', description: 'Capacitações relacionadas às Normas Regulamentadoras, conforme a atividade e os requisitos do treinamento.', image: '/images/content/services/treinamento-de-nrs.webp' },
+	{ title: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional/', description: 'Apoio à identificação de perigos, avaliação de riscos e definição de medidas de prevenção no ambiente de trabalho.', image: '/images/content/services/assessoria-e-consultoria-em-saude-ocupacional.webp' },
+	{ title: 'Gestão de E-Social', href: '/servicos/gestao-do-e-social/', description: 'Orientação e organização das informações de Saúde e Segurança do Trabalho enviadas ao eSocial.', image: '/images/content/services/gestao-do-e-social.webp' },
+	{ title: 'Gestão de Meio Ambiente', href: '/servicos/gestao-ambiental/', description: 'Orientação sobre segregação, armazenamento e destinação de resíduos conforme a operação.', image: '/images/content/services/gestao-ambiental.webp' },
+	{ title: 'Gestão de Qualidade', href: '/servicos/gestao-da-qualidade/', description: 'Organização dos critérios e registros de qualidade aplicáveis aos serviços e à execução de obras.', image: '/images/content/services/gestao-da-qualidade.webp' },
+	{ title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos/', description: 'Organização do acompanhamento de saúde ocupacional e dos ASOs, conforme os riscos das atividades.', image: '/images/content/services/pcmso-e-asos.jpg' },
+	{ title: 'Perícia em Insalubridade e Periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade/', description: 'Avaliações técnicas de condições de exposição para subsidiar perícias e documentos trabalhistas.', image: '/images/content/services/pericias-em-periculosidade-e-insalubridade.webp' },
+	{ title: 'Projetos de Combate a Incêndio', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/', description: 'Projetos e documentação de prevenção e combate a incêndio, conforme as exigências aplicáveis a cada edificação.', image: '/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp' },
+	{ title: 'Regularização de Imóveis - CBM', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', description: 'Elaboração de projetos conforme normativas para atender às necessidades específicas de segurança contra incêndios de edificações comerciais, residenciais e industriais, de pequeno, médio e grande porte.', image: '/images/content/services/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros.webp' },
+	{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs/', description: 'Capacitações relacionadas às Normas Regulamentadoras, conforme a atividade e os requisitos do treinamento.', image: '/images/content/services/treinamento-de-nrs.webp' },
 ] as const;
 
 export const workflowSteps = [

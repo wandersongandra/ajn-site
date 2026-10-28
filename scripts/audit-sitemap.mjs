@@ -51,7 +51,7 @@ for (const [name, page] of [['Home', headerCheck],['Sobre nós', footerCheck],['
 	const footer = page.match(/<footer\b[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/)?.[0] ?? '';
 	check(!nav.includes('href="/informacoes"') && !footer.includes('href="/informacoes"'),
 		`${name}: link legado de Informações continua visível.`);
-	check(footer.includes('href="/mapa-site"'), `${name}: mapa não está no rodapé.`);
+	check(footer.includes('href="/mapa-site/"'), `${name}: mapa não está no rodapé.`);
 }
 
 check(/RedirectMatch\s+301\s+\^\/informacoes\/\?\$\s+\/mapa-site/.test(serverRules),
