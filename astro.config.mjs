@@ -4,12 +4,71 @@ import sitemap from '@astrojs/sitemap';
 
 const site = (process.env.PUBLIC_SITE_ORIGIN || 'https://ajnengenharia.com.br').replace(/\/+$/, '');
 
+/** Rotas com HTTP 301 — não entram no sitemap. */
+const redirectedPaths = new Set([
+	'/informacoes',
+	'/analise-projetos-eletricos-bh',
+	'/elevacao-vertical',
+	'/elevador-bh',
+	'/empresa-elevador',
+	'/empresa-elevador-belo-horizonte',
+	'/empresa-escada-rolante',
+	'/empresa-plataforma-elevatoria',
+	'/empresa-projeto-eletrico',
+	'/empresa-projeto-eletrico-bh',
+	'/empresas-elevadores-bh',
+	'/empresas-manutencao-elevadores-bh',
+	'/escada-rolante',
+	'/escada-rolante-belo-horizonte',
+	'/escada-rolante-bh',
+	'/instalacao-predial-eletrica',
+	'/instalacoes-eletricas-projeto',
+	'/manutencao-elevadores-belo-horizonte',
+	'/manutencao-elevadores-bh',
+	'/orcamento-projeto-eletrico',
+	'/plataforma-acessibilidade',
+	'/plataforma-acessibilidade-bh',
+	'/plataforma-acessibilidade-preco',
+	'/plataforma-elevatoria',
+	'/plataforma-elevatoria-belo-horizonte',
+	'/plataforma-elevatoria-bh',
+	'/plataforma-elevatoria-preco',
+	'/preco-projetos-eletricos',
+	'/projeto-eletrico',
+	'/projeto-eletrico-belo-horizonte',
+	'/projeto-eletrico-bh',
+	'/projeto-eletrico-comercial',
+	'/projeto-eletrico-industrial',
+	'/projeto-eletrico-industrial-belo-horizonte',
+	'/projeto-eletrico-industrial-preco',
+	'/projeto-eletrico-preco',
+	'/projeto-eletrico-residencial',
+	'/projeto-eletrico-residencial-belo-horizonte',
+	'/projeto-eletrico-residencial-completo',
+	'/projeto-eletrico-residencial-orcamento',
+	'/projeto-instalacao-eletrica-residencial',
+	'/projeto-instalacoes-eletricas',
+	'/projetos-eletricos-orcamento',
+	'/projetos-eletricos-prediais',
+	'/projetos-engenharia-eletrica',
+	'/projetos-instalacoes-eletricas-prediais',
+	'/servico-projeto-eletrico',
+	'/projetos-spda',
+	'/projetos-cabeamento-estruturado',
+	'/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia',
+]);
+
+/** @param {string} url */
+function isIndexableSitemapUrl(url) {
+	const pathname = new URL(url).pathname.replace(/\/+$/, '') || '/';
+	return !redirectedPaths.has(pathname);
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site,
 	integrations: [sitemap({
-		// Redirecionamentos não representam páginas indexáveis.
-		filter: (url) => !/^\/informacoes\/?$/.test(new URL(url).pathname),
+		filter: isIndexableSitemapUrl,
 	})],
 	// Fallback estático do Astro; a hospedagem Apache aplica HTTP 301 via .htaccess.
 	redirects: {
