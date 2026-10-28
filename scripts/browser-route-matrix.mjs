@@ -43,15 +43,20 @@ try {
 			const errors = [];
 			page.on('pageerror', (error) => errors.push(error.message));
 			try {
-				// This route is intentionally a static meta-refresh fallback. Letting
-				// the browser follow it destroys the original document context, so
-				// validate the redirect artifact without navigating.
-				if (route === '/informacoes/') {
-					const response = await context.request.get(new URL(route, base).href);
-					const body = await response.text();
-					check(response.ok(), `${scenario.name} ${route}: redirect artifact HTTP OK`);
-					check(/http-equiv="refresh"/i.test(body) && body.includes('/mapa-site'),
-						`${scenario.name} ${route}: fallback 301/meta refresh incompleto`);
+				// Static meta-refresh stubs (informacoes → mapa-site, and the 2026-10
+				// service-removal 301s → /servicos). Following them destroys the
+				// original document context, so validate the artifact via request.
+				const artifact = await context.request.get(new URL(route, base).href);
+				const body = await artifact.text();
+				const refreshMatch = body.match(/http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i)
+					|| body.match(/content=["'][^"']*url=([^"']+)["'][^>]*http-equiv=["']refresh["']/i);
+				if (refreshMatch) {
+					const destination = refreshMatch[1];
+					check(artifact.ok(), `${scenario.name} ${route}: redirect artifact HTTP OK`);
+					const expected =
+						route === '/informacoes/' ? '/mapa-site' : '/servicos';
+					check(destination.includes(expected),
+						`${scenario.name} ${route}: fallback meta refresh incompleto (dest=${destination})`);
 					continue;
 				}
 				const response = await page.goto(new URL(route, base).href, {
