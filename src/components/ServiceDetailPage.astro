@@ -51,6 +51,36 @@ const serviceSectionHeadings: Record<string, string> = {
 const sections = page.sections.map((section, index) => index === 0 && section.heading === 'Informações'
 	? { ...section, heading: serviceSectionHeadings[page.path] ?? section.heading }
 	: section);
+
+const relatedTechnicalReading: Record<string, readonly { title: string; href: string }[]> = {
+	'/servicos/assessoria-e-consultoria-em-saude-ocupacional': [
+		{ title: 'PGR: como planejar a gestão de riscos ocupacionais', href: '/blog/laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho/' },
+	],
+	'/servicos/gestao-do-e-social': [
+		{ title: 'S-2210, S-2220 e S-2240: diferenças e exemplos', href: '/blog/esocial-sst-diferencas-entre-s2210-s2220-e-s2240/' },
+		{ title: 'PPP: o que é e como consultar', href: '/blog/ppp-facil-o-ue-e-como-consultar-e-sua-importancia/' },
+	],
+	'/servicos/pcmso-e-asos': [
+		{ title: 'PCMSO e a gestão da saúde ocupacional', href: '/blog/seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional/' },
+	],
+	'/servicos/projetos-de-combate-a-incendio-e-panico-ppcip': [
+		{ title: 'PPCIP, AVCB e CLCB: como organizar a regularização', href: '/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/' },
+	],
+	'/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros': [
+		{ title: 'PPCIP, AVCB e CLCB: como organizar a regularização', href: '/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/' },
+	],
+	'/servicos/treinamento-de-nrs': [
+		{ title: 'NR-35: trabalho em altura e segurança', href: '/blog/nr-35-trabalho-em-altura-e-seguranca/' },
+		{ title: 'NR-10: documentação e capacitação', href: '/blog/nr-10-documentacao-capacitacao-e-transicao-regulatoria/' },
+	],
+	'/servicos/gestao-ambiental': [
+		{ title: 'Gestão de resíduos: organização da rotina operacional', href: '/blog/gestao-de-residuos-como-organizar-a-rotina-da-operacao/' },
+	],
+	'/servicos/gestao-da-qualidade': [
+		{ title: 'Controle de qualidade em obras: registros e inspeções', href: '/blog/controle-de-qualidade-em-obras-registros-inspecoes-e-desvios/' },
+	],
+};
+const technicalReading = relatedTechnicalReading[page.path] ?? [];
 ---
 
 <PageShell heading={page.heading}>
@@ -60,6 +90,15 @@ const sections = page.sections.map((section, index) => index === 0 && section.he
 		</div>
 		<div class="service-detail-wp__content">
 			<ContentSections sections={sections} formatHeading={normalizeKeywordTerms} />
+			{technicalReading.length > 0 && (
+				<section class="content-section" aria-labelledby="service-reading-heading">
+					<h2 id="service-reading-heading">Leituras técnicas relacionadas</h2>
+					<p>Artigos para compreender documentos, critérios e etapas associados a este serviço.</p>
+					<ul class="content-list">
+						{technicalReading.map((article) => <li><a href={article.href}>{article.title}</a></li>)}
+					</ul>
+				</section>
+			)}
 			<p class="page-cta"><a class="button" href="/contato/">Entre em contato</a></p>
 		</div>
 	</div>

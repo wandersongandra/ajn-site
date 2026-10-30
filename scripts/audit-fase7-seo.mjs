@@ -40,6 +40,37 @@ if (new Set(titles).size !== titles.length) {
 	failures.push('os títulos explícitos ainda não são únicos');
 }
 
+const expectedEditorialLinks = {
+	'/blog': [
+		'/blog/esocial-sst-diferencas-entre-s2210-s2220-e-s2240/',
+		'/blog/avaliacao-de-iluminamento-posto-de-trabalho-nho-11/',
+		'/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/',
+	],
+	'/servicos/gestao-do-e-social': [
+		'/blog/esocial-sst-diferencas-entre-s2210-s2220-e-s2240/',
+		'/blog/ppp-facil-o-ue-e-como-consultar-e-sua-importancia/',
+	],
+	'/servicos/projetos-de-combate-a-incendio-e-panico-ppcip': [
+		'/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/',
+	],
+	'/servicos/pcmso-e-asos': [
+		'/blog/seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional/',
+	],
+	'/servicos/treinamento-de-nrs': [
+		'/blog/nr-35-trabalho-em-altura-e-seguranca/',
+	],
+	'/medicoes-ambientais-ocupacionais': [
+		'/blog/avaliacao-de-iluminamento-posto-de-trabalho-nho-11/',
+	],
+};
+
+for (const [route, targets] of Object.entries(expectedEditorialLinks)) {
+	const html = await readFile(path.join('dist', route.slice(1), 'index.html'), 'utf8');
+	for (const href of targets) {
+		if (!html.includes(`href="${href}"`)) failures.push(`${route}: falta link editorial para ${href}`);
+	}
+}
+
 if (failures.length > 0) {
 	console.error('[fase7-seo][FAIL]');
 	for (const failure of failures) console.error(`- ${failure}`);
