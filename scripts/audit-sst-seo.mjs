@@ -1,6 +1,12 @@
 // Regressão de conteúdo técnico e SEO para as páginas de LTCAT, eSocial e perícias.
 import { readFile } from 'node:fs/promises';
 
+try {
+  if (!process.env.PUBLIC_SITE_ORIGIN && typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile('.env');
+  }
+} catch {}
+
 const origin = process.env.PUBLIC_SITE_ORIGIN?.replace(/\/+$/, '');
 const indexing = process.env.PUBLIC_ALLOW_INDEXING;
 const cases = [

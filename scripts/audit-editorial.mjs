@@ -1,6 +1,12 @@
 // Regression checks for AJN's public SEO metadata and editorial service catalog.
 import { readFile } from 'node:fs/promises';
 
+try {
+  if (!process.env.PUBLIC_SITE_ORIGIN && typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile('.env');
+  }
+} catch {}
+
 const failures = [];
 const check = (condition, message) => {
   if (!condition) failures.push(message);

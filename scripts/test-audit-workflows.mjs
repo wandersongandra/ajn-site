@@ -62,14 +62,16 @@ test('bloqueia interpolação direta de dados de PR e segredos em comandos shell
 
 test('impede remover ou limitar verificações obrigatórias de todas as PRs', async () => {
 	for (const file of ['quality.yml', 'codeql.yml', 'gitleaks.yml', 'dependency-review.yml']) {
-		const source = await readFile(`.github/workflows/${file}`, 'utf8');
+		const rawSource = await readFile(`.github/workflows/${file}`, 'utf8');
+		const source = rawSource.replaceAll('\r\n', '\n');
 		assert.deepEqual(auditWorkflowSource(source, file), []);
 		const removedTrigger = source.replace('  pull_request:\n', '');
 		assert.match(auditWorkflowSource(removedTrigger, file).join('\n'), /precisa executar em pull_request/);
 		const pathsFiltered = source.replace('  pull_request:\n', "  pull_request:\n    paths: ['src/**']\n");
 		assert.match(auditWorkflowSource(pathsFiltered, file).join('\n'), /não pode filtrar pull_request/);
 	}
-	const quality = await readFile('.github/workflows/quality.yml', 'utf8');
+	const rawQuality = await readFile('.github/workflows/quality.yml', 'utf8');
+	const quality = rawQuality.replaceAll('\r\n', '\n');
 	const branchFiltered = quality.replace('  pull_request:\n', '  pull_request:\n    branches: [staging]\n');
 	assert.match(auditWorkflowSource(branchFiltered, 'quality.yml').join('\n'), /não pode filtrar pull_request/);
 	const conditionalJob = quality.replace('  validate:\n', "  validate:\n    if: github.ref == 'refs/heads/main'\n");
@@ -78,9 +80,11 @@ test('impede remover ou limitar verificações obrigatórias de todas as PRs', a
 	assert.match(auditWorkflowSource(removedAudit, 'quality.yml').join('\n'), /etapa obrigatória.*audit:security/);
 	const persistedCheckout = quality.replace('          persist-credentials: false\n', '');
 	assert.match(auditWorkflowSource(persistedCheckout, 'quality.yml').join('\n'), /checkout deve remover credenciais/);
-	const dependency = await readFile('.github/workflows/dependency-review.yml', 'utf8');
+	const rawDependency = await readFile('.github/workflows/dependency-review.yml', 'utf8');
+	const dependency = rawDependency.replaceAll('\r\n', '\n');
 	assert.match(auditWorkflowSource(dependency.replace('        run: npm audit --audit-level=high\n', ''), 'dependency-review.yml').join('\n'), /etapa obrigatória.*npm audit/);
-	const gitleaks = await readFile('.github/workflows/gitleaks.yml', 'utf8');
+	const rawGitleaks = await readFile('.github/workflows/gitleaks.yml', 'utf8');
+	const gitleaks = rawGitleaks.replaceAll('\r\n', '\n');
 	assert.match(auditWorkflowSource(gitleaks.replace(/^\s+uses: gitleaks\/gitleaks-action@.*$/m, ''), 'gitleaks.yml').join('\n'), /ação de segurança obrigatória.*gitleaks/);
 });
 

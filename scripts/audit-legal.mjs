@@ -1,6 +1,12 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
+try {
+  if (!process.env.PUBLIC_SITE_ORIGIN && typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile('.env');
+  }
+} catch {}
+
 const issues = [];
 const expect = (ok, note) => { if (!ok) issues.push(note); };
 const remoteFontHosts = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);

@@ -1,6 +1,12 @@
 // A-004: valida origem e política de indexação da saída estática da CI.
 import { readFile } from 'node:fs/promises';
 
+try {
+  if (!process.env.PUBLIC_SITE_ORIGIN && typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile('.env');
+  }
+} catch {}
+
 const origin = process.env.PUBLIC_SITE_ORIGIN?.replace(/\/+$/, '');
 const indexing = process.env.PUBLIC_ALLOW_INDEXING;
 const issues = [];

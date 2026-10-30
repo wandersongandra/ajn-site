@@ -33,6 +33,8 @@ private/
 .playwright-cli/
 output/
 .tmp-og-test/
+artifacts/
+docs/audits/2026-10-20-auditoria-extrema/
 
 # Phase 2 visual QA screenshots
 tests/visual/screenshots/
