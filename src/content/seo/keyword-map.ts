@@ -151,7 +151,8 @@ export const keywordMap = {
 		primaryKeyword: 'PPCIP',
 		secondaryKeywords: ['PPCIP', 'AVCB', 'CLCB', 'segurança contra incêndio'],
 		intent: 'comercial',
-		title: 'Projeto PPCIP de combate a incêndio e pânico | AJN',
+		title: 'PPCIP: projeto contra incêndio e regularização | AJN',
+		heading: 'PPCIP: projetos de prevenção e combate a incêndio',
 		description: 'Projetos PPCIP e documentação de segurança contra incêndio e pânico, incluindo regularização e renovação de AVCB/CLCB conforme a edificação.',
 	},
 	'/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros': {
