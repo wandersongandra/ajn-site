@@ -4,7 +4,7 @@ export const servicePage = {
   slug: 'projetos-de-combate-a-incendio-e-panico-ppcip',
   path: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip',
   title: 'Projetos de Combate a Incêndio e Pânico - PPCIP - AJN Consultoria e Engenharia',
-  description: 'Projetos PPCIP e documentação de segurança contra incêndio e pânico, incluindo regularização e renovação de AVCB/CLCB conforme a edificação.',
+  "description": "Projetos PPCIP e documentação de segurança contra incêndio e pânico, incluindo regularização e renovação de AVCB/CLCB conforme a edificação.",
   heading: 'Projetos de combate a incêndio e pânico (PPCIP)',
   image: '/images/content/services/projetos-de-combate-a-incendio-e-panico-ppcip.webp',
   imageAlt: 'Projetos de Combate a Incêndio e Pânico - PPCIP',
