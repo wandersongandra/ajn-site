@@ -1,73 +1,67 @@
 import type { MarketingContent } from '../types';
 
 export const elaboracaoPgrPcmso = {
-	slug: 'elaboracao-pgr-pcmso',
-	path: '/elaboracao-pgr-pcmso',
-	title: 'Elaboração de pgr e pcmso - AJN Consultoria e Engenharia',
-	description: 'Elaboração de pgr e pcmso é essencial para empresas que buscam assegurar a segurança e a saúde de seus colaboradores, bem como estar conforme as normas regulamentadoras.',
-	heading: 'Elaboração de pgr e pcmso',
-	images: [
-		{ src: '/images/content/marketing/elaboracao-pgr-pcmso/elaboracao-pgr-pcmso-01.webp', alt: 'Elaboração de pgr e pcmso' },
-		{ src: '/images/content/marketing/elaboracao-pgr-pcmso/elaboracao-pgr-pcmso-02.webp', alt: 'Elaboração de pgr e pcmso' },
-		{ src: '/images/content/marketing/elaboracao-pgr-pcmso/elaboracao-pgr-pcmso-03.webp', alt: 'Elaboração de pgr e pcmso' },
-	],
-	sections: [
-		{
-			heading: 'elaboração de pgr e pcmso: A Importância da Prevenção de Riscos e Saúde Ocupacional',
-			paragraphs: [
-				{ segments: ['A ', { bold: true, text: 'elaboração de pgr e pcmso' }, ' é fundamental para empresas que buscam assegurar a segurança e o bem-estar de seus colaboradores, bem como estar conforme as normas regulamentadoras.'] },
-				'Esses programas, quando integrados de forma eficiente, proporcionam uma visão abrangente das condições de trabalho, permitindo a identificação e controle de riscos, além de promover a saúde ocupacional dos funcionários.',
-				'Neste artigo, vamos explorar a importância da elaboração do PGR e PCMSO, destacando como esses programas podem contribuir para a gestão preventiva e a qualidade de vida no ambiente de trabalho.',
-			],
-		},
-		{
-			heading: 'A Importância do Programa de Gerenciamento de Riscos (PGR)',
-			paragraphs: [
-				'O Programa de Gerenciamento de Riscos (PGR) tem como objetivo identificar, avaliar e controlar os riscos presentes no ambiente de trabalho, visando prevenir acidentes e doenças ocupacionais.',
-				'A elaboração do PGR envolve a análise detalhada dos processos, atividades e instalações da empresa, identificando os perigos e estabelecendo medidas de controle adequadas.',
-				'Ao implementar um PGR eficiente, a empresa demonstra seu compromisso com a segurança dos colaboradores, além de cumprir com as exigências legais estabelecidas pelas normas regulamentadoras.',
-				'A integração do PGR com outras ferramentas de gestão, como o PCMSO, permite uma abordagem mais abrangente na identificação e controle de riscos, contribuindo para a melhoria contínua das condições de trabalho e a redução de acidentes.',
-				'Além disso, o PGR auxilia na conscientização dos colaboradores sobre os riscos existentes em seu ambiente de trabalho, promovendo uma cultura de segurança e prevenção.',
-			],
-		},
-		{
-			heading: 'A Relevância do Programa de Controle Médico de Saúde Ocupacional (PCMSO)',
-			paragraphs: [
-				'O Programa de Controle Médico de Saúde Ocupacional (PCMSO) é responsável por promover a saúde dos trabalhadores, por meio da realização de exames médicos periódicos, monitoramento da saúde ocupacional e orientações sobre prevenção de doenças relacionadas ao trabalho.',
-				'A elaboração do PCMSO envolve a definição de protocolos para exames admissionais, periódicos, demissionais e de retorno ao trabalho, promovendo a detecção precoce de possíveis problemas de saúde e a adoção de medidas preventivas.',
-				'Ao integrar o PCMSO com o PGR, a empresa consegue estabelecer uma abordagem mais completa em relação à saúde e segurança dos colaboradores.',
-				'A realização de exames médicos periódicos, aliada à identificação e controle de riscos, contribui para a promoção da qualidade de vida no trabalho e a prevenção de doenças ocupacionais.',
-				'Além disso, o PCMSO permite o acompanhamento da saúde dos funcionários ao longo do tempo, possibilitando a identificação de possíveis impactos das condições de trabalho na saúde dos colaboradores.',
-			],
-		},
-		{
-			heading: 'elaboração de pgr e pcmso: Benefícios e Vantagens',
-			paragraphs: [
-				{ segments: ['A integração entre a ', { bold: true, text: 'elaboração de pgr e pcmso' }, ' traz uma série de benefícios para as empresas, contribuindo para a gestão preventiva e a promoção da saúde ocupacional.'] },
-				'Ao unir esses programas, a empresa consegue ter uma visão mais ampla das condições de trabalho, identificando de forma mais eficiente os riscos e adotando medidas de controle adequadas.',
-				'A integração entre PGR e PCMSO também facilita o planejamento operacional da empresa, permitindo a adoção de ações mais assertivas em relação à segurança e saúde dos colaboradores.',
-				'Além disso, a união desses programas favorece a conformidade com as normas regulamentadoras, promovendo que a empresa esteja em dia com suas obrigações legais e evitando possíveis penalidades.',
-			],
-		},
-		{
-			heading: 'Segurança e Saúde Ocupacional como Prioridades Empresariais',
-			paragraphs: [
-				{ segments: ['A ', { bold: true, text: 'elaboração de pgr e pcmso' }, ' é essencial para empresas que buscam assegurar a segurança e a saúde de seus colaboradores, bem como promover um ambiente de trabalho mais seguro e saudável.'] },
-				'A integração entre esses programas permite uma abordagem mais abrangente em relação à prevenção de riscos e à promoção da saúde ocupacional, contribuindo para a melhoria contínua das condições de trabalho e o bem-estar dos funcionários.',
-				{ segments: ['A AJN Consultoria e Engenharia, empresa especializada em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA), destaca-se como referência na ', { bold: true, text: 'elaboração de pgr e pcmso' }, ', oferecendo suporte técnico personalizado para empresas que buscam fortalecer sua gestão preventiva.'] },
-				'Com uma equipe qualificada e focada em soluções sob medida, a AJN se posiciona como uma parceira estratégica na construção de ambientes de trabalho mais seguros e saudáveis.',
-			],
-			subsections: [{
-				heading: 'Não deixe a segurança e a saúde dos colaboradores em segundo plano.',
-				paragraphs: [
-					{ segments: ['Invista na ', { bold: true, text: 'elaboração de pgr e pcmso' }, ' e promova um ambiente de trabalho mais seguro, saudável e produtivo!'] },
-					'Entre em contato com a AJN Consultoria e Engenharia e proporcione a segurança e a saúde dos seus colaboradores!',
-				],
-			}] ,
-		},
-		{
-			heading: 'Para saber mais sobre Elaboração de pgr e pcmso',
-			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
-		},
-	],
+  slug: 'elaboracao-pgr-pcmso',
+  path: '/elaboracao-pgr-pcmso',
+  title: 'Elaboração de PGR e PCMSO para empresas | AJN',
+  description: 'Solicite avaliação para elaboração de PGR e PCMSO. Entenda os documentos, as responsabilidades técnicas e os dados necessários ao orçamento.',
+  heading: 'Elaboração de PGR e PCMSO para empresas',
+  images: [
+    { src: '/images/content/marketing/elaboracao-pgr-pcmso/elaboracao-pgr-pcmso-01.webp', alt: 'Elaboração de PGR e PCMSO' },
+    { src: '/images/content/marketing/elaboracao-pgr-pcmso/elaboracao-pgr-pcmso-02.webp', alt: 'Elaboração de PGR e PCMSO' },
+    { src: '/images/content/marketing/elaboracao-pgr-pcmso/elaboracao-pgr-pcmso-03.webp', alt: 'Elaboração de PGR e PCMSO' },
+  ],
+  sections: [
+    {
+      heading: 'Do levantamento de riscos ao planejamento da saúde ocupacional',
+      paragraphs: [
+        'A elaboração de PGR e PCMSO envolve frentes técnicas diferentes, mas relacionadas. O PGR organiza a identificação de perigos, a avaliação dos riscos ocupacionais e as medidas de prevenção. O PCMSO utiliza essas informações para orientar o acompanhamento médico da saúde dos trabalhadores.',
+        'A AJN avalia a demanda e delimita, na proposta, os levantamentos, documentos, visitas e atividades de acompanhamento necessários. A responsabilidade pelo conteúdo médico do PCMSO permanece com o profissional legalmente habilitado.',
+      ],
+    },
+    {
+      heading: 'Etapas consideradas na definição do escopo',
+      paragraphs: [
+        'O trabalho começa pelo conhecimento das atividades da empresa. O tipo de operação, os riscos presentes e a documentação disponível interferem nas etapas e no prazo da entrega.',
+      ],
+      lists: [{ items: [
+        'Levantamento de estabelecimentos, setores, funções, processos e documentos existentes.',
+        'Identificação e avaliação dos riscos, com organização do inventário e do plano de ação do PGR.',
+        'Articulação entre as informações de riscos e o planejamento médico do PCMSO, respeitando as atribuições profissionais.',
+        'Definição dos documentos a entregar, responsabilidades, revisões e eventual acompanhamento contratado.',
+      ] }],
+    },
+    {
+      heading: 'PGR, PCMSO e as normas aplicáveis',
+      paragraphs: [
+        'A NR-1 estabelece os requisitos de gerenciamento de riscos ocupacionais e do PGR. Desde 26 de maio de 2026, o capítulo 1.5 atualizado inclui expressamente os fatores de risco psicossociais relacionados ao trabalho entre os aspectos do gerenciamento de riscos. A avaliação deve observar as atividades e a organização do trabalho.',
+        'A NR-7 orienta o PCMSO e os exames ocupacionais, considerados os riscos identificados e classificados pelo PGR. A indicação de exames e condutas clínicas não deve ser feita por um modelo genérico ou fora da responsabilidade médica.',
+        { segments: [
+          'Para entender a função de cada documento, leia ',
+          { text: 'como PGR e PCMSO se relacionam', href: '/elaboracao-do-pgr-pcmso/' },
+          '. Consulte também a ',
+          { text: 'página oficial do PGR', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr/' },
+          ' e a ',
+          { text: 'NR-7 no Ministério do Trabalho e Emprego', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-7-nr-7' },
+          '.',
+        ] },
+      ],
+    },
+    {
+      heading: 'O que enviar para receber uma proposta',
+      paragraphs: [
+        'Informe o CNPJ ou ramo de atividade, o endereço ou município dos estabelecimentos, o número de trabalhadores, as funções exercidas e os documentos de SST e saúde ocupacional já disponíveis. Descreva também a urgência da demanda e eventuais mudanças nas atividades.',
+        'A partir dessas informações, a AJN poderá avaliar a necessidade de levantamentos adicionais e apresentar os serviços previstos, sem prometer uma entrega padronizada para operações diferentes.',
+        { segments: [
+          'Solicite a avaliação pela ',
+          { text: 'página de contato', href: '/contato/' },
+          ' ou veja os serviços específicos de ',
+          { text: 'PGR', href: '/elaboracao-pgr/' },
+          ' e ',
+          { text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
+          '.',
+        ] },
+      ],
+    },
+  ],
 } as const satisfies MarketingContent;
