@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import '../styles/campaign-chrome.css';
 import SocialFloat from '../components/SocialFloat.astro';
 import { site } from '../data/home';
 import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
@@ -78,7 +79,7 @@ const websiteSchema = {
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
 		<meta name="robots" content={robotsDirective} />
-		<meta name="theme-color" content="#4CAF50" />
+		<meta name="theme-color" content="#121212" />
 		<meta name="author" content={site.name} />
 		<link rel="canonical" href={canonicalUrl} />
 		<link rel="preload" as="font" type="font/woff2" href="/fonts/archivo-latin-700.woff2" crossorigin />
@@ -103,7 +104,7 @@ const websiteSchema = {
 		<script type="application/ld+json" set:html={serializeJsonLd([organizationSchema, websiteSchema])} />
 		<title>{title}</title>
 	</head>
-	<body>
+	<body class="campaign-preview">
 		<a class="skip-link" href="#conteudo-principal">Ir para o conteúdo principal</a>
 		<Header />
 		<main id="conteudo-principal" tabindex="-1"><slot /></main>

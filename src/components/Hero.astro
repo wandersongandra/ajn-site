@@ -1,12 +1,21 @@
 ---
 import { hero } from '../data/home';
+
+const titleAccent = 'projetos de engenharia.';
+const titleLead = hero.title.endsWith(titleAccent) ? hero.title.slice(0, -titleAccent.length) : hero.title;
+const titleMark = hero.title.endsWith(titleAccent) ? titleAccent : '';
 ---
 
 <section class="hero" style={`--hero-image: url('${hero.image}')`} aria-labelledby="hero-title">
+	<div class="hero__stage" aria-hidden="true">
+		<span class="hero__ring"></span>
+		<span class="hero__disc"></span>
+		<span class="hero__grain"></span>
+	</div>
 	<div class="site-shell hero__content">
 		<div class="hero__main">
 			<p class="hero__eyebrow">{hero.eyebrow}</p>
-			<h1 id="hero-title">{hero.title}</h1>
+			<h1 id="hero-title">{titleMark ? <>{titleLead}<span class="hero__accent">{titleMark}</span></> : hero.title}</h1>
 			<p class="hero__lead">{hero.description}</p>
 			<div class="hero__actions">
 				<a class="button" href="/contato">Solicitar atendimento</a>

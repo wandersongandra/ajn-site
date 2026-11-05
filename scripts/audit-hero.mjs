@@ -17,7 +17,7 @@ const section = html.match(/<section\b[^>]*class="hero"[^>]*>[\s\S]*?<\/section>
 check(Boolean(section), 'Hero da home não foi gerado.');
 check((html.match(/<h1\b/g) ?? []).length === 1, 'A página precisa de apenas um H1.');
 check(section.includes('id="hero-title"'), 'H1 do hero sem identificador.');
-check(/Consultoria em segurança do trabalho, laudos e projetos de engenharia\./.test(section),
+check(/Consultoria em segurança do trabalho, laudos e\s*(?:<span\b[^>]*>)?projetos de engenharia\./.test(section),
 	'H1 específico de serviços não foi renderizado.');
 check(/PGR, PCMSO, ASOs, eSocial, inspeções e projetos técnicos para empresas\./.test(section),
 	'Texto de apoio deve mencionar serviços documentados.');

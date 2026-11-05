@@ -1,0 +1,188 @@
+/* Prévia da campanha Black Friday. O cabeçalho, os botões e o rodapé
+   acompanham o carvão, o verde e o dourado da faixa. O conteúdo das
+   páginas internas continua claro para a leitura longa. */
+
+.campaign-preview {
+	--campaign-charcoal: #121212;
+	--campaign-green: #2fce45;
+	--campaign-green-deep: #26b33a;
+	--campaign-gold: #f5c518;
+	--campaign-ink: #f4f4f4;
+}
+
+.campaign-preview ::selection {
+	color: #101410;
+	background: var(--campaign-gold);
+}
+
+.campaign-preview .button {
+	border-color: var(--campaign-green);
+	color: #101410;
+	background: var(--campaign-green);
+	font-weight: 700;
+}
+
+.campaign-preview .button:hover {
+	border-color: var(--campaign-green-deep);
+	color: #101410;
+	background: var(--campaign-green-deep);
+}
+
+#site-header {
+	background: var(--campaign-charcoal, #121212);
+	border-bottom: 1px solid rgb(255 255 255 / 10%);
+	box-shadow: none;
+}
+
+#site-header .navigation-list > li > a:not(.training-link),
+#site-header .navigation-item__group > a {
+	color: var(--campaign-ink, #f4f4f4);
+}
+
+#site-header .navigation-list > li > a:not(.training-link)::after,
+#site-header .navigation-item__group > a::after {
+	background: var(--campaign-gold, #f5c518);
+}
+
+#site-header .navigation-list > li > a:not(.training-link):hover,
+#site-header .navigation-list > li > a:not(.training-link):focus-visible,
+#site-header .navigation-list > li > a:not(.training-link)[aria-current='page'],
+#site-header .navigation-item__group > a:hover,
+#site-header .navigation-item__group > a:focus-visible,
+#site-header .navigation-item__group > a[aria-current='page'] {
+	color: var(--campaign-gold, #f5c518);
+}
+
+#site-header .submenu-toggle {
+	color: var(--campaign-gold, #f5c518);
+}
+
+#site-header .submenu-toggle:hover,
+#site-header .submenu-toggle[aria-expanded='true'] {
+	background: rgb(245 197 24 / 12%);
+}
+
+#site-header .has-submenu > .submenu {
+	border-color: rgb(47 206 69 / 35%);
+	background: #1a1a1a;
+	box-shadow: 0 16px 32px rgb(0 0 0 / 35%);
+}
+
+#site-header .submenu > li > a {
+	color: var(--campaign-ink, #f4f4f4);
+	background: transparent;
+}
+
+#site-header .submenu > li > a:hover,
+#site-header .submenu > li > a:focus-visible,
+#site-header .submenu > li > a[aria-current='page'] {
+	color: var(--campaign-gold, #f5c518);
+	background: rgb(47 206 69 / 14%);
+}
+
+#site-header .navigation-list__action > a.training-link {
+	border-color: var(--campaign-green, #2fce45);
+	border-radius: 999px;
+	color: #101410 !important;
+	background: var(--campaign-green, #2fce45);
+}
+
+#site-header .navigation-list__action > a.training-link:hover,
+#site-header .navigation-list__action > a.training-link:focus-visible {
+	border-color: var(--campaign-green-deep, #26b33a);
+	color: #101410 !important;
+	background: var(--campaign-green-deep, #26b33a);
+}
+
+#site-header a:focus-visible,
+#site-header button:focus-visible {
+	outline: 3px solid var(--campaign-gold, #f5c518);
+	outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+	#site-header .menu-toggle {
+		border-color: rgb(47 206 69 / 45%);
+		color: var(--campaign-green, #2fce45);
+		background: #1a1a1a;
+	}
+
+	#site-header .primary-navigation {
+		border-color: rgb(47 206 69 / 35%);
+		border-top: 3px solid var(--campaign-green, #2fce45);
+		background: #161616;
+		box-shadow: 0 18px 36px rgb(0 0 0 / 40%);
+	}
+
+	#site-header .navigation-list > li > a:not(.training-link):hover,
+	#site-header .navigation-list > li > a[aria-current='page'],
+	#site-header .navigation-item__group > a:hover,
+	#site-header .navigation-item__group > a[aria-current='page'] {
+		color: var(--campaign-gold, #f5c518);
+		background: rgb(245 197 24 / 10%);
+	}
+
+	#site-header .submenu-toggle {
+		border-color: rgb(47 206 69 / 35%);
+	}
+
+	#site-header .has-submenu > .submenu {
+		border-left: 2px solid var(--campaign-green, #2fce45);
+		background: #101010;
+	}
+
+	#site-header .submenu > li > a {
+		background: transparent;
+	}
+}
+
+.campaign-preview .site-footer {
+	background: #121212;
+	border-top: 4px solid var(--campaign-green, #2fce45);
+}
+
+.campaign-preview .site-footer .footer__logo {
+	filter: none;
+}
+
+.campaign-preview .site-footer .footer__company-name > span,
+.campaign-preview .site-footer .footer__menu h2,
+.campaign-preview .site-footer .footer__contact h2,
+.campaign-preview .site-footer .footer__social-column h2 {
+	color: var(--campaign-gold, #f5c518);
+}
+
+.campaign-preview .site-footer .footer__button {
+	border-color: var(--campaign-green, #2fce45);
+	border-radius: 999px;
+	color: #101410;
+	background: var(--campaign-green, #2fce45);
+}
+
+.campaign-preview .site-footer .footer__button:hover {
+	border-color: var(--campaign-green-deep, #26b33a);
+	color: #101410;
+	background: var(--campaign-green-deep, #26b33a);
+}
+
+.campaign-preview .site-footer .footer__brand-link:focus-visible,
+.campaign-preview .site-footer .footer__menu a:focus-visible,
+.campaign-preview .site-footer .footer__contact > a:focus-visible,
+.campaign-preview .site-footer .footer__button:focus-visible,
+.campaign-preview .site-footer .footer__social a:focus-visible,
+.campaign-preview .site-footer .footer__privacy-control:focus-visible {
+	outline-color: var(--campaign-gold, #f5c518);
+}
+
+.campaign-preview .site-footer .copyright-footer {
+	border-top-color: rgb(47 206 69 / 28%);
+	background: #0c0c0c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.campaign-preview .button,
+	.campaign-preview .site-footer .footer__button,
+	#site-header .navigation-list__action > a.training-link {
+		transition: none;
+	}
+}

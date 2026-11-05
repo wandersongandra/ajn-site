@@ -1,0 +1,493 @@
+/* Home da prévia: carvão texturizado, verde AJN, branco e dourado.
+   Carrega depois dos estilos editoriais para vencer o visual claro
+   sem apagar as salvaguardas de tipografia e de layout. */
+
+.home-page {
+	--campaign-charcoal: #101010;
+	--campaign-raised: #1b1b1b;
+	--campaign-green: #2fce45;
+	--campaign-green-deep: #26b33a;
+	--campaign-gold: #f5c518;
+	--campaign-ink: #f7f7f5;
+	--campaign-muted: #d5d5d5;
+	--campaign-grain:
+		radial-gradient(rgb(255 255 255 / 5.5%) 0.65px, transparent 0.75px),
+		radial-gradient(rgb(0 0 0 / 35%) 0.65px, transparent 0.75px);
+	color: var(--campaign-ink);
+	background: var(--campaign-charcoal);
+}
+
+.campaign-preview main:has(.home-page) {
+	background: #101010;
+}
+
+.home-page .section-title,
+.home-page .hero__content h1,
+.home-page .hero__panel-title,
+.home-page .solutions .service-card h3,
+.home-page .home-sector-card h3,
+.home-page .workflow__step h3,
+.home-page .ajn-measure-home__copy h2,
+.home-page .instagram-highlights__heading h2,
+.home-page .instagram-highlights__body h3 {
+	font-family: var(--font-display);
+}
+
+.home-page .section-title { color: var(--campaign-ink); }
+
+.home-page .home-section-heading__eyebrow,
+.home-page .instagram-highlights__eyebrow,
+.home-page .ajn-measure-home__copy > span,
+.home-page .hero__eyebrow,
+.home-page .hero__panel-kicker {
+	display: inline-block;
+	width: fit-content;
+	max-width: 100%;
+	padding-bottom: 3px;
+	border-bottom: 3px solid var(--campaign-gold);
+	color: var(--campaign-gold);
+	font-family: var(--font-display);
+	font-weight: 700;
+	letter-spacing: .14em;
+}
+
+.home-page .hero__eyebrow { display: inline-block !important; }
+
+.home-page .hero__accent,
+.home-page .campaign-accent { color: var(--campaign-green); }
+
+.home-page .home-section-heading > p:last-child,
+.home-page .solutions .home-services-heading__intro,
+.home-page .home-sectors__heading > p:not(.home-section-heading__eyebrow),
+.home-page .workflow__intro {
+	color: var(--campaign-muted);
+}
+
+/* Hero: fotografia preservada sob o carvão, com os círculos da campanha. */
+.home-page .hero { background-color: #101010; }
+
+.home-page .hero::after {
+	background: linear-gradient(100deg, rgb(16 16 16 / 94%) 0%, rgb(14 14 14 / 88%) 46%, rgb(12 12 12 / 74%) 100%);
+}
+
+.home-page .hero__stage {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.home-page .hero__ring,
+.home-page .hero__disc {
+	position: absolute;
+	display: block;
+	border-radius: 50%;
+}
+
+.home-page .hero__ring {
+	top: -16%;
+	right: 7%;
+	width: min(30vw, 300px);
+	aspect-ratio: 1;
+	border: 22px solid var(--campaign-green);
+	transform-origin: 62% 62%;
+}
+
+.home-page .hero__disc {
+	right: -6%;
+	bottom: -34%;
+	width: min(48vw, 540px);
+	aspect-ratio: 1;
+	background: var(--campaign-green);
+}
+
+.home-page .hero__grain {
+	position: absolute;
+	inset: 0;
+	opacity: .45;
+	background-image: var(--campaign-grain);
+	background-position: 0 0, 1px 2px;
+	background-size: 3px 3px, 5px 5px;
+	mix-blend-mode: overlay;
+}
+
+.home-page .hero__content { z-index: 3; }
+
+.home-page .hero__content h1,
+.home-page .hero__lead { color: var(--campaign-ink); }
+
+.home-page .hero__actions > .button {
+	border-radius: 999px;
+	font-family: var(--font-display);
+	font-weight: 700;
+}
+
+.home-page .hero__actions > .button:first-child {
+	border-color: var(--campaign-green);
+	color: #101410;
+	background: var(--campaign-green);
+}
+
+.home-page .hero__actions > .button:first-child:hover {
+	border-color: var(--campaign-green-deep);
+	color: #101410;
+	background: var(--campaign-green-deep);
+}
+
+.home-page .hero__actions > .button--outline {
+	border-color: rgb(255 255 255 / 78%);
+	color: #fff;
+	background: transparent;
+}
+
+.home-page .hero__actions > .button--outline:hover {
+	border-color: var(--campaign-gold);
+	color: #101410;
+	background: var(--campaign-gold);
+}
+
+.home-page .hero__actions > .button:focus-visible {
+	outline: 3px solid var(--campaign-gold);
+	outline-offset: 4px;
+}
+
+.home-page .hero__panel {
+	border: 1px solid rgb(47 206 69 / 34%);
+	border-left: 3px solid var(--campaign-gold);
+	border-radius: 18px;
+	background: rgb(16 16 16 / 82%);
+	box-shadow: 0 18px 40px rgb(0 0 0 / 28%);
+}
+
+.home-page .hero__panel-title,
+.home-page .hero__panel-item-title { color: #fff; }
+
+.home-page .hero__panel-item-detail { color: var(--campaign-muted); }
+
+.home-page .hero__panel li { border-top-color: rgb(255 255 255 / 12%); }
+
+/* Serviços */
+.home-page .solutions {
+	position: relative;
+	overflow: hidden;
+	border-top: 0;
+	background-color: #101010;
+	background-image: var(--campaign-grain);
+	background-position: 0 0, 1px 2px;
+	background-size: 3px 3px, 5px 5px;
+}
+
+.home-page .solutions::before,
+.home-page .solutions::after {
+	position: absolute;
+	border-radius: 50%;
+	content: '';
+	pointer-events: none;
+}
+
+.home-page .solutions::before {
+	display: block;
+	top: -210px;
+	right: -160px;
+	width: 280px;
+	height: 280px;
+	border: 26px solid var(--campaign-green);
+	transform-origin: 70% 70%;
+}
+
+.home-page .solutions::after {
+	bottom: -160px;
+	left: -110px;
+	width: 340px;
+	height: 340px;
+	background: var(--campaign-green);
+}
+
+.home-page .solutions .site-shell { position: relative; z-index: 1; }
+
+.home-page .solutions .home-section-heading__eyebrow { color: var(--campaign-gold); }
+
+.home-page .solutions .home-services-heading .section-title { color: #fff; }
+
+.home-page .solutions .service-card {
+	border-color: rgb(47 206 69 / 38%);
+	background: var(--campaign-raised);
+	box-shadow: none;
+}
+
+.home-page .solutions .service-card h3 { color: #fff; }
+
+.home-page .solutions .service-card p { color: var(--campaign-muted); }
+
+.home-page .solutions .service-card .service-card__link { color: var(--campaign-green); }
+
+.home-page .home-service-card__link:hover .service-card__link,
+.home-page .home-service-card__link:focus-visible .service-card__link { color: var(--campaign-gold); }
+
+.home-page .home-service-card__link:focus-visible {
+	outline: 3px solid var(--campaign-gold);
+	outline-offset: -4px;
+}
+
+.home-page .home-services-footer .home-text-link {
+	padding: 12px 22px;
+	border-radius: 999px;
+	color: #101410;
+	background: var(--campaign-green);
+	font-family: var(--font-display);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.home-page .home-services-footer .home-text-link:hover {
+	color: #101410;
+	background: var(--campaign-green-deep);
+	text-decoration: none;
+}
+
+.home-page .home-services-footer .home-text-link:focus-visible {
+	outline: 3px solid var(--campaign-gold);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+	.home-page .solutions .service-card:hover,
+	.home-page .solutions .service-card:focus-within {
+		border-color: var(--campaign-green);
+		box-shadow: 0 16px 34px rgb(0 0 0 / 28%);
+	}
+}
+
+/* Medições */
+.home-page .ajn-measure-home {
+	background: #101010;
+	color: var(--campaign-ink);
+}
+
+.home-page .ajn-measure-home__copy h2 { color: #fff; }
+
+.home-page .ajn-measure-home__copy p { color: var(--campaign-muted); }
+
+.home-page .ajn-measure-home__photo {
+	border-radius: 18px;
+	box-shadow: 0 0 0 8px #101010, 0 0 0 12px var(--campaign-green);
+}
+
+.home-page .ajn-measure-home__links a:first-child {
+	border-radius: 999px;
+	color: #101410;
+	background: var(--campaign-green);
+	font-weight: 700;
+}
+
+.home-page .ajn-measure-home__links a:first-child:hover { background: var(--campaign-green-deep); }
+
+.home-page .ajn-measure-home__links a:last-child { color: var(--campaign-gold); }
+
+.home-page .ajn-measure-home__links a:focus-visible {
+	outline: 3px solid var(--campaign-gold);
+	outline-offset: 3px;
+}
+
+/* Setores */
+.home-page .home-sectors {
+	border-top-color: rgb(47 206 69 / 24%);
+	border-bottom-color: rgb(47 206 69 / 24%);
+	background: #141414;
+}
+
+.home-page .home-sectors__heading h2 { color: #fff; }
+
+.home-page .home-sectors__link {
+	color: var(--campaign-gold);
+	border-bottom-color: var(--campaign-gold);
+}
+
+.home-page .home-sectors__link:hover {
+	color: #fff;
+	border-bottom-color: #fff;
+}
+
+.home-page .home-sectors__link:focus-visible {
+	outline: 2px solid var(--campaign-gold);
+	outline-offset: 5px;
+}
+
+.home-page .home-sector-card {
+	border-color: rgb(47 206 69 / 32%);
+	background: var(--campaign-raised);
+	box-shadow: none;
+}
+
+.home-page .home-sector-card h3 { color: #fff; }
+
+.home-page .home-sector-card p { color: var(--campaign-muted); }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+	.home-page .home-sector-card:hover {
+		border-color: var(--campaign-green);
+		background: #202020;
+		box-shadow: 0 14px 30px rgb(0 0 0 / 24%);
+	}
+}
+
+/* Clientes: logotipos sobre uma base clara para a marca continuar legível. */
+.home-page .clients {
+	border-top-color: rgb(47 206 69 / 24%);
+	border-bottom-color: rgb(47 206 69 / 24%);
+	background: #101010;
+}
+
+.home-page .clients .section-title { color: #fff; }
+
+.home-page .home-client-logo img {
+	background: #fff;
+	border-radius: 16px;
+}
+
+.home-page .home-clients-pause { color: var(--campaign-ink); }
+
+.home-page .home-clients-pause:hover,
+.home-page .home-clients-pause:focus-visible {
+	color: #101410;
+	background: var(--campaign-gold);
+}
+
+/* Instagram. O estilo do componente é escopado pelo Astro; o ancestral extra vence essa especificidade. */
+.home-page .instagram-highlights.instagram-highlights {
+	background-color: #101010;
+	background-image: var(--campaign-grain);
+	background-position: 0 0, 1px 2px;
+	background-size: 3px 3px, 5px 5px;
+}
+
+.home-page .instagram-highlights .instagram-highlights__heading h2 { color: #fff; }
+
+.home-page .instagram-highlights .instagram-highlights__heading p:not(.instagram-highlights__eyebrow) { color: var(--campaign-muted); }
+
+.home-page .instagram-highlights .instagram-highlights__controls button {
+	border-color: var(--campaign-green);
+	color: var(--campaign-ink);
+	background: #1a1a1a;
+}
+
+.home-page .instagram-highlights .instagram-highlights__controls button:hover {
+	border-color: var(--campaign-gold);
+	color: #101410;
+	background: var(--campaign-gold);
+}
+
+.home-page .instagram-highlights .instagram-highlights__controls button:focus-visible,
+.home-page .instagram-highlights .instagram-highlights__link:focus-visible {
+	outline: 3px solid var(--campaign-gold);
+	outline-offset: 3px;
+}
+
+.home-page .instagram-highlights .instagram-highlights__profile { color: var(--campaign-gold); }
+
+.home-page .instagram-highlights .instagram-highlights__card {
+	border-color: rgb(47 206 69 / 32%);
+	background: var(--campaign-raised);
+}
+
+.home-page .instagram-highlights .instagram-highlights__link { color: var(--campaign-ink); }
+
+.home-page .instagram-highlights .instagram-highlights__top,
+.home-page .instagram-highlights .instagram-highlights__action { border-color: rgb(255 255 255 / 12%); }
+
+.home-page .instagram-highlights .instagram-highlights__index { color: var(--campaign-green); }
+
+.home-page .instagram-highlights .instagram-highlights__kind {
+	border-color: rgb(47 206 69 / 45%);
+	color: var(--campaign-green);
+}
+
+.home-page .instagram-highlights .instagram-highlights__category,
+.home-page .instagram-highlights .instagram-highlights__action { color: var(--campaign-gold); }
+
+.home-page .instagram-highlights .instagram-highlights__body h3 { color: #fff; }
+
+.home-page .instagram-highlights .instagram-highlights__body p,
+.home-page .instagram-highlights .instagram-highlights__note { color: var(--campaign-muted); }
+
+.home-page .instagram-highlights .instagram-highlights__media { background: #141414; }
+
+/* Processo */
+.home-page .differentials {
+	border-top: 1px solid rgb(47 206 69 / 24%);
+	background: #101010;
+}
+
+.home-page .differentials .section-title { color: #fff; }
+
+.home-page .workflow__step {
+	border-top-color: var(--campaign-green);
+	border-right-color: rgb(47 206 69 / 28%);
+	background: transparent;
+}
+
+.home-page .workflow__step::before { background: var(--campaign-gold); }
+
+.home-page .workflow__step-number {
+	color: var(--campaign-green);
+	font-family: var(--font-display);
+}
+
+.home-page .workflow__step h3 { color: #fff; }
+
+.home-page .workflow__step p { color: var(--campaign-muted); }
+
+@media (hover: hover) and (pointer: fine) {
+	.home-page .workflow__step:hover {
+		border-top-color: var(--campaign-gold);
+		background: rgb(47 206 69 / 8%);
+	}
+
+	.home-page .workflow__step:hover::before { background: #fff; }
+}
+
+.home-page a:focus-visible { outline-color: var(--campaign-gold); }
+
+@media (max-width: 768px) {
+	.home-page .hero::after {
+		background-image: linear-gradient(100deg, rgb(16 16 16 / 94%), rgb(14 14 14 / 88%));
+	}
+
+	.home-page .hero__ring {
+		top: -70px;
+		right: -46px;
+		width: 160px;
+		border-width: 14px;
+	}
+
+	.home-page .hero__disc {
+		right: -110px;
+		bottom: -120px;
+		width: 220px;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.home-page .hero__ring,
+	.home-page .solutions::before {
+		animation: campaign-ring-sway 16s ease-in-out infinite;
+	}
+}
+
+@keyframes campaign-ring-sway {
+	0%, 100% { transform: rotate(0deg); }
+	50% { transform: rotate(16deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.home-page .hero__ring,
+	.home-page .hero__disc,
+	.home-page .solutions::before,
+	.home-page .solutions::after,
+	.home-page .service-card,
+	.home-page .home-sector-card {
+		animation: none;
+		transform: none;
+	}
+}
