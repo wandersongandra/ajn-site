@@ -66,7 +66,7 @@ const availablePosts = posts.map((post) => ({
 
 <section class="section instagram-highlights" aria-labelledby="instagram-highlights-title">
   <div class="site-shell">
-    <div class="instagram-highlights__heading">
+    <div class="instagram-highlights__heading" data-reveal>
       <div>
         <p class="instagram-highlights__eyebrow">Registros de campo e conteúdos técnicos</p>
         <h2 id="instagram-highlights-title">Acompanhe a AJN na prática</h2>
@@ -82,7 +82,7 @@ const availablePosts = posts.map((post) => ({
     </div>
     <div class="instagram-highlights__rail" id="ajn-instagram-posts" role="region" aria-label="Publicações selecionadas do Instagram da AJN" tabindex="0">
       {availablePosts.map((post, index) => (
-        <article class="instagram-highlights__card">
+        <article class="instagram-highlights__card" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
           <a href={post.href} class="instagram-highlights__link" data-ig-outbound data-instagram-id={post.id} data-instagram-kind={post.kind} target="_blank" rel="noopener noreferrer">
             {post.localCover && (
               <div class="instagram-highlights__media">

@@ -179,10 +179,22 @@
 	background: #0c0c0c;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+	#site-header .navigation-list__action > a.training-link {
+		animation: campaign-chrome-glow 3.2s ease-in-out infinite;
+	}
+}
+
+@keyframes campaign-chrome-glow {
+	0%, 100% { box-shadow: 0 0 0 0 rgb(47 206 69 / 35%); }
+	50% { box-shadow: 0 0 0 7px rgb(47 206 69 / 0%), 0 0 18px rgb(47 206 69 / 55%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.campaign-preview .button,
 	.campaign-preview .site-footer .footer__button,
 	#site-header .navigation-list__action > a.training-link {
 		transition: none;
+		animation: none;
 	}
 }
