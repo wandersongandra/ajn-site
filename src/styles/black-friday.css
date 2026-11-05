@@ -1,0 +1,115 @@
+/* Faixa estática da Black Friday. Sem animação. Só aparece com .bf-banner no HTML. */
+#site-header .bf-banner {
+	--bf-gold: #e6b325;
+	color: var(--text-on-action);
+	background: var(--ink);
+	font-family: var(--font-body);
+}
+
+#site-header .bf-banner__inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	min-height: 46px;
+	padding-block: 8px;
+}
+
+#site-header .bf-banner__copy {
+	display: flex;
+	align-items: center;
+	flex: 1 1 280px;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+	min-width: 0;
+	margin: 0;
+}
+
+#site-header .bf-banner__label {
+	flex: 0 0 auto;
+	padding-bottom: 1px;
+	border-bottom: 2px solid var(--bf-gold);
+	color: var(--text-on-action);
+	font-family: var(--font-display);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	line-height: 1.25;
+}
+
+#site-header .bf-banner__line {
+	color: var(--text-inverse);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.4;
+}
+
+#site-header .bf-banner__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	min-height: 40px;
+	padding: 8px 16px;
+	border: 1px solid var(--brand-action);
+	border-radius: 999px;
+	color: var(--text-on-action);
+	background: var(--brand-action);
+	box-shadow: 0 0 0 1px rgb(255 255 255 / 16%);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+#site-header .bf-banner__cta:hover,
+#site-header .bf-banner__cta:focus-visible {
+	color: var(--text-on-action);
+	background: var(--brand-action-hover);
+	border-color: var(--brand-action-hover);
+	transform: none;
+}
+
+#site-header .bf-banner a:focus-visible {
+	outline: 3px solid var(--text-on-action);
+	outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+	#site-header .bf-banner__inner {
+		align-items: stretch;
+		padding-block: 10px;
+	}
+
+	#site-header .bf-banner__copy {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	#site-header .bf-banner__cta {
+		width: 100%;
+		min-height: 44px;
+	}
+}
+
+/* O menu mobile abre abaixo do cabeçalho inteiro, já com a faixa. */
+@media (max-width: 1100px) {
+	#site-header:has(.bf-banner) .primary-navigation {
+		max-height: min(calc(100dvh - 200px), 640px);
+	}
+}
+
+@media (max-width: 576px) {
+	#site-header:has(.bf-banner) .primary-navigation {
+		max-height: min(calc(100dvh - 230px), 640px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#site-header .bf-banner a {
+		transition: none;
+	}
+}
