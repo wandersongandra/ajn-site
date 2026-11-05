@@ -1,52 +1,69 @@
 import type { MarketingContent } from '../types';
 
 export const servicosPcmso = {
-	slug: "servicos-pcmso", path: "/servicos-pcmso",
-	title: "Serviços de pcmso - AJN Consultoria e Engenharia",
-	description: "Serviços de pcmso pretendem identificar e prevenir possíveis doenças relacionadas ao ambiente de trabalho, promovendo a conformidade legal e melhorando...",
-	heading: "Serviços de pcmso",
-	images: [
-		{ src: "/images/content/marketing/pcmso-preco/pcmso-preco-02.webp", alt: "Serviços de pcmso" },
-		{ src: "/images/content/marketing/pcmso-preco/pcmso-preco-03.webp", alt: "Serviços de pcmso" },
-		{ src: "/images/content/marketing/empresa-pcmso/empresa-pcmso-03.webp", alt: "Serviços de pcmso" },
-	],
-	sections: [
-		{ heading: "serviços de pcmso: Mantenha a saúde de seus colaboradores em dia", paragraphs: [
-			"A segurança do trabalho é um tema crucial para qualquer empresa que se preocupa com o bem-estar de seus funcionários.",
-			{ segments: ["No ramo de engenharia, a AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, destaca-se por oferecer serviços especializados em", { bold: true, text: "serviços de pcmso" }, ", Segurança, Meio Ambiente e Saúde (QSMS) há mais de 8 anos."] },
-			{ segments: ["Localizada em Belo Horizonte, MG, a empresa se destaca pela excelência na prestação de", { bold: true, text: "serviços de pcmso" }, ", como projetos de Segurança contra incêndios para obtenção de AVCB/CLCB em edificações comerciais, residenciais e industriais de diversos portes."] },
-			"A empresa se destaca pela abrangência em medidas de saúde e segurança no ambiente de trabalho, incluindo projetos de segurança contra incêndio para a obtenção de licenças AVCB e CLCB.",
-			{ segments: ["Além disso, a AJN Consultoria e Engenharia oferece uma gama de", { bold: true, text: "serviços de pcmso" }, "que incluem prevenção e combate a incêndios, segurança ocupacional, consultoria ambiental, certificações, treinamentos em NRs, mobilização de equipe, entre outros."] }
-		]
-		},
-		{ heading: "Por que serviços de pcmso são essenciais para sua empresa?", paragraphs: [
-			"O Programa de Controle Médico de Saúde Ocupacional (PCMSO) é uma ferramenta fundamental para garantir a saúde e bem-estar dos colaboradores de uma empresa.",
-			{ segments: [{ bold: true, text: "Serviços de pcmso" }, "pretendem identificar e prevenir possíveis doenças relacionadas ao ambiente de trabalho, promovendo a conformidade legal e melhorando continuamente as condições laborais."] },
-			"Dessa forma, contribui para o aumento da produtividade e do bem-estar dos trabalhadores. A AJN Consultoria e Engenharia oferece um serviço completo de PCMSO, abrangendo desde a elaboração até a implementação e acompanhamento do programa.",
-			"Com a especialização da equipe da empresa, é possível assegurar que sua organização atenda a todas as exigências legais relacionadas à saúde ocupacional, garantindo a proteção da saúde de seus colaboradores."
-		]
-		},
-		{ heading: "Vantagens de contar com os serviços de pcmso da AJN Consultoria e Engenharia", paragraphs: [
-			{ segments: ["Ao optar pelos", { bold: true, text: "serviços de pcmso" }, "da AJN Consultoria e Engenharia, sua empresa terá acesso a uma série de benefícios, tais como:"] }
-		]
-, lists: [
-			{ items: [
-				"Saúde e bem-estar dos colaboradores: o PCMSO contribui para a promoção da saúde e prevenção de doenças ocupacionais, garantindo um ambiente de trabalho mais seguro e saudável.",
-				"Conformidade legal: a empresa estará conforme as normas regulamentadoras, evitando possíveis sanções e penalidades.",
-				"Melhoria da produtividade: colaboradores saudáveis e seguros tendem a ser mais produtivos e engajados com suas atividades."
-			] }
-		]
-, subsections: [
-			{ heading: "Entre em contato e garanta a segurança e saúde de sua equipe", paragraphs: [
-				{ segments: ["Agora que você conhece a importância dos", { bold: true, text: "serviços de pcmso" }, "oferecidos pela AJN Consultoria e Engenharia, não deixe de investir na segurança e saúde de seus colaboradores."] },
-				"Entre em contato conosco para saber mais sobre como podemos ajudar a sua empresa a manter um ambiente de trabalho seguro e saudável."
-			]
-			}
-		]
-		},
-		{ heading: "Para saber mais sobre Serviços de pcmso", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
-	],
+  slug: 'servicos-pcmso',
+  path: '/servicos-pcmso',
+  title: 'Serviços de PCMSO: planejamento e gestão documental | AJN',
+  description: 'Saiba o que avaliar ao contratar serviços de PCMSO: riscos da atividade, exames ocupacionais, ASOs, documentos e responsabilidades técnicas.',
+  heading: 'Serviços de PCMSO: o que verificar antes de contratar',
+  images: [
+    { src: '/images/content/marketing/pcmso-preco/pcmso-preco-02.webp', alt: 'Serviços de PCMSO' },
+    { src: '/images/content/marketing/pcmso-preco/pcmso-preco-03.webp', alt: 'Serviços de PCMSO' },
+    { src: '/images/content/marketing/empresa-pcmso/empresa-pcmso-03.webp', alt: 'Serviços de PCMSO' },
+  ],
+  sections: [
+    {
+      heading: 'O que está incluído em um serviço de PCMSO?',
+      paragraphs: [
+        'O Programa de Controle Médico de Saúde Ocupacional (PCMSO) é previsto na NR-7 e deve considerar os riscos ocupacionais identificados e classificados pelo PGR. Seu escopo depende das funções exercidas, das exposições presentes e das necessidades de acompanhamento da saúde dos trabalhadores.',
+        'Ao contratar um serviço, é importante separar a responsabilidade médica pelo PCMSO das atividades administrativas de agendamento, controle de prazos e organização documental. A proposta deve deixar claro o que será realizado e por quais profissionais.',
+      ],
+    },
+    {
+      heading: 'Informações necessárias para planejar o atendimento',
+      paragraphs: [
+        'Antes de solicitar um orçamento, reúna dados sobre os estabelecimentos e as atividades. Isso evita propostas baseadas apenas na quantidade de trabalhadores, sem considerar o contexto ocupacional.',
+      ],
+      lists: [{ items: [
+        'Relação de funções, quantidade de trabalhadores e locais de prestação do serviço.',
+        'PGR e informações de riscos ocupacionais disponíveis, com alterações recentes nos processos de trabalho.',
+        'Situação atual do PCMSO, dos ASOs e dos exames ocupacionais previstos.',
+        'Necessidade de acompanhamento de prazos, organização documental ou apoio à gestão do serviço.',
+      ] }],
+    },
+    {
+      heading: 'Exames ocupacionais, ASOs e sigilo médico',
+      paragraphs: [
+        'A NR-7 prevê exames admissionais, periódicos, de retorno ao trabalho, de mudança de riscos ocupacionais e demissionais, conforme as regras aplicáveis. Os exames complementares dependem de avaliação médica e dos riscos da atividade.',
+        'O ASO registra o resultado da avaliação ocupacional prevista. Dados clínicos e prontuários devem permanecer sob acesso restrito dos profissionais autorizados; a gestão administrativa não precisa receber informações médicas além das necessárias ao processo.',
+        { segments: [
+          'Consulte o serviço de ',
+          { text: 'PCMSO e ASOs da AJN', href: '/servicos/pcmso-e-asos/' },
+          ' para conhecer a frente de atendimento.',
+        ] },
+      ],
+    },
+    {
+      heading: 'Quando revisar as informações do programa',
+      paragraphs: [
+        'Mudanças nas atividades, nos processos, nas exposições ou nos resultados da vigilância de saúde podem exigir reavaliação. A organização deve manter a comunicação entre quem gerencia os riscos e o responsável médico pelo PCMSO.',
+        { segments: [
+          'Entenda também a ',
+          { text: 'integração entre PGR e PCMSO', href: '/elaboracao-do-pgr-pcmso/' },
+          '.',
+        ] },
+      ],
+    },
+    {
+      heading: 'Peça uma avaliação para sua empresa',
+      paragraphs: [
+        'A AJN está sediada em Belo Horizonte, MG, e avalia a disponibilidade de atendimento conforme a cidade e o serviço necessário. Envie a atividade da empresa, o número de trabalhadores e a situação atual dos documentos para delimitar a proposta.',
+        { segments: [
+          'Para apresentar a demanda, ',
+          { text: 'fale com a AJN', href: '/contato/' },
+          '.',
+        ] },
+      ],
+    },
+  ],
 } as const satisfies MarketingContent;
