@@ -1,0 +1,214 @@
+/* Faixa da Black Friday. O movimento fica só aqui: brilho do botão,
+   reflexo no rótulo dourado e pulso dos arcos. O restante do site não entra. */
+#site-header .bf-banner {
+	--bf-charcoal: #121212;
+	--bf-green: #2fce45;
+	--bf-green-deep: #26b33a;
+	--bf-gold: #f5c518;
+	--bf-ink: #101410;
+	position: relative;
+	color: var(--text-on-action);
+	background: var(--bf-charcoal);
+	font-family: var(--font-body);
+	box-shadow: inset 0 -4px 0 var(--bf-green);
+}
+
+#site-header .bf-banner__shapes {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+#site-header .bf-banner__shapes::before,
+#site-header .bf-banner__shapes::after {
+	content: '';
+	position: absolute;
+	border-radius: 50%;
+}
+
+#site-header .bf-banner__shapes::before {
+	top: -86px;
+	right: -36px;
+	width: 148px;
+	height: 148px;
+	border: 18px solid var(--bf-green);
+	transform-origin: 70% 70%;
+	animation: bf-ring 5.5s ease-in-out infinite;
+}
+
+#site-header .bf-banner__shapes::after {
+	bottom: -52px;
+	left: -36px;
+	width: 96px;
+	height: 96px;
+	background: var(--bf-green);
+	animation: bf-disc 5.5s ease-in-out infinite;
+}
+
+#site-header .bf-banner__inner {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px 28px;
+	min-height: 84px;
+	padding-block: 14px;
+}
+
+#site-header .bf-banner__copy {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	flex: 1 1 auto;
+	gap: 6px;
+	min-width: 0;
+	margin: 0;
+}
+
+#site-header .bf-banner__label {
+	padding-bottom: 2px;
+	border-bottom: 3px solid var(--bf-gold);
+	color: var(--bf-gold);
+	background-image: linear-gradient(100deg, var(--bf-gold) 0 28%, #fff6c4 42%, #fff 50%, #fff6c4 58%, var(--bf-gold) 72% 100%);
+	background-size: 220% 100%;
+	background-repeat: no-repeat;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	font-family: var(--font-display);
+	font-size: 20px;
+	font-weight: 700;
+	letter-spacing: .12em;
+	line-height: 1.05;
+	animation: bf-gold-shimmer 2.8s ease-in-out infinite;
+}
+
+#site-header .bf-banner__line {
+	max-width: 68ch;
+	color: var(--text-on-action);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.35;
+}
+
+#site-header .bf-banner__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	min-height: 48px;
+	padding: 12px 22px;
+	border: 0;
+	border-radius: 999px;
+	color: var(--bf-ink);
+	background: var(--bf-green);
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+	animation: bf-cta-glow 1.8s ease-in-out infinite;
+}
+
+#site-header .bf-banner__cta:hover,
+#site-header .bf-banner__cta:focus-visible {
+	color: var(--bf-ink);
+	background: var(--bf-green-deep);
+	transform: none;
+}
+
+#site-header .bf-banner a:focus-visible {
+	outline: 3px solid var(--bf-gold);
+	outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+	#site-header .bf-banner__inner {
+		flex-direction: column;
+		align-items: stretch;
+		min-height: 0;
+		padding-block: 16px;
+	}
+
+	#site-header .bf-banner__copy {
+		flex: 0 1 auto;
+	}
+
+	#site-header .bf-banner__label {
+		font-size: 17px;
+		letter-spacing: .1em;
+	}
+
+	#site-header .bf-banner__line {
+		font-size: 15px;
+	}
+
+	#site-header .bf-banner__cta {
+		width: 100%;
+		min-height: 48px;
+	}
+}
+
+/* O menu mobile abre abaixo do cabeçalho inteiro, já com a faixa. */
+@media (max-width: 1100px) {
+	#site-header:has(.bf-banner) .primary-navigation {
+		max-height: min(calc(100dvh - 190px), 640px);
+	}
+}
+
+@media (max-width: 720px) {
+	#site-header:has(.bf-banner) .primary-navigation {
+		max-height: min(calc(100dvh - 270px), 640px);
+	}
+}
+
+@keyframes bf-cta-glow {
+	0%, 100% { box-shadow: 0 0 0 0 rgb(47 206 69 / 45%), 0 0 10px rgb(47 206 69 / 35%); }
+	50% { box-shadow: 0 0 0 7px rgb(47 206 69 / 0%), 0 0 26px rgb(47 206 69 / 85%); }
+}
+
+@keyframes bf-gold-shimmer {
+	0%, 12% { background-position: 100% 0; }
+	48%, 100% { background-position: 0% 0; }
+}
+
+@keyframes bf-ring {
+	0%, 100% { transform: rotate(0deg); }
+	50% { transform: rotate(28deg); }
+}
+
+@keyframes bf-disc {
+	0%, 100% { opacity: 1; }
+	50% { opacity: .55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#site-header .bf-banner__cta,
+	#site-header .bf-banner__label,
+	#site-header .bf-banner__shapes::before,
+	#site-header .bf-banner__shapes::after,
+	#site-header .bf-banner a {
+		animation: none;
+		transition: none;
+	}
+
+	#site-header .bf-banner__label {
+		color: var(--bf-gold);
+		background-image: none;
+		-webkit-text-fill-color: var(--bf-gold);
+	}
+
+	#site-header .bf-banner__cta {
+		box-shadow: none;
+	}
+
+	#site-header .bf-banner__shapes::before {
+		transform: none;
+	}
+
+	#site-header .bf-banner__shapes::after {
+		opacity: 1;
+	}
+}
