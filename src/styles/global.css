@@ -2848,3 +2848,10 @@ h3 { font-size: var(--type-h3); font-weight: var(--font-weight-emphasis); letter
 .contact-form__status[data-state="error"] { color: #842029; }
 .contact-form__status[data-state="pending"] { color: #214e34; }
 .contact-form__status:focus { outline: 3px solid #2f7d35; outline-offset: 2px; }
+
+@media (max-width: 700px) {
+	.service-detail-wp__image img {
+		max-height: 168px;
+		object-fit: cover;
+	}
+}

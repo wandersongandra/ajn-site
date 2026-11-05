@@ -660,4 +660,25 @@
 		top: -280px;
 		right: -260px;
 	}
+
+	/* A foto apoia o card; não ocupa a dobra inteira. */
+	.home-page .solutions .home-service-card__link > img {
+		width: 100%;
+		height: 104px;
+		max-height: 104px;
+		aspect-ratio: auto;
+		object-fit: cover;
+	}
+
+	.home-page .solutions .service-card__content {
+		min-height: 0;
+		padding: 14px 14px 16px;
+	}
+
+	.home-page .home-services-grid { gap: 12px; }
+
+	.home-page .ajn-measure-home__photo {
+		aspect-ratio: 16 / 8;
+		max-height: 168px;
+	}
 }
