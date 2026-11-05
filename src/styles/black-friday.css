@@ -1,5 +1,5 @@
-/* Faixa estática da Black Friday. Sem animação.
-   Paleta da campanha (carvão, verde vivo, ouro), isolada nesta faixa. */
+/* Faixa da Black Friday. O movimento fica só aqui: brilho do botão,
+   reflexo no rótulo dourado e pulso dos arcos. O restante do site não entra. */
 #site-header .bf-banner {
 	--bf-charcoal: #121212;
 	--bf-green: #2fce45;
@@ -33,6 +33,8 @@
 	width: 148px;
 	height: 148px;
 	border: 18px solid var(--bf-green);
+	transform-origin: 70% 70%;
+	animation: bf-ring 5.5s ease-in-out infinite;
 }
 
 #site-header .bf-banner__shapes::after {
@@ -41,6 +43,7 @@
 	width: 96px;
 	height: 96px;
 	background: var(--bf-green);
+	animation: bf-disc 5.5s ease-in-out infinite;
 }
 
 #site-header .bf-banner__inner {
@@ -68,11 +71,18 @@
 	padding-bottom: 2px;
 	border-bottom: 3px solid var(--bf-gold);
 	color: var(--bf-gold);
+	background-image: linear-gradient(100deg, var(--bf-gold) 0 28%, #fff6c4 42%, #fff 50%, #fff6c4 58%, var(--bf-gold) 72% 100%);
+	background-size: 220% 100%;
+	background-repeat: no-repeat;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
 	font-family: var(--font-display);
 	font-size: 20px;
 	font-weight: 700;
 	letter-spacing: .12em;
 	line-height: 1.05;
+	animation: bf-gold-shimmer 2.8s ease-in-out infinite;
 }
 
 #site-header .bf-banner__line {
@@ -99,6 +109,7 @@
 	line-height: 1.2;
 	text-decoration: none;
 	white-space: nowrap;
+	animation: bf-cta-glow 1.8s ease-in-out infinite;
 }
 
 #site-header .bf-banner__cta:hover,
@@ -153,8 +164,51 @@
 	}
 }
 
+@keyframes bf-cta-glow {
+	0%, 100% { box-shadow: 0 0 0 0 rgb(47 206 69 / 45%), 0 0 10px rgb(47 206 69 / 35%); }
+	50% { box-shadow: 0 0 0 7px rgb(47 206 69 / 0%), 0 0 26px rgb(47 206 69 / 85%); }
+}
+
+@keyframes bf-gold-shimmer {
+	0%, 12% { background-position: 100% 0; }
+	48%, 100% { background-position: 0% 0; }
+}
+
+@keyframes bf-ring {
+	0%, 100% { transform: rotate(0deg); }
+	50% { transform: rotate(28deg); }
+}
+
+@keyframes bf-disc {
+	0%, 100% { opacity: 1; }
+	50% { opacity: .55; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+	#site-header .bf-banner__cta,
+	#site-header .bf-banner__label,
+	#site-header .bf-banner__shapes::before,
+	#site-header .bf-banner__shapes::after,
 	#site-header .bf-banner a {
+		animation: none;
 		transition: none;
+	}
+
+	#site-header .bf-banner__label {
+		color: var(--bf-gold);
+		background-image: none;
+		-webkit-text-fill-color: var(--bf-gold);
+	}
+
+	#site-header .bf-banner__cta {
+		box-shadow: none;
+	}
+
+	#site-header .bf-banner__shapes::before {
+		transform: none;
+	}
+
+	#site-header .bf-banner__shapes::after {
+		opacity: 1;
 	}
 }
