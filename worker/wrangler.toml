@@ -1,0 +1,32 @@
+name = "ajn-carreiras-api"
+main = "index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "production"
+CORS_ORIGIN = "https://ajnengenharia.com.br"
+
+# Banco de dados Cloudflare D1
+[[d1_databases]]
+binding = "DB"
+database_name = "ajn-carreiras-db"
+database_id = "00000000-0000-0000-0000-000000000000" # Substituir com o ID gerado pelo wrangler d1 create
+migrations_dir = "db/migrations"
+
+# Bucket Cloudflare R2 Privado para Armazenamento de Currículos
+[[r2_buckets]]
+binding = "RESUMES_BUCKET"
+bucket_name = "ajn-carreiras-resumes-private"
+preview_bucket_name = "ajn-carreiras-resumes-preview"
+
+[env.staging]
+vars = { ENVIRONMENT = "staging", CORS_ORIGIN = "https://sienna-mongoose-223157.hostingersite.com" }
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "ajn-carreiras-db-staging"
+database_id = "staging-0000-0000-0000-000000000000"
+migrations_dir = "db/migrations"
+[[env.staging.r2_buckets]]
+binding = "RESUMES_BUCKET"
+bucket_name = "ajn-carreiras-resumes-staging"

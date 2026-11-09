@@ -1,0 +1,231 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { serializeJsonLd } from '../../../utils/site';
+import '../../../styles/carreiras.css';
+
+const title = 'Painel do Recrutador | AJN Carreiras';
+const description = 'Área restrita de gestão de recrutamento, pipeline de processos seletivos e conformidade LGPD da AJN Consultoria e Engenharia.';
+const canonicalPath = '/admin/carreiras/';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Painel do Recrutador — AJN Carreiras',
+    description: 'Sistema administrativo de gestão de processos seletivos e banco de talentos.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <header class="carreiras-header">
+        <span class="carreiras-eyebrow">Acesso Restrito</span>
+        <h1 class="carreiras-title">Portal do Recrutador — AJN Carreiras</h1>
+        <p class="carreiras-lead">
+          Gestão centralizada de processos seletivos, pipeline de recrutamento, banco de talentos e conformidade com a LGPD.
+        </p>
+      </header>
+
+      <!-- Cartão de Login Administrativo -->
+      <div class="carreiras-form-container" data-admin-login-card style="max-width: 480px; margin-inline: auto;">
+        <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+          Autenticação do Recrutador
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
+          Área protegida por sessão criptográfica e controle de acesso baseado em funções (RBAC).
+        </p>
+
+        <div class="carreiras-notice" data-login-notice role="alert"></div>
+
+        <form data-admin-login-form>
+          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+            <label class="carreiras-label" for="admin-email">E-mail Corporativo</label>
+            <input class="carreiras-input" id="admin-email" name="email" type="email" required placeholder="recrutamento@ajnengenharia.com.br" />
+          </div>
+
+          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+            <label class="carreiras-label" for="admin-password">Senha de Acesso</label>
+            <input class="carreiras-input" id="admin-password" name="password" type="password" required minlength="8" placeholder="••••••••••••" />
+          </div>
+
+          <div class="carreiras-field" data-mfa-field style="display: none; margin-bottom: 1.25rem;">
+            <label class="carreiras-label" for="admin-mfa">Código de Segundo Fator (MFA)</label>
+            <input class="carreiras-input" id="admin-mfa" name="mfaCode" type="text" maxlength="6" placeholder="000000" style="text-align: center; letter-spacing: 0.2em; font-family: monospace;" />
+          </div>
+
+          <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
+            Entrar no Painel <span aria-hidden="true">→</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Dashboard do Recrutador (Exibido após login) -->
+      <div data-admin-dashboard style="display: none;">
+        <div class="admin-header">
+          <div>
+            <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.25rem;">
+              Olá, <span data-admin-user-name>Recrutador</span>
+            </h2>
+            <div style="font-size: 0.875rem; color: var(--text-soft);">
+              Perfil ativo: <span class="carreiras-badge carreiras-badge--primary" data-admin-user-role>recruiter</span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <a class="carreiras-button carreiras-button--secondary" href="/carreiras/" target="_blank" rel="noopener noreferrer">
+              Ver Portal Público <span aria-hidden="true">↗</span>
+            </a>
+            <button class="carreiras-button carreiras-button--secondary" data-admin-logout type="button">
+              Sair
+            </button>
+          </div>
+        </div>
+
+        <!-- Abas do Dashboard -->
+        <div class="carreiras-nav-bar" style="justify-content: flex-start; margin-bottom: 2rem;">
+          <button class="carreiras-nav-link" data-admin-tab="pipeline" aria-selected="true" type="button">
+            📊 Pipeline & Kanban
+          </button>
+          <button class="carreiras-nav-link" data-admin-tab="candidates" aria-selected="false" type="button">
+            👥 Candidatos & R2
+          </button>
+          <button class="carreiras-nav-link" data-admin-tab="jobs" aria-selected="false" type="button">
+            💼 Vagas & Publicações
+          </button>
+          <button class="carreiras-nav-link" data-admin-tab="lgpd" aria-selected="false" type="button">
+            🛡️ Gestão LGPD
+          </button>
+          <button class="carreiras-nav-link" data-admin-tab="audit" aria-selected="false" type="button">
+            📜 Trilha de Auditoria
+          </button>
+        </div>
+
+        <!-- Painel 1: Pipeline & Kanban -->
+        <div data-admin-pane="pipeline">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <label for="pipeline-select" style="font-weight: 600; font-size: 0.9375rem; color: var(--ink);">
+                Selecione a vaga para visualizar:
+              </label>
+              <select class="carreiras-select" id="pipeline-select" data-pipeline-job-select style="max-width: 380px;">
+                <option value="job-eng-seguranca">Engenheiro(a) de Segurança do Trabalho</option>
+              </select>
+            </div>
+            <div style="font-size: 0.8125rem; color: var(--text-soft);">
+              💡 <em>Avaliações humanas exclusivas — triagem automatizada por IA desabilitada.</em>
+            </div>
+          </div>
+
+          <div class="pipeline-board" data-pipeline-board>
+            <!-- Colunas do Kanban renderizadas via JavaScript seguro -->
+          </div>
+        </div>
+
+        <!-- Painel 2: Candidatos & Currículos -->
+        <div data-admin-pane="candidates" style="display: none;">
+          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
+            Base de Candidatos & Banco de Talentos
+          </h3>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nome do Candidato</th>
+                  <th>Contato (E-mail / Fone)</th>
+                  <th>Localização</th>
+                  <th>Cargo / Formação</th>
+                  <th>Ações & Currículo</th>
+                </tr>
+              </thead>
+              <tbody data-candidates-tbody>
+                <!-- Preenchido via script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Painel 3: Vagas Cadastradas -->
+        <div data-admin-pane="jobs" style="display: none;">
+          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
+            Gestão de Vagas Corporativas
+          </h3>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Título da Vaga</th>
+                  <th>Departamento</th>
+                  <th>Local</th>
+                  <th>Regime</th>
+                  <th>Status</th>
+                  <th>Candidatos</th>
+                </tr>
+              </thead>
+              <tbody data-jobs-tbody>
+                <!-- Preenchido via script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Painel 4: Gestão LGPD -->
+        <div data-admin-pane="lgpd" style="display: none;">
+          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
+            Solicitações de Titulares (Artigo 18 da LGPD)
+          </h3>
+          <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1rem;">
+            A exclusão definitiva elimina todos os dados cadastrais e expurga os arquivos armazenados no bucket Cloudflare R2 Privado de forma auditável e irreversível.
+          </p>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Tipo de Solicitação</th>
+                  <th>Titular</th>
+                  <th>Data do Pedido</th>
+                  <th>Status</th>
+                  <th>Ação do DPO / Admin</th>
+                </tr>
+              </thead>
+              <tbody data-lgpd-tbody>
+                <!-- Preenchido via script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Painel 5: Trilha de Auditoria -->
+        <div data-admin-pane="audit" style="display: none;">
+          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
+            Registro Imutável de Eventos de Auditoria
+          </h3>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Ação Realizada</th>
+                  <th>Ator</th>
+                  <th>Recurso</th>
+                  <th>Endereço IP</th>
+                </tr>
+              </thead>
+              <tbody data-audit-tbody>
+                <!-- Preenchido via script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/scripts/admin-carreiras.js" defer></script>
+</BaseLayout>

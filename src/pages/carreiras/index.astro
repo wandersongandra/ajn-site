@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { INITIAL_JOB_POSTINGS } from '../../../worker/db/seed';
+import { serializeJsonLd } from '../../utils/site';
+import '../../styles/carreiras.css';
+
+const title = 'Carreiras e Vagas | AJN Consultoria e Engenharia';
+const description = 'Faça parte da equipe da AJN Consultoria e Engenharia. Conheça nossas vagas abertas em segurança do trabalho, higiene ocupacional e projetos técnicos.';
+const canonicalPath = '/carreiras/';
+
+const departments = Array.from(new Set(INITIAL_JOB_POSTINGS.map((j) => j.department)));
+const employmentTypes = Array.from(new Set(INITIAL_JOB_POSTINGS.map((j) => j.employmentType)));
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: 'https://ajnengenharia.com.br/carreiras/' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Vagas em aberto na AJN Consultoria e Engenharia',
+    numberOfItems: INITIAL_JOB_POSTINGS.length,
+    itemListElement: INITIAL_JOB_POSTINGS.map((job, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      item: {
+        '@type': 'JobPosting',
+        title: job.title,
+        description: job.description,
+        employmentType: job.employmentType === 'CLT' ? 'FULL_TIME' : 'CONTRACTOR',
+        hiringOrganization: {
+          '@type': 'Organization',
+          name: 'AJN Consultoria e Engenharia',
+          sameAs: 'https://ajnengenharia.com.br',
+        },
+        jobLocation: {
+          '@type': 'Place',
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: 'Belo Horizonte',
+            addressRegion: 'MG',
+            addressCountry: 'BR',
+          },
+        },
+      },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <header class="carreiras-header">
+        <span class="carreiras-eyebrow">Trabalhe na AJN</span>
+        <h1 class="carreiras-title">Carreiras & Oportunidades na AJN Consultoria e Engenharia</h1>
+        <p class="carreiras-lead">
+          Construa sua trajetória profissional em uma das consultorias de engenharia e segurança do trabalho mais conceituadas de Minas Gerais. Valorizamos a competência técnica, o rigor ético e o desenvolvimento contínuo.
+        </p>
+      </header>
+
+      <nav class="carreiras-nav-bar" aria-label="Navegação interna de carreiras">
+        <a class="carreiras-nav-link" href="/carreiras/" aria-current="page">Vagas Abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de Talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar Candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Acesso Recrutador</a>
+      </nav>
+
+      <section class="carreiras-filter-box" aria-label="Filtros de busca de vagas">
+        <form class="carreiras-filter-grid" data-carreiras-filters>
+          <div class="carreiras-field">
+            <label class="carreiras-label" for="filter-search">Palavra-chave</label>
+            <input class="carreiras-input" id="filter-search" name="q" type="search" placeholder="Ex: Engenheiro, Higiene, Pleno..." />
+          </div>
+
+          <div class="carreiras-field">
+            <label class="carreiras-label" for="filter-department">Área de atuação</label>
+            <select class="carreiras-select" id="filter-department" name="department">
+              <option value="">Todas as áreas</option>
+              {departments.map((d) => <option value={d.toLowerCase()}>{d}</option>)}
+            </select>
+          </div>
+
+          <div class="carreiras-field">
+            <label class="carreiras-label" for="filter-type">Regime de contratação</label>
+            <select class="carreiras-select" id="filter-type" name="type">
+              <option value="">Todos os regimes</option>
+              {employmentTypes.map((t) => <option value={t.toLowerCase()}>{t}</option>)}
+            </select>
+          </div>
+        </form>
+      </section>
+
+      <section aria-label="Lista de vagas abertas">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink);">
+            Oportunidades Disponíveis (<span data-jobs-count>{INITIAL_JOB_POSTINGS.length}</span>)
+          </h2>
+        </div>
+
+        <div class="carreiras-grid">
+          {INITIAL_JOB_POSTINGS.map((job) => (
+            <article
+              class="carreiras-card"
+              data-job-card
+              data-title={job.title}
+              data-department={job.department}
+              data-type={job.employmentType}
+              data-desc={job.description}
+            >
+              <div>
+                <div class="carreiras-card-badges">
+                  <span class="carreiras-badge carreiras-badge--primary">{job.department}</span>
+                  <span class="carreiras-badge">{job.employmentType}</span>
+                  <span class="carreiras-badge">{job.experienceLevel}</span>
+                </div>
+                <h3 class="carreiras-card-title">{job.title}</h3>
+                <p class="carreiras-card-desc">{job.description}</p>
+              </div>
+
+              <div>
+                <div class="carreiras-card-meta">
+                  <span><strong>Local:</strong> {job.location}</span>
+                  {job.salaryIsDisclosed && (
+                    <span>
+                      <strong>Faixa salarial:</strong> R$ {job.salaryMin?.toLocaleString('pt-BR')} a R$ {job.salaryMax?.toLocaleString('pt-BR')}
+                    </span>
+                  )}
+                </div>
+
+                <a class="carreiras-button carreiras-button--primary" style="width: 100%;" href={`/carreiras/${job.slug}/`}>
+                  Ver detalhes e candidatar-se <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <aside class="carreiras-callout" aria-label="Banco de talentos da AJN">
+        <div class="carreiras-callout-text">
+          <h2>Não encontrou a vaga ideal para seu perfil?</h2>
+          <p>
+            Estamos em constante expansão e cadastramos novos talentos em nosso banco contínuo para futuras oportunidades nas áreas de Segurança do Trabalho, Higiene Ocupacional, Treinamentos e Engenharia.
+          </p>
+        </div>
+        <a class="carreiras-button carreiras-button--secondary" style="background: #fff; color: var(--ink);" href="/carreiras/talentos/">
+          Cadastrar no Banco de Talentos <span aria-hidden="true">↗</span>
+        </a>
+      </aside>
+    </div>
+  </div>
+
+  <script src="/scripts/carreiras.js" defer></script>
+</BaseLayout>

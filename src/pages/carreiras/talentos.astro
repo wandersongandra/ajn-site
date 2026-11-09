@@ -1,0 +1,155 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { serializeJsonLd } from '../../utils/site';
+import '../../styles/carreiras.css';
+
+const title = 'Banco de Talentos | AJN Consultoria e Engenharia';
+const description = 'Cadastre seu currículo no Banco de Talentos da AJN Consultoria e Engenharia. Oportunidades contínuas em segurança do trabalho, engenharia e laudos.';
+const canonicalPath = '/carreiras/talentos/';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: 'https://ajnengenharia.com.br/carreiras/' },
+      { '@type': 'ListItem', position: 3, name: 'Banco de Talentos', item: 'https://ajnengenharia.com.br/carreiras/talentos/' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Banco de Talentos da AJN Consultoria e Engenharia',
+    description: 'Cadastre seu currículo profissional para oportunidades futuras em engenharia e segurança ocupacional.',
+    publisher: {
+      '@type': 'Organization',
+      name: 'AJN Consultoria e Engenharia',
+      sameAs: 'https://ajnengenharia.com.br',
+    },
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <nav class="carreiras-nav-bar" aria-label="Navegação interna de carreiras">
+        <a class="carreiras-nav-link" href="/carreiras/">← Ver Vagas Abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/" aria-current="page">Banco de Talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar Candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Acesso Recrutador</a>
+      </nav>
+
+      <header class="carreiras-header">
+        <span class="carreiras-eyebrow">Oportunidades Futuras</span>
+        <h1 class="carreiras-title">Banco de Talentos AJN Consultoria e Engenharia</h1>
+        <p class="carreiras-lead">
+          Cadastre seu currículo em nossa base de talentos. Quando novas vagas compatíveis com suas competências forem abertas, nossa equipe de recrutamento entrará em contato direto com você.
+        </p>
+      </header>
+
+      <div class="carreiras-form-container">
+        <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+          Cadastro de Currículo Profissional
+        </h2>
+        <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 2rem; text-align: center;">
+          Seus dados são protegidos conforme as diretrizes da LGPD e armazenados com segurança.
+        </p>
+
+        <div class="carreiras-notice" data-notice role="alert"></div>
+
+        <form action="/api/applications/talent-pool" method="POST" enctype="multipart/form-data" data-application-form>
+          <div class="carreiras-form-grid">
+            <div class="carreiras-field carreiras-form-full">
+              <label class="carreiras-label" for="talent-name">Nome Completo *</label>
+              <input class="carreiras-input" id="talent-name" name="fullName" type="text" required minlength="3" placeholder="Seu nome completo" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="talent-email">E-mail *</label>
+              <input class="carreiras-input" id="talent-email" name="email" type="email" required placeholder="seu.email@exemplo.com" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="talent-phone">Telefone / WhatsApp *</label>
+              <input class="carreiras-input" id="talent-phone" name="phone" type="tel" required placeholder="(31) 99999-9999" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="talent-cpf">CPF (apenas dígitos) *</label>
+              <input class="carreiras-input" id="talent-cpf" name="cpf" type="text" required placeholder="000.000.000-00" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="talent-city">Cidade *</label>
+              <input class="carreiras-input" id="talent-city" name="city" type="text" required placeholder="Ex: Belo Horizonte" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="talent-state">Estado (UF) *</label>
+              <input class="carreiras-input" id="talent-state" name="state" type="text" required maxlength="2" placeholder="MG" style="text-transform: uppercase;" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="talent-title">Área de Atuação Principal</label>
+              <input class="carreiras-input" id="talent-title" name="currentTitle" type="text" placeholder="Ex: Engenharia de Segurança, Higienista..." />
+            </div>
+
+            <div class="carreiras-field carreiras-form-full">
+              <label class="carreiras-label" for="talent-linkedin">Perfil do LinkedIn (opcional)</label>
+              <input class="carreiras-input" id="talent-linkedin" name="linkedinUrl" type="url" placeholder="https://linkedin.com/in/seuperfil" />
+            </div>
+
+            <div class="carreiras-field carreiras-form-full">
+              <label class="carreiras-label" for="talent-summary">Resumo de Experiência e Competências</label>
+              <textarea class="carreiras-textarea" id="talent-summary" name="summary" rows="4" placeholder="Descreva suas áreas de interesse, principais laudos e projetos desenvolvidos..."></textarea>
+            </div>
+
+            <div class="carreiras-field carreiras-form-full">
+              <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
+              <div class="carreiras-file-drop">
+                <label for="talent-resume" style="cursor: pointer;">
+                  <div style="font-size: 1.75rem; margin-bottom: 0.5rem;" aria-hidden="true">📄</div>
+                  <span data-file-label style="font-size: 0.875rem; color: var(--brand-action); font-weight: 500;">
+                    Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
+                  </span>
+                </label>
+                <input id="talent-resume" name="resume" type="file" required accept=".pdf,.doc,.docx" style="position: absolute; opacity: 0; width: 1px; height: 1px;" />
+              </div>
+            </div>
+
+            <div class="carreiras-field carreiras-form-full">
+              <div class="carreiras-checkbox-group">
+                <input id="talent-consent-terms" name="consentTerms" type="checkbox" value="true" required />
+                <label class="carreiras-checkbox-label" for="talent-consent-terms">
+                  Concordo com o tratamento dos meus dados pessoais pela AJN Consultoria e Engenharia exclusivamente para processos seletivos e comunicação de novas vagas, nos termos da <a href="/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e da LGPD. *
+                </label>
+              </div>
+
+              <div class="carreiras-checkbox-group">
+                <input id="talent-consent-retention" name="consentRetention" type="checkbox" value="true" checked />
+                <label class="carreiras-checkbox-label" for="talent-consent-retention">
+                  Autorizo a manutenção dos meus dados no banco de talentos por até 2 anos. Posso solicitar exclusão ou retificação a qualquer momento.
+                </label>
+              </div>
+            </div>
+
+            <div class="carreiras-form-full" style="margin-top: 1.5rem;">
+              <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
+                Cadastrar no Banco de Talentos <span aria-hidden="true">✓</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/scripts/carreiras.js" defer></script>
+</BaseLayout>

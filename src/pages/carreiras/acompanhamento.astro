@@ -1,0 +1,152 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { serializeJsonLd } from '../../utils/site';
+import '../../styles/carreiras.css';
+
+const title = 'Acompanhar Candidatura | AJN Consultoria e Engenharia';
+const description = 'Consulte o status do seu processo seletivo ou solicite a gestão dos seus dados cadastrais conforme a LGPD na AJN Consultoria e Engenharia.';
+const canonicalPath = '/carreiras/acompanhamento/';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: 'https://ajnengenharia.com.br/carreiras/' },
+      { '@type': 'ListItem', position: 3, name: 'Acompanhamento', item: 'https://ajnengenharia.com.br/carreiras/acompanhamento/' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Acompanhamento de Candidatura — AJN Carreiras',
+    description: 'Portal de consulta segura do andamento de processos seletivos e canal de atendimento LGPD aos titulares.',
+    publisher: {
+      '@type': 'Organization',
+      name: 'AJN Consultoria e Engenharia',
+      sameAs: 'https://ajnengenharia.com.br',
+    },
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <nav class="carreiras-nav-bar" aria-label="Navegação interna de carreiras">
+        <a class="carreiras-nav-link" href="/carreiras/">← Ver Vagas Abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de Talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/" aria-current="page">Acompanhar Candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Acesso Recrutador</a>
+      </nav>
+
+      <header class="carreiras-header">
+        <span class="carreiras-eyebrow">Transparência & Acompanhamento</span>
+        <h1 class="carreiras-title">Acompanhamento de Candidatura & Privacidade</h1>
+        <p class="carreiras-lead">
+          Insira seu código de acompanhamento exclusivo gerado no momento da candidatura para consultar a etapa atual do processo seletivo com total confidencialidade.
+        </p>
+      </header>
+
+      <div class="carreiras-form-container" style="margin-bottom: 3rem;">
+        <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+          Consultar Andamento da Candidatura
+        </h2>
+        <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 1.75rem; text-align: center;">
+          Formato do código: <code>AJN-2026-XXXXXX</code>
+        </p>
+
+        <div class="carreiras-notice" data-notice role="alert"></div>
+
+        <form data-tracking-form>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 240px;">
+              <label class="sr-only" for="track-code-input">Código de Acompanhamento</label>
+              <input
+                class="carreiras-input"
+                id="track-code-input"
+                name="code"
+                type="text"
+                required
+                placeholder="Ex: AJN-2026-X8K9M"
+                style="text-transform: uppercase; font-family: monospace; font-size: 1.125rem; text-align: center; letter-spacing: 0.05em;"
+              />
+            </div>
+            <button class="carreiras-button carreiras-button--primary" type="submit">
+              Consultar Status <span aria-hidden="true">🔍</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Resultado da Consulta -->
+        <div class="admin-metric-card" data-tracking-result style="display: none; margin-top: 2rem; border-top: 3px solid var(--brand-action);">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+            <div>
+              <span class="carreiras-badge carreiras-badge--primary" data-track-dept>Segurança do Trabalho</span>
+              <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-top: 0.5rem;" data-track-job>Engenheiro(a) de Segurança</h3>
+            </div>
+            <span class="carreiras-badge" data-track-status>Em andamento</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase;">Código</span>
+              <div style="font-weight: 600; font-family: monospace;" data-track-code>AJN-2026-X8K9M</div>
+            </div>
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase;">Etapa Atual</span>
+              <div style="font-weight: 600; color: var(--brand-action);" data-track-stage>Triagem & Inscrição</div>
+            </div>
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase;">Data de Envio</span>
+              <div style="font-weight: 600;" data-track-date>09/11/2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gestão de Dados Pessoais / LGPD Art. 18 -->
+      <section style="max-width: 760px; margin-inline: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-sm);">
+        <h2 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-bottom: 0.75rem;">
+          Seus Direitos como Titular de Dados (LGPD)
+        </h2>
+        <p style="font-size: 0.9375rem; line-height: 1.6; color: var(--text-soft); margin-bottom: 1.5rem;">
+          Em respeito ao Artigo 18 da Lei Geral de Proteção de Dados (Lei 13.709/2018), você pode solicitar a qualquer momento a confirmação da existência de tratamento, a portabilidade ou a <strong>exclusão definitiva</strong> dos seus dados e currículos do nosso banco.
+        </p>
+
+        <form data-lgpd-form>
+          <div class="carreiras-form-grid">
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="lgpd-email">E-mail Cadastrado *</label>
+              <input class="carreiras-input" id="lgpd-email" name="email" type="email" required placeholder="seu.email@exemplo.com" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="lgpd-cpf">CPF para Validação de Identidade *</label>
+              <input class="carreiras-input" id="lgpd-cpf" name="cpf" type="text" required placeholder="000.000.000-00" />
+            </div>
+
+            <div class="carreiras-field carreiras-form-full">
+              <label class="carreiras-label" for="lgpd-reason">Motivo da Solicitação (opcional)</label>
+              <input class="carreiras-input" id="lgpd-reason" name="reason" type="text" placeholder="Ex: Não resido mais na região / Não procuro recolocação" />
+            </div>
+
+            <div class="carreiras-form-full">
+              <button class="carreiras-button carreiras-button--secondary" style="border-color: #c62828; color: #c62828;" type="submit">
+                Solicitar Exclusão Definitiva de Dados (Art. 18 LGPD)
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <script src="/scripts/carreiras.js" defer></script>
+</BaseLayout>
