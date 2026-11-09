@@ -6,9 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initApplicationForm();
   initTrackingForm();
   initLgpdForm();
+  checkCurrentJobStatus();
 });
 
-// 1. Filtros de busca no portal de vagas
+// 1. Filtros de busca no portal de vagas com sincronização ao vivo com a API
 function initJobFilters() {
   const filterForm = document.querySelector('[data-carreiras-filters]');
   if (!filterForm) return;
@@ -23,6 +24,12 @@ function initJobFilters() {
 
     let visibleCount = 0;
     cards.forEach((card) => {
+      // Se a vaga foi marcada como encerrada na sincronização ao vivo, não exibe
+      if (card.getAttribute('data-closed') === 'true') {
+        card.style.display = 'none';
+        return;
+      }
+
       const cardTitle = (card.getAttribute('data-title') || '').toLowerCase();
       const cardDept = (card.getAttribute('data-department') || '').toLowerCase();
       const cardType = (card.getAttribute('data-type') || '').toLowerCase();
@@ -47,9 +54,73 @@ function initJobFilters() {
 
   filterForm.addEventListener('input', applyFilters);
   filterForm.addEventListener('change', applyFilters);
+
+  // Sincronização em segundo plano com a API para refletir encerramentos e novas vagas em tempo real
+  (async () => {
+    try {
+      const res = await fetch('/api/jobs');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data.jobs)) {
+        const liveSlugs = new Set(data.jobs.map((j) => j.slug));
+        cards.forEach((card) => {
+          const link = card.querySelector('a[href*="/carreiras/"]');
+          if (link) {
+            const href = link.getAttribute('href') || '';
+            const slug = href.replace(/\/+$/, '').split('/').pop();
+            if (slug && !liveSlugs.has(slug)) {
+              card.setAttribute('data-closed', 'true');
+            }
+          }
+        });
+        applyFilters();
+      }
+    } catch {
+      // Falha silenciosa de rede: preserva os cartões estáticos
+    }
+  })();
 }
 
-// 2. Formulário de Candidatura e Banco de Talentos
+// 2. Verificação de status da vaga individual ao carregar a página
+async function checkCurrentJobStatus() {
+  const form = document.querySelector('[data-application-form]');
+  if (!form) return;
+
+  const action = form.getAttribute('action') || '';
+  if (!action.includes('/jobs/')) return;
+
+  // Extrai o slug da rota /api/applications/jobs/:slug/apply
+  const match = action.match(/\/jobs\/([^/]+)\/apply/);
+  if (!match) return;
+  const slug = match[1];
+
+  try {
+    const res = await fetch(`/api/jobs/${encodeURIComponent(slug)}`);
+    if (res.status === 404 || !res.ok) {
+      const noticeBox = form.querySelector('[data-notice]');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (noticeBox) {
+        showNotice(
+          noticeBox,
+          'Atenção: Esta oportunidade foi encerrada ou preenchida e não aceita novas inscrições no momento. Você ainda pode cadastrar seu currículo em nosso Banco de Talentos.',
+          'error'
+        );
+      }
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Inscrições Encerradas';
+      }
+      const inputs = form.querySelectorAll('input, textarea, select');
+      inputs.forEach((input) => {
+        input.disabled = true;
+      });
+    }
+  } catch {
+    // Falha silenciosa de verificação preliminar
+  }
+}
+
+// 3. Formulário de Candidatura e Banco de Talentos
 function initApplicationForm() {
   const form = document.querySelector('[data-application-form]');
   if (!form) return;
@@ -113,13 +184,39 @@ function initApplicationForm() {
         if (fileLabel) {
           fileLabel.textContent = 'Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)';
         }
+      } else if (response.status === 409 && result.verificationRequired) {
+        // Exige código de verificação para alteração cadastral por CPF (P0 Item 2)
+        showNotice(
+          noticeBox,
+          result.error || 'Código de verificação necessário enviado para o e-mail cadastrado.',
+          'error'
+        );
+        let tokenInput = form.querySelector('[name="verificationToken"]');
+        if (!tokenInput) {
+          const group = document.createElement('div');
+          group.className = 'carreiras-form-group';
+          const label = document.createElement('label');
+          label.className = 'carreiras-label';
+          label.textContent = 'Código de Verificação de Titularidade (6 dígitos):';
+          tokenInput = document.createElement('input');
+          tokenInput.className = 'carreiras-input';
+          tokenInput.name = 'verificationToken';
+          tokenInput.type = 'text';
+          tokenInput.maxLength = 6;
+          tokenInput.placeholder = 'Digite o código recebido no e-mail cadastrado';
+          tokenInput.required = true;
+          group.appendChild(label);
+          group.appendChild(tokenInput);
+          form.insertBefore(group, submitBtn.parentElement);
+          tokenInput.focus();
+        }
       } else {
         showNotice(noticeBox, result.error || 'Não foi possível enviar a candidatura. Verifique os dados.', 'error');
       }
     } catch (err) {
       showNotice(noticeBox, 'Erro de comunicação com o servidor. Verifique sua conexão e tente novamente.', 'error');
     } finally {
-      if (submitBtn) {
+      if (submitBtn && !submitBtn.disabled) {
         submitBtn.disabled = false;
         submitBtn.textContent = submitBtn.getAttribute('data-orig-text') || 'Enviar Candidatura';
       }
@@ -127,7 +224,7 @@ function initApplicationForm() {
   });
 }
 
-// 3. Consulta de Candidatura por Código (Tracking)
+// 4. Consulta e Recuperação Segura de Candidatura
 function initTrackingForm() {
   const form = document.querySelector('[data-tracking-form]');
   if (!form) return;
@@ -171,6 +268,85 @@ function initTrackingForm() {
       }
     }
   });
+
+  // Fluxo de recuperação de código com verificação de posse do e-mail (P1 Item 10)
+  const recoveryForm = document.querySelector('[data-recovery-form]');
+  if (recoveryForm) {
+    const recNotice = recoveryForm.querySelector('[data-notice]');
+    const recBtn = recoveryForm.querySelector('button[type="submit"]');
+
+    recoveryForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideNotice(recNotice);
+
+      const email = recoveryForm.querySelector('[name="email"]')?.value.trim();
+      const cpf = recoveryForm.querySelector('[name="cpf"]')?.value.trim();
+      const codeInput = recoveryForm.querySelector('[name="recoveryCode"]');
+      const code = codeInput?.value.trim();
+
+      if (!email || !cpf) {
+        showNotice(recNotice, 'Preencha seu e-mail e CPF.', 'error');
+        return;
+      }
+
+      // Se o campo do código ainda não foi preenchido, dispara a solicitação de OTP
+      if (!code) {
+        if (recBtn) {
+          recBtn.disabled = true;
+          recBtn.textContent = 'Enviando código...';
+        }
+
+        try {
+          const res = await fetch('/api/applications/recover-tracking', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, cpf }),
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            showNotice(recNotice, data.message, 'success');
+            const codeGroup = recoveryForm.querySelector('[data-code-group]');
+            if (codeGroup) codeGroup.style.display = 'block';
+            if (codeInput) codeInput.focus();
+            if (recBtn) recBtn.textContent = 'Confirmar Código e Ver Candidaturas';
+          } else {
+            showNotice(recNotice, data.error || 'Não foi possível solicitar o código.', 'error');
+          }
+        } catch {
+          showNotice(recNotice, 'Erro de conexão.', 'error');
+        } finally {
+          if (recBtn) recBtn.disabled = false;
+        }
+      } else {
+        // Envia o código para confirmação segura
+        if (recBtn) {
+          recBtn.disabled = true;
+          recBtn.textContent = 'Validando código...';
+        }
+
+        try {
+          const res = await fetch('/api/applications/verify-recovery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, code }),
+          });
+          const data = await res.json();
+          if (res.ok && Array.isArray(data.applications) && data.applications.length > 0) {
+            showNotice(recNotice, `Recuperação realizada com sucesso! Código: ${data.applications[0].trackingCode}`, 'success');
+            if (resultContainer) {
+              renderTrackingResult(resultContainer, data.applications[0]);
+            }
+          } else {
+            showNotice(recNotice, data.error || 'Código incorreto ou expirado.', 'error');
+          }
+        } catch {
+          showNotice(recNotice, 'Erro de conexão ao verificar código.', 'error');
+        } finally {
+          if (recBtn) recBtn.disabled = false;
+        }
+      }
+    });
+  }
 }
 
 function renderTrackingResult(container, app) {
@@ -197,7 +373,7 @@ function renderTrackingResult(container, app) {
   container.scrollIntoView({ behavior: 'smooth' });
 }
 
-// 4. Solicitação LGPD
+// 5. Solicitação LGPD
 function initLgpdForm() {
   const form = document.querySelector('[data-lgpd-form]');
   if (!form) return;
@@ -220,7 +396,7 @@ function initLgpdForm() {
 
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Registrando solicitação LGPD...';
+      submitBtn.textContent = 'Enviando requerimento...';
     }
 
     try {
@@ -231,18 +407,19 @@ function initLgpdForm() {
       });
 
       const data = await response.json();
+
       if (response.ok && data.success) {
         showNotice(
           noticeBox,
-          `${data.message} Protocolo gerado: ${data.protocol}`,
+          'Requerimento registrado com sucesso! Nosso Encarregado de Dados (DPO) analisará a solicitação e responderá no prazo legal.',
           'success'
         );
         form.reset();
       } else {
-        showNotice(noticeBox, data.error || 'Erro ao processar solicitação.', 'error');
+        showNotice(noticeBox, data.error || 'Não foi possível registrar o requerimento. Verifique os dados.', 'error');
       }
-    } catch {
-      showNotice(noticeBox, 'Erro de conexão ao enviar solicitação.', 'error');
+    } catch (err) {
+      showNotice(noticeBox, 'Erro de conexão ao processar solicitação. Tente novamente mais tarde.', 'error');
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -252,15 +429,15 @@ function initLgpdForm() {
   });
 }
 
-function showNotice(el, msg, type) {
-  if (!el) return;
-  el.textContent = msg;
-  el.className = `carreiras-notice carreiras-notice--${type}`;
-  el.style.display = 'block';
+function showNotice(box, message, type) {
+  if (!box) return;
+  box.textContent = message;
+  box.className = `carreiras-notice carreiras-notice--${type}`;
+  box.style.display = 'block';
 }
 
-function hideNotice(el) {
-  if (!el) return;
-  el.textContent = '';
-  el.style.display = 'none';
+function hideNotice(box) {
+  if (!box) return;
+  box.style.display = 'none';
+  box.textContent = '';
 }

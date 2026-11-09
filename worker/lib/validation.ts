@@ -16,7 +16,10 @@ export const candidateSchema = z.object({
   consentTerms: z.literal(true, {
     message: 'É obrigatório aceitar o termo de consentimento e privacidade da AJN',
   }),
-  consentRetention: z.boolean().optional().default(true),
+  consentRetention: z.boolean({
+    error: 'A manifestação sobre retenção no banco de talentos deve ser explicitamente informada (sim ou não)',
+  }),
+  verificationToken: z.string().trim().optional(),
   turnstileToken: z.string().optional(),
 });
 
@@ -116,4 +119,22 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z.object({
   token: z.string().trim().min(16, 'Token de recuperação inválido'),
   newPassword: z.string().min(8, 'A nova senha deve ter no mínimo 8 caracteres'),
+});
+
+export const verifyRecoverySchema = z.object({
+  email: z.string().trim().email('E-mail inválido'),
+  code: z.string().trim().min(6, 'Código de verificação deve conter 6 dígitos').max(6),
+});
+
+export const mfaActivateSchema = z
+  .object({
+    code: z.string().trim().min(6, 'Código MFA deve ter 6 dígitos').max(6).optional(),
+    totpCode: z.string().trim().min(6, 'Código MFA deve ter 6 dígitos').max(6).optional(),
+  })
+  .refine((data) => data.code || data.totpCode, { message: 'Código MFA de 6 dígitos é obrigatório' })
+  .transform((data) => ({ code: (data.code || data.totpCode)! }));
+
+export const requestVerificationSchema = z.object({
+  cpf: z.string().trim().refine((val) => isValidCpf(val), { message: 'CPF inválido' }),
+  turnstileToken: z.string().optional(),
 });

@@ -45,8 +45,8 @@ async function handleLgpdRequest(c: any, dbFactory: (env: Env) => any, requestTy
   }
   const { email, cpf, reason, turnstileToken } = validation.data;
 
-  // Verificação antispam
-  const antispam = await verifyTurnstile(turnstileToken, c.env?.TURNSTILE_SECRET_KEY, ip);
+  // Verificação antispam fail-secure
+  const antispam = await verifyTurnstile(turnstileToken, c.env?.TURNSTILE_SECRET_KEY, ip, c.env?.ENVIRONMENT);
   if (!antispam.success) {
     return c.json({ error: antispam.error }, 400);
   }

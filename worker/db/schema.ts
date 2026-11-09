@@ -16,6 +16,8 @@ export const candidates = sqliteTable('candidates', {
   currentTitle: text('current_title'),
   summary: text('summary'),
   isTalentPool: integer('is_talent_pool', { mode: 'boolean' }).notNull().default(false),
+  emailVerificationCodeHash: text('email_verification_code_hash'),
+  emailVerificationExpiresAt: integer('email_verification_expires_at', { mode: 'timestamp' }),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
 }, (table) => [
@@ -126,6 +128,8 @@ export const jobApplications = sqliteTable('job_applications', {
   recruiterRating: integer('recruiter_rating'), // 1 a 5 estrelas - exclusivamente avaliação humana, sem triagem automatizada por IA
   recruiterNotes: text('recruiter_notes'),
   rejectionReason: text('rejection_reason'),
+  recoveryCodeHash: text('recovery_code_hash'),
+  recoveryExpiresAt: integer('recovery_expires_at', { mode: 'timestamp' }),
   appliedAt: integer('applied_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
 }, (table) => [
@@ -147,6 +151,8 @@ export const adminUsers = sqliteTable('admin_users', {
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   mfaEnabled: integer('mfa_enabled', { mode: 'boolean' }).notNull().default(false),
   mfaSecret: text('mfa_secret'), // TOTP secret cifrado
+  pendingMfaSecret: text('pending_mfa_secret'),
+  mfaRequired: integer('mfa_required', { mode: 'boolean' }).notNull().default(false),
   failedAttempts: integer('failed_attempts').notNull().default(0),
   lockedUntil: integer('locked_until', { mode: 'timestamp' }),
   resetTokenHash: text('reset_token_hash'),
@@ -190,6 +196,7 @@ export const dataConsents = sqliteTable('data_consents', {
   candidateId: text('candidate_id').notNull().references(() => candidates.id, { onDelete: 'cascade' }),
   consentType: text('consent_type').notNull(), // 'privacy_policy', 'recruitment_process', 'talent_pool_retention'
   consentVersion: text('consent_version').notNull(), // Ex: '1.0'
+  granted: integer('granted', { mode: 'boolean' }).notNull().default(true),
   ipAddress: text('ip_address'),
   userAgent: text('user_agent'),
   consentedAt: integer('consented_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),

@@ -1,4 +1,5 @@
 import * as schema from './schema';
+import { hashPassword, generateTotpSecret } from '../lib/crypto';
 import type { BaseDatabase } from '../types';
 
 export const DEFAULT_STAGES = [
@@ -46,6 +47,7 @@ export const DEFAULT_PERMISSIONS = [
   { id: 'p-vw-3', role: 'viewer', permission: 'applications:read' },
 ];
 
+// Vagas de referência técnica: iniciam estritamente como 'draft' para exigir aprovação explícita (P0 Item 6)
 export const INITIAL_JOB_POSTINGS = [
   {
     id: 'job-eng-seguranca',
@@ -68,9 +70,9 @@ export const INITIAL_JOB_POSTINGS = [
     salaryMin: 9200,
     salaryMax: 12500,
     salaryIsDisclosed: true,
-    status: 'published',
+    status: 'draft',
     openingsCount: 1,
-    publishedAt: new Date('2026-11-01T10:00:00Z'),
+    publishedAt: null,
   },
   {
     id: 'job-tec-seguranca',
@@ -80,21 +82,21 @@ export const INITIAL_JOB_POSTINGS = [
     location: 'Belo Horizonte - MG (Presencial)',
     employmentType: 'CLT',
     experienceLevel: 'Pleno',
-    description: 'Atuação em campo para inspeções de conformidade de NRs, medições preliminares de higiene ocupacional, suporte à CIPA/CIPAMIN e elaboração de relatórios técnicos de visitas.',
+    description: 'Atuação direta no acompanhamento de frentes de serviço, realização de inspeções periódicas, controle e fiscalização de EPIs/EPCs, condução de Diálogos Diários de Segurança (DDS) e suporte aos laudos de campo.',
     requirements: JSON.stringify([
-      'Curso Técnico em Segurança do Trabalho concluído com registro no MTE',
-      'Mínimo de 3 anos de experiência em rotinas industriais ou de construção civil',
-      'Conhecimento prático nas NRs 01, 05, 06, 10, 12, 18 e 35',
-      'Habilidade na condução de DDS e treinamentos normativos',
+      'Curso Técnico completo em Segurança do Trabalho com registro no MTE',
+      'Experiência prévia em ambientes industriais, construção civil ou facilities',
+      'Conhecimento prático nas NRs 01, 06, 10, 12 e 35',
+      'Habilidade com planilhas e relatórios fotográficos de não conformidade',
     ]),
     differentials: 'Certificação de instrutor de NR-35 e NR-33.',
     benefits: 'Vale Refeição, Vale Transporte, Plano Odontológico, Seguro de Vida em grupo.',
     salaryMin: 3800,
     salaryMax: 4800,
     salaryIsDisclosed: true,
-    status: 'published',
+    status: 'draft',
     openingsCount: 2,
-    publishedAt: new Date('2026-11-03T10:00:00Z'),
+    publishedAt: null,
   },
   {
     id: 'job-higienista-ocupacional',
@@ -116,29 +118,101 @@ export const INITIAL_JOB_POSTINGS = [
     salaryMin: 7500,
     salaryMax: 9800,
     salaryIsDisclosed: true,
-    status: 'published',
+    status: 'draft',
     openingsCount: 1,
-    publishedAt: new Date('2026-11-05T10:00:00Z'),
+    publishedAt: null,
   },
 ];
 
-export async function seedDatabase(db: any) {
-  // 1. Etapas
+export interface SeedOptions {
+  autoPublishJobs?: boolean;
+  adminUser?: {
+    email: string;
+    name: string;
+    password: string;
+    role?: 'super_admin' | 'recruiter' | 'viewer';
+  };
+}
+
+export async function seedDatabase(db: any, options?: SeedOptions) {
+  // 1. Etapas do pipeline
   for (const stage of DEFAULT_STAGES) {
     await db.insert(schema.recruitmentStages).values(stage).onConflictDoNothing();
   }
 
-  // 2. Permissões
+  // 2. Permissões RBAC
   for (const perm of DEFAULT_PERMISSIONS) {
     await db.insert(schema.adminPermissions).values(perm).onConflictDoNothing();
   }
 
-  // 3. Vagas iniciais
+  // 3. Vagas iniciais (somente publicadas se explicitamente solicitado em staging/testes)
   for (const job of INITIAL_JOB_POSTINGS) {
+    const finalStatus = options?.autoPublishJobs ? 'published' : 'draft';
     await db.insert(schema.jobPostings).values({
       ...job,
+      status: finalStatus,
+      publishedAt: finalStatus === 'published' ? new Date() : null,
       createdAt: new Date(),
       updatedAt: new Date(),
     }).onConflictDoNothing();
   }
+
+  // 4. Criação reproduzível do usuário inicial administrativo (P1 Item 13)
+  if (options?.adminUser) {
+    const { hash, salt } = await hashPassword(options.adminUser.password);
+    const mfaSecret = generateTotpSecret();
+
+    await db.insert(schema.adminUsers).values({
+      id: 'usr-admin-bootstrap',
+      name: options.adminUser.name,
+      email: options.adminUser.email,
+      passwordHash: hash,
+      passwordSalt: salt,
+      role: options.adminUser.role || 'super_admin',
+      isActive: true,
+      mfaEnabled: true,
+      mfaSecret,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }).onConflictDoNothing();
+
+    return {
+      adminCreated: true,
+      email: options.adminUser.email,
+      mfaSecret,
+      otpauthUri: `otpauth://totp/AJN%20Carreiras:${encodeURIComponent(options.adminUser.email)}?secret=${mfaSecret}&issuer=AJN%20Engenharia`,
+    };
+  }
+
+  return { adminCreated: false };
+}
+
+// Suporte para execução direta via CLI (npx tsx worker/db/seed.ts)
+if (process.argv[1]?.endsWith('seed.ts') || process.argv[1]?.includes('worker/db/seed')) {
+  (async () => {
+    const adminEmail = process.env.ADMIN_EMAIL || 'rh@ajnengenharia.com.br';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminPassword || adminPassword.length < 8) {
+      console.error('[ERRO DE BOOTSTRAP] É obrigatório definir ADMIN_PASSWORD com no mínimo 8 caracteres.');
+      console.error('Exemplo: ADMIN_EMAIL="rh@ajnengenharia.com.br" ADMIN_PASSWORD="<SENHA_FORTE>" npx tsx worker/db/seed.ts');
+      process.exit(1);
+    }
+
+    console.log(`[BOOTSTRAP] Iniciando seed administrativo para: ${adminEmail}...`);
+    // Em execução local fora do Worker, exibe o segredo TOTP e confirma o provisionamento
+    const { hash, salt } = await hashPassword(adminPassword);
+    const mfaSecret = generateTotpSecret();
+    const otpauth = `otpauth://totp/AJN%20Carreiras:${encodeURIComponent(adminEmail)}?secret=${mfaSecret}&issuer=AJN%20Engenharia`;
+
+    console.log('\n============================================================');
+    console.log('AJN CARREIRAS — CREDENCIAIS ADMINISTRATIVAS GERADAS');
+    console.log('============================================================');
+    console.log(`E-mail:       ${adminEmail}`);
+    console.log(`Função:       super_admin`);
+    console.log(`MFA Segredo:  ${mfaSecret}`);
+    console.log(`URI TOTP:     ${otpauth}`);
+    console.log('Adicione este segredo no Google Authenticator ou Microsoft Authenticator.');
+    console.log('============================================================\n');
+  })();
 }

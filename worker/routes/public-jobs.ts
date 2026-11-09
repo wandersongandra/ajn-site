@@ -53,6 +53,7 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
         salaryIsDisclosed: schema.jobPostings.salaryIsDisclosed,
         openingsCount: schema.jobPostings.openingsCount,
         publishedAt: schema.jobPostings.publishedAt,
+        status: schema.jobPostings.status,
       })
       .from(schema.jobPostings)
       .where(and(...conditions))

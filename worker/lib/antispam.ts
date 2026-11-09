@@ -1,15 +1,29 @@
 export async function verifyTurnstile(
   token: string | undefined,
   secretKey: string | undefined,
-  ipAddress?: string
+  ipAddress?: string,
+  environment?: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Se não houver secretKey configurada (ambiente local ou de testes), permite execução
-  if (!secretKey || secretKey === 'test' || secretKey === 'dummy_secret') {
+  const isIsolatedTest =
+    (environment === 'test' || process.env.NODE_ENV === 'test' || process.env.VITEST !== undefined) &&
+    environment !== 'production' &&
+    environment !== 'staging';
+
+  // Bypass permitido EXCLUSIVAMENTE em ambiente de teste isolado com segredo de teste
+  if (isIsolatedTest && (secretKey === 'test' || !secretKey)) {
     return { success: true };
   }
 
-  if (!token) {
-    return { success: false, error: 'Validação antispam obrigatória.' };
+  // Falha segura (Fail-Secure): Em staging ou produção, a ausência de segredo é bloqueante
+  if (!secretKey || secretKey.trim() === '' || secretKey === 'test' || secretKey === 'dummy_secret') {
+    return {
+      success: false,
+      error: 'Configuração antispam do servidor incompleta. O segredo obrigatório do Turnstile não foi configurado.',
+    };
+  }
+
+  if (!token || token.trim() === '') {
+    return { success: false, error: 'Validação antispam obrigatória. Token do Turnstile ausente.' };
   }
 
   try {

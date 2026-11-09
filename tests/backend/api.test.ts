@@ -29,7 +29,7 @@ describe('Carreiras Backend API Tests (Cloudflare Workers + Hono)', () => {
     }
 
     db = drizzle(sqlite, { schema });
-    await seedDatabase(db);
+    await seedDatabase(db, { autoPublishJobs: true });
 
     // Mock do Cloudflare R2 Bucket em memória
     mockR2Storage = new Map<string, Uint8Array>();

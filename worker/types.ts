@@ -3,6 +3,7 @@
 export interface Env {
   DB: D1Database;
   RESUMES_BUCKET: R2Bucket;
+  RATE_LIMIT_KV?: KVNamespace;
   ENVIRONMENT?: string;
   SESSION_SECRET?: string;
   TURNSTILE_SECRET_KEY?: string;

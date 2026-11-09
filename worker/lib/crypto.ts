@@ -104,7 +104,30 @@ export function isValidCpf(cpf: string): boolean {
   return rev === parseInt(clean.charAt(10), 10);
 }
 
+// Geração de segredo Base32 para TOTP (RFC 6238)
+export function generateTotpSecret(byteLength = 20): string {
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = '';
+  for (let i = 0; i < bytes.length; i++) {
+    bits += bytes[i].toString(2).padStart(8, '0');
+  }
+  let base32 = '';
+  for (let i = 0; i < bits.length; i += 5) {
+    const chunk = bits.substring(i, i + 5).padEnd(5, '0');
+    base32 += alphabet[parseInt(chunk, 2)];
+  }
+  return base32;
+}
+
 // Verificação de TOTP MFA (RFC 6238)
+export async function generateCurrentTotp(base32Secret: string): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  const currentStep = Math.floor(now / 30);
+  return generateTotpForStep(base32Secret, currentStep);
+}
+
 export async function verifyTotp(secret: string, token: string): Promise<boolean> {
   const cleanToken = token.trim();
   if (!/^\d{6}$/.test(cleanToken)) return false;

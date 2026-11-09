@@ -31,25 +31,37 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     await next();
   });
 
-  // Middleware: CORS configurável com suporte a credenciais seguras e subdomínio carreiras
+  // Middleware: CORS restrito exclusivamente a origens autorizadas (sem wildcards)
   app.use(
     '/api/*',
     cors({
       origin: (origin, c) => {
         const allowedOrigin = c.env?.CORS_ORIGIN || 'https://ajnengenharia.com.br';
         if (!origin) return allowedOrigin;
-        const trustedOrigins = [
+
+        const exactTrustedOrigins = new Set<string>([
           allowedOrigin,
           'https://ajnengenharia.com.br',
           'https://www.ajnengenharia.com.br',
           'https://carreiras.ajnengenharia.com.br',
-          'http://127.0.0.1:4321',
-          'http://localhost:4321',
-        ];
-        if (trustedOrigins.includes(origin) || origin.endsWith('.hostingersite.com')) {
+          'https://sienna-mongoose-223157.hostingersite.com',
+        ]);
+
+        const isDevOrTest =
+          c.env?.ENVIRONMENT === 'test' ||
+          c.env?.ENVIRONMENT === 'development' ||
+          process.env.NODE_ENV === 'test' ||
+          process.env.VITEST !== undefined;
+
+        if (isDevOrTest) {
+          exactTrustedOrigins.add('http://127.0.0.1:4321');
+          exactTrustedOrigins.add('http://localhost:4321');
+        }
+
+        if (exactTrustedOrigins.has(origin)) {
           return origin;
         }
-        return allowedOrigin;
+        return null;
       },
       allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

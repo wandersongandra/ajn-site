@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { INITIAL_JOB_POSTINGS } from '../../../worker/db/seed';
+import { APPROVED_JOB_POSTINGS } from '../../data/carreiras';
 import { serializeJsonLd } from '../../utils/site';
 import '../../styles/carreiras.css';
 
@@ -8,8 +8,8 @@ const title = 'Carreiras e Vagas | AJN Consultoria e Engenharia';
 const description = 'Faça parte da equipe da AJN Consultoria e Engenharia. Conheça nossas vagas abertas em segurança do trabalho, higiene ocupacional e projetos técnicos.';
 const canonicalPath = '/carreiras/';
 
-const departments = Array.from(new Set(INITIAL_JOB_POSTINGS.map((j) => j.department)));
-const employmentTypes = Array.from(new Set(INITIAL_JOB_POSTINGS.map((j) => j.employmentType)));
+const departments = Array.from(new Set(APPROVED_JOB_POSTINGS.map((j) => j.department)));
+const employmentTypes = Array.from(new Set(APPROVED_JOB_POSTINGS.map((j) => j.employmentType)));
 
 const jsonLd = [
   {
@@ -24,8 +24,8 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'Vagas em aberto na AJN Consultoria e Engenharia',
-    numberOfItems: INITIAL_JOB_POSTINGS.length,
-    itemListElement: INITIAL_JOB_POSTINGS.map((job, idx) => ({
+    numberOfItems: APPROVED_JOB_POSTINGS.length,
+    itemListElement: APPROVED_JOB_POSTINGS.map((job, idx) => ({
       '@type': 'ListItem',
       position: idx + 1,
       item: {
@@ -104,12 +104,12 @@ const jsonLd = [
       <section aria-label="Lista de vagas abertas">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
           <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink);">
-            Oportunidades Disponíveis (<span data-jobs-count>{INITIAL_JOB_POSTINGS.length}</span>)
+            Oportunidades Disponíveis (<span data-jobs-count>{APPROVED_JOB_POSTINGS.length}</span>)
           </h2>
         </div>
 
         <div class="carreiras-grid">
-          {INITIAL_JOB_POSTINGS.map((job) => (
+          {APPROVED_JOB_POSTINGS.map((job) => (
             <article
               class="carreiras-card"
               data-job-card
