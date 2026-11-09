@@ -55,5 +55,5 @@ test('keeps career routes on Hostinger PHP same-origin, no Worker redirect', () 
 	for (const expectedRule of expectedRules) {
 		assert.ok(configLines.some((line) => line === expectedRule));
 	}
-	assert.doesNotMatch(config, /carreiras\.ajnengenharia\.com\.br/);
+	assert.equal(config.includes('carreiras.ajnengenharia.com.br'), false);
 });
