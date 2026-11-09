@@ -5,12 +5,12 @@ import { eq } from 'drizzle-orm';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import * as schema from '../../worker/db/schema';
-import { createCarreirasApp } from '../../worker/index';
+import worker, { createCarreirasApp } from '../../worker/index';
 import { hashPassword, generateCurrentTotp, generateTotpSecret } from '../../worker/lib/crypto';
 import { seedDatabase } from '../../worker/db/seed';
 import { resetRateLimiterStore } from '../../worker/middleware/rate-limit';
 
-describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () => {
+describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remota)', () => {
   let sqlite: InstanceType<typeof Database>;
   let db: ReturnType<typeof drizzle<typeof schema>>;
   let app: ReturnType<typeof createCarreirasApp>;
@@ -104,15 +104,15 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     DB: {} as any,
     RESUMES_BUCKET: mockR2Bucket,
     RATE_LIMITER_DO: mockDOBinding,
-    ENVIRONMENT: 'development',
+    ENVIRONMENT: 'test',
     TURNSTILE_SECRET_KEY: 'test',
     TURNSTILE_SITE_KEY: '0x4AAAAAAAx_GATE_TEST_KEY',
     APP_URL: 'https://carreiras.ajnengenharia.com.br',
     ...overrides,
   });
 
-  // PROVA 1: Login com MFA seguido de consulta autenticada de vagas e candidatos (apenas com cookie)
-  it('Prova 1: Login com MFA seguido de consulta autenticada usando apenas Cookie HttpOnly e tolerando Bearer undefined', async () => {
+  // Fixture local: D1, R2 e Durable Object são substituídos por adaptadores de teste.
+  it('Integração local: login MFA e consultas autenticadas usando apenas Cookie HttpOnly', async () => {
     const validTotp = await generateCurrentTotp(superAdminTotpSecret);
 
     // 1. Login com credenciais e código MFA
@@ -174,8 +174,7 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     expect(Array.isArray(candidatesData.candidates)).toBe(true);
   });
 
-  // PROVA 2: Atualização da página com sessão válida (GET /me) e Gestão de Contas
-  it('Prova 2: Restauração de sessão válida em refresh (GET /me) e Gestão de Contas de Recrutadores', async () => {
+  it('Integração local: restauração de sessão em refresh e gestão de recrutadores', async () => {
     const validTotp = await generateCurrentTotp(superAdminTotpSecret);
     const loginRes = await app.request(
       '/api/admin/auth/login',
@@ -256,8 +255,7 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     expect(statusRes.status).toBe(200);
   });
 
-  // PROVA 3: Logout e expiração da sessão
-  it('Prova 3: Logout revoga sessão no banco, limpa cookie e expiração invalida acesso', async () => {
+  it('Integração local: logout revoga sessão, limpa cookie e invalida acesso', async () => {
     const validTotp = await generateCurrentTotp(superAdminTotpSecret);
     const loginRes = await app.request(
       '/api/admin/auth/login',
@@ -299,8 +297,7 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     expect(postLogoutRes.status).toBe(401);
   });
 
-  // PROVA 4: Candidatura real de teste com upload R2 e gravação D1
-  it('Prova 4: Candidatura real com upload R2 (magic bytes) e gravação atômica D1', async () => {
+  it('Integração local: candidatura com magic bytes, D1 SQLite e R2 Map', async () => {
     // 1. Cria uma vaga publicada no D1
     const [insertedJob] = await db
       .insert(schema.jobPostings)
@@ -371,8 +368,7 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     expect(mockR2Storage.has(resumeDb!.fileKey)).toBe(true);
   });
 
-  // PROVA 5: Criação de vaga no painel e acesso direto à URL
-  it('Prova 5: Criação de vaga pelo RH e acesso direto à URL com HTML e JSON-LD completos', async () => {
+  it('Integração local: criação de vaga e HTML/JSON-LD SSR', async () => {
     // 1. Login do recrutador
     const recLogin = await app.request(
       '/api/admin/auth/login',
@@ -438,8 +434,7 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     expect(html).toContain('0x4AAAAAAAx_GATE_TEST_KEY'); // Turnstile SiteKey dinâmica
   });
 
-  // PROVA 6: HTML e status HTTP verificados com JavaScript desativado
-  it('Prova 6: Status HTTP e semântica HTML corretos para vaga aberta (200), inexistente (404) e listagem (200)', async () => {
+  it('Integração local: status HTTP e SEO sem JavaScript para aberta, inexistente e listagem', async () => {
     // Vaga publicada no D1
     await db.insert(schema.jobPostings).values({
       id: 'job-sem-js',
@@ -496,17 +491,33 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     expect(listHtml).not.toContain('"@type":"JobPosting"'); // Sem JobPosting na listagem!
   });
 
-  // PROVA 7: Teste de domínio, CSP, CORS e cookies em Staging
-  it('Prova 7: Configuração de Staging com Hostinger preview em CORS, CSP estrita e Cookie SameSite', async () => {
+  it('Integração local: configuração staging canônica, CORS explícito e Cookie SameSite', async () => {
     const stagingEnv = getEnv({
       ENVIRONMENT: 'staging',
-      CORS_ORIGIN: 'https://sienna-mongoose-223157.hostingersite.com',
-      APP_URL: 'https://sienna-mongoose-223157.hostingersite.com',
+      CORS_ORIGIN: 'https://staging-ajn-carreiras-api.workers.dev',
+      CORS_ORIGINS: 'https://staging-ajn-carreiras-api.workers.dev',
+      APP_URL: 'https://staging-ajn-carreiras-api.workers.dev',
       TURNSTILE_SITE_KEY: '0x4AAAAAAAx_STAGING_KEY',
     });
 
-    // 1. CORS em preflight OPTIONS vindo da Hostinger Staging
+    // 1. CORS em preflight vindo da origem canônica do Worker
     const corsRes = await app.request(
+      '/api/jobs',
+      {
+        method: 'OPTIONS',
+        headers: {
+          Origin: 'https://staging-ajn-carreiras-api.workers.dev',
+          'Access-Control-Request-Method': 'GET',
+        },
+      },
+      stagingEnv
+    );
+    expect(corsRes.status).toBe(204);
+    expect(corsRes.headers.get('access-control-allow-origin')).toBe('https://staging-ajn-carreiras-api.workers.dev');
+    expect(corsRes.headers.get('access-control-allow-credentials')).toBe('true');
+
+    // 2. CORS rejeita origem da antiga página Hostinger e origem maliciosa
+    const legacyCorsRes = await app.request(
       '/api/jobs',
       {
         method: 'OPTIONS',
@@ -517,11 +528,21 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
       },
       stagingEnv
     );
-    expect(corsRes.status).toBe(204);
-    expect(corsRes.headers.get('access-control-allow-origin')).toBe('https://sienna-mongoose-223157.hostingersite.com');
-    expect(corsRes.headers.get('access-control-allow-credentials')).toBe('true');
+    expect(legacyCorsRes.headers.get('access-control-allow-origin')).toBeNull();
 
-    // 2. CORS rejeita origem não autorizada
+    const localCorsRes = await app.request(
+      '/api/jobs',
+      {
+        method: 'OPTIONS',
+        headers: {
+          Origin: 'http://localhost:4321',
+          'Access-Control-Request-Method': 'GET',
+        },
+      },
+      stagingEnv
+    );
+    expect(localCorsRes.headers.get('access-control-allow-origin')).toBeNull();
+
     const badCorsRes = await app.request(
       '/api/jobs',
       {
@@ -535,12 +556,15 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     );
     expect(badCorsRes.headers.get('access-control-allow-origin')).toBeNull();
 
-    // 3. Validação do Cookie de sessão gerado em Staging
+    // 3. Validação do Cookie de sessão gerado em Staging; Origin é obrigatório para POST real.
     const loginRes = await app.request(
       '/api/admin/auth/login',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: 'https://staging-ajn-carreiras-api.workers.dev',
+        },
         body: JSON.stringify({
           email: 'juliana.gate@ajnengenharia.com.br',
           password: 'RecruiterPass123!',
@@ -552,10 +576,81 @@ describe('GATE FINAL DE INTEGRAÇÃO — AJN CARREIRAS (8 Provas Exigidas)', () 
     expect(cookie).toContain('HttpOnly');
     expect(cookie).toContain('Secure');
     expect(cookie).toContain('SameSite=Strict');
+
+    // 4. Operações administrativas rejeitam CSRF sem Origin confiável.
+    const forgedRes = await app.request(
+      '/api/admin/auth/login',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: 'https://hacker-site-malicioso.com',
+        },
+        body: JSON.stringify({
+          email: 'juliana.gate@ajnengenharia.com.br',
+          password: 'RecruiterPass123!',
+        }),
+      },
+      stagingEnv
+    );
+    expect(forgedRes.status).toBe(403);
+
+    const missingOriginRes = await app.request(
+      '/api/admin/auth/login',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'juliana.gate@ajnengenharia.com.br',
+          password: 'RecruiterPass123!',
+        }),
+      },
+      stagingEnv
+    );
+    expect(missingOriginRes.status).toBe(403);
   });
 
-  // PROVA 8: Teste negativo de falha de API, D1, R2 e Turnstile
-  it('Prova 8: Testes negativos com falha de Turnstile, indisponibilidade do R2 e erro do D1', async () => {
+  it('Contrato local: Worker serve assets estáticos e não mascara 404 de API', async () => {
+    let assetFetchCalls = 0;
+    const mockAssets = {
+      fetch: async (request: Request) => {
+        assetFetchCalls += 1;
+        const pathname = new URL(request.url).pathname;
+        expect(['/styles/carreiras.css', '/carreiras/talentos/']).toContain(pathname);
+        return new Response(pathname === '/styles/carreiras.css' ? '/* careers asset */' : '<html><body>talentos</body></html>', {
+          status: 200,
+          headers: { 'Content-Type': pathname.endsWith('.css') ? 'text/css' : 'text/html' },
+        });
+      },
+    };
+
+    const assetResponse = await worker.fetch(
+      new Request('https://staging-ajn-carreiras-api.workers.dev/styles/carreiras.css'),
+      getEnv({ ENVIRONMENT: 'staging', ASSETS: mockAssets }),
+      {} as ExecutionContext
+    );
+    expect(assetResponse.status).toBe(200);
+    expect(await assetResponse.text()).toContain('careers asset');
+    expect(assetResponse.headers.get('Content-Security-Policy')).toContain("default-src 'self'");
+
+    const staticCareerResponse = await worker.fetch(
+      new Request('https://staging-ajn-carreiras-api.workers.dev/carreiras/talentos/'),
+      getEnv({ ENVIRONMENT: 'staging', ASSETS: mockAssets }),
+      {} as ExecutionContext
+    );
+    expect(staticCareerResponse.status).toBe(200);
+    expect(await staticCareerResponse.text()).toContain('talentos');
+
+    const api404Response = await worker.fetch(
+      new Request('https://staging-ajn-carreiras-api.workers.dev/api/endpoint-inexistente'),
+      getEnv({ ENVIRONMENT: 'staging', ASSETS: mockAssets }),
+      {} as ExecutionContext
+    );
+    expect(api404Response.status).toBe(404);
+    expect(assetFetchCalls).toBe(2);
+  });
+
+  it('Integração local: Turnstile, R2 e bloqueio de login falham fechados', async () => {
     // 1. Falha de Turnstile em produção/staging (sem token) -> fail-secure 400
     const turnstileFailRes = await app.request(
       '/api/applications/request-verification',

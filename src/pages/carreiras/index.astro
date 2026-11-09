@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { APPROVED_JOB_POSTINGS } from '../../data/carreiras';
 import { serializeJsonLd } from '../../utils/site';
+import { absoluteCareersUrl, careersOrigin } from '../../utils/careers';
 import '../../styles/carreiras.css';
 
 const title = 'Carreiras e Vagas | AJN Consultoria e Engenharia';
@@ -17,7 +18,7 @@ const jsonLd = [
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
-      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: 'https://ajnengenharia.com.br/carreiras/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: absoluteCareersUrl('/carreiras/') },
     ],
   },
   {
@@ -25,7 +26,7 @@ const jsonLd = [
     '@type': 'WebPage',
     name: title,
     description: description,
-    url: 'https://ajnengenharia.com.br/carreiras/',
+    url: absoluteCareersUrl('/carreiras/'),
     inLanguage: 'pt-BR',
     publisher: {
       '@type': 'Organization',
@@ -40,6 +41,7 @@ const jsonLd = [
   title={title}
   description={description}
   canonicalPath={canonicalPath}
+  canonicalOrigin={careersOrigin}
 >
   <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
   <div class="carreiras-page">

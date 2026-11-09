@@ -10,11 +10,13 @@ export interface Env {
   TURNSTILE_SECRET_KEY?: string;
   TURNSTILE_SITE_KEY?: string;
   CORS_ORIGIN?: string;
+  CORS_ORIGINS?: string;
   EMAIL_API_KEY?: string;
   EMAIL_FROM?: string;
   EMAIL_PROVIDER?: string;
   RESEND_API_KEY?: string;
   APP_URL?: string;
+  ASSETS?: Fetcher;
 }
 
 export type BaseDatabase = any;

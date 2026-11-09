@@ -8,10 +8,12 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/sync-worker-assets.mjs",
     "check": "astro check",
     "preview": "astro preview",
     "test:backend": "vitest run",
     "test:browser-carreiras": "node scripts/browser-carreiras.mjs",
+    "test:homologation-remote": "node scripts/test-remote-carreiras.mjs",
     "astro": "astro",
     "audit:seo": "node scripts/audit-seo.mjs",
     "audit:fragments": "node scripts/audit-fragments.mjs",

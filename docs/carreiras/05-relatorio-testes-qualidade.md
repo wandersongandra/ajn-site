@@ -1,91 +1,35 @@
-# Relatório de Testes e Garantia da Qualidade — AJN Carreiras
+# AJN Carreiras — matriz de evidências de QA
 
-## 1. Visão Geral da Suite de Testes
+Este relatório separa testes locais, contrato, navegador e homologação remota. Fixtures SQLite, Map de R2 e Durable Object stub não são infraestrutura Cloudflare real.
 
-Para garantir estabilidade, segurança e não-regressão, o módulo **AJN Carreiras** foi submetido a baterias completas de testes automatizados abrangendo todas as camadas da aplicação: banco de dados, API, autenticação, segurança de upload, interface do usuário (E2E) e conformidade institucional com o pipeline de 35 gates do projeto.
+## Classificação
 
----
+| Camada | Comando/artefato | O que comprova | Estado |
+|---|---|---|---|
+| Backend local | `npm run test:backend` (5 arquivos Vitest) | Regras de segurança, autorização e contratos locais | `PASS — 61 testes` |
+| Integração local | `tests/backend/integration-gate.test.ts` | Fluxos com SQLite em memória, Map R2, DO stub e contrato ASSETS | `PASS — 9 testes; não remoto` |
+| Contrato | `scripts/audit-hosting-config.mjs`, `scripts/test-hosting-redirect.mjs` | CSP, redirects, assets e invariantes do artefato | `PASS — 170 HTML/CSS; 5 testes` |
+| E2E navegador local | `npm run test:browser-carreiras` | HTML, responsividade, navegação, F5, CRUD e erros JS no Astro local | `PASS — 102 asserções mobile/desktop` |
+| Homologação remota | `npm run test:homologation-remote` | Worker/Custom Domain, status real e assets publicados | `BLOCKED sem endpoint e recursos` |
 
-## 2. Testes Unitários e de Integração do Backend (`vitest`)
+## Cobertura local existente
 
-Executados via comando:
-```bash
-npm run test:backend
-```
+Os nove cenários do arquivo de integração local cobrem login MFA, cookie, refresh `/me`, logout/revogação, candidatura e persistência nos adaptadores locais, criação de vaga, SSR/JSON-LD, 404/noindex, CORS/cookie/CSRF de staging, fallback de assets do Worker e falhas de Turnstile/R2/bloqueio.
 
-**Resultado:** 100% de aprovação (3 arquivos de teste, 23 assertions).
+Essa cobertura é útil para regressão, mas não demonstra:
 
-### 2.1. Testes de Integridade de Schema e Banco (`tests/db/schema.test.ts`)
-- `should create candidate with masked CPF and tracking code`: Verifica se campos mandatórios, máscara de CPF e unicidade de tracking code funcionam adequadamente.
-- `should enforce unique email constraint on candidates`: Garante que e-mails duplicados disparam erro de violação de chave única.
-- `should cascade delete resumes when candidate is deleted`: Valida integridade referencial com exclusão em cascata.
-- `should enforce unique slug on job postings`: Previne duplicidade de URLs amigáveis.
-- `should record immutable audit logs`: Confirma persistência de logs sem violação de constraints.
+- cookie real em navegador contra um Worker publicado;
+- D1, R2, KV/DO, e-mail ou Turnstile Cloudflare reais;
+- recuperação de senha por mailbox;
+- execução remota dos direitos LGPD;
+- comportamento do Custom Domain, DNS, preflight e cache na borda.
 
-### 2.2. Testes de API e Fluxos de Negócio (`tests/backend/api.test.ts`)
-- `GET /api/jobs`: Validação de listagem de vagas públicas e filtros.
-- `GET /api/jobs/:slug`: Resolução de vaga ativa e rejeição 404 para slugs inexistentes.
-- `POST /api/applications`: Submissão de candidatura completa com formulário multipart e upload de arquivo PDF válido (`%PDF-`), com criação automática de candidato, anexo e tracking code.
-- `GET /api/applications/status/:code`: Consulta segura de status pelo código sem dados sensíveis.
-- `POST /api/talentos`: Inscrição com upload no banco de talentos e flag `talent_pool_opt_in=1`.
-- `POST /api/lgpd/requests`: Abertura de solicitação de titularidade sob o Art. 18.
-- `POST /api/admin/auth/login`: Autenticação administrativa com validação PBKDF2.
-- `POST /api/admin/auth/mfa`: Conclusão do login com código TOTP RFC 6238 e geração de sessão ativa.
-- `GET /api/admin/jobs`: Listagem administrativa de vagas com proteção de token.
-- `POST /api/admin/jobs`: Criação de nova vaga com etapas automáticas do funil.
-- `GET /api/admin/pipeline/:jobId`: Consulta das colunas do quadro Kanban.
-- `POST /api/admin/pipeline/move`: Transição de candidato entre etapas com registro em trilha de auditoria.
+## Gate remoto
 
-### 2.3. Testes de Segurança e Casos Adversos (`tests/backend/security.test.ts`)
-- `Malicious upload rejection`: Envio de arquivo falso com extensão `.pdf` contendo script executável `<?php echo 'pwned'; ?>`. Rejeitado com HTTP 400 pelo validador de Magic Bytes.
-- `Oversized file rejection`: Envio de arquivo de 6 MB (limite é 5 MB). Rejeitado com HTTP 400.
-- `Unauthenticated resume download`: Tentativa de acesso direto ao endpoint de currículo sem cookie/token de sessão. Bloqueado com HTTP 401.
-- `Inactive admin login`: Tentativa de login com usuário desativado (`is_active = 0`). Bloqueado com HTTP 403.
-- `Brute force lockout`: 5 tentativas consecutivas com senha errada resultam no bloqueio da conta com HTTP 429 e timestamp de bloqueio.
+O script remoto não usa localhost nem fixtures. Sem `AJN_CARREIRAS_REMOTE_ORIGIN`, ele termina com `BLOCKED` e lista os requisitos ausentes. Mesmo com uma URL pública, autenticação MFA, upload PDF, R2, e-mail, Turnstile, LGPD, expiração e revogação só podem ser classificados após execução em recursos de staging controlados e credenciais fornecidas fora do repositório.
 
-### 2.4. Testes de Backup e Restauração (`tests/db/backup.test.ts`)
-- Criação de banco de produção com candidaturas e logs.
-- Execução de backup online do banco SQLite.
-- Simulação de corrupção catastrófica no banco primário.
-- Restauração a partir do arquivo de backup e verificação de 100% dos dados íntegros.
+## Regra de veredito
 
----
-
-## 3. Testes End-to-End no Navegador (`Playwright`)
-
-Script dedicado: `scripts/browser-carreiras.mjs`  
-Executado em Chromium Headless em duas resoluções:
-- **Mobile:** 390 x 844 (iPhone 14)
-- **Desktop:** 1440 x 900
-
-**Resultado:** 98 asserções executadas e 100% aprovadas.
-
-| Teste | Asserções | Status |
-|---|---|---|
-| Acessibilidade e SEO em `/carreiras/` | 14 | Aprovado |
-| Interatividade de Filtros na listagem de vagas | 12 | Aprovado |
-| Detalhes da Vaga `/carreiras/engenheiro-seguranca-trabalho-senior/` | 18 | Aprovado |
-| JSON-LD Google Jobs Schema estruturado | 6 | Aprovado |
-| Página de Inscrição no Banco de Talentos `/carreiras/talentos/` | 12 | Aprovado |
-| Consulta e Acompanhamento de Candidatura `/carreiras/acompanhamento/` | 14 | Aprovado |
-| Painel Administrativo de Recrutamento `/admin/carreiras/` | 22 | Aprovado |
-
----
-
-## 4. Pipeline Institucional de Validação (`npm run validate`)
-
-O comando `npm run validate` executa os 35 gates obrigatórios do repositório AJN:
-
-1. `npm run check` (Astro TypeScript Check): **0 erros, 0 alertas em 259 arquivos**.
-2. `audit-design-tokens`: Tokens de cores, espaçamentos e fontes AJN validados.
-3. `audit-security`: Conformidade estrita com política CSP (zero `innerHTML`, zero Web Storage).
-4. `audit-seo-metadata`: Meta tags, OpenGraph e canonical validados em todas as páginas.
-5. `audit-accessibility`: Contraste, labels e atributos ARIA validados.
-6. `audit-performance-budget`: Orçamento de CSS/JS e recursos dentro dos limites.
-7. `scripts/browser-smoke.mjs`: **1.457 asserções aprovadas**.
-8. `scripts/browser-route-matrix.mjs`: **1.341 asserções aprovadas** em 164 rotas do site.
-
-**Resultado Final do Pipeline:**
-```
-Pipeline validation completed successfully. All gates passed.
-```
+- `PASS`: evidência executada no ambiente indicado e assertions relevantes aprovadas;
+- `FAIL`: comportamento incorreto reproduzido;
+- `BLOCKED`: dependência externa ausente, sem converter fixture/local em prova remota.

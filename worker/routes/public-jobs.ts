@@ -13,6 +13,23 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
+function serializeJsonLd(value: unknown): string {
+  return (JSON.stringify(value) ?? 'null')
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
+function normalizeCanonicalBase(value: string): string {
+  try {
+    return new URL(value).origin;
+  } catch {
+    return 'https://carreiras.ajnengenharia.com.br';
+  }
+}
+
 function renderNotFoundHtml(): string {
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -21,6 +38,7 @@ function renderNotFoundHtml(): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Vaga Não Encontrada | AJN Carreiras</title>
   <meta name="robots" content="noindex, follow">
+  <link rel="stylesheet" href="/styles/global.css">
   <link rel="stylesheet" href="/styles/carreiras.css">
 </head>
 <body>
@@ -84,8 +102,9 @@ function renderJobListHtml(jobs: any[], canonicalBase: string): string {
   <title>Vagas e Oportunidades | AJN Carreiras</title>
   <meta name="description" content="Oportunidades profissionais na AJN Consultoria e Engenharia. Consulte vagas abertas ou envie seu currículo ao nosso Banco de Talentos.">
   <link rel="canonical" href="${escapeHtml(canonicalBase)}/carreiras/">
+  <link rel="stylesheet" href="/styles/global.css">
   <link rel="stylesheet" href="/styles/carreiras.css">
-  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+  <script type="application/ld+json">${serializeJsonLd(jsonLd)}</script>
 </head>
 <body>
   <div class="carreiras-page">
@@ -140,8 +159,9 @@ function renderJobHtml(
   <title>${escapeHtml(job.title)} | Carreiras AJN</title>
   <meta name="description" content="Vaga de ${escapeHtml(job.title)} na AJN Consultoria e Engenharia em ${escapeHtml(job.location)}. Conheça os requisitos e candidate-se online.">
   <link rel="canonical" href="${escapeHtml(canonicalBase)}/carreiras/${escapeHtml(job.slug)}/">
+  <link rel="stylesheet" href="/styles/global.css">
   <link rel="stylesheet" href="/styles/carreiras.css">
-  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+  <script type="application/ld+json">${serializeJsonLd(jsonLd)}</script>
 </head>
 <body>
   <div class="carreiras-page">
@@ -333,7 +353,7 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
 
     const acceptsHtml = c.req.header('accept')?.includes('text/html');
     if (acceptsHtml) {
-      const canonicalBase = c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br';
+      const canonicalBase = normalizeCanonicalBase(c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br');
       return c.html(renderJobListHtml(publicJobs, canonicalBase), 200);
     }
 
@@ -354,6 +374,8 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
     const acceptsHtml = c.req.header('accept')?.includes('text/html');
 
     if (!job) {
+      c.header('Cache-Control', 'no-store');
+      c.header('X-Robots-Tag', 'noindex, follow');
       if (acceptsHtml) {
         return c.html(renderNotFoundHtml(), 404);
       }
@@ -412,7 +434,7 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
         : c.env?.ENVIRONMENT === 'production'
         ? '0x4AAAAAAAx_PROD_SITE_KEY_x'
         : '1x00000000000000000000AA');
-    const canonicalBase = c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br';
+    const canonicalBase = normalizeCanonicalBase(c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br');
 
     if (acceptsHtml) {
       return c.html(renderJobHtml(job, parsedRequirements, jsonLd, siteKey, canonicalBase), 200);

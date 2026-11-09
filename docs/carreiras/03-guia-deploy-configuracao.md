@@ -1,164 +1,95 @@
-# Guia de Configuração e Implantação — AJN Carreiras
+# AJN Carreiras — configuração e topologia de homologação
 
-Este documento orienta a equipe de Engenharia e DevOps sobre o provisionamento de recursos, a configuração de segurança e o procedimento de deploy do backend e frontend do portal **AJN Carreiras**.
+Este guia descreve a arquitetura implementada na branch `feat/ajn-carreiras`. Ele não autoriza deploy, alteração de DNS ou execução de migration remota.
 
----
+## 1. Decisão arquitetural
 
-## 1. Topologia de Infraestrutura
+As páginas de carreiras, a API administrativa/pública e os recursos necessários às páginas SSR são entregues pelo mesmo Worker:
 
-- **Frontend:** Astro (SSG), servido via Hostinger Apache (`public/.htaccess`).
-- **Backend API:** Cloudflare Workers (`worker/index.ts`).
-- **Banco de Dados Relacional:** Cloudflare D1 (`prod-ajn-carreiras-d1`).
-- **Armazenamento Privado:** Cloudflare R2 (`prod-ajn-carreiras-resumes`, privado, sem acesso público).
-- **Rate Limiting Distribuído:** Cloudflare KV (`prod-ajn-carreiras-kv`).
-- **Proteção Antispam:** Cloudflare Turnstile com política estrita *Fail-Secure*.
-
----
-
-## 2. Nomenclatura Padronizada de Recursos
-
-Para garantir total consistência entre o código (`worker/wrangler.toml`), pipelines de CI/CD e este guia, utilize rigorosamente os seguintes nomes:
-
-| Recurso | Ambiente de Produção | Ambiente de Staging / Homologação |
+| Ambiente | Origem canônica | Apache institucional |
 |---|---|---|
-| **Worker API** | `ajn-carreiras-api` | `ajn-carreiras-api-staging` |
-| **Banco D1** | `prod-ajn-carreiras-d1` | `staging-ajn-carreiras-d1` |
-| **Bucket R2** | `prod-ajn-carreiras-resumes` | `staging-ajn-carreiras-resumes` |
-| **Namespace KV** | `prod-ajn-carreiras-kv` | `staging-ajn-carreiras-kv` |
+| Staging | `https://staging-ajn-carreiras-api.workers.dev` | Redireciona `/carreiras/*` e `/admin/carreiras/*` para o Worker |
+| Produção pretendida | `https://carreiras.ajnengenharia.com.br` | Redireciona as rotas de carreiras do apex para o Custom Domain do Worker |
 
----
+Isso elimina o cookie administrativo cross-site entre página e API no ambiente pretendido. O cookie continua `HttpOnly; Secure; SameSite=Strict`; nenhum token é salvo em `localStorage` ou `sessionStorage`.
 
-## 3. Provisionamento dos Recursos na Cloudflare
+O site institucional existente continua sendo servido pelo Apache. O Worker não substitui as páginas institucionais e o `.htaccess` não faz mais rewrite interno de uma vaga dinâmica para `/carreiras/vaga/?slug=...`, pois esse fallback podia entregar HTTP 200 sem o recurso real.
 
-Execute os comandos abaixo a partir de um terminal autenticado no Wrangler (`npx wrangler login`):
+## 2. Recursos do Worker
 
-### 3.1. Criar os Bancos de Dados D1
-```bash
-# Produção
-npx wrangler d1 create prod-ajn-carreiras-d1
+`worker/wrangler.toml` declara a binding `ASSETS` para `../dist`, com Worker-first. O `postbuild` copia `src/styles/global.css` e `src/styles/carreiras.css` para `dist/styles`; scripts públicos continuam sendo gerados em `dist/scripts` pelo Astro.
 
-# Staging
-npx wrangler d1 create staging-ajn-carreiras-d1
-```
-*Copie os `database_id` gerados e atualize os campos correspondentes no arquivo `worker/wrangler.toml`.*
+Os bindings D1, R2, KV e Durable Object permanecem explicitamente declarados. Os IDs atualmente presentes no arquivo são placeholders de configuração e impedem homologação remota até serem substituídos pelos IDs reais do ambiente correto.
 
-### 3.2. Criar os Buckets Privados R2
-```bash
-# Produção
-npx wrangler r2 bucket create prod-ajn-carreiras-resumes
+| Recurso | Produção | Staging |
+|---|---|---|
+| Worker | `ajn-carreiras-api` | `ajn-carreiras-api` com `--env staging` |
+| D1 | `prod-ajn-carreiras-d1` | `staging-ajn-carreiras-d1` |
+| R2 privado | `prod-ajn-carreiras-resumes` | `staging-ajn-carreiras-resumes` |
+| KV | `prod-ajn-carreiras-kv` | namespace definido pelo ID real de staging |
 
-# Staging
-npx wrangler r2 bucket create staging-ajn-carreiras-resumes
-```
-> [!CAUTION]
-> **NUNCA** ative a opção "Public Access" ou vincule domínios públicos diretamente aos buckets R2. O acesso aos arquivos de currículos é estritamente mediado pelo Cloudflare Worker através de verificação de permissão RBAC (`resumes:read`) e trilha de auditoria imutável.
+Antes de qualquer publicação, provisionar e validar separadamente:
 
-### 3.3. Criar os Namespaces KV para Rate Limiting Distribuído
-```bash
-# Produção
-npx wrangler kv:namespace create prod-ajn-carreiras-kv
+1. D1 de staging e produção, com migrations aplicadas no ambiente correto;
+2. bucket R2 privado para currículos;
+3. namespace KV e Durable Object de rate limiting;
+4. `SESSION_SECRET`, `TURNSTILE_SECRET_KEY` e credenciais do provedor de e-mail como secrets do Worker;
+5. chaves Turnstile de staging e produção;
+6. usuário administrativo de teste com MFA e mailbox controlado;
+7. build com `PUBLIC_CAREERS_ORIGIN` igual à origem canônica do ambiente.
 
-# Staging
-npx wrangler kv:namespace create staging-ajn-carreiras-kv
-```
-*Atualize as chaves `id` no bloco `[[kv_namespaces]]` em `worker/wrangler.toml`.*
+Não inserir secrets no repositório, em fixtures ou na saída dos testes.
 
-### 3.4. Configurar Segredos Obrigatórios (Fail-Secure)
-No diretório `worker/`:
-```bash
-# Segredo criptográfico de sessão
-npx wrangler secret put SESSION_SECRET
+## 3. Segurança de origem, CORS e CSP
 
-# Segredo obrigatório do Cloudflare Turnstile (Fail-Secure em staging/prod)
-npx wrangler secret put TURNSTILE_SECRET_KEY
-```
+As listas de CORS são explícitas em `CORS_ORIGINS`. Não há `Access-Control-Allow-Origin: *` em rotas autenticadas. Para mutações em `/api/admin/*`, o Worker exige `Origin` ou `Referer` cuja origem seja exatamente `APP_URL`; a exceção existe apenas para fixtures locais/testes, nunca para `staging` ou `production`.
 
----
+No Apache, a CSP enforced e a Report-Only autorizam somente a API de carreiras, Google Analytics já existente e Turnstile. `script-src` não libera inline/eval; `form-action` não usa o curinga `https:`.
 
-## 4. Migrações e Bootstrap do Usuário Inicial
+## 4. DNS e e-mail — pré-requisitos e preservação
 
-### 4.1. Aplicar Migração SQL no D1
-```bash
-# Ambiente local (testes locais)
-npx wrangler d1 execute prod-ajn-carreiras-d1 --local --file=./worker/db/migrations/0000_curious_the_executioner.sql
+Não usar delegação de uma zona filha como premissa: a documentação da Cloudflare informa que Subdomain Setup é recurso Enterprise. A alternativa sem essa dependência é manter a zona autoritativa completa no Cloudflare e conectar o Worker por Custom Domain, preservando o Apache por registros da zona.
 
-# Ambiente de Staging remoto
-npx wrangler d1 execute staging-ajn-carreiras-d1 --remote --file=./worker/db/migrations/0000_curious_the_executioner.sql
+Se a autoridade DNS for migrada para Cloudflare, exportar e comparar antes os registros atuais e recriá-los com os valores exatos:
 
-# Ambiente de Produção remoto
-npx wrangler d1 execute prod-ajn-carreiras-d1 --remote --file=./worker/db/migrations/0000_curious_the_executioner.sql
-```
+- `A` e `AAAA` do apex e `www`, apontando para o Apache Hostinger conforme o estado confirmado;
+- `MX` e eventuais subdomínios de e-mail;
+- `TXT` de verificação, SPF e demais políticas;
+- DKIM (normalmente `CNAME` ou `TXT`, conforme o provedor);
+- DMARC (`_dmarc`);
+- `CAA` e qualquer outro registro necessário ao certificado/serviços atuais.
 
-### 4.2. Criar Acesso Administrativo Inicial (Seed com MFA Obrigatório)
-O script `worker/db/seed.ts` possui execução CLI segura e reproduzível:
-```bash
-ADMIN_EMAIL="rh@ajnengenharia.com.br" ADMIN_PASSWORD="<SENHA_FORTE_MINIMO_8_CHARS>" npx tsx worker/db/seed.ts
-```
-O comando gerará o segredo TOTP e a URI `otpauth://` para configuração no aplicativo autenticador (Google Authenticator ou Microsoft Authenticator).
+Os nameservers devem ser exatamente os atribuídos pela Cloudflare à zona no painel. `ns1.cloudflare.com` e `ns2.cloudflare.com` não são valores genéricos válidos para essa finalidade. Nenhum registro ou nameserver foi alterado nesta tarefa.
 
----
+Referências oficiais: [Subdomain Setup](https://developers.cloudflare.com/dns/zone-setups/subdomain-setup/setup/), [nameservers](https://developers.cloudflare.com/dns/nameservers/), [troubleshooting de nameservers](https://developers.cloudflare.com/dns/zone-setups/troubleshooting/pending-nameservers/), [Custom Domains de Workers](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/) e [configuração de assets](https://developers.cloudflare.com/workers/wrangler/configuration/).
 
-## 5. Viabilidade e Topologias de Roteamento com Hostinger DNS
+## 5. Sequência controlada de homologação
 
-Considerando que o domínio institucional `ajnengenharia.com.br` utiliza hospedagem e servidores de DNS da **Hostinger**, foram avaliadas quatro topologias para o subdomínio `carreiras.ajnengenharia.com.br`:
-
-```mermaid
-flowchart TD
-    subgraph Hostinger DNS
-        Zone["ajnengenharia.com.br (Hostinger DNS)"]
-    end
-    
-    Zone -->|Opção 1: CNAME Custom Domain| CFWorker["Cloudflare Worker (carreiras.ajnengenharia.com.br)"]
-    Zone -->|Opção 2: A / CNAME Hostinger| HostingerApache["Hostinger Apache (.htaccess Reverse Proxy)"]
-    HostingerApache -->|ProxyPass /api/*| CFWorkerDev["ajn-carreiras-api.workers.dev"]
-    Zone -->|Opção 3: NS Delegation| CFZone["Cloudflare DNS (Subzona carreiras)"]
-```
-
-### Topologia 1 (Recomendada): Custom Domain de Worker via CNAME na Hostinger
-1. No painel Cloudflare Workers, em `ajn-carreiras-api` > **Settings** > **Triggers** > **Custom Domains**, adicione `carreiras.ajnengenharia.com.br`.
-2. No painel de DNS da Hostinger (hPanel):
-   - Adicione registro: **Tipo:** `CNAME` | **Nome:** `carreiras` | **Aponta para:** `ajn-carreiras-api.workers.dev` (ou o hostname fornecido pela Cloudflare).
-3. A Cloudflare valida a titularidade e emite o certificado SSL automaticamente (via Cloudflare for SaaS/Custom Domains).
-
-### Topologia 2: Subdomínio na Hostinger com Proxy Reverso Apache
-1. Crie o subdomínio `carreiras.ajnengenharia.com.br` diretamente no hPanel da Hostinger, apontando para o diretório de build estático do Astro.
-2. No arquivo `.htaccess` do subdomínio, adicione o encaminhamento transparente da API:
-   ```apache
-   RewriteEngine On
-   RewriteRule ^api/(.*)$ https://ajn-carreiras-api.workers.dev/api/$1 [P,L]
-   ```
-3. O frontend estático é servido localmente pela Hostinger, enquanto todas as chamadas `/api/*` operam no Cloudflare Worker de forma transparente.
-
-### Topologia 3: Delegação de Subdomínio via NS na Hostinger
-1. No painel da Hostinger, adicione registros NS específicos para o subdomínio:
-   - `carreiras.ajnengenharia.com.br` NS `ns1.cloudflare.com`
-   - `carreiras.ajnengenharia.com.br` NS `ns2.cloudflare.com`
-2. Isso concede autoridade DNS à Cloudflare exclusivamente para o subdomínio `carreiras`, preservando a apex `ajnengenharia.com.br` e o e-mail corporativo intactos na Hostinger.
-
-### Topologia 4: Delegação Completa de DNS para a Cloudflare
-1. Altere os nameservers autoritativos do domínio na entidade registradora para a Cloudflare.
-2. Crie registro `A` na Cloudflare apontando para o endereço IP do servidor Hostinger (garantindo que o site institucional existente continue sendo servido sem qualquer impacto).
-3. Ative a rota de Worker `carreiras.ajnengenharia.com.br/*`.
-
----
-
-## 6. Procedimento de Build e Deploy
+Executar em uma conta Cloudflare de staging autorizada, nunca neste checkout sem credenciais/IDs reais:
 
 ```bash
-# 1. Checagem de tipos estrita
-npm run check
-
-# 2. Build estático Astro
-npm run build
-
-# 3. Testes unitários, segurança e integridade
+npm ci
+set PUBLIC_CAREERS_ORIGIN=https://staging-ajn-carreiras-api.workers.dev
 npm run test:backend
-
-# 4. Pipeline institucional completo de homologação
-npm run validate
-
-# 5. Deploy do Worker para o ambiente desejado
-npx wrangler deploy --env staging
-# ou
-npx wrangler deploy --env production
+npm run check
+npm run build
+npx wrangler deploy --dry-run --config worker/wrangler.toml --env staging
 ```
+
+O comando `deploy --dry-run` é somente validação de bundle/configuração. O deploy efetivo exige autorização operacional separada.
+
+Depois da publicação controlada, configurar `AJN_CARREIRAS_REMOTE_ORIGIN` e executar `npm run test:homologation-remote`. Sem endpoint, recursos e credenciais de homologação, o resultado correto é `BLOCKED`.
+
+## 6. Rollback
+
+1. Interromper a promoção do Worker sem apagar D1, R2, KV ou DO.
+2. Remover/desativar apenas o Custom Domain ou as regras de redirect que foram alterados, com registro do estado anterior.
+3. Restaurar o `.htaccess` anterior somente a partir do commit conhecido e após revisão, sem rewrite dinâmico que masque 404.
+4. Se houver mudança DNS autorizada, restaurar os registros exportados exatamente; não improvisar nameservers.
+5. Revalidar apex, `www`, MX, SPF, DKIM, DMARC, CAA e o site institucional antes de qualquer nova tentativa.
+
+## 7. Estado desta branch
+
+`CONFIRMED`: código local com topologia same-origin planejada, CSP/CORS explícitos, cookie forte, SSR 200/404 e binding de assets configurada.
+
+`BLOCKED`: recursos Cloudflare reais, secrets, seed MFA, mailbox, Turnstile válido, DNS/Custom Domain e homologação remota ainda não estão comprovados neste checkout.

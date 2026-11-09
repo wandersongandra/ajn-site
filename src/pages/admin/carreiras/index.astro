@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { serializeJsonLd } from '../../../utils/site';
+import { careersOrigin } from '../../../utils/careers';
 import '../../../styles/carreiras.css';
 
 const title = 'Painel do Recrutador | AJN Carreiras';
@@ -21,6 +22,7 @@ const jsonLd = [
   title={title}
   description={description}
   canonicalPath={canonicalPath}
+  canonicalOrigin={careersOrigin}
 >
   <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
   <div class="carreiras-page">
@@ -208,9 +210,83 @@ const jsonLd = [
 
         <!-- Painel 3: Vagas Cadastradas -->
         <div data-admin-pane="jobs" style="display: none;">
-          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
-            Gestão de Vagas Corporativas
-          </h3>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+            <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin: 0; color: var(--ink);">
+              Gestão de Vagas Corporativas
+            </h3>
+            <button class="carreiras-button carreiras-button--primary" data-toggle-job-form type="button">
+              + Cadastrar ou editar vaga
+            </button>
+          </div>
+          <div class="carreiras-notice" data-jobs-notice role="alert"></div>
+          <div class="carreiras-form-container" data-job-form-card style="display: none; max-width: 760px; margin-bottom: 2rem;">
+            <h4 style="font-size: 1.125rem; margin-top: 0; margin-bottom: 1rem; color: var(--ink);" data-job-form-title>Nova vaga</h4>
+            <form data-job-form>
+              <input type="hidden" name="jobId" />
+              <div class="carreiras-form-grid">
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="admin-job-title">Título *</label>
+                  <input class="carreiras-input" id="admin-job-title" name="title" required minlength="3" maxlength="150" />
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="admin-job-slug">Slug *</label>
+                  <input class="carreiras-input" id="admin-job-slug" name="slug" required minlength="3" pattern="[a-z0-9-]+" placeholder="engenheiro-seguranca" />
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="admin-job-department">Departamento *</label>
+                  <input class="carreiras-input" id="admin-job-department" name="department" required minlength="2" />
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="admin-job-location">Local *</label>
+                  <input class="carreiras-input" id="admin-job-location" name="location" required minlength="2" />
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="admin-job-type">Regime *</label>
+                  <select class="carreiras-select" id="admin-job-type" name="employmentType" required>
+                    <option value="CLT">CLT</option>
+                    <option value="PJ">PJ</option>
+                    <option value="Estágio">Estágio</option>
+                    <option value="Temporário">Temporário</option>
+                  </select>
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="admin-job-level">Experiência *</label>
+                  <select class="carreiras-select" id="admin-job-level" name="experienceLevel" required>
+                    <option value="Júnior">Júnior</option>
+                    <option value="Pleno">Pleno</option>
+                    <option value="Sênior">Sênior</option>
+                    <option value="Especialista">Especialista</option>
+                  </select>
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="admin-job-status">Status *</label>
+                  <select class="carreiras-select" id="admin-job-status" name="status" required>
+                    <option value="draft">Rascunho</option>
+                    <option value="published">Publicada</option>
+                    <option value="paused">Pausada</option>
+                    <option value="closed">Encerrada</option>
+                    <option value="archived">Arquivada</option>
+                  </select>
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="admin-job-openings">Número de vagas *</label>
+                  <input class="carreiras-input" id="admin-job-openings" name="openingsCount" type="number" min="1" step="1" value="1" required />
+                </div>
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="admin-job-description">Descrição *</label>
+                  <textarea class="carreiras-textarea" id="admin-job-description" name="description" required minlength="20" rows="5"></textarea>
+                </div>
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="admin-job-requirements">Requisitos (um por linha) *</label>
+                  <textarea class="carreiras-textarea" id="admin-job-requirements" name="requirements" required rows="4"></textarea>
+                </div>
+                <div class="carreiras-form-full" style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+                  <button class="carreiras-button carreiras-button--primary" type="submit" data-job-form-submit>Salvar vaga</button>
+                  <button class="carreiras-button carreiras-button--secondary" data-cancel-job-form type="button">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
@@ -221,6 +297,7 @@ const jsonLd = [
                   <th>Regime</th>
                   <th>Status</th>
                   <th>Candidatos</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody data-jobs-tbody>

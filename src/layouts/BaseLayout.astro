@@ -11,6 +11,7 @@ interface Props {
 	title?: string;
 	description?: string;
 	canonicalPath?: string;
+	canonicalOrigin?: string;
 	ogType?: 'website' | 'article';
 	ogImage?: string;
 	noindex?: boolean;
@@ -20,6 +21,7 @@ const {
 	title: requestedTitle = 'AJN Consultoria e Engenharia | Segurança do Trabalho e Engenharia',
 	description: requestedDescription = 'Consultoria e engenharia em QSSMA, segurança do trabalho, laudos, PCMSO, eSocial, projetos elétricos e prevenção contra incêndio.',
 	canonicalPath = '/',
+	canonicalOrigin,
 	ogType = 'website',
 	ogImage = '/images/hero/banner.webp',
 	noindex = false,
@@ -30,7 +32,8 @@ const seoPath = normalizedPath === '/' ? '/' : normalizedPath.replace(/\/$/, '')
 const seo = getSeoMetadata(seoPath, { title: requestedTitle, description: requestedDescription });
 const title = seo.title;
 const description = seo.description;
-const canonicalUrl = absoluteSiteUrl(normalizedPath);
+const canonicalBase = (canonicalOrigin ?? siteOrigin).replace(/\/+$/, '');
+const canonicalUrl = new URL(normalizedPath, `${canonicalBase}/`).href;
 const imageUrl = absoluteSiteUrl(ogImage);
 const ga4Candidate = (import.meta.env.PUBLIC_GA4_MEASUREMENT_ID ?? 'G-N6L406K645').trim().toUpperCase();
 const ga4MeasurementId = /^G-[A-Z0-9]{6,20}$/.test(ga4Candidate) ? ga4Candidate : '';

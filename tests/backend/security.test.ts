@@ -786,7 +786,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
         '/api/admin/auth/login',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Origin: 'https://carreiras.ajnengenharia.com.br' },
           body: JSON.stringify({ email: 'joao@ajnengenharia.com.br', password: 'ViewerPass123!' }),
         },
         { ENVIRONMENT: 'production', RATE_LIMITER_DO: mockDOBinding } as any
@@ -805,7 +805,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
         '/api/admin/auth/login',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Auth-Mode': 'api' },
+          headers: { 'Content-Type': 'application/json', 'X-Auth-Mode': 'api', Origin: 'https://carreiras.ajnengenharia.com.br' },
           body: JSON.stringify({ email: 'joao@ajnengenharia.com.br', password: 'ViewerPass123!' }),
         },
         { ENVIRONMENT: 'production', RATE_LIMITER_DO: mockDOBinding } as any
@@ -1382,7 +1382,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
           '/api/admin/auth/forgot-password',
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': '189.1.1.5' },
+            headers: { 'Content-Type': 'application/json', Origin: 'https://carreiras.ajnengenharia.com.br', 'cf-connecting-ip': '189.1.1.5' },
             body: JSON.stringify({ email: 'admin@ajnengenharia.com.br' }),
           },
           envWithDO as any

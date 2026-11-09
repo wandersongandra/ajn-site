@@ -16,10 +16,11 @@ check(cspSourcesEqual(enforced, 'img-src', ["'self'", 'data:', 'https://www.goog
 	'CSP enforced não deve liberar imagens em qualquer origem HTTPS.');
 check(cspSourcesEqual(reportOnly, 'default-src', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com', 'https://challenges.cloudflare.com']), 'CSP candidata deve restringir default/script a self.');
-check(cspSourcesEqual(reportOnly, 'form-action', ["'self'"]) &&
+check(cspSourcesEqual(reportOnly, 'form-action', ["'self'", 'https://carreiras.ajnengenharia.com.br', 'https://staging-ajn-carreiras-api.workers.dev']) &&
 	cspSourcesEqual(reportOnly, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']), 'CSP candidata deve restringir forms e imagens.');
-check(cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']),
-  'CSP candidata deve permitir apenas endpoints de medição GA4 e Turnstile conhecidos.');
+check(cspSourcesEqual(enforced, 'connect-src', ["'self'", 'https://carreiras.ajnengenharia.com.br', 'https://staging-ajn-carreiras-api.workers.dev', 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']) &&
+	cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://carreiras.ajnengenharia.com.br', 'https://staging-ajn-carreiras-api.workers.dev', 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']),
+	  'CSP deve permitir apenas a API de carreiras, endpoints de medição GA4 e Turnstile conhecidos.');
 check(cspSourcesEqual(reportOnly, 'frame-src', ["'self'", 'https://challenges.cloudflare.com']),
   'CSP candidata deve permitir carregamento de frames do Turnstile.');
 check(cspSourcesEqual(reportOnly, 'style-src', ["'self'"]) &&
@@ -39,6 +40,9 @@ check(!/Strict-Transport-Security[^\r\n]*(?:includeSubDomains|preload)/i.test(co
 	'Não usar includeSubDomains/preload sem auditoria específica.');
 check(/RewriteRule \^ https:\/\/ajnengenharia\.com\.br%\{REQUEST_URI\} \[R=301,L,NE\]/.test(config),
 	'O redirecionamento de www para o host canônico deve ser permanente após homologação.');
+check(/staging-ajn-carreiras-api\.workers\.dev\/carreiras\//.test(config) &&
+	/https:\/\/carreiras\.ajnengenharia\.com\.br\/carreiras\//.test(config),
+	'As rotas de carreiras devem ser encaminhadas ao Worker canônico, sem rewrite interno estático.');
 
 async function walk(directory) {
 	const entries = await readdir(directory, { withFileTypes: true });

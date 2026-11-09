@@ -16,6 +16,90 @@ import { createAdminAuditRoutes } from './routes/admin-audit';
 import { createAdminUsersRoutes } from './routes/admin-users';
 import type { Env, HonoVariables } from './types';
 
+const defaultProductionOrigins = [
+  'https://ajnengenharia.com.br',
+  'https://www.ajnengenharia.com.br',
+  'https://carreiras.ajnengenharia.com.br',
+];
+const defaultStagingOrigins = ['https://staging-ajn-carreiras-api.workers.dev'];
+const staticCareerAssetPaths = new Set(['/carreiras/talentos', '/carreiras/acompanhamento', '/carreiras/vaga']);
+
+function getAllowedOrigins(env?: Env): Set<string> {
+  const configured = (env?.CORS_ORIGINS || env?.CORS_ORIGIN || '')
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+  const origins = new Set(configured.length > 0
+    ? configured
+    : env?.ENVIRONMENT === 'staging'
+      ? defaultStagingOrigins
+      : defaultProductionOrigins);
+
+  const isStrictEnvironment = env?.ENVIRONMENT === 'staging' || env?.ENVIRONMENT === 'production';
+  const isDevOrTest = !isStrictEnvironment && (
+    env?.ENVIRONMENT === 'test' ||
+    env?.ENVIRONMENT === 'development' ||
+    process.env.NODE_ENV === 'test' ||
+    process.env.VITEST !== undefined
+  );
+
+  if (isDevOrTest) {
+    origins.add('http://127.0.0.1:4321');
+    origins.add('http://localhost:4321');
+    origins.add('http://127.0.0.1:8787');
+    origins.add('http://localhost:8787');
+  }
+
+  return origins;
+}
+
+function getAdminOrigin(env?: Env): string | null {
+  try {
+    return new URL(env?.APP_URL || 'https://carreiras.ajnengenharia.com.br').origin;
+  } catch {
+    return null;
+  }
+}
+
+function getRequestOrigin(request: Request): string | null {
+  const origin = request.headers.get('Origin')?.trim();
+  if (origin) return origin;
+
+  const referer = request.headers.get('Referer')?.trim();
+  if (!referer) return null;
+
+  try {
+    return new URL(referer).origin;
+  } catch {
+    return null;
+  }
+}
+
+function isLocalTest(env?: Env): boolean {
+  if (env?.ENVIRONMENT === 'staging' || env?.ENVIRONMENT === 'production') return false;
+  return !env || env.ENVIRONMENT === 'test' || env.ENVIRONMENT === 'development' || process.env.NODE_ENV === 'test' || process.env.VITEST !== undefined;
+}
+
+function setSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com; media-src 'self'; worker-src 'self'; manifest-src 'self'"
+  );
+  headers.set('X-Content-Type-Options', 'nosniff');
+  headers.set('X-Frame-Options', 'DENY');
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  headers.set('Permissions-Policy', 'accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()');
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
+function isDynamicCareerPath(pathname: string): boolean {
+  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  if (!normalizedPath.startsWith('/carreiras/')) return false;
+
+  return !staticCareerAssetPaths.has(normalizedPath);
+}
+
 export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
   const app = new Hono<{ Bindings: Env; Variables: HonoVariables }>();
 
@@ -29,6 +113,8 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     c.header('X-Content-Type-Options', 'nosniff');
     c.header('X-Frame-Options', 'DENY');
     c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+    c.header('Content-Security-Policy', "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com; media-src 'self'; worker-src 'self'; manifest-src 'self'");
+    c.header('Permissions-Policy', 'accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()');
     await next();
   });
 
@@ -37,32 +123,8 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     '/api/*',
     cors({
       origin: (origin, c) => {
-        const allowedOrigin = c.env?.CORS_ORIGIN || 'https://ajnengenharia.com.br';
-        if (!origin) return allowedOrigin;
-
-        const exactTrustedOrigins = new Set<string>([
-          allowedOrigin,
-          'https://ajnengenharia.com.br',
-          'https://www.ajnengenharia.com.br',
-          'https://carreiras.ajnengenharia.com.br',
-          'https://sienna-mongoose-223157.hostingersite.com',
-        ]);
-
-        const isDevOrTest =
-          c.env?.ENVIRONMENT === 'test' ||
-          c.env?.ENVIRONMENT === 'development' ||
-          process.env.NODE_ENV === 'test' ||
-          process.env.VITEST !== undefined;
-
-        if (isDevOrTest) {
-          exactTrustedOrigins.add('http://127.0.0.1:4321');
-          exactTrustedOrigins.add('http://localhost:4321');
-        }
-
-        if (exactTrustedOrigins.has(origin)) {
-          return origin;
-        }
-        return null;
+        if (!origin) return undefined;
+        return getAllowedOrigins(c.env).has(origin) ? origin : undefined;
       },
       allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -71,6 +133,23 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
       maxAge: 86400,
     })
   );
+
+  // Operações administrativas com cookie exigem prova de origem no navegador.
+  // O bypass existe apenas para fixtures Vitest, nunca para staging/produção.
+  app.use('/api/admin/*', async (c, next) => {
+    if (['GET', 'HEAD', 'OPTIONS'].includes(c.req.method)) {
+      await next();
+      return;
+    }
+
+    const requestOrigin = getRequestOrigin(c.req.raw);
+    const adminOrigin = getAdminOrigin(c.env);
+    if (!isLocalTest(c.env) && (!requestOrigin || !adminOrigin || requestOrigin !== adminOrigin)) {
+      return c.json({ error: 'Origem não autorizada.' }, 403);
+    }
+
+    await next();
+  });
 
   // Health check endpoint
   app.get('/api/health', (c) => {
@@ -148,8 +227,15 @@ export { RateLimiterDO } from './middleware/rate-limit';
 
 // Handler padrão Cloudflare Worker
 export default {
-  fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
+  fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
     const app = createCarreirasApp();
-    return app.fetch(request, env, ctx);
+    const response = await app.fetch(request, env, ctx);
+    const pathname = new URL(request.url).pathname;
+    if (response.status !== 404 || !env.ASSETS || pathname.startsWith('/api/') || pathname === '/api' || isDynamicCareerPath(pathname) || pathname === '/carreiras') {
+      return response;
+    }
+
+    const assetResponse = await env.ASSETS.fetch(request);
+    return setSecurityHeaders(assetResponse);
   },
 };

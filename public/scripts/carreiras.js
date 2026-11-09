@@ -1,6 +1,26 @@
 // Client-side interactions para o Portal de Carreiras AJN
 // Conformidade rigorosa com CSP: sem eval, sem innerHTML, sem Web Storage.
 
+const allowedCareerApiOrigins = new Set([
+  'https://carreiras.ajnengenharia.com.br',
+  'https://staging-ajn-carreiras-api.workers.dev',
+]);
+
+function getConfiguredCareerApiOrigin() {
+  if (typeof window === 'undefined' || !window.AJN_CARREIRAS_API_BASE) return '';
+
+  try {
+    const configuredUrl = new URL(window.AJN_CARREIRAS_API_BASE, window.location.origin);
+    return allowedCareerApiOrigins.has(configuredUrl.origin) ||
+      (window.location.protocol === 'http:' &&
+        (configuredUrl.origin === 'http://localhost:8787' || configuredUrl.origin === 'http://127.0.0.1:8787'))
+      ? configuredUrl.origin
+      : '';
+  } catch {
+    return '';
+  }
+}
+
 function getApiEndpoint(path) {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -9,14 +29,16 @@ function getApiEndpoint(path) {
   if (
     typeof window !== 'undefined' &&
     (window.location.hostname === 'carreiras.ajnengenharia.com.br' ||
+      window.location.hostname === 'staging-ajn-carreiras-api.workers.dev' ||
       window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1')
   ) {
     return clean;
   }
 
-  if (typeof window !== 'undefined' && window.AJN_CARREIRAS_API_BASE) {
-    return `${window.AJN_CARREIRAS_API_BASE}${clean}`;
+  const configuredOrigin = getConfiguredCareerApiOrigin();
+  if (configuredOrigin) {
+    return `${configuredOrigin}${clean}`;
   }
 
   if (typeof window !== 'undefined' && window.location.hostname.includes('hostingersite.com')) {

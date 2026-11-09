@@ -5,6 +5,27 @@
   let authToken = '';
   let currentUser = null;
   let currentJobId = 'job-eng-seguranca';
+  let listenersRegistered = false;
+
+  const allowedApiOrigins = new Set([
+    'https://carreiras.ajnengenharia.com.br',
+    'https://staging-ajn-carreiras-api.workers.dev',
+  ]);
+
+  function getConfiguredApiOrigin() {
+    if (typeof window === 'undefined' || !window.AJN_CARREIRAS_API_BASE) return '';
+
+    try {
+      const configuredUrl = new URL(window.AJN_CARREIRAS_API_BASE, window.location.origin);
+      return allowedApiOrigins.has(configuredUrl.origin) ||
+        (window.location.protocol === 'http:' &&
+          (configuredUrl.origin === 'http://localhost:8787' || configuredUrl.origin === 'http://127.0.0.1:8787'))
+        ? configuredUrl.origin
+        : '';
+    } catch {
+      return '';
+    }
+  }
 
   function getApiEndpoint(path) {
     if (!path) return '';
@@ -14,14 +35,16 @@
     if (
       typeof window !== 'undefined' &&
       (window.location.hostname === 'carreiras.ajnengenharia.com.br' ||
+        window.location.hostname === 'staging-ajn-carreiras-api.workers.dev' ||
         window.location.hostname === 'localhost' ||
         window.location.hostname === '127.0.0.1')
     ) {
       return clean;
     }
 
-    if (typeof window !== 'undefined' && window.AJN_CARREIRAS_API_BASE) {
-      return `${window.AJN_CARREIRAS_API_BASE}${clean}`;
+    const configuredOrigin = getConfiguredApiOrigin();
+    if (configuredOrigin) {
+      return `${configuredOrigin}${clean}`;
     }
 
     if (typeof window !== 'undefined' && window.location.hostname.includes('hostingersite.com')) {
@@ -51,16 +74,30 @@
     const resetCard = document.querySelector('[data-admin-reset-card]');
     const resetForm = document.querySelector('[data-admin-reset-form]');
     const logoutBtn = document.querySelector('[data-admin-logout]');
+    const elements = { loginCard, dashboard, loginForm, forgotForm, resetCard, resetForm, logoutBtn };
 
-    // 1. Trata Redefinição de Senha via URL com Token (?resetToken=...)
     const urlParams = new URLSearchParams(window.location.search);
     const resetToken = urlParams.get('resetToken');
 
-    if (resetToken && resetCard && resetForm) {
-      if (loginCard) loginCard.style.display = 'none';
-      if (dashboard) dashboard.style.display = 'none';
-      resetCard.style.display = 'block';
+    registerAdminEventListeners(elements, resetToken);
 
+    if (resetToken && resetCard && resetForm) {
+      setAuthView(elements, false);
+      resetCard.style.display = 'block';
+      return;
+    }
+
+    const restored = await restoreAdminSession(elements);
+    if (!restored) setAuthView(elements, false);
+  }
+
+  function registerAdminEventListeners(elements, resetToken) {
+    if (listenersRegistered) return;
+    listenersRegistered = true;
+
+    const { loginCard, loginForm, forgotForm, resetCard, resetForm, logoutBtn } = elements;
+
+    if (resetToken && resetCard && resetForm) {
       resetForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const newPassword = resetForm.querySelector('[name="newPassword"]')?.value;
@@ -85,14 +122,12 @@
             showNotice(noticeEl, 'Senha redefinida com sucesso! Redirecionando para o login...', 'success');
             setTimeout(() => {
               if (window.history && window.history.replaceState) {
-                const cleanUrl = window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
+                window.history.replaceState({}, document.title, window.location.pathname);
               }
               resetCard.style.display = 'none';
               if (loginCard) {
                 loginCard.style.display = 'block';
-                const loginNotice = loginCard.querySelector('[data-login-notice]');
-                showNotice(loginNotice, 'Senha alterada. Faça login com suas novas credenciais.', 'success');
+                showNotice(loginCard.querySelector('[data-login-notice]'), 'Senha alterada. Faça login com suas novas credenciais.', 'success');
               }
             }, 2000);
           } else {
@@ -102,11 +137,8 @@
           showNotice(noticeEl, 'Erro de conexão ao redefinir senha.', 'error');
         }
       });
-
-      return;
     }
 
-    // 2. Alternância entre Login e Esqueci Minha Senha
     const showForgotBtn = document.querySelector('[data-show-forgot-btn]');
     const showLoginBtn = document.querySelector('[data-show-login-btn]');
 
@@ -157,7 +189,6 @@
       });
     }
 
-    // 3. Login com Autenticação e Suporte a MFA
     if (loginForm) {
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -178,10 +209,9 @@
           if (res.ok && data.success) {
             authToken = data.token || '';
             currentUser = data.user;
-            if (loginCard) loginCard.style.display = 'none';
-            if (dashboard) dashboard.style.display = 'block';
+            setAuthView(elements, true);
             updateUserBadge();
-            loadDashboardData();
+            void loadDashboardData();
           } else if (data.mfaRequired) {
             const mfaField = loginForm.querySelector('[data-mfa-field]');
             if (mfaField) mfaField.style.display = 'block';
@@ -195,7 +225,6 @@
       });
     }
 
-    // 4. Logout com Invalidação de Sessão e Limpeza de Cookies
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {
         try {
@@ -207,39 +236,10 @@
         } catch {}
         authToken = '';
         currentUser = null;
-        if (dashboard) dashboard.style.display = 'none';
-        if (loginCard) loginCard.style.display = 'block';
-        const noticeEl = loginCard?.querySelector('[data-login-notice]');
-        if (noticeEl) noticeEl.style.display = 'none';
+        setAuthView(elements, false);
       });
     }
 
-    // 5. Restauração Automática de Sessão Válida (Refresh da Página)
-    try {
-      const meRes = await fetch(getApiEndpoint('/api/admin/auth/me'), {
-        method: 'GET',
-        credentials: 'include',
-        headers: getAuthHeaders(),
-      });
-
-      if (meRes.ok) {
-        const meData = await meRes.json();
-        if (meData.user) {
-          currentUser = meData.user;
-          if (loginCard) loginCard.style.display = 'none';
-          if (dashboard) dashboard.style.display = 'block';
-          updateUserBadge();
-          loadDashboardData();
-          return;
-        }
-      }
-    } catch {}
-
-    // Se não autenticado por cookie prévio, exibe o cartão de login
-    if (loginCard) loginCard.style.display = 'block';
-    if (dashboard) dashboard.style.display = 'none';
-
-    // 6. Configuração das Abas do Dashboard
     const tabButtons = document.querySelectorAll('[data-admin-tab]');
     tabButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -248,32 +248,83 @@
         btn.setAttribute('aria-selected', 'true');
 
         document.querySelectorAll('[data-admin-pane]').forEach((pane) => {
-          if (pane.getAttribute('data-admin-pane') === targetTab) {
-            pane.style.display = 'block';
-          } else {
-            pane.style.display = 'none';
-          }
+          pane.style.display = pane.getAttribute('data-admin-pane') === targetTab ? 'block' : 'none';
         });
 
-        if (targetTab === 'pipeline') loadPipeline(currentJobId);
-        else if (targetTab === 'candidates') loadCandidates();
-        else if (targetTab === 'jobs') loadJobs();
-        else if (targetTab === 'lgpd') loadLgpdRequests();
-        else if (targetTab === 'audit') loadAuditLogs();
-        else if (targetTab === 'users') loadAdminUsers();
+        if (targetTab === 'pipeline') void loadPipeline(currentJobId);
+        else if (targetTab === 'candidates') void loadCandidates();
+        else if (targetTab === 'jobs') void loadJobs();
+        else if (targetTab === 'lgpd') void loadLgpdRequests();
+        else if (targetTab === 'audit') void loadAuditLogs();
+        else if (targetTab === 'users') void loadAdminUsers();
       });
     });
 
-    // Filtro de vaga no pipeline
     const jobSelect = document.querySelector('[data-pipeline-job-select]');
     if (jobSelect) {
       jobSelect.addEventListener('change', () => {
         currentJobId = jobSelect.value;
-        loadPipeline(currentJobId);
+        void loadPipeline(currentJobId);
       });
     }
 
-    // Modal/Toggle de criação de usuário
+    const toggleJobFormBtn = document.querySelector('[data-toggle-job-form]');
+    const cancelJobFormBtn = document.querySelector('[data-cancel-job-form]');
+    const jobForm = document.querySelector('[data-job-form]');
+
+    if (toggleJobFormBtn) {
+      toggleJobFormBtn.addEventListener('click', () => openJobForm());
+    }
+
+    if (cancelJobFormBtn) {
+      cancelJobFormBtn.addEventListener('click', () => closeJobForm());
+    }
+
+    if (jobForm) {
+      jobForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(jobForm);
+        const jobId = String(formData.get('jobId') || '').trim();
+        const requirements = String(formData.get('requirements') || '')
+          .split(/\r?\n/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+        const payload = {
+          title: String(formData.get('title') || '').trim(),
+          department: String(formData.get('department') || '').trim(),
+          location: String(formData.get('location') || '').trim(),
+          employmentType: String(formData.get('employmentType') || ''),
+          experienceLevel: String(formData.get('experienceLevel') || ''),
+          description: String(formData.get('description') || '').trim(),
+          requirements,
+          status: String(formData.get('status') || 'draft'),
+          openingsCount: Number(formData.get('openingsCount') || 1),
+        };
+        if (!jobId) payload.slug = String(formData.get('slug') || '').trim();
+
+        const noticeEl = document.querySelector('[data-jobs-notice]');
+        try {
+          const res = await fetch(getApiEndpoint(jobId ? `/api/admin/jobs/${encodeURIComponent(jobId)}` : '/api/admin/jobs'), {
+            method: jobId ? 'PUT' : 'POST',
+            credentials: 'include',
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            showNotice(noticeEl, data.error || 'Não foi possível salvar a vaga.', 'error');
+            return;
+          }
+
+          showNotice(noticeEl, jobId ? 'Vaga atualizada com sucesso.' : 'Vaga criada com sucesso.', 'success');
+          closeJobForm();
+          void loadJobs();
+        } catch {
+          showNotice(noticeEl, 'Erro de conexão ao salvar a vaga.', 'error');
+        }
+      });
+    }
+
     const toggleCreateUserBtn = document.querySelector('[data-toggle-create-user-btn]');
     const cancelCreateUserBtn = document.querySelector('[data-cancel-create-user]');
     const createUserCard = document.querySelector('[data-create-user-card]');
@@ -324,6 +375,34 @@
     }
   }
 
+  function setAuthView(elements, authenticated) {
+    if (elements.loginCard) elements.loginCard.style.display = authenticated ? 'none' : 'block';
+    if (elements.dashboard) elements.dashboard.style.display = authenticated ? 'block' : 'none';
+    if (!authenticated) updateUserBadge();
+  }
+
+  async function restoreAdminSession(elements) {
+    try {
+      const meRes = await fetch(getApiEndpoint('/api/admin/auth/me'), {
+        method: 'GET',
+        credentials: 'include',
+        headers: getAuthHeaders(),
+      });
+
+      if (!meRes.ok) return false;
+      const meData = await meRes.json();
+      if (!meData.user) return false;
+
+      currentUser = meData.user;
+      setAuthView(elements, true);
+      updateUserBadge();
+      void loadDashboardData();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   function updateUserBadge() {
     const userBadge = document.querySelector('[data-admin-user-name]');
     const roleBadge = document.querySelector('[data-admin-user-role]');
@@ -335,6 +414,64 @@
     if (usersTab && currentUser) {
       const canManage = currentUser.role === 'super_admin' || (currentUser.permissions && currentUser.permissions.includes('admin:manage'));
       usersTab.style.display = canManage ? 'inline-block' : 'none';
+    }
+  }
+
+  function openJobForm(job = null) {
+    const card = document.querySelector('[data-job-form-card]');
+    const form = document.querySelector('[data-job-form]');
+    if (!card || !form) return;
+
+    const titleEl = document.querySelector('[data-job-form-title]');
+    const slugEl = form.querySelector('[name="slug"]');
+    const jobIdEl = form.querySelector('[name="jobId"]');
+    if (!job) {
+      form.reset();
+      if (jobIdEl) jobIdEl.value = '';
+      if (slugEl) slugEl.readOnly = false;
+      if (titleEl) titleEl.textContent = 'Nova vaga';
+    } else {
+      const requirements = parseJobRequirements(job.requirements);
+      const values = {
+        jobId: job.id,
+        title: job.title,
+        slug: job.slug,
+        department: job.department,
+        location: job.location,
+        employmentType: job.employmentType,
+        experienceLevel: job.experienceLevel,
+        status: job.status,
+        openingsCount: job.openingsCount || 1,
+        description: job.description || '',
+        requirements: requirements.join('\n'),
+      };
+      Object.entries(values).forEach(([name, value]) => {
+        const field = form.querySelector(`[name="${name}"]`);
+        if (field) field.value = String(value ?? '');
+      });
+      if (slugEl) slugEl.readOnly = true;
+      if (titleEl) titleEl.textContent = 'Editar vaga';
+    }
+
+    card.style.display = 'block';
+    card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  function closeJobForm() {
+    const card = document.querySelector('[data-job-form-card]');
+    const form = document.querySelector('[data-job-form]');
+    if (form) form.reset();
+    if (card) card.style.display = 'none';
+  }
+
+  function parseJobRequirements(requirements) {
+    if (Array.isArray(requirements)) return requirements.filter(Boolean);
+    if (typeof requirements !== 'string' || !requirements.trim()) return [];
+    try {
+      const parsed = JSON.parse(requirements);
+      return Array.isArray(parsed) ? parsed.filter(Boolean) : [requirements];
+    } catch {
+      return requirements.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
     }
   }
 
@@ -394,6 +531,17 @@
         const tdCount = document.createElement('td');
         tdCount.textContent = String(job.applicationsCount || 0);
         tr.appendChild(tdCount);
+
+        const tdActions = document.createElement('td');
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'carreiras-button carreiras-button--secondary';
+        editBtn.style.padding = '0.35rem 0.65rem';
+        editBtn.style.fontSize = '0.75rem';
+        editBtn.textContent = 'Editar';
+        editBtn.addEventListener('click', () => openJobForm(job));
+        tdActions.appendChild(editBtn);
+        tr.appendChild(tdActions);
 
         tableBody.appendChild(tr);
 
