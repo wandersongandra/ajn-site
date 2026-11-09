@@ -54,13 +54,6 @@ describe('Carreiras Backend API Tests (Cloudflare Workers + Hono)', () => {
       },
     };
 
-    const mockEnv = {
-      DB: {} as any,
-      RESUMES_BUCKET: mockR2Bucket,
-      ENVIRONMENT: 'test',
-      TURNSTILE_SECRET_KEY: 'test',
-    };
-
     app = createCarreirasApp(() => db);
   });
 

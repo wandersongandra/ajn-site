@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { serializeJsonLd } from '../../utils/site';
+import '../../styles/carreiras.css';
+
+const title = 'Oportunidade de Carreira | AJN Consultoria e Engenharia';
+const description = 'Conheça os requisitos e candidate-se para oportunidades técnicas em engenharia de segurança do trabalho e higiene ocupacional na AJN.';
+const canonicalPath = '/carreiras/';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: 'https://ajnengenharia.com.br/carreiras/' },
+      { '@type': 'ListItem', position: 3, name: 'Oportunidade', item: 'https://ajnengenharia.com.br/carreiras/vaga/' },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page" data-dynamic-job-page>
+    <div class="site-shell">
+      <nav class="carreiras-nav-bar" style="margin-top: 0;" aria-label="Navegação de retorno">
+        <a class="carreiras-nav-link" href="/carreiras/">← Voltar para todas as vagas</a>
+        <a class="carreiras-nav-link" href="#candidatura">Ir para formulário de inscrição ↓</a>
+      </nav>
+
+      <noscript>
+        <div class="carreiras-notice carreiras-notice--info" style="display: block; margin-bottom: 2rem;">
+          Para visualizar os detalhes atualizados desta vaga e enviar sua inscrição online, ative o suporte a JavaScript em seu navegador. Você também pode cadastrar seu currículo diretamente em nosso <a href="/carreiras/talentos/">Banco de Talentos</a>.
+        </div>
+      </noscript>
+
+      <!-- Estado de Vaga Encerrada ou Não Encontrada -->
+      <div id="job-closed-box" style="display: none; text-align: center; padding: 4rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 4rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;" aria-hidden="true">🔒</div>
+        <h2 style="font-family: var(--font-display); font-size: 1.75rem; color: var(--ink); margin-bottom: 1rem;">
+          Esta oportunidade não está mais aberta
+        </h2>
+        <p style="font-size: 1.125rem; color: var(--text-soft); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6;">
+          O processo seletivo para esta vaga foi encerrado ou preenchido por nossa equipe. Você pode conferir nossas vagas ativas ou cadastrar seu currículo em nosso Banco de Talentos para futuras oportunidades.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a class="carreiras-button carreiras-button--primary" href="/carreiras/">
+            Ver Vagas Abertas ←
+          </a>
+          <a class="carreiras-button carreiras-button--secondary" href="/carreiras/talentos/">
+            Cadastrar no Banco de Talentos ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Container Dinâmico da Vaga -->
+      <div id="job-details-container">
+        <header class="carreiras-header" style="text-align: left; max-width: 100%; margin-bottom: 2.5rem;">
+          <div class="carreiras-card-badges" style="margin-bottom: 1rem;">
+            <span class="carreiras-badge carreiras-badge--primary" data-job-department>Carregando departamento...</span>
+            <span class="carreiras-badge" data-job-type>CLT</span>
+            <span class="carreiras-badge" data-job-level>Nível técnico</span>
+            <span class="carreiras-badge" data-job-location>Belo Horizonte - MG</span>
+          </div>
+          <h1 class="carreiras-title" data-job-title>Carregando dados da oportunidade...</h1>
+          <p data-job-salary style="font-size: 1.25rem; font-weight: 600; color: var(--brand-action); margin-top: 0.5rem; display: none;"></p>
+        </header>
+
+        <div style="display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1.2fr); gap: 2.5rem; align-items: start; margin-bottom: 4rem;">
+          <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow-sm);">
+            <section style="margin-bottom: 2rem;">
+              <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+                Descrição da Oportunidade
+              </h2>
+              <p data-job-desc style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);">
+                Carregando descrição completa da vaga...
+              </p>
+            </section>
+
+            <section style="margin-bottom: 2rem;">
+              <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+                Requisitos Obrigatórios
+              </h2>
+              <ul data-job-requirements style="list-style: disc; padding-left: 1.25rem; line-height: 1.8; color: var(--text-soft);">
+                <li>Aguarde o carregamento dos requisitos técnicos...</li>
+              </ul>
+            </section>
+
+            <section data-job-differentials-box style="margin-bottom: 2rem; display: none;">
+              <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+                Diferenciais Valorizados
+              </h2>
+              <p data-job-differentials style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);"></p>
+            </section>
+
+            <section data-job-benefits-box style="display: none;">
+              <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+                Benefícios Oferecidos
+              </h2>
+              <p data-job-benefits style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);"></p>
+            </section>
+          </div>
+
+          <!-- Formulário de Inscrição Direta -->
+          <div class="carreiras-form-container" id="candidatura" style="max-width: 100%; margin: 0;">
+            <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+              Inscreva-se nesta Vaga
+            </h2>
+            <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
+              Preencha seus dados e anexe seu currículo atualizado em PDF ou DOCX.
+            </p>
+
+            <div class="carreiras-notice" data-notice role="alert"></div>
+
+            <form action="/api/applications/talent-pool" method="POST" enctype="multipart/form-data" data-application-form>
+              <div class="carreiras-form-grid">
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="apply-name">Nome Completo *</label>
+                  <input class="carreiras-input" id="apply-name" name="fullName" type="text" required minlength="3" placeholder="Seu nome completo" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-email">E-mail *</label>
+                  <input class="carreiras-input" id="apply-email" name="email" type="email" required placeholder="seu.email@exemplo.com" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-phone">Telefone / WhatsApp *</label>
+                  <input class="carreiras-input" id="apply-phone" name="phone" type="tel" required placeholder="(31) 99999-9999" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-cpf">CPF (apenas dígitos) *</label>
+                  <input class="carreiras-input" id="apply-cpf" name="cpf" type="text" required placeholder="000.000.000-00" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-city">Cidade *</label>
+                  <input class="carreiras-input" id="apply-city" name="city" type="text" required placeholder="Ex: Belo Horizonte" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-state">Estado (UF) *</label>
+                  <input class="carreiras-input" id="apply-state" name="state" type="text" required maxlength="2" placeholder="MG" style="text-transform: uppercase;" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-title">Cargo / Formação Atual</label>
+                  <input class="carreiras-input" id="apply-title" name="currentTitle" type="text" placeholder="Ex: Engenheiro de Segurança" />
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="apply-linkedin">Perfil do LinkedIn (opcional)</label>
+                  <input class="carreiras-input" id="apply-linkedin" name="linkedinUrl" type="url" placeholder="https://linkedin.com/in/seuperfil" />
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="apply-summary">Breve Resumo Profissional</label>
+                  <textarea class="carreiras-textarea" id="apply-summary" name="summary" rows="3" placeholder="Destaque suas principais experiências e projetos..."></textarea>
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
+                  <div class="carreiras-file-drop">
+                    <label for="apply-resume" style="cursor: pointer;">
+                      <div style="font-size: 1.75rem; margin-bottom: 0.5rem;" aria-hidden="true">📄</div>
+                      <span data-file-label style="font-size: 0.875rem; color: var(--brand-action); font-weight: 500;">
+                        Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
+                      </span>
+                    </label>
+                    <input id="apply-resume" name="resume" type="file" required accept=".pdf,.doc,.docx" style="position: absolute; opacity: 0; width: 1px; height: 1px;" />
+                  </div>
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <div class="carreiras-checkbox-group">
+                    <input id="apply-consent-terms" name="consentTerms" type="checkbox" value="true" required />
+                    <label class="carreiras-checkbox-label" for="apply-consent-terms">
+                      Concordo com o tratamento dos meus dados pessoais pela AJN Consultoria e Engenharia exclusivamente para fins de processos seletivos, nos termos da <a href="/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e da LGPD. *
+                    </label>
+                  </div>
+
+                  <div class="carreiras-checkbox-group">
+                    <input id="apply-consent-retention" name="consentRetention" type="checkbox" value="true" checked />
+                    <label class="carreiras-checkbox-label" for="apply-consent-retention">
+                      Autorizo a AJN a manter meu currículo no banco de talentos pelo período de até 2 anos para futuras oportunidades profissionais.
+                    </label>
+                  </div>
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light"></div>
+                </div>
+
+                <div class="carreiras-form-full" style="margin-top: 1rem;">
+                  <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
+                    Confirmar e Enviar Candidatura <span aria-hidden="true">✓</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="/scripts/carreiras.js" defer></script>
+</BaseLayout>

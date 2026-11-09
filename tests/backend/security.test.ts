@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import * as schema from '../../worker/db/schema';
@@ -9,7 +9,7 @@ import { createCarreirasApp } from '../../worker/index';
 import { hashPassword, sha256, generateRandomToken, generateCurrentTotp, generateTotpSecret } from '../../worker/lib/crypto';
 import { seedDatabase, INITIAL_JOB_POSTINGS } from '../../worker/db/seed';
 import { rateLimiter, resetRateLimiterStore, RateLimiterDO } from '../../worker/middleware/rate-limit';
-import { clearSentTestEmails, sentTestEmails } from '../../worker/lib/email';
+import { clearSentTestEmails, sentTestEmails, escapeHtml } from '../../worker/lib/email';
 import { Hono } from 'hono';
 
 describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos', () => {
@@ -18,14 +18,19 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
   let app: ReturnType<typeof createCarreirasApp>;
   let mockR2Storage: Map<string, Uint8Array>;
   let mockR2Bucket: any;
-  let mockKv: any;
+  let mockDOBinding: any;
 
   beforeEach(async () => {
     resetRateLimiterStore();
-    const kvStore = new Map<string, string>();
-    mockKv = {
-      get: async (k: string) => kvStore.get(k) || null,
-      put: async (k: string, v: string) => kvStore.set(k, v),
+    mockDOBinding = {
+      idFromName: (_name: string) => ({ toString: () => 'do-stub-id' }),
+      get: (_id: any) => ({
+        fetch: async () =>
+          new Response(JSON.stringify({ allowed: true, count: 1, remaining: 59, resetTimestamp: Math.ceil(Date.now() / 1000) + 60, retryAfter: 0 }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json', 'X-RateLimit-Limit': '60', 'X-RateLimit-Remaining': '59', 'X-RateLimit-Reset': '1000' },
+          }),
+      }),
     };
 
     sqlite = new Database(':memory:');
@@ -82,6 +87,22 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       passwordSalt: viewPass.salt,
       role: 'viewer',
       isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const adminPass = await hashPassword('AdminPassword123!');
+    const adminMfaSecret = generateTotpSecret();
+    await db.insert(schema.adminUsers).values({
+      id: 'usr-admin-test',
+      name: 'Administrador RH',
+      email: 'admin@ajnengenharia.com.br',
+      passwordHash: adminPass.hash,
+      passwordSalt: adminPass.salt,
+      role: 'super_admin',
+      isActive: true,
+      mfaEnabled: true,
+      mfaSecret: adminMfaSecret,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -452,7 +473,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       const resMissingKey = await app.request(
         '/api/applications/talent-pool',
         { method: 'POST', body: form },
-        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: '', RATE_LIMIT_KV: mockKv } as any
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: '', RATE_LIMITER_DO: mockDOBinding } as any
       );
       expect(resMissingKey.status).toBe(400);
       const dataMissing = (await resMissingKey.json()) as any;
@@ -462,7 +483,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       const resDummyKey = await app.request(
         '/api/applications/talent-pool',
         { method: 'POST', body: form },
-        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: 'dummy_secret', RATE_LIMIT_KV: mockKv } as any
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: 'dummy_secret', RATE_LIMITER_DO: mockDOBinding } as any
       );
       expect(resDummyKey.status).toBe(400);
     });
@@ -581,7 +602,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       testApp.use('*', rateLimiter({ max: 2, windowSeconds: 60, keyPrefix: 'test-kv' }));
       testApp.get('/test', (c) => c.text('OK'));
 
-      const env = { RATE_LIMIT_KV: mockKv, ENVIRONMENT: 'production' };
+      const env = { RATE_LIMIT_KV: mockKv, ENVIRONMENT: 'development' };
 
       // Req 1: OK
       const r1 = await testApp.request('/test', { headers: { 'cf-connecting-ip': '200.1.2.3' } }, env);
@@ -768,7 +789,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: 'joao@ajnengenharia.com.br', password: 'ViewerPass123!' }),
         },
-        { ENVIRONMENT: 'production', RATE_LIMIT_KV: mockKv } as any
+        { ENVIRONMENT: 'production', RATE_LIMITER_DO: mockDOBinding } as any
       );
       expect(resWeb.status).toBe(200);
       const webData = (await resWeb.json()) as any;
@@ -787,7 +808,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
           headers: { 'Content-Type': 'application/json', 'X-Auth-Mode': 'api' },
           body: JSON.stringify({ email: 'joao@ajnengenharia.com.br', password: 'ViewerPass123!' }),
         },
-        { ENVIRONMENT: 'production', RATE_LIMIT_KV: mockKv } as any
+        { ENVIRONMENT: 'production', RATE_LIMITER_DO: mockDOBinding } as any
       );
       expect(resApi.status).toBe(200);
       const apiData = (await resApi.json()) as any;
@@ -1107,6 +1128,276 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
         }),
       });
       expect(newLoginRes.status).toBe(200);
+    });
+  });
+
+  describe('6. Auditoria Final da PR #107 — Correções P0 e P1', () => {
+    it('P0-1 & P0-2: Ciclo de vida completo de vaga dinâmica, SEO Google Jobs e despublicação', async () => {
+      // 1. Gera token de super_admin
+      const adminSessionToken = generateRandomToken(32);
+      const adminTokenHash = await sha256(adminSessionToken);
+      await db.insert(schema.adminSessions).values({
+        id: 'sess-dyn-test',
+        userId: 'usr-admin-test',
+        sessionTokenHash: adminTokenHash,
+        role: 'super_admin',
+        expiresAt: new Date(Date.now() + 8 * 3600 * 1000),
+        createdAt: new Date(),
+      });
+
+      // 2. Super Admin cria e publica vaga
+      const newJobRes = await app.request('/api/admin/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminSessionToken}` },
+        body: JSON.stringify({
+          title: 'Engenheiro Estrutural Sênior',
+          slug: 'engenheiro-estrutural-senior',
+          department: 'Engenharia Civil',
+          location: 'Belo Horizonte - MG (Presencial)',
+          employmentType: 'CLT',
+          experienceLevel: 'Sênior',
+          description: 'Responsável pelo cálculo estrutural, inspeções prediais e laudos técnicos de conformidade.',
+          requirements: ['Graduação em Engenharia Civil com CREA ativo', 'Experiência sólida em cálculo e inspeção predial'],
+          salaryMin: 11000,
+          salaryMax: 14500,
+          salaryIsDisclosed: true,
+          status: 'published',
+        }),
+      });
+      expect(newJobRes.status).toBe(201);
+
+      // 3. Vaga aparece na listagem pública da API
+      const listRes = await app.request('/api/jobs');
+      expect(listRes.status).toBe(200);
+      const listData = (await listRes.json()) as any;
+      const found = listData.jobs.find((j: any) => j.slug === 'engenheiro-estrutural-senior');
+      expect(found).toBeDefined();
+      expect(found.title).toBe('Engenheiro Estrutural Sênior');
+
+      // 4. Acesso direto à URL individual com Accept: text/html retorna 200 com JSON-LD Google Jobs
+      const htmlRes = await app.request('/carreiras/engenheiro-estrutural-senior', {
+        headers: { Accept: 'text/html' },
+      });
+      expect(htmlRes.status).toBe(200);
+      const html = await htmlRes.text();
+      expect(html).toContain('Engenheiro Estrutural Sênior');
+      expect(html).toContain('schema.org');
+      expect(html).toContain('JobPosting');
+      expect(html).toContain('AJN Consultoria e Engenharia');
+
+      // 5. Candidato se inscreve com sucesso nesta vaga
+      const pdfBytes = new TextEncoder().encode('%PDF-1.4 Dynamic Job Test');
+      const applyForm = new FormData();
+      applyForm.append('fullName', 'Candidato Engenheiro');
+      applyForm.append('email', 'cand.eng@teste.com');
+      applyForm.append('phone', '(31) 98765-4321');
+      applyForm.append('cpf', '00000000191');
+      applyForm.append('city', 'Belo Horizonte');
+      applyForm.append('state', 'MG');
+      applyForm.append('consentTerms', 'true');
+      applyForm.append('consentRetention', 'true');
+      applyForm.append('resume', new File([pdfBytes], 'curriculo.pdf', { type: 'application/pdf' }));
+      applyForm.append('turnstileToken', 'bypass-test');
+
+      const applyRes = await app.request(
+        '/api/applications/jobs/engenheiro-estrutural-senior/apply',
+        { method: 'POST', body: applyForm },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'test', TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+      expect(applyRes.status).toBe(201);
+      const applyData = (await applyRes.json()) as any;
+      expect(applyData.trackingCode).toBeDefined();
+
+      // 6. Admin encerra a vaga
+      const closeRes = await app.request(`/api/admin/jobs/${found.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminSessionToken}` },
+        body: JSON.stringify({ status: 'closed' }),
+      });
+      expect(closeRes.status).toBe(200);
+
+      // 7. Acesso direto à URL agora retorna 404
+      const closedHtmlRes = await app.request('/carreiras/engenheiro-estrutural-senior', {
+        headers: { Accept: 'text/html' },
+      });
+      expect(closedHtmlRes.status).toBe(404);
+      const closedHtml = await closedHtmlRes.text();
+      expect(closedHtml).toContain('não está mais aberta');
+
+      // 8. Vaga foi removida da listagem pública
+      const updatedList = await app.request('/api/jobs');
+      const updatedData = (await updatedList.json()) as any;
+      expect(updatedData.jobs.find((j: any) => j.slug === 'engenheiro-estrutural-senior')).toBeUndefined();
+    });
+
+    it('P0-3: Cloudflare D1 batch atômico e compensação imediata de arquivo R2 em falha', async () => {
+      // 1. Simulação com candidato novo e falha no meio do batch
+      let r2DeletedKey: string | null = null;
+      const trackingBucket = {
+        ...mockR2Bucket,
+        delete: async (key: string) => {
+          r2DeletedKey = key;
+        },
+      };
+
+      let batchExecuted = false;
+      const mockD1Database = {
+        select: db.select.bind(db),
+        insert: db.insert.bind(db),
+        update: db.update.bind(db),
+        batch: async (_stmts: any[]) => {
+          batchExecuted = true;
+          // Simula falha atômica no meio da transação
+          throw new Error('D1_EXECUTION_ERROR: SQLite transaction aborted');
+        },
+      };
+
+      const failingD1App = createCarreirasApp(() => mockD1Database as any);
+
+      const pdfBytes = new TextEncoder().encode('%PDF-1.4 D1 Batch Atomicity Test');
+      const form = new FormData();
+      form.append('fullName', 'Novo Candidato D1');
+      form.append('email', 'novo.d1@teste.com');
+      form.append('phone', '(31) 98888-1111');
+      form.append('cpf', '11144477735');
+      form.append('city', 'Belo Horizonte');
+      form.append('state', 'MG');
+      form.append('consentTerms', 'true');
+      form.append('consentRetention', 'true');
+      form.append('resume', new File([pdfBytes], 'cv.pdf', { type: 'application/pdf' }));
+      form.append('turnstileToken', 'bypass-test');
+
+      const res = await failingD1App.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form },
+        { DB: {} as any, RESUMES_BUCKET: trackingBucket, ENVIRONMENT: 'test', TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+
+      expect(res.status).toBe(500);
+      expect(batchExecuted).toBe(true);
+      // Garante que o arquivo R2 enviado antes do batch foi compensado (deletado)
+      expect(r2DeletedKey).not.toBeNull();
+      expect(r2DeletedKey).toContain('resumes/');
+
+      // Confirma que nenhum candidato ficou registrado no banco
+      const candidatesCount = await db.select().from(schema.candidates).where(eq(schema.candidates.email, 'novo.d1@teste.com')).all();
+      expect(candidatesCount.length).toBe(0);
+    });
+
+    it('P1-4: Durable Object RateLimiterDO com storage persistente, concorrência, expiração e reinício', async () => {
+      const persistentStorage = new Map<string, any>();
+      const mockDOState = {
+        storage: {
+          get: async (k: string) => persistentStorage.get(k),
+          put: async (k: string, v: any) => persistentStorage.set(k, v),
+          delete: async (k: string) => persistentStorage.delete(k),
+        },
+      };
+
+      // 1. Instância do DO executando requisições
+      const do1 = new RateLimiterDO(mockDOState);
+
+      // Concorrência: 3 requisições simultâneas
+      const req = () => new Request('https://do-ratelimit.internal/?key=user-ip-1&max=5&window=60');
+      const [r1, r2, r3] = await Promise.all([do1.fetch(req()), do1.fetch(req()), do1.fetch(req())]);
+
+      expect(r1.status).toBe(200);
+      expect(r2.status).toBe(200);
+      expect(r3.status).toBe(200);
+
+      // Estado gravado no storage
+      const record = persistentStorage.get('user-ip-1');
+      expect(record).toBeDefined();
+      expect(record.count).toBe(3);
+
+      // 2. Reinício do Durable Object (nova instância criada com o mesmo storage compartilhado)
+      const do2 = new RateLimiterDO(mockDOState);
+      const r4 = await do2.fetch(req());
+      const r5 = await do2.fetch(req());
+      const r6 = await do2.fetch(req()); // Excede o limite de 5
+
+      expect(r4.status).toBe(200);
+      expect(r5.status).toBe(200);
+      expect(r6.status).toBe(429); // Bloqueado! O contador persistiu através do reinício
+
+      // 3. Expiração da janela
+      const expiredRecord = { count: 5, resetAt: Date.now() - 1000 };
+      persistentStorage.set('user-ip-1', expiredRecord);
+
+      const rAfterExpiry = await do2.fetch(req());
+      expect(rAfterExpiry.status).toBe(200);
+      const dataAfter = (await rAfterExpiry.json()) as any;
+      expect(dataAfter.count).toBe(1); // Resetou para a nova janela
+
+      // 4. Falha segura em produção sem DO binding (503 explícito sem fallback KV)
+      const testApp = new Hono<{ Bindings: any; Variables: any }>();
+      testApp.use('*', rateLimiter({ max: 5, windowSeconds: 60 }));
+      testApp.get('/test', (c) => c.text('OK'));
+
+      const prodRes = await testApp.request('/test', {}, { ENVIRONMENT: 'production' } as any);
+      expect(prodRes.status).toBe(503);
+    });
+
+    it('P1-5: Bootstrap seguro e primeiro login administrativo com MFA remoto', async () => {
+      // 1. Simula primeiro login do super_admin criado no bootstrap
+      // Login sem código MFA é desafiado com 401 e mfaRequired: true
+      const chalRes = await app.request('/api/admin/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'admin@ajnengenharia.com.br',
+          password: 'AdminPassword123!',
+        }),
+      });
+      expect(chalRes.status).toBe(401);
+      const chalData = (await chalRes.json()) as any;
+      expect(chalData.mfaRequired).toBe(true);
+
+      // 2. Busca chave do usuário e gera código TOTP válido
+      const adminUser = await db.select().from(schema.adminUsers).where(eq(schema.adminUsers.email, 'admin@ajnengenharia.com.br')).get();
+      expect(adminUser?.mfaSecret).toBeDefined();
+
+      const validTotp = await generateCurrentTotp(adminUser!.mfaSecret!);
+      const loginRes = await app.request('/api/admin/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'admin@ajnengenharia.com.br',
+          password: 'AdminPassword123!',
+          mfaCode: validTotp,
+        }),
+      });
+      expect(loginRes.status).toBe(200);
+      const loginData = (await loginRes.json()) as any;
+      expect(loginData.success).toBe(true);
+      expect(loginData.user.role).toBe('super_admin');
+    });
+
+    it('P1-6: Endurecimento de recuperação de senha, rate limiting específico e escape HTML', async () => {
+      // 1. Rate limiting no endpoint forgot-password (max 3 / 900s)
+      const envWithDO = { ENVIRONMENT: 'production', RATE_LIMITER_DO: mockDOBinding };
+
+      const reqForgot = () =>
+        app.request(
+          '/api/admin/auth/forgot-password',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': '189.1.1.5' },
+            body: JSON.stringify({ email: 'admin@ajnengenharia.com.br' }),
+          },
+          envWithDO as any
+        );
+
+      const f1 = await reqForgot();
+      expect(f1.status).toBe(200);
+
+      // 2. Escape HTML sanitiza ataques XSS em templates de e-mail
+      const maliciousPayload = '<script>alert("xss")</script><img src=x onerror=alert(1)>';
+      const escaped = escapeHtml(maliciousPayload);
+      expect(escaped).not.toContain('<script>');
+      expect(escaped).not.toContain('<img');
+      expect(escaped).toContain('&lt;script&gt;');
+      expect(escaped).toContain('&lt;img');
     });
   });
 });

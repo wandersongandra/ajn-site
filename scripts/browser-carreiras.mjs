@@ -17,9 +17,7 @@ const routes = [
   '/carreiras/',
   '/carreiras/talentos/',
   '/carreiras/acompanhamento/',
-  '/carreiras/engenheiro-seguranca-do-trabalho/',
-  '/carreiras/tecnico-seguranca-do-trabalho-pleno/',
-  '/carreiras/especialista-higiene-ocupacional-medicoes/',
+  '/carreiras/vaga/',
   '/admin/carreiras/',
 ];
 

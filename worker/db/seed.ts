@@ -221,17 +221,43 @@ if (process.argv[1]?.endsWith('seed.ts') || process.argv[1]?.includes('worker/db
       const isRemote = process.argv.includes('--remote') || process.env.REMOTE === 'true';
 
       if (isRemote) {
-        console.log('[BOOTSTRAP] Modo remoto detectado. Gerando comandos SQL para Cloudflare D1...');
+        console.log('[BOOTSTRAP] Modo remoto detectado. Gerando comandos SQL em arquivo temporário seguro para Cloudflare D1...');
         const { hash, salt } = await hashPassword(adminPassword);
         const mfaSecret = generateTotpSecret();
-        const sqlCmd = `INSERT INTO admin_users (id, name, email, password_hash, password_salt, role, is_active, mfa_enabled, mfa_secret, created_at, updated_at) VALUES ('usr-admin-bootstrap', 'Administrador RH', '${adminEmail}', '${hash}', '${salt}', 'super_admin', 1, 1, '${mfaSecret}', unixepoch(), unixepoch()) ON CONFLICT(email) DO UPDATE SET password_hash='${hash}', password_salt='${salt}', mfa_secret='${mfaSecret}', mfa_enabled=1, is_active=1, updated_at=unixepoch();`;
-        
-        execSync(`npx wrangler d1 execute prod-ajn-carreiras-d1 --config=./worker/wrangler.toml --remote --command="${sqlCmd.replace(/"/g, '\\"')}"`, {
-          stdio: 'inherit',
-          cwd: process.cwd(),
-        });
+        const escapeSql = (s: string) => s.replace(/'/g, "''");
 
-        console.log('[BOOTSTRAP] Usuário inserido com sucesso no Cloudflare D1 remoto.');
+        const sqlLines = [
+          ...DEFAULT_STAGES.map((s) => `INSERT INTO recruitment_stages (id, name, stage_order, is_terminal_hired, is_terminal_rejected) VALUES ('${escapeSql(s.id)}', '${escapeSql(s.name)}', ${s.stageOrder}, ${s.isTerminalHired ? 1 : 0}, ${s.isTerminalRejected ? 1 : 0}) ON CONFLICT(id) DO NOTHING;`),
+          ...DEFAULT_PERMISSIONS.map((p) => `INSERT INTO admin_permissions (id, role, permission) VALUES ('${escapeSql(p.id)}', '${escapeSql(p.role)}', '${escapeSql(p.permission)}') ON CONFLICT(id) DO NOTHING;`),
+          `INSERT INTO admin_users (id, name, email, password_hash, password_salt, role, is_active, mfa_enabled, mfa_secret, created_at, updated_at) VALUES ('usr-admin-bootstrap', 'Administrador RH', '${escapeSql(adminEmail)}', '${escapeSql(hash)}', '${escapeSql(salt)}', 'super_admin', 1, 1, '${escapeSql(mfaSecret)}', unixepoch(), unixepoch()) ON CONFLICT(email) DO UPDATE SET password_hash='${escapeSql(hash)}', password_salt='${escapeSql(salt)}', mfa_secret='${escapeSql(mfaSecret)}', mfa_enabled=1, is_active=1, updated_at=unixepoch();`
+        ].join('\n');
+
+        const { writeFileSync, unlinkSync } = await import('node:fs');
+        const { tmpdir } = await import('node:os');
+        const { join: pathJoin } = await import('node:path');
+        const { randomBytes } = await import('node:crypto');
+
+        const tmpFile = pathJoin(tmpdir(), `d1-bootstrap-${randomBytes(8).toString('hex')}.sql`);
+        writeFileSync(tmpFile, sqlLines, { mode: 0o600 });
+
+        try {
+          // Utiliza --file com permissões restritas em vez de --command para não expor credenciais em ps aux (P1 Item 5)
+          execSync(`npx wrangler d1 execute prod-ajn-carreiras-d1 --config=./worker/wrangler.toml --remote --file="${tmpFile}"`, {
+            stdio: 'inherit',
+            cwd: process.cwd(),
+          });
+        } finally {
+          try { unlinkSync(tmpFile); } catch {}
+        }
+
+        console.log('[BOOTSTRAP] Usuário inserido com sucesso no Cloudflare D1 remoto sem exposição em argumentos de processo (ps aux).');
+        console.log(`[BOOTSTRAP] Administrador: ${adminEmail}`);
+        if (process.stdout.isTTY) {
+          console.log(`[BOOTSTRAP] Segredo MFA (TOTP): ${mfaSecret}`);
+          console.log(`[BOOTSTRAP] URI TOTP: otpauth://totp/AJN%20Carreiras:${encodeURIComponent(adminEmail)}?secret=${mfaSecret}&issuer=AJN%20Engenharia`);
+        } else {
+          console.log('[BOOTSTRAP] Segredo MFA gerado e configurado no banco. Configure via autenticador seguro.');
+        }
         return;
       }
 

@@ -1,5 +1,3 @@
-import { INITIAL_JOB_POSTINGS } from '../../worker/db/seed';
-
 export interface CareerJob {
   id: string;
   title: string;
@@ -20,7 +18,7 @@ export interface CareerJob {
   publishedAt: Date | null;
 }
 
-// Em conformidade com o requisito P0 Item 6:
-// Vagas de teste são mantidas como rascunho.
-// Somente vagas com aprovação explícita são publicadas no portal público.
-export const APPROVED_JOB_POSTINGS: CareerJob[] = INITIAL_JOB_POSTINGS;
+// Em conformidade estrita com o requisito P0 Item 2:
+// Nenhuma vaga fictícia ou em rascunho (draft) é pré-renderizada no HTML estático.
+// O portal público exibe exclusivamente vagas aprovadas e publicadas em tempo real via Cloudflare D1.
+export const APPROVED_JOB_POSTINGS: CareerJob[] = [];

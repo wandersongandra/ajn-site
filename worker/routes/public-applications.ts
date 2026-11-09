@@ -19,30 +19,50 @@ import { verifyTurnstile } from '../lib/antispam';
 import { logAuditEvent } from '../lib/audit';
 import type { Env, HonoVariables } from '../types';
 
-async function executeAtomicDbWrites(db: any, operation: (tx: any) => Promise<void>) {
-  const client = db.session?.client;
-  if (client && typeof client.exec === 'function') {
-    client.exec('BEGIN TRANSACTION');
-    try {
-      await operation(db);
-      client.exec('COMMIT');
-    } catch (err) {
-      try {
-        client.exec('ROLLBACK');
-      } catch {}
-      throw err;
-    }
-    return;
+export async function executeAtomicDbWrites(
+  db: any,
+  statementBuilder: (dbOrTx: any) => any[]
+) {
+  // 1. Cloudflare D1 nativo via Drizzle ORM (API oficial de batching atômico do D1)
+  if (typeof db.batch === 'function') {
+    const stmts = statementBuilder(db);
+    if (!stmts || stmts.length === 0) return [];
+    return await db.batch(stmts as [any, ...any[]]);
   }
 
+  // 2. Binding direto de Cloudflare D1 (env.DB.batch)
+  if (db?.session?.client && typeof db.session.client.batch === 'function') {
+    const stmts = statementBuilder(db);
+    return await db.session.client.batch(stmts);
+  }
+
+  // 3. Better-SQLite3 em modo transacional síncrono atômico
   if (typeof db.transaction === 'function') {
-    await db.transaction(async (tx: any) => {
-      await operation(tx);
+    return db.transaction((tx: any) => {
+      const stmts = statementBuilder(tx);
+      const results: any[] = [];
+      for (const stmt of stmts) {
+        if (stmt && typeof stmt.run === 'function') {
+          results.push(stmt.run());
+        } else if (stmt && typeof stmt.execute === 'function') {
+          results.push(stmt.execute());
+        }
+      }
+      return results;
     });
-    return;
   }
 
-  await operation(db);
+  // 4. Fallback direto para objetos de teste/mock
+  const stmts = statementBuilder(db);
+  const results: any[] = [];
+  for (const stmt of stmts) {
+    if (stmt && typeof stmt.run === 'function') {
+      results.push(stmt.run());
+    } else if (stmt && typeof stmt.execute === 'function') {
+      results.push(await stmt.execute());
+    }
+  }
+  return results;
 }
 
 export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
@@ -653,117 +673,137 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
       .where(eq(schema.recruitmentStages.stageOrder, 1))
       .get();
 
-    // Execução em bloco transacional atômico
-    await executeAtomicDbWrites(db, async (tx: any) => {
+    // Execução em lote transacional estritamente atômico (compatível com Cloudflare D1 batch)
+    await executeAtomicDbWrites(db, (dbOrTx: any) => {
+      const stmts: any[] = [];
+
       if (!existingCandidate) {
-        await tx.insert(schema.candidates).values({
-          id: candidateId,
-          fullName: validData.fullName,
-          email: validData.email.toLowerCase(),
-          phone: validData.phone,
-          cpfHash,
-          cpfMasked,
-          city: validData.city,
-          state: validData.state,
-          linkedinUrl: validData.linkedinUrl || null,
-          portfolioUrl: validData.portfolioUrl || null,
-          currentTitle: validData.currentTitle || null,
-          summary: validData.summary || null,
-          isTalentPool: !targetJob ? true : validData.consentRetention,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-      } else {
-        // Consumo único do token de verificação e atualização segura dos dados
-        await tx
-          .update(schema.candidates)
-          .set({
+        stmts.push(
+          dbOrTx.insert(schema.candidates).values({
+            id: candidateId,
             fullName: validData.fullName,
             email: validData.email.toLowerCase(),
             phone: validData.phone,
+            cpfHash,
+            cpfMasked,
             city: validData.city,
             state: validData.state,
-            linkedinUrl: validData.linkedinUrl || existingCandidate.linkedinUrl,
-            portfolioUrl: validData.portfolioUrl || existingCandidate.portfolioUrl,
-            currentTitle: validData.currentTitle || existingCandidate.currentTitle,
-            summary: validData.summary || existingCandidate.summary,
+            linkedinUrl: validData.linkedinUrl || null,
+            portfolioUrl: validData.portfolioUrl || null,
+            currentTitle: validData.currentTitle || null,
+            summary: validData.summary || null,
             isTalentPool: !targetJob ? true : validData.consentRetention,
-            emailVerificationCodeHash: null,
-            emailVerificationExpiresAt: null,
-            emailVerificationAttempts: 0,
+            createdAt: new Date(),
             updatedAt: new Date(),
           })
-          .where(eq(schema.candidates.id, candidateId));
+        );
+      } else {
+        // Consumo único do token de verificação e atualização segura dos dados
+        stmts.push(
+          dbOrTx
+            .update(schema.candidates)
+            .set({
+              fullName: validData.fullName,
+              email: validData.email.toLowerCase(),
+              phone: validData.phone,
+              city: validData.city,
+              state: validData.state,
+              linkedinUrl: validData.linkedinUrl || existingCandidate.linkedinUrl,
+              portfolioUrl: validData.portfolioUrl || existingCandidate.portfolioUrl,
+              currentTitle: validData.currentTitle || existingCandidate.currentTitle,
+              summary: validData.summary || existingCandidate.summary,
+              isTalentPool: !targetJob ? true : validData.consentRetention,
+              emailVerificationCodeHash: null,
+              emailVerificationExpiresAt: null,
+              emailVerificationAttempts: 0,
+              updatedAt: new Date(),
+            })
+            .where(eq(schema.candidates.id, candidateId))
+        );
       }
 
       // Inativa currículos anteriores e registra o novo
-      await tx
-        .update(schema.resumes)
-        .set({ isCurrent: false })
-        .where(eq(schema.resumes.candidateId, candidateId));
+      stmts.push(
+        dbOrTx
+          .update(schema.resumes)
+          .set({ isCurrent: false })
+          .where(eq(schema.resumes.candidateId, candidateId))
+      );
 
-      await tx.insert(schema.resumes).values({
-        id: resumeId,
-        candidateId,
-        fileKey,
-        originalFilename: resumeFile.name,
-        mimeType: resumeFile.type || 'application/pdf',
-        fileSizeBytes: fileBuffer.length,
-        fileSha256,
-        isCurrent: true,
-        uploadedAt: new Date(),
-      });
+      stmts.push(
+        dbOrTx.insert(schema.resumes).values({
+          id: resumeId,
+          candidateId,
+          fileKey,
+          originalFilename: resumeFile.name,
+          mimeType: resumeFile.type || 'application/pdf',
+          fileSizeBytes: fileBuffer.length,
+          fileSha256,
+          isCurrent: true,
+          uploadedAt: new Date(),
+        })
+      );
 
       // Atualiza certificações
       if (validData.certifications && validData.certifications.length > 0) {
         for (const certName of validData.certifications) {
-          await tx.insert(schema.certifications).values({
-            id: 'cert-' + generateRandomToken(8),
-            candidateId,
-            name: certName,
-            createdAt: new Date(),
-          });
+          stmts.push(
+            dbOrTx.insert(schema.certifications).values({
+              id: 'cert-' + generateRandomToken(8),
+              candidateId,
+              name: certName,
+              createdAt: new Date(),
+            })
+          );
         }
       }
 
       // Registra consentimentos LGPD efetivos
-      await tx.insert(schema.dataConsents).values({
-        id: 'consent-' + generateRandomToken(10),
-        candidateId,
-        consentType: targetJob ? 'recruitment_process' : 'talent_pool_opt_in',
-        consentVersion: '1.0',
-        granted: true,
-        ipAddress: ip,
-        userAgent,
-        consentedAt: new Date(),
-      });
-
-      if (targetJob) {
-        await tx.insert(schema.dataConsents).values({
-          id: 'consent-ret-' + generateRandomToken(10),
+      stmts.push(
+        dbOrTx.insert(schema.dataConsents).values({
+          id: 'consent-' + generateRandomToken(10),
           candidateId,
-          consentType: 'talent_pool_retention',
+          consentType: targetJob ? 'recruitment_process' : 'talent_pool_opt_in',
           consentVersion: '1.0',
-          granted: validData.consentRetention,
+          granted: true,
           ipAddress: ip,
           userAgent,
           consentedAt: new Date(),
-        });
+        })
+      );
+
+      if (targetJob) {
+        stmts.push(
+          dbOrTx.insert(schema.dataConsents).values({
+            id: 'consent-ret-' + generateRandomToken(10),
+            candidateId,
+            consentType: 'talent_pool_retention',
+            consentVersion: '1.0',
+            granted: validData.consentRetention,
+            ipAddress: ip,
+            userAgent,
+            consentedAt: new Date(),
+          })
+        );
       }
 
       // Cria candidatura
-      await tx.insert(schema.jobApplications).values({
-        id: applicationId,
-        jobId: targetJob ? targetJob.id : null,
-        candidateId,
-        resumeId,
-        currentStageId: defaultStage ? defaultStage.id : null,
-        trackingCode,
-        status: 'active',
-        source: targetJob ? 'portal' : 'talentos',
-        appliedAt: new Date(),
-        updatedAt: new Date(),
-      });
+      stmts.push(
+        dbOrTx.insert(schema.jobApplications).values({
+          id: applicationId,
+          jobId: targetJob ? targetJob.id : null,
+          candidateId,
+          resumeId,
+          currentStageId: defaultStage ? defaultStage.id : null,
+          trackingCode,
+          status: 'active',
+          source: targetJob ? 'portal' : 'talentos',
+          appliedAt: new Date(),
+          updatedAt: new Date(),
+        })
+      );
+
+      return stmts;
     });
 
     await logAuditEvent({

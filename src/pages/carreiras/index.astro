@@ -22,33 +22,16 @@ const jsonLd = [
   },
   {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: 'Vagas em aberto na AJN Consultoria e Engenharia',
-    numberOfItems: APPROVED_JOB_POSTINGS.length,
-    itemListElement: APPROVED_JOB_POSTINGS.map((job, idx) => ({
-      '@type': 'ListItem',
-      position: idx + 1,
-      item: {
-        '@type': 'JobPosting',
-        title: job.title,
-        description: job.description,
-        employmentType: job.employmentType === 'CLT' ? 'FULL_TIME' : 'CONTRACTOR',
-        hiringOrganization: {
-          '@type': 'Organization',
-          name: 'AJN Consultoria e Engenharia',
-          sameAs: 'https://ajnengenharia.com.br',
-        },
-        jobLocation: {
-          '@type': 'Place',
-          address: {
-            '@type': 'PostalAddress',
-            addressLocality: 'Belo Horizonte',
-            addressRegion: 'MG',
-            addressCountry: 'BR',
-          },
-        },
-      },
-    })),
+    '@type': 'WebPage',
+    name: title,
+    description: description,
+    url: 'https://ajnengenharia.com.br/carreiras/',
+    inLanguage: 'pt-BR',
+    publisher: {
+      '@type': 'Organization',
+      name: 'AJN Consultoria e Engenharia',
+      url: 'https://ajnengenharia.com.br',
+    },
   },
 ];
 ---
@@ -109,41 +92,56 @@ const jsonLd = [
         </div>
 
         <div class="carreiras-grid">
-          {APPROVED_JOB_POSTINGS.map((job) => (
-            <article
-              class="carreiras-card"
-              data-job-card
-              data-title={job.title}
-              data-department={job.department}
-              data-type={job.employmentType}
-              data-desc={job.description}
-            >
-              <div>
-                <div class="carreiras-card-badges">
-                  <span class="carreiras-badge carreiras-badge--primary">{job.department}</span>
-                  <span class="carreiras-badge">{job.employmentType}</span>
-                  <span class="carreiras-badge">{job.experienceLevel}</span>
+          {APPROVED_JOB_POSTINGS.length === 0 ? (
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+              <div style="font-size: 2.5rem; margin-bottom: 1rem;" aria-hidden="true">💼</div>
+              <h3 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.75rem;">
+                Oportunidades em Atualização
+              </h3>
+              <p style="font-size: 1.0625rem; color: var(--text-soft); max-width: 540px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                Novas vagas técnicas em Segurança do Trabalho e Higiene Ocupacional estão sendo abertas por nossa equipe. Cadastre seu currículo em nosso Banco de Talentos para ser considerado prioritariamente nos próximos processos seletivos.
+              </p>
+              <a class="carreiras-button carreiras-button--primary" href="/carreiras/talentos/">
+                Cadastrar no Banco de Talentos <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          ) : (
+            APPROVED_JOB_POSTINGS.map((job) => (
+              <article
+                class="carreiras-card"
+                data-job-card
+                data-title={job.title}
+                data-department={job.department}
+                data-type={job.employmentType}
+                data-desc={job.description}
+              >
+                <div>
+                  <div class="carreiras-card-badges">
+                    <span class="carreiras-badge carreiras-badge--primary">{job.department}</span>
+                    <span class="carreiras-badge">{job.employmentType}</span>
+                    <span class="carreiras-badge">{job.experienceLevel}</span>
+                  </div>
+                  <h3 class="carreiras-card-title">{job.title}</h3>
+                  <p class="carreiras-card-desc">{job.description}</p>
                 </div>
-                <h3 class="carreiras-card-title">{job.title}</h3>
-                <p class="carreiras-card-desc">{job.description}</p>
-              </div>
 
-              <div>
-                <div class="carreiras-card-meta">
-                  <span><strong>Local:</strong> {job.location}</span>
-                  {job.salaryIsDisclosed && (
-                    <span>
-                      <strong>Faixa salarial:</strong> R$ {job.salaryMin?.toLocaleString('pt-BR')} a R$ {job.salaryMax?.toLocaleString('pt-BR')}
-                    </span>
-                  )}
+                <div>
+                  <div class="carreiras-card-meta">
+                    <span><strong>Local:</strong> {job.location}</span>
+                    {job.salaryIsDisclosed && (
+                      <span>
+                        <strong>Faixa salarial:</strong> R$ {job.salaryMin?.toLocaleString('pt-BR')} a R$ {job.salaryMax?.toLocaleString('pt-BR')}
+                      </span>
+                    )}
+                  </div>
+
+                  <a class="carreiras-button carreiras-button--primary" style="width: 100%;" href={`/carreiras/${job.slug}/`}>
+                    Ver detalhes e candidatar-se <span aria-hidden="true">→</span>
+                  </a>
                 </div>
-
-                <a class="carreiras-button carreiras-button--primary" style="width: 100%;" href={`/carreiras/${job.slug}/`}>
-                  Ver detalhes e candidatar-se <span aria-hidden="true">→</span>
-                </a>
-              </div>
-            </article>
-          ))}
+              </article>
+            ))
+          )}
         </div>
       </section>
 

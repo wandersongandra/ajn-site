@@ -10,11 +10,13 @@ interface RateLimitRecord {
 // Garante execução atômica com isolamento e estado fortemente consistente na borda
 export class RateLimiterDO {
   state: any;
-  counters: Map<string, RateLimitRecord>;
+  inMemoryFallback: Map<string, RateLimitRecord>;
+  locks: Map<string, Promise<void>>;
 
   constructor(state: any) {
     this.state = state;
-    this.counters = new Map();
+    this.inMemoryFallback = new Map();
+    this.locks = new Map();
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -25,14 +27,42 @@ export class RateLimiterDO {
     const now = Date.now();
     const windowMs = windowSeconds * 1000;
 
-    // Atualização estritamente atômica em memória isolada por ID
-    let record = this.counters.get(key);
-    if (!record || record.resetAt <= now) {
-      record = { count: 1, resetAt: now + windowMs };
-    } else {
-      record.count += 1;
+    // Mutex serializado por chave para garantir atomicidade sob concorrência rigorosa (P1 Item 4)
+    let releaseLock: () => void = () => {};
+    const previousLock = this.locks.get(key) || Promise.resolve();
+    const currentLock = new Promise<void>((resolve) => {
+      releaseLock = resolve;
+    });
+    this.locks.set(
+      key,
+      previousLock.then(() => currentLock)
+    );
+    await previousLock;
+
+    let record: RateLimitRecord | undefined;
+    try {
+      // Recupera registro do armazenamento persistente do Durable Object (P1 Item 4)
+      if (this.state?.storage) {
+        record = await this.state.storage.get(key);
+      } else {
+        record = this.inMemoryFallback.get(key);
+      }
+
+      if (!record || record.resetAt <= now) {
+        record = { count: 1, resetAt: now + windowMs };
+      } else {
+        record = { count: record.count + 1, resetAt: record.resetAt };
+      }
+
+      // Grava atomicamente no storage persistente do Durable Object
+      if (this.state?.storage) {
+        await this.state.storage.put(key, record);
+      } else {
+        this.inMemoryFallback.set(key, record);
+      }
+    } finally {
+      releaseLock();
     }
-    this.counters.set(key, record);
 
     const allowed = record.count <= max;
     const remaining = Math.max(0, max - record.count);
@@ -88,8 +118,16 @@ export function rateLimiter(options: { max: number; windowSeconds: number; keyPr
     const isProductionOrStaging =
       c.env?.ENVIRONMENT === 'production' || c.env?.ENVIRONMENT === 'staging';
 
-    // 1. Arquitetura Primária: Cloudflare Durable Objects (Atomic Edge Rate Limiting)
-    if (c.env?.RATE_LIMITER_DO) {
+    // 1. Arquitetura Primária Obrigatória para Staging/Produção: Cloudflare Durable Objects (P1 Item 4)
+    // Em produção/staging: NUNCA permite fallback para KV nem bypass desprotegido
+    if (isProductionOrStaging) {
+      if (!c.env?.RATE_LIMITER_DO) {
+        return c.json(
+          { error: 'Configuração de proteção de requisições (Durable Object) obrigatória em produção/staging.' },
+          503
+        );
+      }
+
       try {
         const doKey = `${keyPrefix}:${ip}`;
         const id = c.env.RATE_LIMITER_DO.idFromName(doKey);
@@ -119,16 +157,49 @@ export function rateLimiter(options: { max: number; windowSeconds: number; keyPr
         return;
       } catch (doErr) {
         console.error('[RATE_LIMITER_DO_FAIL]', doErr);
-        // Em produção: NUNCA permite bypass silencioso que reduza a segurança
-        if (isProductionOrStaging) {
+        return c.json(
+          { error: 'Serviço de proteção de requisições temporariamente indisponível.' },
+          503
+        );
+      }
+    }
+
+    // 2. Ambiente de Desenvolvimento / Testes Unitários
+    if (c.env?.RATE_LIMITER_DO) {
+      try {
+        const doKey = `${keyPrefix}:${ip}`;
+        const id = c.env.RATE_LIMITER_DO.idFromName(doKey);
+        const stub = c.env.RATE_LIMITER_DO.get(id);
+
+        const res = await stub.fetch(
+          `https://do-ratelimit.internal/?key=${encodeURIComponent(doKey)}&max=${max}&window=${windowSeconds}`
+        );
+
+        c.header('X-RateLimit-Limit', res.headers.get('X-RateLimit-Limit') || max.toString());
+        c.header('X-RateLimit-Remaining', res.headers.get('X-RateLimit-Remaining') || '0');
+        c.header('X-RateLimit-Reset', res.headers.get('X-RateLimit-Reset') || '');
+
+        if (res.status === 429) {
+          const retryAfter = res.headers.get('Retry-After') || windowSeconds.toString();
+          c.header('Retry-After', retryAfter);
           return c.json(
-            { error: 'Serviço de proteção de requisições temporariamente indisponível.' },
-            503
+            {
+              error: 'Muitas requisições. Por favor, aguarde alguns instantes antes de tentar novamente.',
+              retryAfterSeconds: parseInt(retryAfter, 10),
+            },
+            429
           );
         }
+
+        await next();
+        return;
+      } catch (doErr) {
+        console.error('[DEV_RATE_LIMITER_DO_FAIL]', doErr);
       }
-    } else if (c.env?.RATE_LIMIT_KV) {
-      // 2. Proteção distribuída via KV (compatibilidade)
+    }
+
+    if (c.env?.RATE_LIMIT_KV) {
+      // KV exclusivamente permitido em desenvolvimento se configurado
       const now = Date.now();
       const currentWindow = Math.floor(now / windowMs);
       const kvKey = `ratelimit:${keyPrefix}:${ip}:${currentWindow}`;
@@ -155,12 +226,6 @@ export function rateLimiter(options: { max: number; windowSeconds: number; keyPr
       }
       await next();
       return;
-    } else if (isProductionOrStaging) {
-      // Falha segura: sem Durable Object nem KV em produção/staging, não expõe o endpoint desprotegido (P0 Item 4)
-      return c.json(
-        { error: 'Configuração de proteção rate limit ausente no ambiente de produção.' },
-        503
-      );
     } else {
       // 2. Ambiente de desenvolvimento local (Fallback controlado)
       const now = Date.now();

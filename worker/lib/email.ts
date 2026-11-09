@@ -151,22 +151,35 @@ async function sendViaMailChannels(from: string, options: EmailOptions): Promise
   }
 }
 
+// Sanitização e escape seguro de HTML para evitar injeção em templates de e-mail (P1 Item 6)
+export function escapeHtml(str: string): string {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // 1. Template: Comprovação de Titularidade para Atualização de Cadastro
 export async function sendCandidateVerificationEmail(
   env: Env | undefined,
   params: { email: string; fullName: string; otpCode: string }
 ): Promise<EmailResult> {
+  const safeFullName = escapeHtml(params.fullName);
+  const safeOtp = escapeHtml(params.otpCode);
   const subject = `Código de Verificação de Cadastro: ${params.otpCode} — AJN Carreiras`;
   const text = `Olá, ${params.fullName}.\n\nRecebemos uma solicitação de atualização cadastral ou envio de novo currículo para seu CPF/e-mail no portal AJN Carreiras.\n\nSeu código de verificação é:\n\n${params.otpCode}\n\nEste código expira em 15 minutos e é de uso único.\nSe você não solicitou esta alteração, desconsidere esta mensagem. Seus dados continuam protegidos.\n\nAtenciosamente,\nEquipe de Recrutamento — AJN Consultoria e Engenharia`;
 
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px;">
       <h2 style="color: #0b1528; margin-top: 0;">AJN Consultoria e Engenharia</h2>
-      <p style="color: #374151; font-size: 15px;">Olá, <strong>${params.fullName}</strong>.</p>
+      <p style="color: #374151; font-size: 15px;">Olá, <strong>${safeFullName}</strong>.</p>
       <p style="color: #374151; font-size: 15px;">Identificamos uma solicitação para atualizar seus dados cadastrais ou anexar um novo currículo no portal <strong>AJN Carreiras</strong>.</p>
       <p style="color: #374151; font-size: 15px;">Para sua segurança e conformidade com a LGPD, informe o código de verificação abaixo no formulário:</p>
       <div style="background-color: #f3f4f6; border-radius: 6px; padding: 18px; text-align: center; margin: 24px 0;">
-        <span style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #0b1528; font-family: monospace;">${params.otpCode}</span>
+        <span style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #0b1528; font-family: monospace;">${safeOtp}</span>
       </div>
       <p style="color: #6b7280; font-size: 13px;">Este código é válido por <strong>15 minutos</strong> e expira após o uso.</p>
       <p style="color: #6b7280; font-size: 13px;">Se você não solicitou esta alteração, nenhuma ação é necessária. Seus dados permanecem inalterados e protegidos.</p>
@@ -183,17 +196,19 @@ export async function sendCandidateRecoveryEmail(
   env: Env | undefined,
   params: { email: string; fullName: string; otpCode: string }
 ): Promise<EmailResult> {
+  const safeFullName = escapeHtml(params.fullName);
+  const safeOtp = escapeHtml(params.otpCode);
   const subject = `Código de Acesso às suas Candidaturas: ${params.otpCode} — AJN Carreiras`;
   const text = `Olá, ${params.fullName}.\n\nRecebemos uma solicitação para consultar seus códigos de acompanhamento no portal AJN Carreiras.\n\nSeu código de acesso temporário é:\n\n${params.otpCode}\n\nEste código expira em 15 minutos.\nSe você não fez esta solicitação, ignore este e-mail.\n\nAtenciosamente,\nAJN Consultoria e Engenharia`;
 
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px;">
       <h2 style="color: #0b1528; margin-top: 0;">AJN Consultoria e Engenharia</h2>
-      <p style="color: #374151; font-size: 15px;">Olá, <strong>${params.fullName}</strong>.</p>
+      <p style="color: #374151; font-size: 15px;">Olá, <strong>${safeFullName}</strong>.</p>
       <p style="color: #374151; font-size: 15px;">Você solicitou a recuperação dos seus códigos de acompanhamento de processos seletivos.</p>
       <p style="color: #374151; font-size: 15px;">Insira o código abaixo no portal para visualizar suas candidaturas ativas:</p>
       <div style="background-color: #f3f4f6; border-radius: 6px; padding: 18px; text-align: center; margin: 24px 0;">
-        <span style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #0b1528; font-family: monospace;">${params.otpCode}</span>
+        <span style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #0b1528; font-family: monospace;">${safeOtp}</span>
       </div>
       <p style="color: #6b7280; font-size: 13px;">Válido por 15 minutos para consulta segura.</p>
       <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
@@ -209,23 +224,25 @@ export async function sendAdminPasswordResetEmail(
   env: Env | undefined,
   params: { email: string; name: string; resetToken: string; resetUrl?: string }
 ): Promise<EmailResult> {
-  const resetUrl =
+  const rawUrl =
     params.resetUrl ||
     `${env?.APP_URL || 'https://carreiras.ajnengenharia.com.br'}/admin/carreiras/?resetToken=${params.resetToken}`;
+  const safeName = escapeHtml(params.name);
+  const safeUrl = escapeHtml(rawUrl);
 
   const subject = `Instruções de Redefinição de Senha Administrativa — AJN Carreiras`;
-  const text = `Olá, ${params.name}.\n\nFoi solicitada a redefinição de senha para sua conta administrativa no AJN Carreiras.\n\nAcesse o link abaixo para criar uma nova senha (válido por 1 hora):\n${resetUrl}\n\nToken de uso único:\n${params.resetToken}\n\nSe você não solicitou a redefinição, avise imediatamente a equipe de segurança da AJN.\n\nAtenciosamente,\nSegurança da Informação — AJN Engenharia`;
+  const text = `Olá, ${params.name}.\n\nFoi solicitada a redefinição de senha para sua conta administrativa no AJN Carreiras.\n\nAcesse o link abaixo para criar uma nova senha (válido por 1 hora):\n${rawUrl}\n\nToken de uso único:\n${params.resetToken}\n\nSe você não solicitou a redefinição, avise imediatamente a equipe de segurança da AJN.\n\nAtenciosamente,\nSegurança da Informação — AJN Engenharia`;
 
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px;">
       <h2 style="color: #0b1528; margin-top: 0;">Segurança Administrativa AJN</h2>
-      <p style="color: #374151; font-size: 15px;">Olá, <strong>${params.name}</strong>.</p>
+      <p style="color: #374151; font-size: 15px;">Olá, <strong>${safeName}</strong>.</p>
       <p style="color: #374151; font-size: 15px;">Recebemos uma solicitação de redefinição de senha para seu acesso administrativo ao painel <strong>AJN Carreiras</strong>.</p>
       <div style="text-align: center; margin: 28px 0;">
-        <a href="${resetUrl}" style="background-color: #0b1528; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px; display: inline-block;">Redefinir Minha Senha</a>
+        <a href="${safeUrl}" style="background-color: #0b1528; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px; display: inline-block;">Redefinir Minha Senha</a>
       </div>
       <p style="color: #6b7280; font-size: 13px;">Se o botão não funcionar, copie e cole este link no navegador:</p>
-      <p style="color: #4b5563; font-size: 12px; word-break: break-all;">${resetUrl}</p>
+      <p style="color: #4b5563; font-size: 12px; word-break: break-all;">${safeUrl}</p>
       <p style="color: #6b7280; font-size: 13px;">Este link expira em <strong>1 hora</strong> e é de uso estritamente único.</p>
       <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
       <p style="color: #dc2626; font-size: 12px;">Se você não realizou esta solicitação, contate imediatamente o administrador de segurança.</p>

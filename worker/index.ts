@@ -85,14 +85,35 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
   app.use('/api/jobs/*', rateLimiter({ max: 120, windowSeconds: 60, keyPrefix: 'rl-jobs' }));
   app.route('/api/jobs', createPublicJobsRoutes(dbFactory));
 
+  // Roteamento de páginas públicas de carreiras no Cloudflare Worker (SSR compatível)
+  app.use('/carreiras/*', rateLimiter({ max: 120, windowSeconds: 60, keyPrefix: 'rl-carreiras-page' }));
+  app.route('/carreiras', createPublicJobsRoutes(dbFactory));
+
+  // Proteção contra abuso de envio de e-mails e recuperação (P1 Item 6)
+  app.use(
+    '/api/applications/request-verification',
+    rateLimiter({ max: 3, windowSeconds: 900, keyPrefix: 'rl-app-req-verif' })
+  );
+  app.use(
+    '/api/applications/recover-tracking',
+    rateLimiter({ max: 3, windowSeconds: 900, keyPrefix: 'rl-app-rec-track' })
+  );
   app.use('/api/applications/*', rateLimiter({ max: 20, windowSeconds: 600, keyPrefix: 'rl-app' }));
   app.route('/api/applications', createPublicApplicationsRoutes(dbFactory));
 
   app.use('/api/lgpd/*', rateLimiter({ max: 10, windowSeconds: 600, keyPrefix: 'rl-lgpd' }));
   app.route('/api/lgpd', createPublicLgpdRoutes(dbFactory));
 
-  // Rotas administrativas
+  // Rotas administrativas com rate limiting específico para login e redefinição (P1 Item 6)
   app.use('/api/admin/auth/login', rateLimiter({ max: 10, windowSeconds: 900, keyPrefix: 'rl-login' }));
+  app.use(
+    '/api/admin/auth/forgot-password',
+    rateLimiter({ max: 3, windowSeconds: 900, keyPrefix: 'rl-forgot-pw' })
+  );
+  app.use(
+    '/api/admin/auth/reset-password',
+    rateLimiter({ max: 5, windowSeconds: 900, keyPrefix: 'rl-reset-pw' })
+  );
   app.route('/api/admin/auth', createAdminAuthRoutes(dbFactory));
   app.route('/api/admin/jobs', createAdminJobsRoutes(dbFactory));
   app.route('/api/admin/candidates', createAdminCandidatesRoutes(dbFactory));
