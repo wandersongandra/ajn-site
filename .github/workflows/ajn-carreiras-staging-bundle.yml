@@ -24,6 +24,7 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           PUBLIC_CAREERS_ENVIRONMENT: staging
+          PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAF6m11dgryygXD9L
           PUBLIC_CAREERS_ORIGIN: https://lightskyblue-gnat-418094.hostingersite.com
           PUBLIC_SITE_ORIGIN: https://lightskyblue-gnat-418094.hostingersite.com
         run: npm run build
