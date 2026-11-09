@@ -102,3 +102,18 @@ export const lgpdDeletionSchema = z.object({
   reason: z.string().trim().max(500).optional(),
   turnstileToken: z.string().optional(),
 });
+
+export const recoverTrackingSchema = z.object({
+  email: z.string().trim().email('E-mail inválido'),
+  cpf: z.string().trim().refine((val) => isValidCpf(val), { message: 'CPF inválido' }),
+  turnstileToken: z.string().optional(),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().email('E-mail institucional inválido'),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().trim().min(16, 'Token de recuperação inválido'),
+  newPassword: z.string().min(8, 'A nova senha deve ter no mínimo 8 caracteres'),
+});

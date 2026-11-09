@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const base = process.env.BASE_URL || 'http://127.0.0.1:4321';
+const base = process.env.BASE_URL || 'http://localhost:4321';
 const browser = await chromium.launch({ headless: true });
 const failures = [];
 let assertions = 0;

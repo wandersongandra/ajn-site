@@ -59,7 +59,7 @@ npx wrangler secret put TURNSTILE_SECRET_KEY
 
 As variáveis de ambiente não sensíveis são configuradas no `worker/wrangler.toml`:
 - `ENVIRONMENT = "production"`
-- `CORS_ORIGIN = "https://ajnconsultoria.com.br"`
+- `CORS_ORIGIN = "https://ajnengenharia.com.br"`
 - `TURNSTILE_SITE_KEY = "0x4AAAAAA..."`
 
 ---
@@ -79,7 +79,7 @@ npx wrangler d1 execute prod-ajn-carreiras-d1 --remote --file=./worker/db/migrat
 ### 4.2. Criar Usuário Administrador Inicial (Seed)
 Execute o script de seed passando a variável com senha segura:
 ```bash
-ADMIN_EMAIL="rh@ajnconsultoria.com.br" ADMIN_PASSWORD="<SENHA_FORTE_GERADA>" npx tsx worker/db/seed.ts
+ADMIN_EMAIL="rh@ajnengenharia.com.br" ADMIN_PASSWORD="<SENHA_FORTE_GERADA>" npx tsx worker/db/seed.ts
 ```
 
 ---
@@ -95,10 +95,26 @@ npx wrangler deploy --env staging
 npx wrangler deploy --env production
 ```
 
-### 5.1. Roteamento de Domínio
-Recomenda-se associar o Worker a uma rota da Cloudflare ou a um subdomínio específico:
-- `api.carreiras.ajnconsultoria.com.br/*` ou
-- `ajnconsultoria.com.br/api/*` via Cloudflare Worker Route.
+### 5.1. Arquitetura do Subdomínio `carreiras.ajnengenharia.com.br`
+
+O subdomínio dedicado `carreiras.ajnengenharia.com.br` foi arquitetado segundo o padrão **Edge Unified Reverse Proxy**:
+
+```mermaid
+flowchart LR
+    User["Candidato / Recrutador"] -->|HTTPS| CF["Cloudflare Edge (carreiras.ajnengenharia.com.br)"]
+    CF -->|Rota /api/*| Worker["Cloudflare Worker (Hono API)"]
+    Worker --> D1[("Cloudflare D1")]
+    Worker --> R2[("Cloudflare R2 Privado")]
+    CF -->|Rotas HTML / Assets| Origin["Astro SSG / Hostinger Apache"]
+```
+
+1. **Configuração de DNS (Cloudflare):**
+   - Registro CNAME: `carreiras.ajnengenharia.com.br` apontando para o servidor de origem Hostinger (ou Cloudflare Pages/Edge com proxy ativado - Nuvem Laranja).
+2. **Roteamento de Worker (Cloudflare Route):**
+   - Regra de Rota: `carreiras.ajnengenharia.com.br/api/*` vinculada ao Worker `ajn-carreiras-api`.
+   - **Vantagem de Performance e Segurança:** As chamadas de API executam na mesma origem (`same-origin`), dispensando preflights CORS e garantindo cookies de sessão `SameSite=Strict; Secure; HttpOnly`.
+3. **Descoberta Institucional:**
+   - O domínio institucional `https://ajnengenharia.com.br/carreiras/` redireciona via HTTP 301 ou espelha o conteúdo de `https://carreiras.ajnengenharia.com.br/`, mantendo a autoridade de domínio e SEO.
 
 ---
 

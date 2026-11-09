@@ -21,10 +21,16 @@ pnpm-debug.log*
 
 # local backups and sensitive exports
 *.sql
+!worker/db/migrations/*.sql
 *.dump
 *.bak
 *.backup
 *.log
+*.sqlite
+*.sqlite3
+*.db
+.wrangler/
+worker/.wrangler/
 backups/
 dumps/
 private/

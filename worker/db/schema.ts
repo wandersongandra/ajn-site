@@ -149,6 +149,8 @@ export const adminUsers = sqliteTable('admin_users', {
   mfaSecret: text('mfa_secret'), // TOTP secret cifrado
   failedAttempts: integer('failed_attempts').notNull().default(0),
   lockedUntil: integer('locked_until', { mode: 'timestamp' }),
+  resetTokenHash: text('reset_token_hash'),
+  resetExpiresAt: integer('reset_expires_at', { mode: 'timestamp' }),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
 }, (table) => [

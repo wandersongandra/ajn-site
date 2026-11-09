@@ -31,20 +31,22 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     await next();
   });
 
-  // Middleware: CORS configurável com suporte a credenciais seguras
+  // Middleware: CORS configurável com suporte a credenciais seguras e subdomínio carreiras
   app.use(
     '/api/*',
     cors({
       origin: (origin, c) => {
         const allowedOrigin = c.env?.CORS_ORIGIN || 'https://ajnengenharia.com.br';
         if (!origin) return allowedOrigin;
-        // Permite origens de homologação e local em desenvolvimento
-        if (
-          origin === allowedOrigin ||
-          origin === 'http://127.0.0.1:4321' ||
-          origin === 'http://localhost:4321' ||
-          origin.endsWith('.hostingersite.com')
-        ) {
+        const trustedOrigins = [
+          allowedOrigin,
+          'https://ajnengenharia.com.br',
+          'https://www.ajnengenharia.com.br',
+          'https://carreiras.ajnengenharia.com.br',
+          'http://127.0.0.1:4321',
+          'http://localhost:4321',
+        ];
+        if (trustedOrigins.includes(origin) || origin.endsWith('.hostingersite.com')) {
           return origin;
         }
         return allowedOrigin;

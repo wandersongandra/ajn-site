@@ -32,9 +32,9 @@ Para que o sistema passe do estágio local para o ambiente de homologação (Sta
    - Inserir a chave pública do Turnstile na variável `data-sitekey` dos formulários em produção ou configurar a chave real no `worker/wrangler.toml`.
 
 ### 2.2. Configuração de DNS e Rotas
-1. Definir o endpoint do backend:
-   - Opção recomendada: Criar rota do Worker na Cloudflare para `https://ajnconsultoria.com.br/api/*`.
-   - Opção alternativa: Criar subdomínio `https://api.carreiras.ajnconsultoria.com.br`.
+1. Definir o endpoint do backend e subdomínio:
+   - Opção recomendada: Criar rota do Worker na Cloudflare para `https://carreiras.ajnengenharia.com.br/api/*` e `https://ajnengenharia.com.br/api/*`.
+   - Criar entrada DNS CNAME para `carreiras.ajnengenharia.com.br`.
 
 ### 2.3. Cadastramento de Usuários Iniciais do RH
 1. Rodar o seed script (`worker/db/seed.ts`) com o e-mail oficial do responsável de RH da AJN para provisionar o primeiro usuário com perfil `recruiter` ou `superadmin`.

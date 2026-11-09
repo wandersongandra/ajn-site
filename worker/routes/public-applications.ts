@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { eq, and } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import { sha256, generateRandomToken, generateTrackingCode, maskCpf } from '../lib/crypto';
-import { candidateSchema, validateResumeBuffer } from '../lib/validation';
+import { candidateSchema, validateResumeBuffer, recoverTrackingSchema } from '../lib/validation';
 import { verifyTurnstile } from '../lib/antispam';
 import { logAuditEvent } from '../lib/audit';
 import type { Env, HonoVariables } from '../types';
@@ -55,6 +55,81 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
         currentStage: application.stageName || 'Triagem & Inscrição',
         status: application.status === 'active' ? 'Em andamento' : application.status === 'hired' ? 'Aprovado' : 'Processo encerrado',
       },
+    });
+  });
+
+  // Recuperação de acesso / código de acompanhamento pelo titular (e-mail + CPF)
+  router.post('/recover-tracking', async (c) => {
+    const db = dbFactory(c.env);
+    const ip =
+      c.req.header('cf-connecting-ip') ||
+      c.req.header('x-real-ip') ||
+      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      '127.0.0.1';
+
+    let body: any;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Corpo da requisição deve ser JSON válido.' }, 400);
+    }
+
+    const validation = recoverTrackingSchema.safeParse(body);
+    if (!validation.success) {
+      return c.json({ error: 'Dados informados inválidos.', details: validation.error.flatten().fieldErrors }, 400);
+    }
+    const { email, cpf, turnstileToken } = validation.data;
+
+    // Antispam Turnstile
+    const antispam = await verifyTurnstile(turnstileToken, c.env?.TURNSTILE_SECRET_KEY, ip);
+    if (!antispam.success) {
+      return c.json({ error: antispam.error }, 400);
+    }
+
+    const cpfClean = cpf.replace(/\D/g, '');
+    const cpfHash = await sha256(cpfClean);
+
+    const candidate = await db
+      .select()
+      .from(schema.candidates)
+      .where(and(eq(schema.candidates.cpfHash, cpfHash), eq(schema.candidates.email, email)))
+      .get();
+
+    if (!candidate) {
+      return c.json({ error: 'Nenhum cadastro localizado com a combinação de CPF e e-mail informada.' }, 404);
+    }
+
+    const applications = await db
+      .select({
+        trackingCode: schema.jobApplications.trackingCode,
+        status: schema.jobApplications.status,
+        appliedAt: schema.jobApplications.appliedAt,
+        jobTitle: schema.jobPostings.title,
+      })
+      .from(schema.jobApplications)
+      .leftJoin(schema.jobPostings, eq(schema.jobApplications.jobId, schema.jobPostings.id))
+      .where(eq(schema.jobApplications.candidateId, candidate.id))
+      .all();
+
+    await logAuditEvent({
+      db,
+      actorId: candidate.id,
+      actorType: 'candidate',
+      action: 'ACCESS_RECOVERY_REQUESTED',
+      resource: 'candidate',
+      resourceId: candidate.id,
+      ipAddress: ip,
+      userAgent: c.req.header('user-agent'),
+    });
+
+    return c.json({
+      success: true,
+      applications: applications.map((app: any) => ({
+        trackingCode: app.trackingCode,
+        jobTitle: app.jobTitle || 'Banco de Talentos AJN',
+        status: app.status === 'active' ? 'Em andamento' : app.status === 'hired' ? 'Aprovado' : 'Processo encerrado',
+        appliedAt: app.appliedAt,
+      })),
     });
   });
 

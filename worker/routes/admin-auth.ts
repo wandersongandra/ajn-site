@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { eq, and } from 'drizzle-orm';
 import * as schema from '../db/schema';
-import { verifyPassword, generateRandomToken, sha256, verifyTotp } from '../lib/crypto';
-import { adminLoginSchema } from '../lib/validation';
+import { verifyPassword, hashPassword, generateRandomToken, sha256, verifyTotp } from '../lib/crypto';
+import { adminLoginSchema, forgotPasswordSchema, resetPasswordSchema } from '../lib/validation';
 import { logAuditEvent } from '../lib/audit';
 import { authMiddleware } from '../middleware/auth';
 import type { Env, HonoVariables } from '../types';
@@ -193,6 +193,143 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
   router.get('/me', authMiddleware(dbFactory), async (c) => {
     const user = c.get('user');
     return c.json({ user });
+  });
+
+  // Solicitação de recuperação de senha administrativa
+  router.post('/forgot-password', async (c) => {
+    const db = dbFactory(c.env);
+    const ip =
+      c.req.header('cf-connecting-ip') ||
+      c.req.header('x-real-ip') ||
+      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      '127.0.0.1';
+    const userAgent = c.req.header('user-agent') || 'Unknown';
+
+    let body: any;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Corpo da requisição deve ser JSON válido.' }, 400);
+    }
+
+    const validation = forgotPasswordSchema.safeParse(body);
+    if (!validation.success) {
+      return c.json({ error: 'E-mail institucional inválido.' }, 400);
+    }
+    const { email } = validation.data;
+
+    const user = await db
+      .select()
+      .from(schema.adminUsers)
+      .where(eq(schema.adminUsers.email, email))
+      .get();
+
+    // Resposta idempotente e segura para não permitir enumeração de e-mails
+    if (!user || !user.isActive) {
+      return c.json({
+        success: true,
+        message: 'Se o e-mail estiver cadastrado, as orientações de recuperação foram registradas.',
+      });
+    }
+
+    const resetToken = generateRandomToken(32);
+    const resetTokenHash = await sha256(resetToken);
+    const resetExpiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora de validade
+
+    await db
+      .update(schema.adminUsers)
+      .set({
+        resetTokenHash,
+        resetExpiresAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.adminUsers.id, user.id));
+
+    await logAuditEvent({
+      db,
+      actorId: user.id,
+      actorType: 'admin',
+      action: 'AUTH_PASSWORD_RESET_REQUESTED',
+      resource: 'auth',
+      details: { email },
+      ipAddress: ip,
+      userAgent,
+    });
+
+    const isTest = process.env.NODE_ENV === 'test' || process.env.VITEST !== undefined || c.env?.ENVIRONMENT === 'test';
+    return c.json({
+      success: true,
+      message: 'Se o e-mail estiver cadastrado, as orientações de recuperação foram registradas.',
+      resetToken: isTest ? resetToken : undefined,
+    });
+  });
+
+  // Redefinição de senha com token de uso único
+  router.post('/reset-password', async (c) => {
+    const db = dbFactory(c.env);
+    const ip =
+      c.req.header('cf-connecting-ip') ||
+      c.req.header('x-real-ip') ||
+      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      '127.0.0.1';
+    const userAgent = c.req.header('user-agent') || 'Unknown';
+
+    let body: any;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Corpo da requisição deve ser JSON válido.' }, 400);
+    }
+
+    const validation = resetPasswordSchema.safeParse(body);
+    if (!validation.success) {
+      return c.json({ error: 'Dados inválidos.', details: validation.error.flatten().fieldErrors }, 400);
+    }
+    const { token, newPassword } = validation.data;
+
+    const tokenHash = await sha256(token);
+    const user = await db
+      .select()
+      .from(schema.adminUsers)
+      .where(eq(schema.adminUsers.resetTokenHash, tokenHash))
+      .get();
+
+    if (!user || !user.resetExpiresAt || new Date(user.resetExpiresAt).getTime() < Date.now()) {
+      return c.json({ error: 'Token de recuperação inválido ou expirado.' }, 400);
+    }
+
+    const { hash, salt } = await hashPassword(newPassword);
+
+    await db
+      .update(schema.adminUsers)
+      .set({
+        passwordHash: hash,
+        passwordSalt: salt,
+        resetTokenHash: null,
+        resetExpiresAt: null,
+        failedAttempts: 0,
+        lockedUntil: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.adminUsers.id, user.id));
+
+    // Invalida todas as sessões ativas do usuário
+    await db.delete(schema.adminSessions).where(eq(schema.adminSessions.userId, user.id));
+
+    await logAuditEvent({
+      db,
+      actorId: user.id,
+      actorType: 'admin',
+      action: 'AUTH_PASSWORD_RESET_SUCCESS',
+      resource: 'auth',
+      ipAddress: ip,
+      userAgent,
+    });
+
+    return c.json({
+      success: true,
+      message: 'Senha redefinida com sucesso. Faça login com suas novas credenciais.',
+    });
   });
 
   return router;
