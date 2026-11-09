@@ -46,7 +46,11 @@ tag = "v1"
 new_classes = ["RateLimiterDO"]
 
 [env.staging]
-vars = { ENVIRONMENT = "staging", CORS_ORIGIN = "https://staging-ajn-carreiras-api.workers.dev", CORS_ORIGINS = "https://staging-ajn-carreiras-api.workers.dev", APP_URL = "https://staging-ajn-carreiras-api.workers.dev", TURNSTILE_SITE_KEY = "0x4AAAAAAAx_STAGING_SITE_KEY_x" }
+name = "ajn-carreiras-api-staging"
+workers_dev = true
+# Cloudflare assigns the account subdomain. The origin is supplied only after
+# AJN_CARREIRAS_STAGING_ORIGIN is confirmed for the authorized staging account.
+vars = { ENVIRONMENT = "staging", CORS_ORIGIN = "", CORS_ORIGINS = "", APP_URL = "", TURNSTILE_SITE_KEY = "" }
 [env.staging.durable_objects]
 bindings = [
   { name = "RATE_LIMITER_DO", class_name = "RateLimiterDO" }

@@ -494,31 +494,31 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
   it('Integração local: configuração staging canônica, CORS explícito e Cookie SameSite', async () => {
     const stagingEnv = getEnv({
       ENVIRONMENT: 'staging',
-      CORS_ORIGIN: 'https://staging-ajn-carreiras-api.workers.dev',
-      CORS_ORIGINS: 'https://staging-ajn-carreiras-api.workers.dev',
-      APP_URL: 'https://staging-ajn-carreiras-api.workers.dev',
-      TURNSTILE_SITE_KEY: '0x4AAAAAAAx_STAGING_KEY',
+      CORS_ORIGIN: '',
+      CORS_ORIGINS: '',
+      APP_URL: '',
+      TURNSTILE_SITE_KEY: '',
     });
 
     // 1. CORS em preflight vindo da origem canônica do Worker
     const corsRes = await app.request(
-      '/api/jobs',
+      'https://staging.example.test/api/jobs',
       {
         method: 'OPTIONS',
         headers: {
-          Origin: 'https://staging-ajn-carreiras-api.workers.dev',
+          Origin: 'https://staging.example.test',
           'Access-Control-Request-Method': 'GET',
         },
       },
       stagingEnv
     );
     expect(corsRes.status).toBe(204);
-    expect(corsRes.headers.get('access-control-allow-origin')).toBe('https://staging-ajn-carreiras-api.workers.dev');
+    expect(corsRes.headers.get('access-control-allow-origin')).toBe('https://staging.example.test');
     expect(corsRes.headers.get('access-control-allow-credentials')).toBe('true');
 
     // 2. CORS rejeita origem da antiga página Hostinger e origem maliciosa
     const legacyCorsRes = await app.request(
-      '/api/jobs',
+      'https://staging.example.test/api/jobs',
       {
         method: 'OPTIONS',
         headers: {
@@ -531,7 +531,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     expect(legacyCorsRes.headers.get('access-control-allow-origin')).toBeNull();
 
     const localCorsRes = await app.request(
-      '/api/jobs',
+      'https://staging.example.test/api/jobs',
       {
         method: 'OPTIONS',
         headers: {
@@ -544,7 +544,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     expect(localCorsRes.headers.get('access-control-allow-origin')).toBeNull();
 
     const badCorsRes = await app.request(
-      '/api/jobs',
+      'https://staging.example.test/api/jobs',
       {
         method: 'OPTIONS',
         headers: {
@@ -558,12 +558,12 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
 
     // 3. Validação do Cookie de sessão gerado em Staging; Origin é obrigatório para POST real.
     const loginRes = await app.request(
-      '/api/admin/auth/login',
+      'https://staging.example.test/api/admin/auth/login',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Origin: 'https://staging-ajn-carreiras-api.workers.dev',
+          Origin: 'https://staging.example.test',
         },
         body: JSON.stringify({
           email: 'juliana.gate@ajnengenharia.com.br',
@@ -579,7 +579,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
 
     // 4. Operações administrativas rejeitam CSRF sem Origin confiável.
     const forgedRes = await app.request(
-      '/api/admin/auth/login',
+      'https://staging.example.test/api/admin/auth/login',
       {
         method: 'POST',
         headers: {
@@ -596,7 +596,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     expect(forgedRes.status).toBe(403);
 
     const missingOriginRes = await app.request(
-      '/api/admin/auth/login',
+      'https://staging.example.test/api/admin/auth/login',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -625,7 +625,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     };
 
     const assetResponse = await worker.fetch(
-      new Request('https://staging-ajn-carreiras-api.workers.dev/styles/carreiras.css'),
+      new Request('https://staging.example.test/styles/carreiras.css'),
       getEnv({ ENVIRONMENT: 'staging', ASSETS: mockAssets }),
       {} as ExecutionContext
     );
@@ -634,7 +634,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     expect(assetResponse.headers.get('Content-Security-Policy')).toContain("default-src 'self'");
 
     const staticCareerResponse = await worker.fetch(
-      new Request('https://staging-ajn-carreiras-api.workers.dev/carreiras/talentos/'),
+      new Request('https://staging.example.test/carreiras/talentos/'),
       getEnv({ ENVIRONMENT: 'staging', ASSETS: mockAssets }),
       {} as ExecutionContext
     );
@@ -642,7 +642,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     expect(await staticCareerResponse.text()).toContain('talentos');
 
     const api404Response = await worker.fetch(
-      new Request('https://staging-ajn-carreiras-api.workers.dev/api/endpoint-inexistente'),
+      new Request('https://staging.example.test/api/endpoint-inexistente'),
       getEnv({ ENVIRONMENT: 'staging', ASSETS: mockAssets }),
       {} as ExecutionContext
     );

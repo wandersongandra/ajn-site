@@ -26,7 +26,7 @@ Essa cobertura é útil para regressão, mas não demonstra:
 
 ## Gate remoto
 
-O script remoto não usa localhost nem fixtures. Sem `AJN_CARREIRAS_REMOTE_ORIGIN`, ele termina com `BLOCKED` e lista os requisitos ausentes. Mesmo com uma URL pública, autenticação MFA, upload PDF, R2, e-mail, Turnstile, LGPD, expiração e revogação só podem ser classificados após execução em recursos de staging controlados e credenciais fornecidas fora do repositório.
+O script remoto não usa localhost nem fixtures. Sem `AJN_CARREIRAS_REMOTE_ORIGIN`/`AJN_CARREIRAS_STAGING_ORIGIN`, ele termina com `BLOCKED` e lista os requisitos ausentes. Mesmo com uma URL pública, autenticação MFA, upload PDF, R2, e-mail, Turnstile, LGPD, expiração e revogação permanecem `BLOCKED` até execução real e evidência estruturada. A variável histórica `AJN_CARREIRAS_HOMOLOGATION_READY` não tem efeito.
 
 ## Regra de veredito
 

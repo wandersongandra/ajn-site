@@ -5,14 +5,14 @@
 O staging canônico será same-origin no Worker:
 
 ```text
-https://staging-ajn-carreiras-api.workers.dev
+https://ajn-carreiras-api-staging.<account-subdomain>.workers.dev
 ├── /carreiras/*       páginas SSR públicas
 ├── /admin/carreiras/* painel administrativo estático
 ├── /api/*              API pública e administrativa
 └── /styles/*, /scripts/*, /_astro/*  assets da build
 ```
 
-O domínio Hostinger `sienna-mongoose-223157.hostingersite.com` não é mais tratado como origem autenticada. O `.htaccess` redireciona as rotas de carreiras para o Worker. Em produção, o endereço canônico pretendido é `https://carreiras.ajnengenharia.com.br`, conectado ao Worker como Custom Domain após validação de zona/DNS.
+O domínio Hostinger `sienna-mongoose-223157.hostingersite.com` não é mais tratado como origem autenticada; as rotas legadas falham fechado. O staging só pode usar a origem real confirmada da conta Cloudflare, registrada em `AJN_CARREIRAS_STAGING_ORIGIN` ou derivada de `CLOUDFLARE_ACCOUNT_SUBDOMAIN`. Em produção, o endereço canônico pretendido é `https://carreiras.ajnengenharia.com.br`, conectado ao Worker como Custom Domain após validação de zona/DNS.
 
 ## Por que esta opção
 
@@ -54,4 +54,4 @@ Sem apagar dados: desativar o Custom Domain ou o redirect novo, restaurar a conf
 
 `CONFIRMED`: decisão refletida no código local, CSP/CORS explícitos, sessão same-origin planejada e assets configurados.
 
-`BLOCKED`: nenhuma mudança DNS, Custom Domain, deploy, D1/R2/DO real ou navegador contra staging foi executada nesta tarefa.
+`BLOCKED`: a conta/subdomínio real de staging, nenhuma mudança DNS, Custom Domain, deploy, D1/R2/DO real ou navegador contra staging foi comprovada nesta tarefa.

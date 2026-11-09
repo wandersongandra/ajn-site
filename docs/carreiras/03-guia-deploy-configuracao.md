@@ -8,7 +8,7 @@ As páginas de carreiras, a API administrativa/pública e os recursos necessári
 
 | Ambiente | Origem canônica | Apache institucional |
 |---|---|---|
-| Staging | `https://staging-ajn-carreiras-api.workers.dev` | Redireciona `/carreiras/*` e `/admin/carreiras/*` para o Worker |
+| Staging | `https://ajn-carreiras-api-staging.<account-subdomain>.workers.dev` ou Custom Domain confirmado | O Worker entrega `/carreiras/*`, `/admin/carreiras/*`, `/api/*` e os assets na mesma origem |
 | Produção pretendida | `https://carreiras.ajnengenharia.com.br` | Redireciona as rotas de carreiras do apex para o Custom Domain do Worker |
 
 Isso elimina o cookie administrativo cross-site entre página e API no ambiente pretendido. O cookie continua `HttpOnly; Secure; SameSite=Strict`; nenhum token é salvo em `localStorage` ou `sessionStorage`.
@@ -23,7 +23,7 @@ Os bindings D1, R2, KV e Durable Object permanecem explicitamente declarados. Os
 
 | Recurso | Produção | Staging |
 |---|---|---|
-| Worker | `ajn-carreiras-api` | `ajn-carreiras-api` com `--env staging` |
+| Worker | `ajn-carreiras-api` | `ajn-carreiras-api-staging` |
 | D1 | `prod-ajn-carreiras-d1` | `staging-ajn-carreiras-d1` |
 | R2 privado | `prod-ajn-carreiras-resumes` | `staging-ajn-carreiras-resumes` |
 | KV | `prod-ajn-carreiras-kv` | namespace definido pelo ID real de staging |
@@ -69,7 +69,8 @@ Executar em uma conta Cloudflare de staging autorizada, nunca neste checkout sem
 
 ```bash
 npm ci
-set PUBLIC_CAREERS_ORIGIN=https://staging-ajn-carreiras-api.workers.dev
+set PUBLIC_CAREERS_ENVIRONMENT=staging
+set PUBLIC_CAREERS_ORIGIN=%AJN_CARREIRAS_STAGING_ORIGIN%
 npm run test:backend
 npm run check
 npm run build
@@ -78,7 +79,9 @@ npx wrangler deploy --dry-run --config worker/wrangler.toml --env staging
 
 O comando `deploy --dry-run` é somente validação de bundle/configuração. O deploy efetivo exige autorização operacional separada.
 
-Depois da publicação controlada, configurar `AJN_CARREIRAS_REMOTE_ORIGIN` e executar `npm run test:homologation-remote`. Sem endpoint, recursos e credenciais de homologação, o resultado correto é `BLOCKED`.
+Para o staging, definir `AJN_CARREIRAS_STAGING_ORIGIN` com a origem real confirmada pela conta autorizada ou `CLOUDFLARE_ACCOUNT_SUBDOMAIN` para derivá-la do nome do Worker. A validação é executada com `npm run test:staging-origin`; sem esses dados o resultado correto é `BLOCKED`, sem inferir um hostname.
+
+Depois da publicação controlada, definir `AJN_CARREIRAS_REMOTE_ORIGIN` e executar `npm run test:homologation-remote`. O gate remoto é dividido em Gates A-D e só retorna `PASS` com evidência real de todos os fluxos; `AJN_CARREIRAS_HOMOLOGATION_READY` não autoriza nem substitui testes.
 
 ## 6. Rollback
 

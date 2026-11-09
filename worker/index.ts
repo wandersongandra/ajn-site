@@ -21,7 +21,6 @@ const defaultProductionOrigins = [
   'https://www.ajnengenharia.com.br',
   'https://carreiras.ajnengenharia.com.br',
 ];
-const defaultStagingOrigins = ['https://staging-ajn-carreiras-api.workers.dev'];
 const staticCareerAssetPaths = new Set(['/carreiras/talentos', '/carreiras/acompanhamento', '/carreiras/vaga']);
 
 function getAllowedOrigins(env?: Env): Set<string> {
@@ -31,9 +30,9 @@ function getAllowedOrigins(env?: Env): Set<string> {
     .filter(Boolean);
   const origins = new Set(configured.length > 0
     ? configured
-    : env?.ENVIRONMENT === 'staging'
-      ? defaultStagingOrigins
-      : defaultProductionOrigins);
+    : !env || env?.ENVIRONMENT === 'production'
+      ? defaultProductionOrigins
+      : []);
 
   const isStrictEnvironment = env?.ENVIRONMENT === 'staging' || env?.ENVIRONMENT === 'production';
   const isDevOrTest = !isStrictEnvironment && (
@@ -53,9 +52,16 @@ function getAllowedOrigins(env?: Env): Set<string> {
   return origins;
 }
 
-function getAdminOrigin(env?: Env): string | null {
+function getAdminOrigin(request: Request, env?: Env): string | null {
+  const configured = env?.APP_URL?.trim();
+  if (!configured && env?.ENVIRONMENT === 'staging') {
+    return new URL(request.url).origin;
+  }
+
+  if (!configured && env?.ENVIRONMENT !== 'production' && !isLocalTest(env)) return null;
+
   try {
-    return new URL(env?.APP_URL || 'https://carreiras.ajnengenharia.com.br').origin;
+    return new URL(configured || 'https://carreiras.ajnengenharia.com.br').origin;
   } catch {
     return null;
   }
@@ -124,6 +130,7 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     cors({
       origin: (origin, c) => {
         if (!origin) return undefined;
+        if (c.env?.ENVIRONMENT === 'staging' && origin === new URL(c.req.url).origin) return origin;
         return getAllowedOrigins(c.env).has(origin) ? origin : undefined;
       },
       allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -143,7 +150,7 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     }
 
     const requestOrigin = getRequestOrigin(c.req.raw);
-    const adminOrigin = getAdminOrigin(c.env);
+    const adminOrigin = getAdminOrigin(c.req.raw, c.env);
     if (!isLocalTest(c.env) && (!requestOrigin || !adminOrigin || requestOrigin !== adminOrigin)) {
       return c.json({ error: 'Origem não autorizada.' }, 403);
     }

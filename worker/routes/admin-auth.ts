@@ -341,6 +341,7 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
       email: user.email,
       name: user.name,
       resetToken,
+      resetUrl: `${c.env?.APP_URL?.trim() || new URL(c.req.url).origin}/admin/carreiras/?resetToken=${encodeURIComponent(resetToken)}`,
     });
 
     if (!emailResult.success) {

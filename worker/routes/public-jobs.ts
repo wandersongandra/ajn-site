@@ -22,12 +22,19 @@ function serializeJsonLd(value: unknown): string {
     .replace(/\u2029/g, '\\u2029');
 }
 
-function normalizeCanonicalBase(value: string): string {
+function normalizeCanonicalBase(value: string, fallback: string = 'https://carreiras.ajnengenharia.com.br'): string {
   try {
     return new URL(value).origin;
   } catch {
-    return 'https://carreiras.ajnengenharia.com.br';
+    return fallback;
   }
+}
+
+function getCanonicalBase(request: Request, env?: Env): string {
+  const configured = env?.APP_URL?.trim();
+  if (configured) return normalizeCanonicalBase(configured);
+  if (env?.ENVIRONMENT === 'staging') return new URL(request.url).origin;
+  return normalizeCanonicalBase('', new URL(request.url).origin);
 }
 
 function renderNotFoundHtml(): string {
@@ -353,7 +360,7 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
 
     const acceptsHtml = c.req.header('accept')?.includes('text/html');
     if (acceptsHtml) {
-      const canonicalBase = normalizeCanonicalBase(c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br');
+      const canonicalBase = getCanonicalBase(c.req.raw, c.env);
       return c.html(renderJobListHtml(publicJobs, canonicalBase), 200);
     }
 
@@ -427,14 +434,8 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
         : undefined,
     };
 
-    const siteKey =
-      c.env?.TURNSTILE_SITE_KEY ||
-      (c.env?.ENVIRONMENT === 'staging'
-        ? '0x4AAAAAAAx_STAGING_SITE_KEY_x'
-        : c.env?.ENVIRONMENT === 'production'
-        ? '0x4AAAAAAAx_PROD_SITE_KEY_x'
-        : '1x00000000000000000000AA');
-    const canonicalBase = normalizeCanonicalBase(c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br');
+    const siteKey = c.env?.TURNSTILE_SITE_KEY || (c.env?.ENVIRONMENT === 'test' ? '1x00000000000000000000AA' : '');
+    const canonicalBase = getCanonicalBase(c.req.raw, c.env);
 
     if (acceptsHtml) {
       return c.html(renderJobHtml(job, parsedRequirements, jsonLd, siteKey, canonicalBase), 200);

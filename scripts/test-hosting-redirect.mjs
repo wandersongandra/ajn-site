@@ -49,8 +49,7 @@ test('keeps the fixed apex origin and does not pass through request host or port
 test('keeps career routes on the Worker canonical topology', () => {
 	assert.match(config, /sienna-mongoose-223157\\\.hostingersite\\\.com/);
 	const expectedRules = [
-		'RewriteRule ^carreiras/?$ https://staging-ajn-carreiras-api.workers.dev/carreiras/ [R=302,L,NE]',
-		'RewriteRule ^admin/carreiras/?$ https://staging-ajn-carreiras-api.workers.dev/admin/carreiras/ [R=302,L,NE]',
+		'RewriteRule ^(?:admin/)?carreiras(?:/.*)?$ - [R=410,L]',
 		'RewriteRule ^carreiras/?$ https://carreiras.ajnengenharia.com.br/carreiras/ [R=301,L,NE]',
 		'RewriteRule ^admin/carreiras/?$ https://carreiras.ajnengenharia.com.br/admin/carreiras/ [R=301,L,NE]',
 	];

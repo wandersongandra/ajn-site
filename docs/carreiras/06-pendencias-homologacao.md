@@ -5,7 +5,7 @@
 | Área | Estado | Evidência/limite |
 |---|---|---|
 | Correção do init administrativo | `IMPLEMENTADO` | Listeners registrados antes de restaurar `/me`; guard contra duplicidade |
-| Topologia same-origin | `IMPLEMENTADO NO CÓDIGO` | Worker canônico, redirects Apache e `APP_URL` staging; publicação não verificada |
+| Topologia same-origin | `IMPLEMENTADO NO CÓDIGO` | Worker canônico, origem derivada/confirmada e rotas Apache legadas fail-closed; publicação não verificada |
 | CSP/CORS/CSRF | `IMPLEMENTADO NO CÓDIGO` | Origens exatas e validação de origem; headers live não verificados |
 | SSR/SEO de vaga | `IMPLEMENTADO LOCALMENTE` | Worker retorna 200/404 e JSON-LD seguro em fixture local |
 | Assets no Worker | `IMPLEMENTADO NO BUNDLE` | `ASSETS` + `postbuild`; Worker publicado não verificado |
@@ -13,6 +13,17 @@
 | Turnstile/e-mail/MFA remoto | `BLOCKED` | Chaves válidas, mailbox e usuário de homologação ausentes |
 | DNS/Custom Domain | `BLOCKED` | Nenhuma alteração autorizada/executada; zona e plano Cloudflare não comprovados |
 | E2E remoto | `BLOCKED` | Endpoint/credenciais de homologação não fornecidos |
+
+## Gate remoto obrigatório
+
+`npm run test:homologation-remote` produz evidência estruturada para quatro gates:
+
+- **A — Infraestrutura e superfície pública:** endpoint HTTPS, Worker/health, SSR, assets, 404, D1, R2, Durable Object, Turnstile e e-mail;
+- **B — Autenticação administrativa:** MFA, cookie seguro, refresh, logout, expiração, RBAC e CSRF;
+- **C — Recrutamento:** ciclo de vida/status da vaga, candidatura PDF, persistência D1 e acompanhamento;
+- **D — Segurança/LGPD:** recuperação de senha, Turnstile válido/inválido, rate limit, exclusão, auditoria e acessos não autorizados.
+
+Os checks públicos A executam HTTP real quando um endpoint de staging é fornecido. Os demais exigem um manifesto externo de evidências, produzido por execução real em navegador/CLI remoto. `local`, `mock`, `fixture` e variáveis de autorização não são aceitos como prova. Check não executado é `BLOCKED`; qualquer falha é `FAIL`; o resultado global só é `PASS` quando todos os checks obrigatórios passam.
 
 ## Requisitos externos
 

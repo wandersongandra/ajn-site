@@ -14,6 +14,7 @@
     "test:backend": "vitest run",
     "test:browser-carreiras": "node scripts/browser-carreiras.mjs",
     "test:homologation-remote": "node scripts/test-remote-carreiras.mjs",
+    "test:staging-origin": "node scripts/validate-staging-origin.mjs",
     "astro": "astro",
     "audit:seo": "node scripts/audit-seo.mjs",
     "audit:fragments": "node scripts/audit-fragments.mjs",
