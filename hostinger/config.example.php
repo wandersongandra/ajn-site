@@ -14,8 +14,8 @@ return [
         'password' => 'SUBSTITUIR_SENHA',
     ],
     'resume_directory' => __DIR__ . '/resumes',
-    // Gerar com: php -r 'echo bin2hex(random_bytes(32)), PHP_EOL;'
-    'encryption_key' => 'SUBSTITUIR_POR_64_CARACTERES_HEXADECIMAIS',
+    // Preencha somente na cópia privada com: php -r 'echo bin2hex(random_bytes(32)), PHP_EOL;'
+    'encryption_key' => '',
     // Chave privada Turnstile do hostname definido em app_url; nunca expor no Astro.
     'turnstile_secret_key' => 'SUBSTITUIR_CHAVE_PRIVADA_TURNSTILE',
     'smtp' => [
