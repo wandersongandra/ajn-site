@@ -20,6 +20,7 @@ function renderNotFoundHtml(): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Vaga Não Encontrada | AJN Carreiras</title>
+  <meta name="robots" content="noindex, follow">
   <link rel="stylesheet" href="/styles/carreiras.css">
 </head>
 <body>
@@ -40,7 +41,86 @@ function renderNotFoundHtml(): string {
 </html>`;
 }
 
-function renderJobHtml(job: any, requirements: string[], jsonLd: any): string {
+function renderJobListHtml(jobs: any[], canonicalBase: string): string {
+  const jobCards = jobs.length > 0
+    ? jobs.map((job) => `
+        <article class="carreiras-card">
+          <div class="carreiras-card-badges">
+            <span class="carreiras-badge carreiras-badge--primary">${escapeHtml(job.department)}</span>
+            <span class="carreiras-badge">${escapeHtml(job.employmentType)}</span>
+            <span class="carreiras-badge">${escapeHtml(job.location)}</span>
+          </div>
+          <h2 class="carreiras-card-title">${escapeHtml(job.title)}</h2>
+          <p class="carreiras-card-desc">${escapeHtml(job.description ? job.description.slice(0, 160) + '...' : '')}</p>
+          <div style="margin-top: 1.5rem;">
+            <a class="carreiras-button carreiras-button--primary" style="width: 100%; text-align: center;" href="/carreiras/${escapeHtml(job.slug)}/">
+              Ver Detalhes e Inscrever-se →
+            </a>
+          </div>
+        </article>
+      `).join('\n')
+    : `
+        <div class="carreiras-empty" style="text-align: center; padding: 3rem 1.5rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; grid-column: 1 / -1;">
+          <h2 style="font-size: 1.35rem; color: #0b1528; margin-bottom: 0.75rem;">Oportunidades em Atualização</h2>
+          <p style="color: #64748b; max-width: 540px; margin: 0 auto 1.5rem;">
+            No momento não há processos seletivos públicos com inscrições abertas. Cadastre seu currículo em nosso Banco de Talentos para ser contatado em futuras oportunidades.
+          </p>
+          <a class="carreiras-button carreiras-button--primary" href="/carreiras/talentos/">Cadastrar no Banco de Talentos ↗</a>
+        </div>
+      `;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Carreiras e Oportunidades | AJN Consultoria e Engenharia',
+    url: `${canonicalBase}/carreiras/`,
+  };
+
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vagas e Oportunidades | AJN Carreiras</title>
+  <meta name="description" content="Oportunidades profissionais na AJN Consultoria e Engenharia. Consulte vagas abertas ou envie seu currículo ao nosso Banco de Talentos.">
+  <link rel="canonical" href="${escapeHtml(canonicalBase)}/carreiras/">
+  <link rel="stylesheet" href="/styles/carreiras.css">
+  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+</head>
+<body>
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <header class="carreiras-header">
+        <span class="carreiras-eyebrow">Recrutamento e Seleção</span>
+        <h1 class="carreiras-title">Oportunidades Profissionais</h1>
+        <p class="carreiras-lead">
+          Faça parte da AJN Consultoria e Engenharia. Trabalhe em projetos de alto impacto com segurança, ética e inovação.
+        </p>
+      </header>
+
+      <nav class="carreiras-nav-bar" aria-label="Navegação Carreiras">
+        <a class="carreiras-nav-link" href="/carreiras/" aria-current="page">Vagas Abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de Talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar Candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Acesso Recrutador</a>
+      </nav>
+
+      <div class="carreiras-grid">
+        ${jobCards}
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+function renderJobHtml(
+  job: any,
+  requirements: string[],
+  jsonLd: any,
+  siteKey: string,
+  canonicalBase: string = 'https://carreiras.ajnengenharia.com.br'
+): string {
   const reqItems = requirements.map((r) => `<li>${escapeHtml(r)}</li>`).join('\n');
   const salaryHtml = job.salaryIsDisclosed && job.salaryMin
     ? `<p style="font-size: 1.25rem; font-weight: 600; color: var(--brand-action, #166534); margin-top: 0.5rem;">Faixa Salarial: R$ ${job.salaryMin.toLocaleString('pt-BR')}${job.salaryMax ? ' a R$ ' + job.salaryMax.toLocaleString('pt-BR') : ''} / mês</p>`
@@ -59,7 +139,7 @@ function renderJobHtml(job: any, requirements: string[], jsonLd: any): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(job.title)} | Carreiras AJN</title>
   <meta name="description" content="Vaga de ${escapeHtml(job.title)} na AJN Consultoria e Engenharia em ${escapeHtml(job.location)}. Conheça os requisitos e candidate-se online.">
-  <link rel="canonical" href="https://ajnengenharia.com.br/carreiras/${escapeHtml(job.slug)}/">
+  <link rel="canonical" href="${escapeHtml(canonicalBase)}/carreiras/${escapeHtml(job.slug)}/">
   <link rel="stylesheet" href="/styles/carreiras.css">
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 </head>
@@ -169,7 +249,7 @@ function renderJobHtml(job: any, requirements: string[], jsonLd: any): string {
                 </div>
               </div>
               <div class="carreiras-field carreiras-form-full">
-                <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light"></div>
+                <div class="cf-turnstile" data-sitekey="${escapeHtml(siteKey)}" data-theme="light"></div>
               </div>
               <div class="carreiras-form-full" style="margin-top: 1rem;">
                 <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
@@ -251,6 +331,12 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
       salaryMax: job.salaryIsDisclosed ? job.salaryMax : null,
     }));
 
+    const acceptsHtml = c.req.header('accept')?.includes('text/html');
+    if (acceptsHtml) {
+      const canonicalBase = c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br';
+      return c.html(renderJobListHtml(publicJobs, canonicalBase), 200);
+    }
+
     return c.json({ jobs: publicJobs, count: publicJobs.length });
   });
 
@@ -319,8 +405,17 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
         : undefined,
     };
 
+    const siteKey =
+      c.env?.TURNSTILE_SITE_KEY ||
+      (c.env?.ENVIRONMENT === 'staging'
+        ? '0x4AAAAAAAx_STAGING_SITE_KEY_x'
+        : c.env?.ENVIRONMENT === 'production'
+        ? '0x4AAAAAAAx_PROD_SITE_KEY_x'
+        : '1x00000000000000000000AA');
+    const canonicalBase = c.env?.APP_URL || 'https://carreiras.ajnengenharia.com.br';
+
     if (acceptsHtml) {
-      return c.html(renderJobHtml(job, parsedRequirements, jsonLd), 200);
+      return c.html(renderJobHtml(job, parsedRequirements, jsonLd, siteKey, canonicalBase), 200);
     }
 
     return c.json({

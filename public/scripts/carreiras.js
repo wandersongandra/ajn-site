@@ -1,6 +1,31 @@
 // Client-side interactions para o Portal de Carreiras AJN
 // Conformidade rigorosa com CSP: sem eval, sem innerHTML, sem Web Storage.
 
+function getApiEndpoint(path) {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const clean = path.startsWith('/') ? path : '/' + path;
+
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'carreiras.ajnengenharia.com.br' ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1')
+  ) {
+    return clean;
+  }
+
+  if (typeof window !== 'undefined' && window.AJN_CARREIRAS_API_BASE) {
+    return `${window.AJN_CARREIRAS_API_BASE}${clean}`;
+  }
+
+  if (typeof window !== 'undefined' && window.location.hostname.includes('hostingersite.com')) {
+    return `https://staging-ajn-carreiras-api.workers.dev${clean}`;
+  }
+
+  return `https://carreiras.ajnengenharia.com.br${clean}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initJobFilters();
   initApplicationForm();
@@ -56,7 +81,7 @@ function initJobFilters() {
   // Carregamento dinâmico direto da API (Item 4: eliminação de dependência funcional estática)
   (async () => {
     try {
-      const res = await fetch('/api/jobs');
+      const res = await fetch(getApiEndpoint('/api/jobs'), { credentials: 'include' });
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data.jobs)) {
@@ -260,7 +285,7 @@ async function checkCurrentJobStatus() {
   const detailsContainer = document.getElementById('job-details-container');
 
   try {
-    const res = await fetch(`/api/jobs/${encodeURIComponent(slug)}`);
+    const res = await fetch(getApiEndpoint(`/api/jobs/${encodeURIComponent(slug)}`), { credentials: 'include' });
 
     if (res.status === 404 || !res.ok) {
       // Vaga não encontrada ou encerrada
@@ -451,9 +476,10 @@ function initApplicationForm() {
     }
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(getApiEndpoint(endpoint), {
         method: 'POST',
         body: formData,
+        credentials: 'include',
       });
 
       const result = await response.json();
@@ -548,7 +574,9 @@ function initTrackingForm() {
     }
 
     try {
-      const response = await fetch(`/api/applications/track/${encodeURIComponent(code)}`);
+      const response = await fetch(getApiEndpoint(`/api/applications/track/${encodeURIComponent(code)}`), {
+        credentials: 'include',
+      });
       const data = await response.json();
 
       if (response.ok && data.application) {
@@ -596,8 +624,9 @@ function initTrackingForm() {
         }
 
         try {
-          const res = await fetch('/api/applications/recover-tracking', {
+          const res = await fetch(getApiEndpoint('/api/applications/recover-tracking'), {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, cpf, turnstileToken }),
           });
@@ -623,8 +652,9 @@ function initTrackingForm() {
         }
 
         try {
-          const res = await fetch('/api/applications/verify-recovery', {
+          const res = await fetch(getApiEndpoint('/api/applications/verify-recovery'), {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, code }),
           });
@@ -705,8 +735,9 @@ function initLgpdForm() {
     }
 
     try {
-      const response = await fetch('/api/lgpd/deletion-request', {
+      const response = await fetch(getApiEndpoint('/api/lgpd/deletion-request'), {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, cpf, reason, turnstileToken }),
       });

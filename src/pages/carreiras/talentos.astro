@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { serializeJsonLd } from '../../utils/site';
+import { TURNSTILE_SITE_KEY } from '../../data/carreiras';
 import '../../styles/carreiras.css';
 
 const title = 'Banco de Talentos | AJN Consultoria e Engenharia';
@@ -141,7 +142,7 @@ const jsonLd = [
             </div>
 
             <div class="carreiras-field carreiras-form-full">
-              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light"></div>
+              <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
             </div>
 
             <div class="carreiras-form-full" style="margin-top: 1.5rem;">

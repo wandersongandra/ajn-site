@@ -138,3 +138,14 @@ export const requestVerificationSchema = z.object({
   cpf: z.string().trim().refine((val) => isValidCpf(val), { message: 'CPF inválido' }),
   turnstileToken: z.string().optional(),
 });
+
+export const adminCreateUserSchema = z.object({
+  name: z.string().trim().min(3, 'Nome deve ter no mínimo 3 caracteres').max(100),
+  email: z.string().trim().email('E-mail institucional inválido'),
+  role: z.enum(['super_admin', 'recruiter', 'viewer']),
+  password: z.string().min(8, 'Senha provisória deve ter no mínimo 8 caracteres'),
+});
+
+export const adminUpdateUserStatusSchema = z.object({
+  isActive: z.boolean(),
+});

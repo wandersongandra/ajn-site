@@ -6,6 +6,8 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 ENVIRONMENT = "production"
 CORS_ORIGIN = "https://ajnengenharia.com.br"
+APP_URL = "https://carreiras.ajnengenharia.com.br"
+TURNSTILE_SITE_KEY = "0x4AAAAAAAx_PROD_SITE_KEY_x"
 
 # Banco de dados Cloudflare D1
 [[d1_databases]]
@@ -36,7 +38,7 @@ tag = "v1"
 new_classes = ["RateLimiterDO"]
 
 [env.staging]
-vars = { ENVIRONMENT = "staging", CORS_ORIGIN = "https://sienna-mongoose-223157.hostingersite.com" }
+vars = { ENVIRONMENT = "staging", CORS_ORIGIN = "https://sienna-mongoose-223157.hostingersite.com", APP_URL = "https://sienna-mongoose-223157.hostingersite.com", TURNSTILE_SITE_KEY = "0x4AAAAAAAx_STAGING_SITE_KEY_x" }
 [env.staging.durable_objects]
 bindings = [
   { name = "RATE_LIMITER_DO", class_name = "RateLimiterDO" }

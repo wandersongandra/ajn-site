@@ -11,10 +11,19 @@ export const authMiddleware = (dbFactory: (env: Env) => any) =>
 
     let token = '';
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.substring(7).trim();
-    } else if (cookieHeader) {
+      const candidate = authHeader.substring(7).trim();
+      if (candidate && candidate !== 'undefined' && candidate !== 'null') {
+        token = candidate;
+      }
+    }
+    if (!token && cookieHeader) {
       const match = cookieHeader.match(/ajn_admin_session=([^;]+)/);
-      if (match) token = match[1].trim();
+      if (match) {
+        const candidateCookie = match[1].trim();
+        if (candidateCookie && candidateCookie !== 'undefined' && candidateCookie !== 'null') {
+          token = candidateCookie;
+        }
+      }
     }
 
     if (!token) {

@@ -6,34 +6,177 @@
   let currentUser = null;
   let currentJobId = 'job-eng-seguranca';
 
+  function getApiEndpoint(path) {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    const clean = path.startsWith('/') ? path : '/' + path;
+
+    if (
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'carreiras.ajnengenharia.com.br' ||
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1')
+    ) {
+      return clean;
+    }
+
+    if (typeof window !== 'undefined' && window.AJN_CARREIRAS_API_BASE) {
+      return `${window.AJN_CARREIRAS_API_BASE}${clean}`;
+    }
+
+    if (typeof window !== 'undefined' && window.location.hostname.includes('hostingersite.com')) {
+      return `https://staging-ajn-carreiras-api.workers.dev${clean}`;
+    }
+
+    return `https://carreiras.ajnengenharia.com.br${clean}`;
+  }
+
+  function getAuthHeaders(extraHeaders = {}) {
+    const headers = { ...extraHeaders };
+    if (authToken && authToken !== 'undefined' && authToken !== 'null' && authToken.trim() !== '') {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    return headers;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initAdminApp();
   });
 
-  function initAdminApp() {
+  async function initAdminApp() {
     const loginCard = document.querySelector('[data-admin-login-card]');
     const dashboard = document.querySelector('[data-admin-dashboard]');
     const loginForm = document.querySelector('[data-admin-login-form]');
+    const forgotForm = document.querySelector('[data-admin-forgot-form]');
+    const resetCard = document.querySelector('[data-admin-reset-card]');
+    const resetForm = document.querySelector('[data-admin-reset-form]');
     const logoutBtn = document.querySelector('[data-admin-logout]');
 
+    // 1. Trata Redefinição de Senha via URL com Token (?resetToken=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get('resetToken');
+
+    if (resetToken && resetCard && resetForm) {
+      if (loginCard) loginCard.style.display = 'none';
+      if (dashboard) dashboard.style.display = 'none';
+      resetCard.style.display = 'block';
+
+      resetForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newPassword = resetForm.querySelector('[name="newPassword"]')?.value;
+        const confirmPassword = resetForm.querySelector('[name="confirmPassword"]')?.value;
+        const noticeEl = resetCard.querySelector('[data-reset-notice]');
+
+        if (newPassword !== confirmPassword) {
+          showNotice(noticeEl, 'A confirmação de senha não coincide com a nova senha digitada.', 'error');
+          return;
+        }
+
+        try {
+          const res = await fetch(getApiEndpoint('/api/admin/auth/reset-password'), {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: resetToken, newPassword }),
+          });
+
+          const data = await res.json();
+          if (res.ok && data.success) {
+            showNotice(noticeEl, 'Senha redefinida com sucesso! Redirecionando para o login...', 'success');
+            setTimeout(() => {
+              if (window.history && window.history.replaceState) {
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+              }
+              resetCard.style.display = 'none';
+              if (loginCard) {
+                loginCard.style.display = 'block';
+                const loginNotice = loginCard.querySelector('[data-login-notice]');
+                showNotice(loginNotice, 'Senha alterada. Faça login com suas novas credenciais.', 'success');
+              }
+            }, 2000);
+          } else {
+            showNotice(noticeEl, data.error || 'Não foi possível redefinir a senha.', 'error');
+          }
+        } catch {
+          showNotice(noticeEl, 'Erro de conexão ao redefinir senha.', 'error');
+        }
+      });
+
+      return;
+    }
+
+    // 2. Alternância entre Login e Esqueci Minha Senha
+    const showForgotBtn = document.querySelector('[data-show-forgot-btn]');
+    const showLoginBtn = document.querySelector('[data-show-login-btn]');
+
+    if (showForgotBtn && loginForm && forgotForm) {
+      showForgotBtn.addEventListener('click', () => {
+        loginForm.style.display = 'none';
+        forgotForm.style.display = 'block';
+        const noticeEl = loginCard?.querySelector('[data-login-notice]');
+        if (noticeEl) noticeEl.style.display = 'none';
+      });
+    }
+
+    if (showLoginBtn && loginForm && forgotForm) {
+      showLoginBtn.addEventListener('click', () => {
+        forgotForm.style.display = 'none';
+        loginForm.style.display = 'block';
+        const noticeEl = loginCard?.querySelector('[data-login-notice]');
+        if (noticeEl) noticeEl.style.display = 'none';
+      });
+    }
+
+    if (forgotForm) {
+      forgotForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = forgotForm.querySelector('[name="forgotEmail"]')?.value.trim();
+        const noticeEl = loginCard?.querySelector('[data-login-notice]');
+
+        try {
+          const res = await fetch(getApiEndpoint('/api/admin/auth/forgot-password'), {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            showNotice(noticeEl, data.message || 'Se o e-mail estiver cadastrado, as orientações foram enviadas.', 'success');
+            forgotForm.reset();
+            forgotForm.style.display = 'none';
+            if (loginForm) loginForm.style.display = 'block';
+          } else {
+            showNotice(noticeEl, data.error || 'Erro ao processar solicitação.', 'error');
+          }
+        } catch {
+          showNotice(noticeEl, 'Erro ao conectar ao serviço de recuperação.', 'error');
+        }
+      });
+    }
+
+    // 3. Login com Autenticação e Suporte a MFA
     if (loginForm) {
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = loginForm.querySelector('[name="email"]')?.value.trim();
         const password = loginForm.querySelector('[name="password"]')?.value;
         const mfaCode = loginForm.querySelector('[name="mfaCode"]')?.value.trim();
-        const noticeEl = loginForm.querySelector('[data-login-notice]');
+        const noticeEl = loginCard?.querySelector('[data-login-notice]');
 
         try {
-          const res = await fetch('/api/admin/auth/login', {
+          const res = await fetch(getApiEndpoint('/api/admin/auth/login'), {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password, mfaCode }),
           });
 
           const data = await res.json();
           if (res.ok && data.success) {
-            authToken = data.token;
+            authToken = data.token || '';
             currentUser = data.user;
             if (loginCard) loginCard.style.display = 'none';
             if (dashboard) dashboard.style.display = 'block';
@@ -42,7 +185,7 @@
           } else if (data.mfaRequired) {
             const mfaField = loginForm.querySelector('[data-mfa-field]');
             if (mfaField) mfaField.style.display = 'block';
-            showNotice(noticeEl, 'Código MFA obrigatório. Digite o código do aplicativo autenticador.', 'error');
+            showNotice(noticeEl, 'Código MFA obrigatório. Digite o código de 6 dígitos gerado no aplicativo.', 'error');
           } else {
             showNotice(noticeEl, data.error || 'Credenciais inválidas.', 'error');
           }
@@ -52,22 +195,51 @@
       });
     }
 
+    // 4. Logout com Invalidação de Sessão e Limpeza de Cookies
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {
         try {
-          await fetch('/api/admin/auth/logout', {
+          await fetch(getApiEndpoint('/api/admin/auth/logout'), {
             method: 'POST',
-            headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+            credentials: 'include',
+            headers: getAuthHeaders(),
           });
         } catch {}
         authToken = '';
         currentUser = null;
         if (dashboard) dashboard.style.display = 'none';
         if (loginCard) loginCard.style.display = 'block';
+        const noticeEl = loginCard?.querySelector('[data-login-notice]');
+        if (noticeEl) noticeEl.style.display = 'none';
       });
     }
 
-    // Inicialização das abas administrativas
+    // 5. Restauração Automática de Sessão Válida (Refresh da Página)
+    try {
+      const meRes = await fetch(getApiEndpoint('/api/admin/auth/me'), {
+        method: 'GET',
+        credentials: 'include',
+        headers: getAuthHeaders(),
+      });
+
+      if (meRes.ok) {
+        const meData = await meRes.json();
+        if (meData.user) {
+          currentUser = meData.user;
+          if (loginCard) loginCard.style.display = 'none';
+          if (dashboard) dashboard.style.display = 'block';
+          updateUserBadge();
+          loadDashboardData();
+          return;
+        }
+      }
+    } catch {}
+
+    // Se não autenticado por cookie prévio, exibe o cartão de login
+    if (loginCard) loginCard.style.display = 'block';
+    if (dashboard) dashboard.style.display = 'none';
+
+    // 6. Configuração das Abas do Dashboard
     const tabButtons = document.querySelectorAll('[data-admin-tab]');
     tabButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -88,6 +260,7 @@
         else if (targetTab === 'jobs') loadJobs();
         else if (targetTab === 'lgpd') loadLgpdRequests();
         else if (targetTab === 'audit') loadAuditLogs();
+        else if (targetTab === 'users') loadAdminUsers();
       });
     });
 
@@ -99,13 +272,70 @@
         loadPipeline(currentJobId);
       });
     }
+
+    // Modal/Toggle de criação de usuário
+    const toggleCreateUserBtn = document.querySelector('[data-toggle-create-user-btn]');
+    const cancelCreateUserBtn = document.querySelector('[data-cancel-create-user]');
+    const createUserCard = document.querySelector('[data-create-user-card]');
+    const createUserForm = document.querySelector('[data-create-user-form]');
+
+    if (toggleCreateUserBtn && createUserCard) {
+      toggleCreateUserBtn.addEventListener('click', () => {
+        createUserCard.style.display = createUserCard.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+
+    if (cancelCreateUserBtn && createUserCard) {
+      cancelCreateUserBtn.addEventListener('click', () => {
+        createUserCard.style.display = 'none';
+      });
+    }
+
+    if (createUserForm) {
+      createUserForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = createUserForm.querySelector('[name="name"]')?.value.trim();
+        const email = createUserForm.querySelector('[name="email"]')?.value.trim();
+        const role = createUserForm.querySelector('[name="role"]')?.value;
+        const password = createUserForm.querySelector('[name="password"]')?.value;
+        const noticeEl = document.querySelector('[data-users-notice]');
+
+        try {
+          const res = await fetch(getApiEndpoint('/api/admin/users'), {
+            method: 'POST',
+            credentials: 'include',
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ name, email, role, password }),
+          });
+
+          const data = await res.json();
+          if (res.ok && data.success) {
+            showNotice(noticeEl, 'Conta de recrutador criada com sucesso.', 'success');
+            createUserForm.reset();
+            if (createUserCard) createUserCard.style.display = 'none';
+            loadAdminUsers();
+          } else {
+            showNotice(noticeEl, data.error || 'Erro ao cadastrar usuário.', 'error');
+          }
+        } catch {
+          showNotice(noticeEl, 'Erro de conexão ao cadastrar usuário.', 'error');
+        }
+      });
+    }
   }
 
   function updateUserBadge() {
     const userBadge = document.querySelector('[data-admin-user-name]');
     const roleBadge = document.querySelector('[data-admin-user-role]');
+    const usersTab = document.querySelector('[data-admin-users-tab]');
+
     if (userBadge && currentUser) userBadge.textContent = currentUser.name;
     if (roleBadge && currentUser) roleBadge.textContent = currentUser.role;
+
+    if (usersTab && currentUser) {
+      const canManage = currentUser.role === 'super_admin' || (currentUser.permissions && currentUser.permissions.includes('admin:manage'));
+      usersTab.style.display = canManage ? 'inline-block' : 'none';
+    }
   }
 
   async function loadDashboardData() {
@@ -119,8 +349,9 @@
     if (!tableBody) return;
 
     try {
-      const res = await fetch('/api/admin/jobs', {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const res = await fetch(getApiEndpoint('/api/admin/jobs'), {
+        credentials: 'include',
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (!res.ok) return;
@@ -185,8 +416,9 @@
     while (boardEl.firstChild) boardEl.removeChild(boardEl.firstChild);
 
     try {
-      const res = await fetch(`/api/admin/pipeline/${encodeURIComponent(jobId)}`, {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const res = await fetch(getApiEndpoint(`/api/admin/pipeline/${encodeURIComponent(jobId)}`), {
+        credentials: 'include',
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (!res.ok) return;
@@ -235,7 +467,6 @@
             locP.textContent = `${cand.city} - ${cand.state}`;
             card.appendChild(locP);
 
-            // Botão para avançar estágio
             const actions = document.createElement('div');
             actions.style.marginTop = '0.75rem';
             actions.style.display = 'flex';
@@ -275,12 +506,10 @@
     const rating = ratingStr ? parseInt(ratingStr, 10) : undefined;
 
     try {
-      const res = await fetch('/api/admin/pipeline/move-stage', {
+      const res = await fetch(getApiEndpoint('/api/admin/pipeline/move-stage'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
+        credentials: 'include',
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           applicationId,
           targetStageId: targetStage.id,
@@ -307,8 +536,9 @@
     if (!tableBody) return;
 
     try {
-      const res = await fetch('/api/admin/candidates', {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const res = await fetch(getApiEndpoint('/api/admin/candidates'), {
+        credentials: 'include',
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (!res.ok) return;
@@ -354,8 +584,9 @@
 
   async function downloadResume(candidateId) {
     try {
-      const res = await fetch(`/api/admin/candidates/${encodeURIComponent(candidateId)}/resume`, {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const res = await fetch(getApiEndpoint(`/api/admin/candidates/${encodeURIComponent(candidateId)}/resume`), {
+        credentials: 'include',
+        headers: getAuthHeaders(),
       });
 
       if (!res.ok) {
@@ -391,8 +622,9 @@
     if (!tableBody) return;
 
     try {
-      const res = await fetch('/api/admin/lgpd/requests', {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const res = await fetch(getApiEndpoint('/api/admin/lgpd/requests'), {
+        credentials: 'include',
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (!res.ok) return;
@@ -449,9 +681,10 @@
     }
 
     try {
-      const res = await fetch(`/api/admin/lgpd/requests/${encodeURIComponent(requestId)}/execute`, {
+      const res = await fetch(getApiEndpoint(`/api/admin/lgpd/requests/${encodeURIComponent(requestId)}/execute`), {
         method: 'POST',
-        headers: { Authorization: `Bearer ${authToken}` },
+        credentials: 'include',
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (res.ok) {
@@ -471,8 +704,9 @@
     if (!tableBody) return;
 
     try {
-      const res = await fetch('/api/admin/audit', {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const res = await fetch(getApiEndpoint('/api/admin/audit'), {
+        credentials: 'include',
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (!res.ok) return;
@@ -507,6 +741,100 @@
         tableBody.appendChild(tr);
       });
     } catch {}
+  }
+
+  // 6. Gestão de Contas de Recrutadores
+  async function loadAdminUsers() {
+    const tableBody = document.querySelector('[data-users-tbody]');
+    if (!tableBody) return;
+
+    try {
+      const res = await fetch(getApiEndpoint('/api/admin/users'), {
+        credentials: 'include',
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      if (!res.ok) return;
+
+      while (tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
+
+      data.users.forEach((usr) => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        const strong = document.createElement('strong');
+        strong.textContent = usr.name;
+        tdName.appendChild(strong);
+        tr.appendChild(tdName);
+
+        const tdEmail = document.createElement('td');
+        tdEmail.textContent = usr.email;
+        tr.appendChild(tdEmail);
+
+        const tdRole = document.createElement('td');
+        const roleBadge = document.createElement('span');
+        roleBadge.className = `carreiras-badge ${usr.role === 'super_admin' ? 'carreiras-badge--primary' : ''}`;
+        roleBadge.textContent = usr.role;
+        tdRole.appendChild(roleBadge);
+        tr.appendChild(tdRole);
+
+        const tdMfa = document.createElement('td');
+        tdMfa.textContent = usr.mfaEnabled ? 'Ativo (TOTP)' : 'Pendente';
+        tr.appendChild(tdMfa);
+
+        const tdStatus = document.createElement('td');
+        const statusSpan = document.createElement('span');
+        statusSpan.style.color = usr.isActive ? '#166534' : '#c62828';
+        statusSpan.style.fontWeight = '600';
+        statusSpan.textContent = usr.isActive ? 'Ativo' : 'Desativado';
+        tdStatus.appendChild(statusSpan);
+        tr.appendChild(tdStatus);
+
+        const tdAction = document.createElement('td');
+        if (currentUser && usr.id !== currentUser.id) {
+          const toggleBtn = document.createElement('button');
+          toggleBtn.type = 'button';
+          toggleBtn.className = 'carreiras-button carreiras-button--secondary';
+          toggleBtn.style.padding = '0.35rem 0.65rem';
+          toggleBtn.style.fontSize = '0.75rem';
+          toggleBtn.textContent = usr.isActive ? 'Desativar' : 'Reativar';
+          if (usr.isActive) {
+            toggleBtn.style.borderColor = '#c62828';
+            toggleBtn.style.color = '#c62828';
+          }
+          toggleBtn.addEventListener('click', () => toggleUserStatus(usr.id, !usr.isActive));
+          tdAction.appendChild(toggleBtn);
+        } else {
+          tdAction.textContent = '(Conta atual)';
+        }
+        tr.appendChild(tdAction);
+
+        tableBody.appendChild(tr);
+      });
+    } catch {}
+  }
+
+  async function toggleUserStatus(userId, newStatus) {
+    const actionLabel = newStatus ? 'reativar' : 'desativar';
+    if (!confirm(`Deseja realmente ${actionLabel} este usuário?`)) return;
+
+    try {
+      const res = await fetch(getApiEndpoint(`/api/admin/users/${encodeURIComponent(userId)}/status`), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ isActive: newStatus }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        loadAdminUsers();
+      } else {
+        alert(data.error || 'Erro ao alterar status do usuário.');
+      }
+    } catch {
+      alert('Erro de conexão ao alterar status do usuário.');
+    }
   }
 
   function showNotice(el, msg, type) {

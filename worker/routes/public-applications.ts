@@ -496,7 +496,7 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
 
   // 3. Validação do arquivo de currículo
   const resumeFile = formData.get('resume');
-  if (!resumeFile || !(resumeFile instanceof File)) {
+  if (!resumeFile || typeof resumeFile === 'string' || !(resumeFile instanceof File)) {
     return c.json({ error: 'O anexo do currículo é obrigatório.' }, 400);
   }
 

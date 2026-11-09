@@ -63,6 +63,58 @@ const jsonLd = [
           <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
             Entrar no Painel <span aria-hidden="true">→</span>
           </button>
+
+          <div style="margin-top: 1rem; text-align: center;">
+            <button class="carreiras-link-button" data-show-forgot-btn type="button" style="background: none; border: none; color: var(--brand-action, #166534); cursor: pointer; text-decoration: underline; font-size: 0.875rem;">
+              Esqueceu sua senha de acesso?
+            </button>
+          </div>
+        </form>
+
+        <!-- Formulário de Solicitação de Redefinição de Senha -->
+        <form data-admin-forgot-form style="display: none;">
+          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+            <label class="carreiras-label" for="admin-forgot-email">E-mail Corporativo</label>
+            <input class="carreiras-input" id="admin-forgot-email" name="forgotEmail" type="email" required placeholder="recrutamento@ajnengenharia.com.br" />
+          </div>
+
+          <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
+            Enviar Instruções por E-mail <span aria-hidden="true">✉</span>
+          </button>
+
+          <div style="margin-top: 1rem; text-align: center;">
+            <button class="carreiras-link-button" data-show-login-btn type="button" style="background: none; border: none; color: var(--text-soft); cursor: pointer; text-decoration: underline; font-size: 0.875rem;">
+              ← Voltar para o formulário de login
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Cartão de Redefinição com Token (Ativado via ?resetToken=...) -->
+      <div class="carreiras-form-container" data-admin-reset-card style="display: none; max-width: 480px; margin-inline: auto;">
+        <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+          Redefinição de Senha
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
+          Crie uma nova senha segura para restaurar seu acesso administrativo.
+        </p>
+
+        <div class="carreiras-notice" data-reset-notice role="alert"></div>
+
+        <form data-admin-reset-form>
+          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+            <label class="carreiras-label" for="admin-new-password">Nova Senha (mínimo 8 caracteres)</label>
+            <input class="carreiras-input" id="admin-new-password" name="newPassword" type="password" required minlength="8" placeholder="••••••••••••" />
+          </div>
+
+          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+            <label class="carreiras-label" for="admin-confirm-password">Confirmar Nova Senha</label>
+            <input class="carreiras-input" id="admin-confirm-password" name="confirmPassword" type="password" required minlength="8" placeholder="••••••••••••" />
+          </div>
+
+          <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
+            Gravar Nova Senha <span aria-hidden="true">✓</span>
+          </button>
         </form>
       </div>
 
@@ -104,6 +156,9 @@ const jsonLd = [
           </button>
           <button class="carreiras-nav-link" data-admin-tab="audit" aria-selected="false" type="button">
             📜 Trilha de Auditoria
+          </button>
+          <button class="carreiras-nav-link" data-admin-tab="users" aria-selected="false" type="button" data-admin-users-tab style="display: none;">
+            👤 Gestão de Recrutadores
           </button>
         </div>
 
@@ -218,6 +273,71 @@ const jsonLd = [
                 </tr>
               </thead>
               <tbody data-audit-tbody>
+                <!-- Preenchido via script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Painel 6: Gestão de Contas de Recrutadores (Apenas Administradores) -->
+        <div data-admin-pane="users" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin: 0;">
+              Equipe de Recrutamento & Controle de Acesso
+            </h3>
+            <button class="carreiras-button carreiras-button--primary" data-toggle-create-user-btn type="button">
+              + Cadastrar Novo Recrutador
+            </button>
+          </div>
+
+          <div class="carreiras-notice" data-users-notice role="alert"></div>
+
+          <!-- Formulário de Criação de Usuário (Oculto por padrão) -->
+          <div class="carreiras-form-container" data-create-user-card style="display: none; max-width: 600px; margin-bottom: 2rem;">
+            <h4 style="font-size: 1.125rem; margin-top: 0; margin-bottom: 1rem; color: var(--ink);">Novo Acesso Administrativo</h4>
+            <form data-create-user-form>
+              <div class="carreiras-form-grid">
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="new-user-name">Nome Completo *</label>
+                  <input class="carreiras-input" id="new-user-name" name="name" type="text" required placeholder="Ex: Ana Souza" />
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="new-user-email">E-mail Corporativo *</label>
+                  <input class="carreiras-input" id="new-user-email" name="email" type="email" required placeholder="ana@ajnengenharia.com.br" />
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="new-user-role">Função / Perfil (RBAC) *</label>
+                  <select class="carreiras-select" id="new-user-role" name="role" required>
+                    <option value="recruiter">Recrutador (recruiter)</option>
+                    <option value="viewer">Visualizador (viewer)</option>
+                    <option value="super_admin">Administrador Geral (super_admin)</option>
+                  </select>
+                </div>
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="new-user-password">Senha Provisória *</label>
+                  <input class="carreiras-input" id="new-user-password" name="password" type="password" required minlength="8" placeholder="••••••••••••" />
+                </div>
+                <div class="carreiras-form-full" style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+                  <button class="carreiras-button carreiras-button--primary" type="submit">Salvar Usuário</button>
+                  <button class="carreiras-button carreiras-button--secondary" data-cancel-create-user type="button">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Função</th>
+                  <th>MFA</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody data-users-tbody>
                 <!-- Preenchido via script -->
               </tbody>
             </table>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { serializeJsonLd } from '../../utils/site';
+import { TURNSTILE_SITE_KEY } from '../../data/carreiras';
 import '../../styles/carreiras.css';
 
 const title = 'Acompanhar Candidatura | AJN Consultoria e Engenharia';
@@ -82,7 +83,7 @@ const jsonLd = [
               Consultar Status <span aria-hidden="true">🔍</span>
             </button>
           </div>
-          <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin-top: 1rem;"></div>
+          <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" style="margin-top: 1rem;"></div>
         </form>
 
         <!-- Resultado da Consulta -->
@@ -139,7 +140,7 @@ const jsonLd = [
             </div>
 
             <div class="carreiras-field carreiras-form-full">
-              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light"></div>
+              <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
             </div>
 
             <div class="carreiras-form-full">

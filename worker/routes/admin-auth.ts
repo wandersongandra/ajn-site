@@ -151,9 +151,11 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
     });
 
     // Cookie seguro HTTP-only (política de autenticação sem expor token ao DOM por padrão)
+    const hostHeader = c.req.header('host') || '';
+    const cookieDomain = hostHeader.includes('ajnengenharia.com.br') ? '; Domain=.ajnengenharia.com.br' : '';
     c.header(
       'Set-Cookie',
-      `ajn_admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${8 * 3600}`
+      `ajn_admin_session=${sessionToken}; Path=/${cookieDomain}; HttpOnly; Secure; SameSite=Strict; Max-Age=${8 * 3600}`
     );
 
     const isProdOrStaging = c.env?.ENVIRONMENT === 'production' || c.env?.ENVIRONMENT === 'staging';
@@ -260,10 +262,19 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
     const cookieHeader = c.req.header('Cookie');
     let token = '';
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.substring(7).trim();
-    } else if (cookieHeader) {
+      const candidate = authHeader.substring(7).trim();
+      if (candidate && candidate !== 'undefined' && candidate !== 'null') {
+        token = candidate;
+      }
+    }
+    if (!token && cookieHeader) {
       const match = cookieHeader.match(/ajn_admin_session=([^;]+)/);
-      if (match) token = match[1].trim();
+      if (match) {
+        const candidateCookie = match[1].trim();
+        if (candidateCookie && candidateCookie !== 'undefined' && candidateCookie !== 'null') {
+          token = candidateCookie;
+        }
+      }
     }
 
     if (token) {
@@ -272,7 +283,9 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
       await db.delete(schema.adminSessions).where(eq(schema.adminSessions.sessionTokenHash, tokenHash));
     }
 
-    c.header('Set-Cookie', 'ajn_admin_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
+    const hostHeader = c.req.header('host') || '';
+    const cookieDomain = hostHeader.includes('ajnengenharia.com.br') ? '; Domain=.ajnengenharia.com.br' : '';
+    c.header('Set-Cookie', `ajn_admin_session=; Path=/${cookieDomain}; HttpOnly; Secure; SameSite=Strict; Max-Age=0`);
     return c.json({ success: true, message: 'Sessão encerrada com sucesso.' });
   });
 

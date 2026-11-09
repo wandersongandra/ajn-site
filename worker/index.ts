@@ -13,6 +13,7 @@ import { createAdminCandidatesRoutes } from './routes/admin-candidates';
 import { createAdminPipelineRoutes } from './routes/admin-pipeline';
 import { createAdminLgpdRoutes } from './routes/admin-lgpd';
 import { createAdminAuditRoutes } from './routes/admin-audit';
+import { createAdminUsersRoutes } from './routes/admin-users';
 import type { Env, HonoVariables } from './types';
 
 export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
@@ -120,6 +121,7 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
   app.route('/api/admin/pipeline', createAdminPipelineRoutes(dbFactory));
   app.route('/api/admin/lgpd', createAdminLgpdRoutes(dbFactory));
   app.route('/api/admin/audit', createAdminAuditRoutes(dbFactory));
+  app.route('/api/admin/users', createAdminUsersRoutes(dbFactory));
 
   // Tratamento seguro de rotas não encontradas
   app.notFound((c) => {
