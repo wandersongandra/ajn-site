@@ -40,8 +40,8 @@ check(!/Strict-Transport-Security[^\r\n]*(?:includeSubDomains|preload)/i.test(co
 	'Não usar includeSubDomains/preload sem auditoria específica.');
 check(/RewriteRule \^ https:\/\/ajnengenharia\.com\.br%\{REQUEST_URI\} \[R=301,L,NE\]/.test(config),
 	'O redirecionamento de www para o host canônico deve ser permanente após homologação.');
-check(/staging-ajn-carreiras-api\.workers\.dev\/carreiras\//.test(config) &&
-	/https:\/\/carreiras\.ajnengenharia\.com\.br\/carreiras\//.test(config),
+check(config.includes('https://staging-ajn-carreiras-api.workers.dev/carreiras/') &&
+	config.includes('https://carreiras.ajnengenharia.com.br/carreiras/'),
 	'As rotas de carreiras devem ser encaminhadas ao Worker canônico, sem rewrite interno estático.');
 
 async function walk(directory) {

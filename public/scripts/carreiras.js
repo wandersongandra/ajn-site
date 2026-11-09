@@ -5,6 +5,7 @@ const allowedCareerApiOrigins = new Set([
   'https://carreiras.ajnengenharia.com.br',
   'https://staging-ajn-carreiras-api.workers.dev',
 ]);
+const legacyStagingHost = 'sienna-mongoose-223157.hostingersite.com';
 
 function getConfiguredCareerApiOrigin() {
   if (typeof window === 'undefined' || !window.AJN_CARREIRAS_API_BASE) return '';
@@ -41,7 +42,7 @@ function getApiEndpoint(path) {
     return `${configuredOrigin}${clean}`;
   }
 
-  if (typeof window !== 'undefined' && window.location.hostname.includes('hostingersite.com')) {
+  if (typeof window !== 'undefined' && window.location.hostname === legacyStagingHost) {
     return `https://staging-ajn-carreiras-api.workers.dev${clean}`;
   }
 

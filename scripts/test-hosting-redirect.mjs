@@ -47,9 +47,9 @@ test('keeps the fixed apex origin and does not pass through request host or port
 
 test('keeps career routes on the Worker canonical topology', () => {
 	assert.match(config, /sienna-mongoose-223157\\\.hostingersite\\\.com/);
-	assert.match(config, /https:\/\/staging-ajn-carreiras-api\.workers\.dev\/carreiras\//);
-	assert.match(config, /https:\/\/staging-ajn-carreiras-api\.workers\.dev\/admin\/carreiras\//);
-	assert.match(config, /https:\/\/carreiras\.ajnengenharia\.com\.br\/carreiras\//);
-	assert.match(config, /https:\/\/carreiras\.ajnengenharia\.com\.br\/admin\/carreiras\//);
+  assert.ok(config.includes('https://staging-ajn-carreiras-api.workers.dev/carreiras/'));
+  assert.ok(config.includes('https://staging-ajn-carreiras-api.workers.dev/admin/carreiras/'));
+  assert.ok(config.includes('https://carreiras.ajnengenharia.com.br/carreiras/'));
+  assert.ok(config.includes('https://carreiras.ajnengenharia.com.br/admin/carreiras/'));
 	assert.doesNotMatch(config, /RewriteRule \^carreiras\/\(\[\^\/\]\+\)\/\?\$ \/carreiras\/vaga/);
 });
