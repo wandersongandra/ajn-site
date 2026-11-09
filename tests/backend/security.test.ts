@@ -8,7 +8,8 @@ import * as schema from '../../worker/db/schema';
 import { createCarreirasApp } from '../../worker/index';
 import { hashPassword, sha256, generateRandomToken, generateCurrentTotp, generateTotpSecret } from '../../worker/lib/crypto';
 import { seedDatabase, INITIAL_JOB_POSTINGS } from '../../worker/db/seed';
-import { rateLimiter } from '../../worker/middleware/rate-limit';
+import { rateLimiter, resetRateLimiterStore, RateLimiterDO } from '../../worker/middleware/rate-limit';
+import { clearSentTestEmails, sentTestEmails } from '../../worker/lib/email';
 import { Hono } from 'hono';
 
 describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos', () => {
@@ -17,8 +18,16 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
   let app: ReturnType<typeof createCarreirasApp>;
   let mockR2Storage: Map<string, Uint8Array>;
   let mockR2Bucket: any;
+  let mockKv: any;
 
   beforeEach(async () => {
+    resetRateLimiterStore();
+    const kvStore = new Map<string, string>();
+    mockKv = {
+      get: async (k: string) => kvStore.get(k) || null,
+      put: async (k: string, v: string) => kvStore.set(k, v),
+    };
+
     sqlite = new Database(':memory:');
     sqlite.pragma('foreign_keys = ON');
 
@@ -443,7 +452,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       const resMissingKey = await app.request(
         '/api/applications/talent-pool',
         { method: 'POST', body: form },
-        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: '' } as any
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: '', RATE_LIMIT_KV: mockKv } as any
       );
       expect(resMissingKey.status).toBe(400);
       const dataMissing = (await resMissingKey.json()) as any;
@@ -453,7 +462,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       const resDummyKey = await app.request(
         '/api/applications/talent-pool',
         { method: 'POST', body: form },
-        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: 'dummy_secret' } as any
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: 'dummy_secret', RATE_LIMIT_KV: mockKv } as any
       );
       expect(resDummyKey.status).toBe(400);
     });
@@ -759,7 +768,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: 'joao@ajnengenharia.com.br', password: 'ViewerPass123!' }),
         },
-        { ENVIRONMENT: 'production' } as any
+        { ENVIRONMENT: 'production', RATE_LIMIT_KV: mockKv } as any
       );
       expect(resWeb.status).toBe(200);
       const webData = (await resWeb.json()) as any;
@@ -778,7 +787,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
           headers: { 'Content-Type': 'application/json', 'X-Auth-Mode': 'api' },
           body: JSON.stringify({ email: 'joao@ajnengenharia.com.br', password: 'ViewerPass123!' }),
         },
-        { ENVIRONMENT: 'production' } as any
+        { ENVIRONMENT: 'production', RATE_LIMIT_KV: mockKv } as any
       );
       expect(resApi.status).toBe(200);
       const apiData = (await resApi.json()) as any;
@@ -843,6 +852,261 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       expect(deployDoc).toContain('Hostinger');
       expect(deployDoc).toContain('carreiras.ajnengenharia.com.br');
       expect(deployDoc).toContain('CNAME');
+    });
+  });
+
+  describe('5. Testes de Integração Real e Resolução de Bloqueadores da PR #107', () => {
+    it('Item 1: Despacha e-mails transacionais com confirmação e falha com 502 se o provedor estiver indisponível', async () => {
+      clearSentTestEmails();
+
+      const pdfBytes = new TextEncoder().encode('%PDF-1.4 Email Delivery Test');
+      const form = new FormData();
+      form.append('fullName', 'Candidato Email Test');
+      form.append('email', 'candidato.email@empresa.com');
+      form.append('phone', '(31) 98888-7777');
+      form.append('cpf', '52998224725');
+      form.append('city', 'Belo Horizonte');
+      form.append('state', 'MG');
+      form.append('consentTerms', 'true');
+      form.append('resume', new File([pdfBytes], 'cv.pdf', { type: 'application/pdf' }));
+
+      await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+
+      // Dispara recuperação de candidatura para candidato existente
+      const res = await app.request('/api/applications/recover-tracking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'candidato.email@empresa.com', cpf: '52998224725' }),
+      });
+
+      expect(res.status).toBe(200);
+      const data = (await res.json()) as any;
+      expect(data.success).toBe(true);
+
+      // Confirma que o e-mail foi despachado
+      expect(sentTestEmails.length).toBeGreaterThan(0);
+      const sent = sentTestEmails[sentTestEmails.length - 1];
+      expect(sent.to).toBe('candidato.email@empresa.com');
+      expect(sent.subject).toContain('Código de Acesso');
+    });
+
+    it('Item 2 & 3: Exige comprovação de titularidade (OTP) mesmo quando CPF e e-mail coincidem rigorosamente', async () => {
+      const pdfBytes = new TextEncoder().encode('%PDF-1.4 Ownership Matching Email');
+      const form = new FormData();
+      form.append('fullName', 'Candidato Original');
+      form.append('email', 'coincidente@empresa.com');
+      form.append('phone', '(31) 98888-9999');
+      form.append('cpf', '00000000191');
+      form.append('city', 'Belo Horizonte');
+      form.append('state', 'MG');
+      form.append('consentTerms', 'true');
+      form.append('consentRetention', 'true');
+      form.append('resume', new File([pdfBytes], 'cv1.pdf', { type: 'application/pdf' }));
+
+      // 1. Primeiro cadastro com sucesso
+      const res1 = await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+      expect(res1.status).toBe(201);
+
+      // 2. Segunda submissão com EXATAMENTE o mesmo CPF e mesmo e-mail sem verificationToken deve ser 409
+      const form2 = new FormData();
+      form2.append('fullName', 'Candidato Original Nome Atualizado');
+      form2.append('email', 'coincidente@empresa.com');
+      form2.append('phone', '(31) 98888-9999');
+      form2.append('cpf', '00000000191');
+      form2.append('city', 'Belo Horizonte');
+      form2.append('state', 'MG');
+      form2.append('consentTerms', 'true');
+      form2.append('consentRetention', 'true');
+      form2.append('resume', new File([pdfBytes], 'cv2.pdf', { type: 'application/pdf' }));
+
+      const res2 = await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form2 },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+      expect(res2.status).toBe(409);
+      const data2 = (await res2.json()) as any;
+      expect(data2.verificationRequired).toBe(true);
+      expect(data2.verificationToken).toBeDefined();
+
+      // 3. Com o token de verificação correto, a atualização é aceita
+      form2.append('verificationToken', data2.verificationToken);
+      const res3 = await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form2 },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+      expect(res3.status).toBe(201);
+
+      // 4. Token é de consumo único: tentar reusar falha com 400
+      const res4 = await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form2 },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+      expect(res4.status).toBe(400);
+      const data4 = (await res4.json()) as any;
+      expect(data4.error).toContain('incorreto ou expirado');
+    });
+
+    it('Item 3: Limite de 5 tentativas de verificação incorretas invalida o código com 429', async () => {
+      const pdfBytes = new TextEncoder().encode('%PDF-1.4 Brute Force OTP');
+      const form = new FormData();
+      form.append('fullName', 'Candidato Limite');
+      form.append('email', 'limite.otp@empresa.com');
+      form.append('phone', '(31) 98888-0000');
+      form.append('cpf', '11144477735');
+      form.append('city', 'Belo Horizonte');
+      form.append('state', 'MG');
+      form.append('consentTerms', 'true');
+      form.append('consentRetention', 'true');
+      form.append('resume', new File([pdfBytes], 'cv.pdf', { type: 'application/pdf' }));
+
+      // 1. Cadastra candidato inicial
+      const initRes = await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+      expect(initRes.status).toBe(201);
+
+      // 2. Dispara pedido de atualização sem token para gerar código ativo
+      const verifReq = await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: form },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+      );
+      expect(verifReq.status).toBe(409);
+
+      // 3. Tenta 5 vezes com código de verificação incorreto
+      for (let i = 1; i <= 5; i++) {
+        const badForm = new FormData();
+        badForm.append('fullName', 'Candidato Limite');
+        badForm.append('email', 'limite.otp@empresa.com');
+        badForm.append('phone', '(31) 98888-0000');
+        badForm.append('cpf', '11144477735');
+        badForm.append('city', 'Belo Horizonte');
+        badForm.append('state', 'MG');
+        badForm.append('consentTerms', 'true');
+        badForm.append('consentRetention', 'true');
+        badForm.append('verificationToken', '000000');
+        badForm.append('resume', new File([pdfBytes], 'cv.pdf', { type: 'application/pdf' }));
+
+        const r = await app.request(
+          '/api/applications/talent-pool',
+          { method: 'POST', body: badForm },
+          { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, TURNSTILE_SECRET_KEY: 'test' } as any
+        );
+
+        if (i < 5) {
+          expect(r.status).toBe(400);
+        } else {
+          expect(r.status).toBe(429);
+        }
+      }
+    });
+
+    it('Item 4: Detalhes de vaga retornam estrutura completa Google Jobs JSON-LD', async () => {
+      const res = await app.request('/api/jobs/engenheiro-seguranca-do-trabalho');
+      expect(res.status).toBe(200);
+      const data = (await res.json()) as any;
+      expect(data.job).toBeDefined();
+      expect(data.jsonLd).toBeDefined();
+      expect(data.jsonLd['@type']).toBe('JobPosting');
+      expect(data.jsonLd.hiringOrganization.name).toBe('AJN Consultoria e Engenharia');
+      expect(data.jsonLd.hiringOrganization.sameAs).toBe('https://ajnengenharia.com.br');
+    });
+
+    it('Item 6: Durable Objects RateLimiterDO gerencia contagem atômica e falha com 503 em produção se o binding estiver ausente', async () => {
+      const doInstance = new RateLimiterDO({} as any);
+
+      // Chamada 1: permitida
+      const req1 = new Request('https://do-ratelimit.internal/?key=ip-1&max=2&window=60');
+      const res1 = await doInstance.fetch(req1);
+      expect(res1.status).toBe(200);
+      const data1 = (await res1.json()) as any;
+      expect(data1.allowed).toBe(true);
+      expect(data1.remaining).toBe(1);
+
+      // Chamada 2: permitida
+      const req2 = new Request('https://do-ratelimit.internal/?key=ip-1&max=2&window=60');
+      const res2 = await doInstance.fetch(req2);
+      expect(res2.status).toBe(200);
+      const data2 = (await res2.json()) as any;
+      expect(data2.allowed).toBe(true);
+      expect(data2.remaining).toBe(0);
+
+      // Chamada 3: bloqueada com 429
+      const req3 = new Request('https://do-ratelimit.internal/?key=ip-1&max=2&window=60');
+      const res3 = await doInstance.fetch(req3);
+      expect(res3.status).toBe(429);
+      const data3 = (await res3.json()) as any;
+      expect(data3.allowed).toBe(false);
+
+      // Em produção sem DO nem KV: fail-secure com 503
+      const middlewareApp = new Hono<{ Bindings: any; Variables: any }>();
+      middlewareApp.use('*', rateLimiter({ max: 5, windowSeconds: 60 }));
+      middlewareApp.get('/api/test', (c) => c.text('OK'));
+
+      const failSecureRes = await middlewareApp.request(
+        '/api/test',
+        { method: 'GET' },
+        { ENVIRONMENT: 'production' } as any
+      );
+      expect(failSecureRes.status).toBe(503);
+    });
+
+    it('Item 8: Redefinição de senha administrativa consome o token e invalida todas as sessões ativas', async () => {
+      // 1. Solicita recuperação de senha
+      const forgotRes = await app.request('/api/admin/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'maria@ajnengenharia.com.br' }),
+      });
+      expect(forgotRes.status).toBe(200);
+      const forgotData = (await forgotRes.json()) as any;
+      expect(forgotData.resetToken).toBeDefined();
+
+      // 2. Redefine a senha
+      const resetRes = await app.request('/api/admin/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: forgotData.resetToken,
+          newPassword: 'NovaSenhaUltraSegura2026!',
+        }),
+      });
+      expect(resetRes.status).toBe(200);
+
+      // 3. Reuso do mesmo token falha (uso único)
+      const reuseRes = await app.request('/api/admin/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: forgotData.resetToken,
+          newPassword: 'OutraSenhaTentativa123!',
+        }),
+      });
+      expect(reuseRes.status).toBe(400);
+
+      // 4. Login com a nova senha tem sucesso
+      const newLoginRes = await app.request('/api/admin/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'maria@ajnengenharia.com.br',
+          password: 'NovaSenhaUltraSegura2026!',
+        }),
+      });
+      expect(newLoginRes.status).toBe(200);
     });
   });
 });

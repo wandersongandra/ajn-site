@@ -18,6 +18,7 @@ export const candidates = sqliteTable('candidates', {
   isTalentPool: integer('is_talent_pool', { mode: 'boolean' }).notNull().default(false),
   emailVerificationCodeHash: text('email_verification_code_hash'),
   emailVerificationExpiresAt: integer('email_verification_expires_at', { mode: 'timestamp' }),
+  emailVerificationAttempts: integer('email_verification_attempts').notNull().default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
 }, (table) => [
@@ -130,6 +131,7 @@ export const jobApplications = sqliteTable('job_applications', {
   rejectionReason: text('rejection_reason'),
   recoveryCodeHash: text('recovery_code_hash'),
   recoveryExpiresAt: integer('recovery_expires_at', { mode: 'timestamp' }),
+  recoveryAttempts: integer('recovery_attempts').notNull().default(0),
   appliedAt: integer('applied_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
 }, (table) => [
@@ -157,6 +159,7 @@ export const adminUsers = sqliteTable('admin_users', {
   lockedUntil: integer('locked_until', { mode: 'timestamp' }),
   resetTokenHash: text('reset_token_hash'),
   resetExpiresAt: integer('reset_expires_at', { mode: 'timestamp' }),
+  resetAttempts: integer('reset_attempts').notNull().default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(strftime('%s', 'now'))`),
 }, (table) => [

@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import { verifyPassword, hashPassword, generateRandomToken, sha256, verifyTotp, generateTotpSecret } from '../lib/crypto';
 import { adminLoginSchema, forgotPasswordSchema, resetPasswordSchema, mfaActivateSchema } from '../lib/validation';
 import { logAuditEvent } from '../lib/audit';
+import { sendAdminPasswordResetEmail } from '../lib/email';
 import { authMiddleware } from '../middleware/auth';
 import type { Env, HonoVariables } from '../types';
 
@@ -322,11 +323,40 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
     const resetTokenHash = await sha256(resetToken);
     const resetExpiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora de validade
 
+    // Despacho de e-mail transacional real
+    const emailResult = await sendAdminPasswordResetEmail(c.env, {
+      email: user.email,
+      name: user.name,
+      resetToken,
+    });
+
+    if (!emailResult.success) {
+      await logAuditEvent({
+        db,
+        actorId: user.id,
+        actorType: 'admin',
+        action: 'AUTH_PASSWORD_RESET_EMAIL_FAILED',
+        resource: 'auth',
+        details: { email, error: emailResult.error },
+        ipAddress: ip,
+        userAgent,
+      });
+
+      return c.json(
+        {
+          error:
+            'Não foi possível enviar o e-mail de recuperação no momento. O provedor transacional está indisponível.',
+        },
+        502
+      );
+    }
+
     await db
       .update(schema.adminUsers)
       .set({
         resetTokenHash,
         resetExpiresAt,
+        resetAttempts: 0,
         updatedAt: new Date(),
       })
       .where(eq(schema.adminUsers.id, user.id));
@@ -384,6 +414,23 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
       return c.json({ error: 'Token de recuperação inválido ou expirado.' }, 400);
     }
 
+    if ((user.resetAttempts ?? 0) >= 5) {
+      await db
+        .update(schema.adminUsers)
+        .set({
+          resetTokenHash: null,
+          resetExpiresAt: null,
+          resetAttempts: 0,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.adminUsers.id, user.id));
+
+      return c.json(
+        { error: 'Limite de tentativas excedido para este token de recuperação. Solicite um novo link.' },
+        429
+      );
+    }
+
     const { hash, salt } = await hashPassword(newPassword);
 
     await db
@@ -393,6 +440,7 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
         passwordSalt: salt,
         resetTokenHash: null,
         resetExpiresAt: null,
+        resetAttempts: 0,
         failedAttempts: 0,
         lockedUntil: null,
         updatedAt: new Date(),

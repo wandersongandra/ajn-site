@@ -82,6 +82,7 @@ const jsonLd = [
               Consultar Status <span aria-hidden="true">🔍</span>
             </button>
           </div>
+          <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin-top: 1rem;"></div>
         </form>
 
         <!-- Resultado da Consulta -->
@@ -137,6 +138,10 @@ const jsonLd = [
               <input class="carreiras-input" id="lgpd-reason" name="reason" type="text" placeholder="Ex: Não resido mais na região / Não procuro recolocação" />
             </div>
 
+            <div class="carreiras-field carreiras-form-full">
+              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light"></div>
+            </div>
+
             <div class="carreiras-form-full">
               <button class="carreiras-button carreiras-button--secondary" style="border-color: #c62828; color: #c62828;" type="submit">
                 Solicitar Exclusão Definitiva de Dados (Art. 18 LGPD)
@@ -148,5 +153,6 @@ const jsonLd = [
     </div>
   </div>
 
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/scripts/carreiras.js" defer></script>
 </BaseLayout>

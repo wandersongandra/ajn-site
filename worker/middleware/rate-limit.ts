@@ -6,16 +6,66 @@ interface RateLimitRecord {
   resetAt: number;
 }
 
-// Fallback in-memory para ambiente local ou quando KV/Cache não estiver disponível
-const memoryStore = new Map<string, RateLimitRecord>();
+// Classe Durable Object exportada para o runtime Cloudflare Workers
+// Garante execução atômica com isolamento e estado fortemente consistente na borda
+export class RateLimiterDO {
+  state: any;
+  counters: Map<string, RateLimitRecord>;
 
-function cleanupMemoryStore() {
-  const now = Date.now();
-  for (const [key, record] of memoryStore.entries()) {
-    if (record.resetAt <= now) {
-      memoryStore.delete(key);
-    }
+  constructor(state: any) {
+    this.state = state;
+    this.counters = new Map();
   }
+
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    const key = url.searchParams.get('key') || 'default';
+    const max = parseInt(url.searchParams.get('max') || '60', 10);
+    const windowSeconds = parseInt(url.searchParams.get('window') || '60', 10);
+    const now = Date.now();
+    const windowMs = windowSeconds * 1000;
+
+    // Atualização estritamente atômica em memória isolada por ID
+    let record = this.counters.get(key);
+    if (!record || record.resetAt <= now) {
+      record = { count: 1, resetAt: now + windowMs };
+    } else {
+      record.count += 1;
+    }
+    this.counters.set(key, record);
+
+    const allowed = record.count <= max;
+    const remaining = Math.max(0, max - record.count);
+    const resetTimestamp = Math.ceil(record.resetAt / 1000);
+    const retryAfter = Math.ceil((record.resetAt - now) / 1000);
+
+    return new Response(
+      JSON.stringify({
+        allowed,
+        count: record.count,
+        remaining,
+        resetTimestamp,
+        retryAfter: allowed ? 0 : retryAfter,
+      }),
+      {
+        status: allowed ? 200 : 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RateLimit-Limit': max.toString(),
+          'X-RateLimit-Remaining': remaining.toString(),
+          'X-RateLimit-Reset': resetTimestamp.toString(),
+          ...(allowed ? {} : { 'Retry-After': retryAfter.toString() }),
+        },
+      }
+    );
+  }
+}
+
+// Fallback in-memory exclusivo para ambiente local de desenvolvimento ou testes unitários
+const localDevStore = new Map<string, RateLimitRecord>();
+
+export function resetRateLimiterStore() {
+  localDevStore.clear();
 }
 
 export function rateLimiter(options: { max: number; windowSeconds: number; keyPrefix?: string }) {
@@ -23,8 +73,8 @@ export function rateLimiter(options: { max: number; windowSeconds: number; keyPr
   const windowMs = windowSeconds * 1000;
 
   return createMiddleware<{ Bindings: Env; Variables: HonoVariables }>(async (c, next) => {
-    // Em testes automatizados padrão, não aplica throttling a menos que ENVIRONMENT seja explicitamente staging/production
-    if (c.env?.ENVIRONMENT === 'test' || (!c.env?.ENVIRONMENT && (process.env.NODE_ENV === 'test' || process.env.VITEST !== undefined))) {
+    // Em testes unitários isolados, não aplica throttling a menos que explicitamente testando o middleware
+    if (c.env?.ENVIRONMENT === 'test' && !c.env?.RATE_LIMITER_DO && !c.req.header('X-Test-Rate-Limit')) {
       await next();
       return;
     }
@@ -35,64 +85,109 @@ export function rateLimiter(options: { max: number; windowSeconds: number; keyPr
       c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
       '127.0.0.1';
 
-    const now = Date.now();
-    let count = 1;
-    let resetAt = now + windowMs;
+    const isProductionOrStaging =
+      c.env?.ENVIRONMENT === 'production' || c.env?.ENVIRONMENT === 'staging';
 
-    // 1. Estratégia Distribuída Primária: Cloudflare KV (compartilhado globalmente)
-    if (c.env?.RATE_LIMIT_KV) {
-      const kvKey = `ratelimit:${keyPrefix}:${ip}`;
+    // 1. Arquitetura Primária: Cloudflare Durable Objects (Atomic Edge Rate Limiting)
+    if (c.env?.RATE_LIMITER_DO) {
       try {
-        const raw = await c.env.RATE_LIMIT_KV.get(kvKey, 'json') as RateLimitRecord | null;
-        if (raw && raw.resetAt > now) {
-          count = raw.count + 1;
-          resetAt = raw.resetAt;
-        } else {
-          count = 1;
-          resetAt = now + windowMs;
+        const doKey = `${keyPrefix}:${ip}`;
+        const id = c.env.RATE_LIMITER_DO.idFromName(doKey);
+        const stub = c.env.RATE_LIMITER_DO.get(id);
+
+        const res = await stub.fetch(
+          `https://do-ratelimit.internal/?key=${encodeURIComponent(doKey)}&max=${max}&window=${windowSeconds}`
+        );
+
+        c.header('X-RateLimit-Limit', res.headers.get('X-RateLimit-Limit') || max.toString());
+        c.header('X-RateLimit-Remaining', res.headers.get('X-RateLimit-Remaining') || '0');
+        c.header('X-RateLimit-Reset', res.headers.get('X-RateLimit-Reset') || '');
+
+        if (res.status === 429) {
+          const retryAfter = res.headers.get('Retry-After') || windowSeconds.toString();
+          c.header('Retry-After', retryAfter);
+          return c.json(
+            {
+              error: 'Muitas requisições. Por favor, aguarde alguns instantes antes de tentar novamente.',
+              retryAfterSeconds: parseInt(retryAfter, 10),
+            },
+            429
+          );
         }
 
-        const ttlSeconds = Math.max(60, Math.ceil((resetAt - now) / 1000));
-        await c.env.RATE_LIMIT_KV.put(
-          kvKey,
-          JSON.stringify({ count, resetAt }),
-          { expirationTtl: ttlSeconds }
-        );
-      } catch (kvErr) {
-        console.warn('[RATE_LIMIT_KV_FAILOVER]', kvErr);
+        await next();
+        return;
+      } catch (doErr) {
+        console.error('[RATE_LIMITER_DO_FAIL]', doErr);
+        // Em produção: NUNCA permite bypass silencioso que reduza a segurança
+        if (isProductionOrStaging) {
+          return c.json(
+            { error: 'Serviço de proteção de requisições temporariamente indisponível.' },
+            503
+          );
+        }
       }
-    } else {
-      // 2. Estratégia Secundária Edge / Fallback
-      const key = `${keyPrefix}:${ip}`;
-      if (memoryStore.size > 10000) {
-        cleanupMemoryStore();
-      }
+    } else if (c.env?.RATE_LIMIT_KV) {
+      // 2. Proteção distribuída via KV (compatibilidade)
+      const now = Date.now();
+      const currentWindow = Math.floor(now / windowMs);
+      const kvKey = `ratelimit:${keyPrefix}:${ip}:${currentWindow}`;
+      const countRaw = await c.env.RATE_LIMIT_KV.get(kvKey);
+      const currentCount = countRaw ? parseInt(countRaw, 10) : 0;
+      const newCount = currentCount + 1;
+      await c.env.RATE_LIMIT_KV.put(kvKey, newCount.toString(), {
+        expirationTtl: Math.max(60, windowSeconds * 2),
+      });
 
-      let record = memoryStore.get(key);
+      c.header('X-RateLimit-Limit', max.toString());
+      c.header('X-RateLimit-Remaining', Math.max(0, max - newCount).toString());
+      c.header('X-RateLimit-Reset', Math.ceil((now + windowMs) / 1000).toString());
+
+      if (newCount > max) {
+        c.header('Retry-After', windowSeconds.toString());
+        return c.json(
+          {
+            error: 'Muitas requisições. Por favor, aguarde alguns instantes antes de tentar novamente.',
+            retryAfterSeconds: windowSeconds,
+          },
+          429
+        );
+      }
+      await next();
+      return;
+    } else if (isProductionOrStaging) {
+      // Falha segura: sem Durable Object nem KV em produção/staging, não expõe o endpoint desprotegido (P0 Item 4)
+      return c.json(
+        { error: 'Configuração de proteção rate limit ausente no ambiente de produção.' },
+        503
+      );
+    } else {
+      // 2. Ambiente de desenvolvimento local (Fallback controlado)
+      const now = Date.now();
+      const localKey = `${keyPrefix}:${ip}`;
+      let record = localDevStore.get(localKey);
       if (!record || record.resetAt <= now) {
         record = { count: 1, resetAt: now + windowMs };
-        memoryStore.set(key, record);
       } else {
         record.count += 1;
       }
-      count = record.count;
-      resetAt = record.resetAt;
-    }
+      localDevStore.set(localKey, record);
 
-    c.header('X-RateLimit-Limit', max.toString());
-    c.header('X-RateLimit-Remaining', Math.max(0, max - count).toString());
-    c.header('X-RateLimit-Reset', Math.ceil(resetAt / 1000).toString());
+      c.header('X-RateLimit-Limit', max.toString());
+      c.header('X-RateLimit-Remaining', Math.max(0, max - record.count).toString());
+      c.header('X-RateLimit-Reset', Math.ceil(record.resetAt / 1000).toString());
 
-    if (count > max) {
-      const retryAfter = Math.ceil((resetAt - now) / 1000);
-      c.header('Retry-After', retryAfter.toString());
-      return c.json(
-        {
-          error: 'Muitas requisições. Por favor, aguarde alguns instantes antes de tentar novamente.',
-          retryAfterSeconds: retryAfter,
-        },
-        429
-      );
+      if (record.count > max) {
+        const retryAfter = Math.ceil((record.resetAt - now) / 1000);
+        c.header('Retry-After', retryAfter.toString());
+        return c.json(
+          {
+            error: 'Muitas requisições. Por favor, aguarde alguns instantes antes de tentar novamente.',
+            retryAfterSeconds: retryAfter,
+          },
+          429
+        );
+      }
     }
 
     await next();

@@ -121,6 +121,8 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
   return app;
 }
 
+export { RateLimiterDO } from './middleware/rate-limit';
+
 // Handler padrão Cloudflare Worker
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) => {

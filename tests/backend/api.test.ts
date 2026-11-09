@@ -8,6 +8,7 @@ import * as schema from '../../worker/db/schema';
 import { createCarreirasApp } from '../../worker/index';
 import { hashPassword, sha256 } from '../../worker/lib/crypto';
 import { seedDatabase } from '../../worker/db/seed';
+import { resetRateLimiterStore } from '../../worker/middleware/rate-limit';
 
 describe('Carreiras Backend API Tests (Cloudflare Workers + Hono)', () => {
   let sqlite: InstanceType<typeof Database>;
@@ -17,6 +18,7 @@ describe('Carreiras Backend API Tests (Cloudflare Workers + Hono)', () => {
   let mockR2Bucket: any;
 
   beforeEach(async () => {
+    resetRateLimiterStore();
     sqlite = new Database(':memory:');
     sqlite.pragma('foreign_keys = ON');
 

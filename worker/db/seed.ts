@@ -1,6 +1,5 @@
 import * as schema from './schema';
 import { hashPassword, generateTotpSecret } from '../lib/crypto';
-import type { BaseDatabase } from '../types';
 
 export const DEFAULT_STAGES = [
   { id: 'stage-1-triagem', name: 'Triagem & Inscrição', stageOrder: 1, isTerminalHired: false, isTerminalRejected: false },
@@ -162,19 +161,32 @@ export async function seedDatabase(db: any, options?: SeedOptions) {
     const { hash, salt } = await hashPassword(options.adminUser.password);
     const mfaSecret = generateTotpSecret();
 
-    await db.insert(schema.adminUsers).values({
-      id: 'usr-admin-bootstrap',
-      name: options.adminUser.name,
-      email: options.adminUser.email,
-      passwordHash: hash,
-      passwordSalt: salt,
-      role: options.adminUser.role || 'super_admin',
-      isActive: true,
-      mfaEnabled: true,
-      mfaSecret,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }).onConflictDoNothing();
+    await db
+      .insert(schema.adminUsers)
+      .values({
+        id: 'usr-admin-bootstrap',
+        name: options.adminUser.name,
+        email: options.adminUser.email,
+        passwordHash: hash,
+        passwordSalt: salt,
+        role: options.adminUser.role || 'super_admin',
+        isActive: true,
+        mfaEnabled: true,
+        mfaSecret,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: schema.adminUsers.email,
+        set: {
+          passwordHash: hash,
+          passwordSalt: salt,
+          mfaSecret,
+          mfaEnabled: true,
+          isActive: true,
+          updatedAt: new Date(),
+        },
+      });
 
     return {
       adminCreated: true,
@@ -200,19 +212,91 @@ if (process.argv[1]?.endsWith('seed.ts') || process.argv[1]?.includes('worker/db
     }
 
     console.log(`[BOOTSTRAP] Iniciando seed administrativo para: ${adminEmail}...`);
-    // Em execução local fora do Worker, exibe o segredo TOTP e confirma o provisionamento
-    const { hash, salt } = await hashPassword(adminPassword);
-    const mfaSecret = generateTotpSecret();
-    const otpauth = `otpauth://totp/AJN%20Carreiras:${encodeURIComponent(adminEmail)}?secret=${mfaSecret}&issuer=AJN%20Engenharia`;
 
-    console.log('\n============================================================');
-    console.log('AJN CARREIRAS — CREDENCIAIS ADMINISTRATIVAS GERADAS');
-    console.log('============================================================');
-    console.log(`E-mail:       ${adminEmail}`);
-    console.log(`Função:       super_admin`);
-    console.log(`MFA Segredo:  ${mfaSecret}`);
-    console.log(`URI TOTP:     ${otpauth}`);
-    console.log('Adicione este segredo no Google Authenticator ou Microsoft Authenticator.');
-    console.log('============================================================\n');
+    try {
+      const { resolve, join } = await import('node:path');
+      const { existsSync, readdirSync } = await import('node:fs');
+      const { execSync } = await import('node:child_process');
+
+      const isRemote = process.argv.includes('--remote') || process.env.REMOTE === 'true';
+
+      if (isRemote) {
+        console.log('[BOOTSTRAP] Modo remoto detectado. Gerando comandos SQL para Cloudflare D1...');
+        const { hash, salt } = await hashPassword(adminPassword);
+        const mfaSecret = generateTotpSecret();
+        const sqlCmd = `INSERT INTO admin_users (id, name, email, password_hash, password_salt, role, is_active, mfa_enabled, mfa_secret, created_at, updated_at) VALUES ('usr-admin-bootstrap', 'Administrador RH', '${adminEmail}', '${hash}', '${salt}', 'super_admin', 1, 1, '${mfaSecret}', unixepoch(), unixepoch()) ON CONFLICT(email) DO UPDATE SET password_hash='${hash}', password_salt='${salt}', mfa_secret='${mfaSecret}', mfa_enabled=1, is_active=1, updated_at=unixepoch();`;
+        
+        execSync(`npx wrangler d1 execute prod-ajn-carreiras-d1 --config=./worker/wrangler.toml --remote --command="${sqlCmd.replace(/"/g, '\\"')}"`, {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        });
+
+        console.log('[BOOTSTRAP] Usuário inserido com sucesso no Cloudflare D1 remoto.');
+        return;
+      }
+
+      // Modo Local D1
+      const d1Dir = resolve(process.cwd(), 'worker/.wrangler/state/v3/d1/miniflare-D1DatabaseObject');
+      let sqlitePath: string | null = null;
+
+      if (existsSync(d1Dir)) {
+        const files = readdirSync(d1Dir);
+        const sqliteFile = files.find((f: string) => f.endsWith('.sqlite') && !f.startsWith('metadata'));
+        if (sqliteFile) {
+          sqlitePath = join(d1Dir, sqliteFile);
+        }
+      }
+
+      if (!sqlitePath) {
+        console.log('[BOOTSTRAP] Banco D1 local não encontrado. Executando migração inicial...');
+        execSync('npx wrangler d1 execute prod-ajn-carreiras-d1 --config=./worker/wrangler.toml --local --file=./worker/db/migrations/0000_curious_the_executioner.sql', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        });
+        const files = readdirSync(d1Dir);
+        const sqliteFile = files.find((f: string) => f.endsWith('.sqlite') && !f.startsWith('metadata'));
+        if (sqliteFile) {
+          sqlitePath = join(d1Dir, sqliteFile);
+        }
+      }
+
+      if (!sqlitePath || !existsSync(sqlitePath)) {
+        throw new Error('Não foi possível inicializar ou localizar o arquivo SQLite do D1 local.');
+      }
+
+      const Database = (await import('better-sqlite3')).default;
+      const { drizzle } = await import('drizzle-orm/better-sqlite3');
+
+      const sqlite = new Database(sqlitePath);
+      sqlite.pragma('foreign_keys = ON');
+      const db = drizzle(sqlite, { schema });
+
+      const result = await seedDatabase(db, {
+        adminUser: {
+          email: adminEmail,
+          name: process.env.ADMIN_NAME || 'Administrador RH',
+          password: adminPassword,
+          role: 'super_admin',
+        },
+        autoPublishJobs: false,
+      });
+
+      console.log('\n============================================================');
+      console.log('AJN CARREIRAS — BOOTSTRAP ADMINISTRATIVO CONCLUÍDO NO D1 LOCAL');
+      console.log('============================================================');
+      console.log(`E-mail:       ${adminEmail}`);
+      console.log(`Função:       super_admin`);
+      console.log(`Status DB:    Usuário persistido no banco de dados D1 local`);
+      if (process.stdout.isTTY) {
+        console.log(`MFA Segredo:  ${result.mfaSecret}`);
+        console.log(`URI TOTP:     ${result.otpauthUri}`);
+      } else {
+        console.log(`MFA Segredo:  [GERADO E SALVO NO D1 - TTY não detectado para evitar vazamento em log persistente]`);
+      }
+      console.log('============================================================\n');
+    } catch (err) {
+      console.error('[ERRO DE BOOTSTRAP] Falha ao persistir no D1:', err);
+      process.exit(1);
+    }
   })();
 }

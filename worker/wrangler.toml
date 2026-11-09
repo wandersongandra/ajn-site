@@ -25,8 +25,22 @@ preview_bucket_name = "prod-ajn-carreiras-resumes-preview"
 binding = "RATE_LIMIT_KV"
 id = "00000000000000000000000000000000"
 
+# Durable Object para Rate Limiting atômico fortemente consistente na borda
+[durable_objects]
+bindings = [
+  { name = "RATE_LIMITER_DO", class_name = "RateLimiterDO" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["RateLimiterDO"]
+
 [env.staging]
 vars = { ENVIRONMENT = "staging", CORS_ORIGIN = "https://sienna-mongoose-223157.hostingersite.com" }
+[env.staging.durable_objects]
+bindings = [
+  { name = "RATE_LIMITER_DO", class_name = "RateLimiterDO" }
+]
 [[env.staging.d1_databases]]
 binding = "DB"
 database_name = "staging-ajn-carreiras-d1"

@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import { sha256 } from '../lib/crypto';
 import type { Env, HonoVariables, AuthUser } from '../types';

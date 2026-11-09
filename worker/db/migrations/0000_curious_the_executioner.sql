@@ -39,6 +39,7 @@ CREATE TABLE `admin_users` (
 	`locked_until` integer,
 	`reset_token_hash` text,
 	`reset_expires_at` integer,
+	`reset_attempts` integer DEFAULT 0 NOT NULL,
 	`created_at` integer DEFAULT (strftime('%s', 'now')) NOT NULL,
 	`updated_at` integer DEFAULT (strftime('%s', 'now')) NOT NULL
 );
@@ -79,6 +80,7 @@ CREATE TABLE `candidates` (
 	`is_talent_pool` integer DEFAULT false NOT NULL,
 	`email_verification_code_hash` text,
 	`email_verification_expires_at` integer,
+	`email_verification_attempts` integer DEFAULT 0 NOT NULL,
 	`created_at` integer DEFAULT (strftime('%s', 'now')) NOT NULL,
 	`updated_at` integer DEFAULT (strftime('%s', 'now')) NOT NULL
 );
@@ -145,6 +147,7 @@ CREATE TABLE `job_applications` (
 	`rejection_reason` text,
 	`recovery_code_hash` text,
 	`recovery_expires_at` integer,
+	`recovery_attempts` integer DEFAULT 0 NOT NULL,
 	`applied_at` integer DEFAULT (strftime('%s', 'now')) NOT NULL,
 	`updated_at` integer DEFAULT (strftime('%s', 'now')) NOT NULL,
 	FOREIGN KEY (`job_id`) REFERENCES `job_postings`(`id`) ON UPDATE no action ON DELETE set null,

@@ -9,22 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
   checkCurrentJobStatus();
 });
 
-// 1. Filtros de busca no portal de vagas com sincronização ao vivo com a API
+// 1. Filtros de busca no portal de vagas com renderização dinâmica e sincronização com API
 function initJobFilters() {
   const filterForm = document.querySelector('[data-carreiras-filters]');
   if (!filterForm) return;
 
-  const cards = document.querySelectorAll('[data-job-card]');
-  const countEl = document.querySelector('[data-jobs-count]');
-
   function applyFilters() {
+    const cards = document.querySelectorAll('[data-job-card]');
+    const countEl = document.querySelector('[data-jobs-count]');
     const q = (filterForm.querySelector('[name="q"]')?.value || '').toLowerCase().trim();
     const dept = (filterForm.querySelector('[name="department"]')?.value || '').toLowerCase();
     const type = (filterForm.querySelector('[name="type"]')?.value || '').toLowerCase();
 
     let visibleCount = 0;
     cards.forEach((card) => {
-      // Se a vaga foi marcada como encerrada na sincronização ao vivo, não exibe
       if (card.getAttribute('data-closed') === 'true') {
         card.style.display = 'none';
         return;
@@ -55,30 +53,180 @@ function initJobFilters() {
   filterForm.addEventListener('input', applyFilters);
   filterForm.addEventListener('change', applyFilters);
 
-  // Sincronização em segundo plano com a API para refletir encerramentos e novas vagas em tempo real
+  // Carregamento dinâmico direto da API (Item 4: eliminação de dependência funcional estática)
   (async () => {
     try {
       const res = await fetch('/api/jobs');
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data.jobs)) {
-        const liveSlugs = new Set(data.jobs.map((j) => j.slug));
-        cards.forEach((card) => {
-          const link = card.querySelector('a[href*="/carreiras/"]');
-          if (link) {
-            const href = link.getAttribute('href') || '';
-            const slug = href.replace(/\/+$/, '').split('/').pop();
-            if (slug && !liveSlugs.has(slug)) {
-              card.setAttribute('data-closed', 'true');
-            }
-          }
-        });
+        renderLiveJobs(data.jobs);
         applyFilters();
       }
     } catch {
-      // Falha silenciosa de rede: preserva os cartões estáticos
+      // Falha silenciosa de rede: preserva cartões estáticos de fallback
     }
   })();
+}
+
+function renderLiveJobs(jobs) {
+  const grid = document.querySelector('.carreiras-grid');
+  if (!grid) return;
+
+  while (grid.firstChild) {
+    grid.removeChild(grid.firstChild);
+  }
+
+  const countEl = document.querySelector('[data-jobs-count]');
+  if (countEl) countEl.textContent = String(jobs.length);
+
+  if (jobs.length === 0) {
+    const emptyBox = document.createElement('div');
+    emptyBox.style.gridColumn = '1 / -1';
+    emptyBox.style.textAlign = 'center';
+    emptyBox.style.padding = '3rem 1rem';
+
+    const p1 = document.createElement('p');
+    p1.style.fontSize = '1.125rem';
+    p1.style.color = 'var(--text-soft)';
+    p1.textContent = 'No momento todas as oportunidades em aberto foram preenchidas.';
+
+    const p2 = document.createElement('p');
+    p2.style.marginTop = '1rem';
+    const talentLink = document.createElement('a');
+    talentLink.className = 'carreiras-button carreiras-button--primary';
+    talentLink.href = '/carreiras/talentos/';
+    talentLink.textContent = 'Cadastrar no Banco de Talentos';
+    p2.appendChild(talentLink);
+
+    emptyBox.appendChild(p1);
+    emptyBox.appendChild(p2);
+    grid.appendChild(emptyBox);
+    return;
+  }
+
+  jobs.forEach((job) => {
+    const card = document.createElement('article');
+    card.className = 'carreiras-card';
+    card.setAttribute('data-job-card', '');
+    card.setAttribute('data-title', job.title || '');
+    card.setAttribute('data-department', job.department || '');
+    card.setAttribute('data-type', job.employmentType || '');
+    card.setAttribute('data-desc', job.description || '');
+
+    const topDiv = document.createElement('div');
+    const badgesDiv = document.createElement('div');
+    badgesDiv.className = 'carreiras-card-badges';
+
+    const deptBadge = document.createElement('span');
+    deptBadge.className = 'carreiras-badge carreiras-badge--primary';
+    deptBadge.textContent = job.department || '';
+    badgesDiv.appendChild(deptBadge);
+
+    const typeBadge = document.createElement('span');
+    typeBadge.className = 'carreiras-badge';
+    typeBadge.textContent = job.employmentType || '';
+    badgesDiv.appendChild(typeBadge);
+
+    if (job.experienceLevel) {
+      const expBadge = document.createElement('span');
+      expBadge.className = 'carreiras-badge';
+      expBadge.textContent = job.experienceLevel;
+      badgesDiv.appendChild(expBadge);
+    }
+    topDiv.appendChild(badgesDiv);
+
+    const titleH3 = document.createElement('h3');
+    titleH3.className = 'carreiras-card-title';
+    titleH3.textContent = job.title || '';
+    topDiv.appendChild(titleH3);
+
+    const descP = document.createElement('p');
+    descP.className = 'carreiras-card-desc';
+    descP.textContent = job.description || '';
+    topDiv.appendChild(descP);
+
+    const botDiv = document.createElement('div');
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'carreiras-card-meta';
+
+    const locSpan = document.createElement('span');
+    const locStrong = document.createElement('strong');
+    locStrong.textContent = 'Local: ';
+    locSpan.appendChild(locStrong);
+    locSpan.appendChild(document.createTextNode(job.location || 'Belo Horizonte - MG'));
+    metaDiv.appendChild(locSpan);
+
+    if (job.salaryIsDisclosed && job.salaryMin && job.salaryMax) {
+      const salSpan = document.createElement('span');
+      const salStrong = document.createElement('strong');
+      salStrong.textContent = 'Faixa salarial: ';
+      salSpan.appendChild(salStrong);
+      salSpan.appendChild(
+        document.createTextNode(
+          `R$ ${Number(job.salaryMin).toLocaleString('pt-BR')} a R$ ${Number(job.salaryMax).toLocaleString('pt-BR')}`
+        )
+      );
+      metaDiv.appendChild(salSpan);
+    }
+    botDiv.appendChild(metaDiv);
+
+    const applyA = document.createElement('a');
+    applyA.className = 'carreiras-button carreiras-button--primary';
+    applyA.style.width = '100%';
+    applyA.href = `/carreiras/${job.slug}/`;
+    applyA.textContent = 'Ver detalhes e candidatar-se →';
+    botDiv.appendChild(applyA);
+
+    card.appendChild(topDiv);
+    card.appendChild(botDiv);
+    grid.appendChild(card);
+  });
+
+  updateJobsJsonLd(jobs);
+}
+
+function updateJobsJsonLd(jobs) {
+  let scriptEl = document.getElementById('dynamic-jobs-jsonld');
+  if (!scriptEl) {
+    scriptEl = document.createElement('script');
+    scriptEl.id = 'dynamic-jobs-jsonld';
+    scriptEl.type = 'application/ld+json';
+    document.head.appendChild(scriptEl);
+  }
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Vagas em aberto na AJN Consultoria e Engenharia',
+    numberOfItems: jobs.length,
+    itemListElement: jobs.map((job, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      item: {
+        '@type': 'JobPosting',
+        title: job.title,
+        description: job.description,
+        employmentType: job.employmentType === 'CLT' ? 'FULL_TIME' : 'CONTRACTOR',
+        hiringOrganization: {
+          '@type': 'Organization',
+          name: 'AJN Consultoria e Engenharia',
+          sameAs: 'https://ajnengenharia.com.br',
+        },
+        jobLocation: {
+          '@type': 'Place',
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: 'Belo Horizonte',
+            addressRegion: 'MG',
+            addressCountry: 'BR',
+          },
+        },
+      },
+    })),
+  };
+
+  scriptEl.textContent = JSON.stringify(jsonLd);
 }
 
 // 2. Verificação de status da vaga individual ao carregar a página
@@ -89,7 +237,6 @@ async function checkCurrentJobStatus() {
   const action = form.getAttribute('action') || '';
   if (!action.includes('/jobs/')) return;
 
-  // Extrai o slug da rota /api/applications/jobs/:slug/apply
   const match = action.match(/\/jobs\/([^/]+)\/apply/);
   if (!match) return;
   const slug = match[1];
@@ -114,13 +261,25 @@ async function checkCurrentJobStatus() {
       inputs.forEach((input) => {
         input.disabled = true;
       });
+    } else {
+      const data = await res.json();
+      if (data.job && data.job.jsonLd) {
+        let jobScript = document.getElementById('dynamic-job-posting-jsonld');
+        if (!jobScript) {
+          jobScript = document.createElement('script');
+          jobScript.id = 'dynamic-job-posting-jsonld';
+          jobScript.type = 'application/ld+json';
+          document.head.appendChild(jobScript);
+        }
+        jobScript.textContent = JSON.stringify(data.job.jsonLd);
+      }
     }
   } catch {
     // Falha silenciosa de verificação preliminar
   }
 }
 
-// 3. Formulário de Candidatura e Banco de Talentos
+// 3. Formulário de Candidatura e Banco de Talentos com Turnstile e OTP de Titularidade
 function initApplicationForm() {
   const form = document.querySelector('[data-application-form]');
   if (!form) return;
@@ -158,6 +317,15 @@ function initApplicationForm() {
       return;
     }
 
+    // Obtenção do token Turnstile do widget ou input hidden
+    const turnstileToken =
+      formData.get('cf-turnstile-response') ||
+      (window.turnstile ? window.turnstile.getResponse() : '') ||
+      '';
+    if (turnstileToken) {
+      formData.set('turnstileToken', String(turnstileToken));
+    }
+
     const endpoint = form.getAttribute('action') || '/api/applications/talent-pool';
 
     if (submitBtn) {
@@ -185,29 +353,42 @@ function initApplicationForm() {
           fileLabel.textContent = 'Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)';
         }
       } else if (response.status === 409 && result.verificationRequired) {
-        // Exige código de verificação para alteração cadastral por CPF (P0 Item 2)
+        // Exige código de verificação para alteração cadastral por CPF ou e-mail (Item 3)
         showNotice(
           noticeBox,
-          result.error || 'Código de verificação necessário enviado para o e-mail cadastrado.',
+          result.error ||
+            'Cadastro prévio localizado. Um código de verificação de 6 dígitos foi enviado ao seu e-mail cadastrado.',
           'error'
         );
+
         let tokenInput = form.querySelector('[name="verificationToken"]');
         if (!tokenInput) {
           const group = document.createElement('div');
-          group.className = 'carreiras-form-group';
+          group.className = 'carreiras-field carreiras-form-full';
           const label = document.createElement('label');
           label.className = 'carreiras-label';
-          label.textContent = 'Código de Verificação de Titularidade (6 dígitos):';
+          label.textContent = 'Código de Verificação de Titularidade (6 dígitos enviado ao e-mail): *';
           tokenInput = document.createElement('input');
           tokenInput.className = 'carreiras-input';
           tokenInput.name = 'verificationToken';
           tokenInput.type = 'text';
           tokenInput.maxLength = 6;
-          tokenInput.placeholder = 'Digite o código recebido no e-mail cadastrado';
+          tokenInput.placeholder = 'Digite o código de 6 dígitos';
           tokenInput.required = true;
+          tokenInput.style.letterSpacing = '0.15em';
+          tokenInput.style.fontWeight = 'bold';
+          tokenInput.style.textAlign = 'center';
+          tokenInput.style.fontSize = '1.25rem';
           group.appendChild(label);
           group.appendChild(tokenInput);
-          form.insertBefore(group, submitBtn.parentElement);
+
+          const gridContainer = form.querySelector('.carreiras-form-grid');
+          const submitContainer = submitBtn?.parentElement;
+          if (gridContainer && submitContainer) {
+            gridContainer.insertBefore(group, submitContainer);
+          } else {
+            form.appendChild(group);
+          }
           tokenInput.focus();
         }
       } else {
@@ -216,9 +397,9 @@ function initApplicationForm() {
     } catch (err) {
       showNotice(noticeBox, 'Erro de comunicação com o servidor. Verifique sua conexão e tente novamente.', 'error');
     } finally {
-      if (submitBtn && !submitBtn.disabled) {
+      if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = submitBtn.getAttribute('data-orig-text') || 'Enviar Candidatura';
+        submitBtn.textContent = submitBtn.getAttribute('data-orig-text') || 'Confirmar e Enviar Candidatura';
       }
     }
   });
@@ -269,7 +450,7 @@ function initTrackingForm() {
     }
   });
 
-  // Fluxo de recuperação de código com verificação de posse do e-mail (P1 Item 10)
+  // Fluxo de recuperação de código com verificação de posse do e-mail
   const recoveryForm = document.querySelector('[data-recovery-form]');
   if (recoveryForm) {
     const recNotice = recoveryForm.querySelector('[data-notice]');
@@ -283,13 +464,15 @@ function initTrackingForm() {
       const cpf = recoveryForm.querySelector('[name="cpf"]')?.value.trim();
       const codeInput = recoveryForm.querySelector('[name="recoveryCode"]');
       const code = codeInput?.value.trim();
+      const turnstileToken =
+        recoveryForm.querySelector('[name="cf-turnstile-response"]')?.value ||
+        (window.turnstile ? window.turnstile.getResponse() : '');
 
       if (!email || !cpf) {
         showNotice(recNotice, 'Preencha seu e-mail e CPF.', 'error');
         return;
       }
 
-      // Se o campo do código ainda não foi preenchido, dispara a solicitação de OTP
       if (!code) {
         if (recBtn) {
           recBtn.disabled = true;
@@ -300,7 +483,7 @@ function initTrackingForm() {
           const res = await fetch('/api/applications/recover-tracking', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, cpf }),
+            body: JSON.stringify({ email, cpf, turnstileToken }),
           });
           const data = await res.json();
           if (res.ok && data.success) {
@@ -318,7 +501,6 @@ function initTrackingForm() {
           if (recBtn) recBtn.disabled = false;
         }
       } else {
-        // Envia o código para confirmação segura
         if (recBtn) {
           recBtn.disabled = true;
           recBtn.textContent = 'Validando código...';
@@ -332,7 +514,11 @@ function initTrackingForm() {
           });
           const data = await res.json();
           if (res.ok && Array.isArray(data.applications) && data.applications.length > 0) {
-            showNotice(recNotice, `Recuperação realizada com sucesso! Código: ${data.applications[0].trackingCode}`, 'success');
+            showNotice(
+              recNotice,
+              `Recuperação realizada com sucesso! Código: ${data.applications[0].trackingCode}`,
+              'success'
+            );
             if (resultContainer) {
               renderTrackingResult(resultContainer, data.applications[0]);
             }
@@ -388,6 +574,9 @@ function initLgpdForm() {
     const email = form.querySelector('[name="email"]')?.value.trim();
     const cpf = form.querySelector('[name="cpf"]')?.value.trim();
     const reason = form.querySelector('[name="reason"]')?.value.trim();
+    const turnstileToken =
+      form.querySelector('[name="cf-turnstile-response"]')?.value ||
+      (window.turnstile ? window.turnstile.getResponse() : '');
 
     if (!email || !cpf) {
       showNotice(noticeBox, 'Preencha seu e-mail e CPF para validar a solicitação.', 'error');
@@ -403,7 +592,7 @@ function initLgpdForm() {
       const response = await fetch('/api/lgpd/deletion-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, cpf, reason }),
+        body: JSON.stringify({ email, cpf, reason, turnstileToken }),
       });
 
       const data = await response.json();

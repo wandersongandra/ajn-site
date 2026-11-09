@@ -1,7 +1,13 @@
 import { Hono } from 'hono';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, or } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import { sha256, generateRandomToken, generateTrackingCode, maskCpf } from '../lib/crypto';
+import {
+  generateSecureOtp,
+  maskEmail,
+  sendCandidateVerificationEmail,
+  sendCandidateRecoveryEmail,
+} from '../lib/email';
 import {
   candidateSchema,
   validateResumeBuffer,
@@ -12,6 +18,32 @@ import {
 import { verifyTurnstile } from '../lib/antispam';
 import { logAuditEvent } from '../lib/audit';
 import type { Env, HonoVariables } from '../types';
+
+async function executeAtomicDbWrites(db: any, operation: (tx: any) => Promise<void>) {
+  const client = db.session?.client;
+  if (client && typeof client.exec === 'function') {
+    client.exec('BEGIN TRANSACTION');
+    try {
+      await operation(db);
+      client.exec('COMMIT');
+    } catch (err) {
+      try {
+        client.exec('ROLLBACK');
+      } catch {}
+      throw err;
+    }
+    return;
+  }
+
+  if (typeof db.transaction === 'function') {
+    await db.transaction(async (tx: any) => {
+      await operation(tx);
+    });
+    return;
+  }
+
+  await operation(db);
+}
 
 export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
   const router = new Hono<{ Bindings: Env; Variables: HonoVariables }>();
@@ -48,23 +80,28 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
       .get();
 
     if (!application) {
-      return c.json({ error: 'Candidatura não encontrada. Verifique o código informado.' }, 404);
+      return c.json({ error: 'Nenhuma candidatura localizada com o código informado.' }, 404);
     }
+
+    const stageMap: Record<string, string> = {
+      'Triagem & Inscrição': 'Inscrição Recebida',
+      'Análise de Requisitos': 'Em Análise Curricular',
+      'Entrevista RH': 'Entrevista com Recrutamento',
+      'Entrevista Técnica com Gestor': 'Avaliação Técnica Especializada',
+      'Proposta & Exames Admissionais': 'Fase Final / Exames',
+      'Contratado': 'Processo Concluído com Sucesso',
+      'Banco de Talentos / Declinado': 'Currículo Mantido no Banco de Talentos',
+    };
 
     return c.json({
       application: {
         trackingCode: application.trackingCode,
-        appliedAt: application.appliedAt,
-        updatedAt: application.updatedAt,
         jobTitle: application.jobTitle || 'Banco de Talentos AJN',
         department: application.jobDepartment || 'Geral',
-        currentStage: application.stageName || 'Triagem & Inscrição',
-        status:
-          application.status === 'active'
-            ? 'Em andamento'
-            : application.status === 'hired'
-              ? 'Aprovado'
-              : 'Processo encerrado',
+        status: application.status === 'active' ? 'Em andamento' : application.status === 'hired' ? 'Aprovado' : 'Processo encerrado',
+        stage: stageMap[application.stageName || ''] || application.stageName || 'Em processamento',
+        appliedAt: application.appliedAt,
+        updatedAt: application.updatedAt,
       },
     });
   });
@@ -106,7 +143,7 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
       });
     }
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = generateSecureOtp(6);
     const codeHash = await sha256(code);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
@@ -115,8 +152,27 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
       .set({
         emailVerificationCodeHash: codeHash,
         emailVerificationExpiresAt: expiresAt,
+        emailVerificationAttempts: 0,
+        updatedAt: new Date(),
       })
       .where(eq(schema.candidates.id, candidate.id));
+
+    // Envio real por provedor transacional de e-mail (Item 1)
+    const emailResult = await sendCandidateVerificationEmail(c.env, {
+      email: candidate.email,
+      fullName: candidate.fullName,
+      otpCode: code,
+    });
+
+    if (!emailResult.success) {
+      return c.json(
+        {
+          error: 'Falha no envio do e-mail com o código de verificação. Tente novamente mais tarde.',
+          details: emailResult.error,
+        },
+        502
+      );
+    }
 
     await logAuditEvent({
       db,
@@ -132,7 +188,8 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
     const isTest = c.env?.ENVIRONMENT === 'test' || process.env.NODE_ENV === 'test' || process.env.VITEST !== undefined;
     return c.json({
       success: true,
-      message: 'Código de verificação enviado para o e-mail cadastrado.',
+      message: `Código de verificação enviado para ${maskEmail(candidate.email)}.`,
+      emailMasked: maskEmail(candidate.email),
       verificationToken: isTest ? code : undefined,
     });
   });
@@ -171,7 +228,7 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
     const candidate = await db
       .select()
       .from(schema.candidates)
-      .where(and(eq(schema.candidates.cpfHash, cpfHash), eq(schema.candidates.email, email)))
+      .where(and(eq(schema.candidates.cpfHash, cpfHash), eq(schema.candidates.email, email.toLowerCase())))
       .get();
 
     // Idempotência segura contra enumeração
@@ -184,8 +241,8 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
       );
     }
 
-    // Gera código de recuperação de 6 dígitos
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // Gera código de recuperação criptograficamente seguro (Item 1)
+    const code = generateSecureOtp(6);
     const codeHash = await sha256(code);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
@@ -194,8 +251,27 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
       .set({
         recoveryCodeHash: codeHash,
         recoveryExpiresAt: expiresAt,
+        recoveryAttempts: 0,
+        updatedAt: new Date(),
       })
       .where(eq(schema.jobApplications.candidateId, candidate.id));
+
+    // Envio real por e-mail com confirmação do provedor antes de declarar sucesso (Item 1)
+    const emailResult = await sendCandidateRecoveryEmail(c.env, {
+      email: candidate.email,
+      fullName: candidate.fullName,
+      otpCode: code,
+    });
+
+    if (!emailResult.success) {
+      return c.json(
+        {
+          error: 'Falha no envio do e-mail com o código de recuperação. Tente novamente mais tarde.',
+          details: emailResult.error,
+        },
+        502
+      );
+    }
 
     await logAuditEvent({
       db,
@@ -231,12 +307,12 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
       return c.json({ error: 'Dados inválidos.', details: validation.error.flatten().fieldErrors }, 400);
     }
     const { email, code } = validation.data;
-    const codeHash = await sha256(code);
+    const codeHash = await sha256(code.trim());
 
     const candidate = await db
       .select()
       .from(schema.candidates)
-      .where(eq(schema.candidates.email, email))
+      .where(eq(schema.candidates.email, email.toLowerCase()))
       .get();
 
     if (!candidate) {
@@ -252,34 +328,55 @@ export function createPublicApplicationsRoutes(dbFactory: (env: Env) => any) {
         jobTitle: schema.jobPostings.title,
         recoveryCodeHash: schema.jobApplications.recoveryCodeHash,
         recoveryExpiresAt: schema.jobApplications.recoveryExpiresAt,
+        recoveryAttempts: schema.jobApplications.recoveryAttempts,
       })
       .from(schema.jobApplications)
       .leftJoin(schema.jobPostings, eq(schema.jobApplications.jobId, schema.jobPostings.id))
-      .where(
-        and(
-          eq(schema.jobApplications.candidateId, candidate.id),
-          eq(schema.jobApplications.recoveryCodeHash, codeHash)
-        )
-      )
+      .where(eq(schema.jobApplications.candidateId, candidate.id))
       .all();
 
-    const validApps = applications.filter(
-      (app: any) => app.recoveryExpiresAt && new Date(app.recoveryExpiresAt).getTime() > Date.now()
-    );
+    if (applications.length === 0) {
+      return c.json({ error: 'Nenhuma candidatura vinculada a este cadastro.' }, 404);
+    }
 
-    if (validApps.length === 0) {
+    const currentApp = applications[0];
+
+    // Limite estrito de tentativas incorretas (Item 1)
+    if ((currentApp.recoveryAttempts || 0) >= 5) {
+      await db
+        .update(schema.jobApplications)
+        .set({ recoveryCodeHash: null, recoveryExpiresAt: null, recoveryAttempts: 0 })
+        .where(eq(schema.jobApplications.candidateId, candidate.id));
+
+      return c.json(
+        { error: 'Limite de tentativas incorretas excedido. Solicite um novo código de recuperação.' },
+        429
+      );
+    }
+
+    const isMatch = currentApp.recoveryCodeHash === codeHash;
+    const isNotExpired =
+      currentApp.recoveryExpiresAt && new Date(currentApp.recoveryExpiresAt).getTime() > Date.now();
+
+    if (!isMatch || !isNotExpired) {
+      // Incrementa tentativa falha
+      await db
+        .update(schema.jobApplications)
+        .set({ recoveryAttempts: (currentApp.recoveryAttempts || 0) + 1 })
+        .where(eq(schema.jobApplications.candidateId, candidate.id));
+
       return c.json({ error: 'Código de recuperação inválido ou expirado.' }, 400);
     }
 
-    // Invalida o código utilizado
+    // Consumo único: invalida o código imediatamente após o uso bem-sucedido
     await db
       .update(schema.jobApplications)
-      .set({ recoveryCodeHash: null, recoveryExpiresAt: null })
+      .set({ recoveryCodeHash: null, recoveryExpiresAt: null, recoveryAttempts: 0 })
       .where(eq(schema.jobApplications.candidateId, candidate.id));
 
     return c.json({
       success: true,
-      applications: validApps.map((app: any) => ({
+      applications: applications.map((app: any) => ({
         trackingCode: app.trackingCode,
         jobTitle: app.jobTitle || 'Banco de Talentos AJN',
         status: app.status === 'active' ? 'Em andamento' : app.status === 'hired' ? 'Aprovado' : 'Processo encerrado',
@@ -321,8 +418,10 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
     }
   }
 
-  // 1. Antispam Turnstile fail-secure
-  const turnstileToken = formData.get('turnstileToken')?.toString();
+  // 1. Verificação antispam Cloudflare Turnstile
+  const turnstileToken =
+    formData.get('turnstileToken')?.toString() ||
+    formData.get('cf-turnstile-response')?.toString();
   const antispam = await verifyTurnstile(turnstileToken, c.env?.TURNSTILE_SECRET_KEY, ip, c.env?.ENVIRONMENT);
   if (!antispam.success) {
     return c.json({ error: antispam.error }, 400);
@@ -347,7 +446,6 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
   } else if (consentRetentionVal === 'false' || consentRetentionVal === '0') {
     parsedConsentRetention = false;
   } else {
-    // Se omitido, exige escolha explícita ou define falso para candidaturas de vaga
     parsedConsentRetention = false;
   }
 
@@ -388,7 +486,7 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
     return c.json({ error: fileValidation.error }, 400);
   }
 
-  // 4. Verificação de disponibilidade do R2 antes de qualquer alteração (P0 Item 5)
+  // 4. Verificação de disponibilidade do R2 antes de qualquer alteração
   if (!c.env?.RESUMES_BUCKET) {
     return c.json(
       { error: 'Armazenamento de currículos (R2) indisponível no momento. A candidatura não pôde ser salva.' },
@@ -402,72 +500,123 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
   const { masked: cpfMasked } = maskCpf(cpfClean);
   const fileSha256 = await sha256(fileBuffer);
 
-  // 6. Localização e proteção de titularidade do candidato (P0 Item 2)
-  let candidate = await db
+  // 6. Localização e comprovação de titularidade para cadastros existentes (Item 3 da Auditoria)
+  // Exige comprovação de titularidade para TODAS as atualizações de dados ou currículos, inclusive quando CPF e e-mail coincidem
+  let existingCandidate = await db
     .select()
     .from(schema.candidates)
-    .where(eq(schema.candidates.cpfHash, cpfHash))
+    .where(or(eq(schema.candidates.cpfHash, cpfHash), eq(schema.candidates.email, validData.email.toLowerCase())))
     .get();
 
-  const candidateId = candidate ? candidate.id : 'cand-' + generateRandomToken(12);
+  const candidateId = existingCandidate ? existingCandidate.id : 'cand-' + generateRandomToken(12);
 
-  // Se o candidato já existe, impede alteração arbitrária de dados com e-mail divergente
-  if (candidate) {
-    const isSameEmail = candidate.email.toLowerCase() === validData.email.toLowerCase();
-    if (!isSameEmail) {
-      let isVerified = false;
-      if (validData.verificationToken) {
-        const tokenHash = await sha256(validData.verificationToken);
-        if (
-          candidate.emailVerificationCodeHash === tokenHash &&
-          candidate.emailVerificationExpiresAt &&
-          new Date(candidate.emailVerificationExpiresAt).getTime() > Date.now()
-        ) {
-          isVerified = true;
-        }
+  if (existingCandidate) {
+    let isVerified = false;
+
+    if (validData.verificationToken) {
+      if ((existingCandidate.emailVerificationAttempts || 0) >= 5) {
+        return c.json(
+          { error: 'Limite de tentativas incorretas excedido. Solicite um novo código de verificação para continuar.' },
+          429
+        );
       }
 
-      if (!isVerified) {
-        // Gera código de verificação para o e-mail previamente cadastrado
-        const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const codeHash = await sha256(verifyCode);
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+      const tokenHash = await sha256(validData.verificationToken.trim());
+      const isTokenValid = existingCandidate.emailVerificationCodeHash === tokenHash;
+      const isNotExpired =
+        existingCandidate.emailVerificationExpiresAt &&
+        new Date(existingCandidate.emailVerificationExpiresAt).getTime() > Date.now();
 
+      if (isTokenValid && isNotExpired) {
+        isVerified = true;
+      } else {
+        const newAttempts = (existingCandidate.emailVerificationAttempts || 0) + 1;
         await db
           .update(schema.candidates)
           .set({
-            emailVerificationCodeHash: codeHash,
-            emailVerificationExpiresAt: expiresAt,
+            emailVerificationAttempts: newAttempts,
+            updatedAt: new Date(),
           })
-          .where(eq(schema.candidates.id, candidate.id));
+          .where(eq(schema.candidates.id, existingCandidate.id));
 
-        await logAuditEvent({
-          db,
-          actorId: candidate.id,
-          actorType: 'candidate',
-          action: 'IDENTITY_VERIFICATION_REQUIRED',
-          resource: 'candidate',
-          resourceId: candidate.id,
-          details: { originalEmail: candidate.email, attemptedEmail: validData.email },
-          ipAddress: ip,
-          userAgent,
-        });
+        if (newAttempts >= 5) {
+          return c.json(
+            { error: 'Limite de tentativas incorretas excedido. Solicite um novo código de verificação para continuar.' },
+            429
+          );
+        }
 
-        const isTest = c.env?.ENVIRONMENT === 'test' || process.env.NODE_ENV === 'test' || process.env.VITEST !== undefined;
         return c.json(
-          {
-            error:
-              'Este CPF já está cadastrado com outro endereço de e-mail. Para proteger sua privacidade, enviamos um código de verificação para seu e-mail cadastrado. Informe-o no campo de verificação.',
-            verificationRequired: true,
-            verificationToken: isTest ? verifyCode : undefined,
-          },
-          409
+          { error: 'Código de verificação de titularidade incorreto ou expirado.' },
+          400
         );
       }
     }
+
+    if (!isVerified) {
+      // Gera código OTP de uso único e dispara envio real para o e-mail cadastrado
+      const verifyCode = generateSecureOtp(6);
+      const codeHash = await sha256(verifyCode);
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+      await db
+        .update(schema.candidates)
+        .set({
+          emailVerificationCodeHash: codeHash,
+          emailVerificationExpiresAt: expiresAt,
+          emailVerificationAttempts: 0,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.candidates.id, existingCandidate.id));
+
+      const emailResult = await sendCandidateVerificationEmail(c.env, {
+        email: existingCandidate.email,
+        fullName: existingCandidate.fullName,
+        otpCode: verifyCode,
+      });
+
+      if (!emailResult.success) {
+        return c.json(
+          {
+            error: 'Não foi possível entregar o código de verificação no e-mail cadastrado. Tente novamente mais tarde.',
+            details: emailResult.error,
+          },
+          502
+        );
+      }
+
+      await logAuditEvent({
+        db,
+        actorId: existingCandidate.id,
+        actorType: 'candidate',
+        action: 'IDENTITY_VERIFICATION_REQUIRED',
+        resource: 'candidate',
+        resourceId: existingCandidate.id,
+        details: { emailMasked: maskEmail(existingCandidate.email) },
+        ipAddress: ip,
+        userAgent,
+      });
+
+      const isDifferentEmail =
+        existingCandidate.email.toLowerCase() !== validData.email.toLowerCase();
+      const errorMessage = isDifferentEmail
+        ? `Este CPF já está cadastrado com outro endereço de e-mail (${maskEmail(existingCandidate.email)}). Para atualizar seus dados ou vincular um novo e-mail, informe o código de verificação enviado para ${maskEmail(existingCandidate.email)}.`
+        : `Candidato já cadastrado no sistema. Para atualizar seus dados ou enviar um novo currículo, informe o código de 6 dígitos enviado para ${maskEmail(existingCandidate.email)}.`;
+
+      const isTest = c.env?.ENVIRONMENT === 'test' || process.env.NODE_ENV === 'test' || process.env.VITEST !== undefined;
+      return c.json(
+        {
+          error: errorMessage,
+          verificationRequired: true,
+          emailMasked: maskEmail(existingCandidate.email),
+          verificationToken: isTest ? verifyCode : undefined,
+        },
+        409
+      );
+    }
   }
 
-  // 7. Upload para o Cloudflare R2 com controle transacional e compensação (P0 Item 5)
+  // 7. Upload para o Cloudflare R2 com controle transacional e compensação (Item 5 e 7)
   const resumeId = 'res-' + generateRandomToken(12);
   const fileExt = resumeFile.name.split('.').pop()?.toLowerCase() || 'pdf';
   const fileKey = `resumes/${candidateId}/${resumeId}.${fileExt}`;
@@ -493,128 +642,128 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
     }
   }
 
-  // 8. Gravação transacional no banco com compensação em caso de erro
-  let trackingCode = '';
-  let applicationId = '';
+  // 8. Gravação transacional efetiva no banco com compensação atômica em falhas (Item 7)
+  let trackingCode = generateTrackingCode();
+  let applicationId = 'app-' + generateRandomToken(12);
 
   try {
-    if (!candidate) {
-      await db.insert(schema.candidates).values({
-        id: candidateId,
-        fullName: validData.fullName,
-        email: validData.email,
-        phone: validData.phone,
-        cpfHash,
-        cpfMasked,
-        city: validData.city,
-        state: validData.state,
-        linkedinUrl: validData.linkedinUrl || null,
-        portfolioUrl: validData.portfolioUrl || null,
-        currentTitle: validData.currentTitle || null,
-        summary: validData.summary || null,
-        isTalentPool: !targetJob ? true : validData.consentRetention,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    } else {
-      await db
-        .update(schema.candidates)
-        .set({
-          fullName: validData.fullName,
-          email: validData.email,
-          phone: validData.phone,
-          city: validData.city,
-          state: validData.state,
-          linkedinUrl: validData.linkedinUrl || candidate.linkedinUrl,
-          portfolioUrl: validData.portfolioUrl || candidate.portfolioUrl,
-          currentTitle: validData.currentTitle || candidate.currentTitle,
-          summary: validData.summary || candidate.summary,
-          isTalentPool: !targetJob ? true : validData.consentRetention,
-          emailVerificationCodeHash: null,
-          emailVerificationExpiresAt: null,
-          updatedAt: new Date(),
-        })
-        .where(eq(schema.candidates.id, candidateId));
-    }
-
-    // Inativa currículos anteriores e registra o novo
-    await db
-      .update(schema.resumes)
-      .set({ isCurrent: false })
-      .where(eq(schema.resumes.candidateId, candidateId));
-
-    await db.insert(schema.resumes).values({
-      id: resumeId,
-      candidateId,
-      fileKey,
-      originalFilename: resumeFile.name,
-      mimeType: resumeFile.type || 'application/pdf',
-      fileSizeBytes: fileBuffer.length,
-      fileSha256,
-      isCurrent: true,
-      uploadedAt: new Date(),
-    });
-
-    // Atualiza certificações
-    if (validData.certifications && validData.certifications.length > 0) {
-      for (const certName of validData.certifications) {
-        await db.insert(schema.certifications).values({
-          id: 'cert-' + generateRandomToken(8),
-          candidateId,
-          name: certName,
-          createdAt: new Date(),
-        });
-      }
-    }
-
-    // 9. Registra consentimentos LGPD efetivos (P0 Item 3)
-    // Termo obrigatório do processo seletivo ou banco de talentos
-    await db.insert(schema.dataConsents).values({
-      id: 'consent-' + generateRandomToken(10),
-      candidateId,
-      consentType: targetJob ? 'recruitment_process' : 'talent_pool_opt_in',
-      consentVersion: '1.0',
-      granted: true,
-      ipAddress: ip,
-      userAgent,
-      consentedAt: new Date(),
-    });
-
-    // Registro explícito da escolha de retenção (inclusive se negativa)
-    if (targetJob) {
-      await db.insert(schema.dataConsents).values({
-        id: 'consent-ret-' + generateRandomToken(10),
-        candidateId,
-        consentType: 'talent_pool_retention',
-        consentVersion: '1.0',
-        granted: validData.consentRetention,
-        ipAddress: ip,
-        userAgent,
-        consentedAt: new Date(),
-      });
-    }
-
-    // 10. Cria candidatura
     const defaultStage = await db
       .select()
       .from(schema.recruitmentStages)
       .where(eq(schema.recruitmentStages.stageOrder, 1))
       .get();
 
-    trackingCode = generateTrackingCode();
-    applicationId = 'app-' + generateRandomToken(12);
+    // Execução em bloco transacional atômico
+    await executeAtomicDbWrites(db, async (tx: any) => {
+      if (!existingCandidate) {
+        await tx.insert(schema.candidates).values({
+          id: candidateId,
+          fullName: validData.fullName,
+          email: validData.email.toLowerCase(),
+          phone: validData.phone,
+          cpfHash,
+          cpfMasked,
+          city: validData.city,
+          state: validData.state,
+          linkedinUrl: validData.linkedinUrl || null,
+          portfolioUrl: validData.portfolioUrl || null,
+          currentTitle: validData.currentTitle || null,
+          summary: validData.summary || null,
+          isTalentPool: !targetJob ? true : validData.consentRetention,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } else {
+        // Consumo único do token de verificação e atualização segura dos dados
+        await tx
+          .update(schema.candidates)
+          .set({
+            fullName: validData.fullName,
+            email: validData.email.toLowerCase(),
+            phone: validData.phone,
+            city: validData.city,
+            state: validData.state,
+            linkedinUrl: validData.linkedinUrl || existingCandidate.linkedinUrl,
+            portfolioUrl: validData.portfolioUrl || existingCandidate.portfolioUrl,
+            currentTitle: validData.currentTitle || existingCandidate.currentTitle,
+            summary: validData.summary || existingCandidate.summary,
+            isTalentPool: !targetJob ? true : validData.consentRetention,
+            emailVerificationCodeHash: null,
+            emailVerificationExpiresAt: null,
+            emailVerificationAttempts: 0,
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.candidates.id, candidateId));
+      }
 
-    await db.insert(schema.jobApplications).values({
-      id: applicationId,
-      jobId: targetJob ? targetJob.id : null,
-      candidateId,
-      resumeId,
-      currentStageId: defaultStage ? defaultStage.id : null,
-      trackingCode,
-      status: 'active',
-      source: targetJob ? 'portal' : 'talentos',
-      appliedAt: new Date(),
-      updatedAt: new Date(),
+      // Inativa currículos anteriores e registra o novo
+      await tx
+        .update(schema.resumes)
+        .set({ isCurrent: false })
+        .where(eq(schema.resumes.candidateId, candidateId));
+
+      await tx.insert(schema.resumes).values({
+        id: resumeId,
+        candidateId,
+        fileKey,
+        originalFilename: resumeFile.name,
+        mimeType: resumeFile.type || 'application/pdf',
+        fileSizeBytes: fileBuffer.length,
+        fileSha256,
+        isCurrent: true,
+        uploadedAt: new Date(),
+      });
+
+      // Atualiza certificações
+      if (validData.certifications && validData.certifications.length > 0) {
+        for (const certName of validData.certifications) {
+          await tx.insert(schema.certifications).values({
+            id: 'cert-' + generateRandomToken(8),
+            candidateId,
+            name: certName,
+            createdAt: new Date(),
+          });
+        }
+      }
+
+      // Registra consentimentos LGPD efetivos
+      await tx.insert(schema.dataConsents).values({
+        id: 'consent-' + generateRandomToken(10),
+        candidateId,
+        consentType: targetJob ? 'recruitment_process' : 'talent_pool_opt_in',
+        consentVersion: '1.0',
+        granted: true,
+        ipAddress: ip,
+        userAgent,
+        consentedAt: new Date(),
+      });
+
+      if (targetJob) {
+        await tx.insert(schema.dataConsents).values({
+          id: 'consent-ret-' + generateRandomToken(10),
+          candidateId,
+          consentType: 'talent_pool_retention',
+          consentVersion: '1.0',
+          granted: validData.consentRetention,
+          ipAddress: ip,
+          userAgent,
+          consentedAt: new Date(),
+        });
+      }
+
+      // Cria candidatura
+      await tx.insert(schema.jobApplications).values({
+        id: applicationId,
+        jobId: targetJob ? targetJob.id : null,
+        candidateId,
+        resumeId,
+        currentStageId: defaultStage ? defaultStage.id : null,
+        trackingCode,
+        status: 'active',
+        source: targetJob ? 'portal' : 'talentos',
+        appliedAt: new Date(),
+        updatedAt: new Date(),
+      });
     });
 
     await logAuditEvent({
@@ -635,7 +784,7 @@ async function handleApplication(c: any, dbFactory: (env: Env) => any, jobSlug: 
       userAgent,
     });
   } catch (dbErr) {
-    // Compensação: Se o banco falhar após upload no R2, remove o arquivo órfão
+    // Compensação atômica consistente: se o banco falhar, remove imediatamente o arquivo órfão do R2
     if (uploadedToR2 && c.env?.RESUMES_BUCKET) {
       try {
         await c.env.RESUMES_BUCKET.delete(fileKey);

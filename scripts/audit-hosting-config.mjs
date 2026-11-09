@@ -15,11 +15,13 @@ check(Boolean(reportOnly), 'A CSP candidata deve permanecer em Report-Only.');
 check(cspSourcesEqual(enforced, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']),
 	'CSP enforced não deve liberar imagens em qualquer origem HTTPS.');
 check(cspSourcesEqual(reportOnly, 'default-src', ["'self'"]) &&
-	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com']), 'CSP candidata deve restringir default/script a self.');
+	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com', 'https://challenges.cloudflare.com']), 'CSP candidata deve restringir default/script a self.');
 check(cspSourcesEqual(reportOnly, 'form-action', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']), 'CSP candidata deve restringir forms e imagens.');
-check(cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com']),
-  'CSP candidata deve permitir apenas endpoints de medição GA4 conhecidos.');
+check(cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']),
+  'CSP candidata deve permitir apenas endpoints de medição GA4 e Turnstile conhecidos.');
+check(cspSourcesEqual(reportOnly, 'frame-src', ["'self'", 'https://challenges.cloudflare.com']),
+  'CSP candidata deve permitir carregamento de frames do Turnstile.');
 check(cspSourcesEqual(reportOnly, 'style-src', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'font-src', ["'self'"]),
 	'CSP candidata deve manter estilos e fontes em origem própria.');

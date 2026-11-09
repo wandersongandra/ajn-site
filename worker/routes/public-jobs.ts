@@ -69,7 +69,7 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
     return c.json({ jobs: publicJobs, count: publicJobs.length });
   });
 
-  // Detalhes da vaga individual por slug
+  // Detalhes da vaga individual por slug e dados estruturados Google Jobs (JSON-LD)
   router.get('/:slug', async (c) => {
     const db = dbFactory(c.env);
     const slug = c.req.param('slug');
@@ -93,6 +93,42 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
       parsedRequirements = [job.requirements];
     }
 
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'JobPosting',
+      title: job.title,
+      description: job.description,
+      datePosted: job.publishedAt ? new Date(job.publishedAt).toISOString() : new Date().toISOString(),
+      employmentType: job.employmentType === 'CLT' ? 'FULL_TIME' : job.employmentType === 'Estágio' ? 'INTERN' : 'CONTRACTOR',
+      hiringOrganization: {
+        '@type': 'Organization',
+        name: 'AJN Consultoria e Engenharia',
+        sameAs: 'https://ajnengenharia.com.br',
+        logo: 'https://ajnengenharia.com.br/images/branding/logo.png',
+      },
+      jobLocation: {
+        '@type': 'Place',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Belo Horizonte',
+          addressRegion: 'MG',
+          addressCountry: 'BR',
+        },
+      },
+      baseSalary: job.salaryIsDisclosed && job.salaryMin
+        ? {
+            '@type': 'MonetaryAmount',
+            currency: 'BRL',
+            value: {
+              '@type': 'QuantitativeValue',
+              minValue: job.salaryMin,
+              maxValue: job.salaryMax || job.salaryMin,
+              unitText: 'MONTH',
+            },
+          }
+        : undefined,
+    };
+
     return c.json({
       job: {
         id: job.id,
@@ -111,7 +147,10 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
         salaryIsDisclosed: job.salaryIsDisclosed,
         openingsCount: job.openingsCount,
         publishedAt: job.publishedAt,
+        status: job.status,
+        jsonLd,
       },
+      jsonLd,
     });
   });
 
