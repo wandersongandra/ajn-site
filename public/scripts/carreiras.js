@@ -464,9 +464,11 @@ function initApplicationForm() {
       formData.get('cf-turnstile-response') ||
       (window.turnstile ? window.turnstile.getResponse() : '') ||
       '';
-    if (turnstileToken) {
-      formData.set('turnstileToken', String(turnstileToken));
+    if (!turnstileToken) {
+      showNotice(noticeBox, 'A verificação antispam ainda não foi concluída. Tente novamente em instantes.', 'error');
+      return;
     }
+    formData.set('turnstileToken', String(turnstileToken));
 
     const endpoint = form.getAttribute('action') || '/api/applications/talent-pool';
 
@@ -695,7 +697,7 @@ function renderTrackingResult(container, app) {
   if (codeEl) codeEl.textContent = app.trackingCode;
   if (jobEl) jobEl.textContent = app.jobTitle;
   if (deptEl) deptEl.textContent = app.department;
-  if (stageEl) stageEl.textContent = app.currentStage;
+  if (stageEl) stageEl.textContent = app.currentStage || app.stage || 'Em processamento';
   if (statusEl) statusEl.textContent = app.status;
   if (dateEl && app.appliedAt) {
     const d = new Date(app.appliedAt);

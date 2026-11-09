@@ -17,11 +17,11 @@ check(cspSourcesEqual(enforced, 'img-src', ["'self'", 'data:', 'https://www.goog
 	'CSP enforced não deve liberar imagens em qualquer origem HTTPS.');
 check(cspSourcesEqual(reportOnly, 'default-src', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com', 'https://challenges.cloudflare.com']), 'CSP candidata deve restringir default/script a self.');
-check(cspSourcesEqual(reportOnly, 'form-action', ["'self'", 'https://carreiras.ajnengenharia.com.br']) &&
+check(cspSourcesEqual(reportOnly, 'form-action', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']), 'CSP candidata deve restringir forms e imagens.');
-check(cspSourcesEqual(enforced, 'connect-src', ["'self'", 'https://carreiras.ajnengenharia.com.br', 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']) &&
-	cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://carreiras.ajnengenharia.com.br', 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']),
-	  'CSP deve permitir apenas a API de carreiras, endpoints de medição GA4 e Turnstile conhecidos.');
+check(cspSourcesEqual(enforced, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']) &&
+	cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']),
+	  'CSP deve permitir apenas a API same-origin, endpoints de medição GA4 e Turnstile conhecidos.');
 check(cspSourcesEqual(reportOnly, 'frame-src', ["'self'", 'https://challenges.cloudflare.com']),
   'CSP candidata deve permitir carregamento de frames do Turnstile.');
 check(cspSourcesEqual(reportOnly, 'style-src', ["'self'"]) &&
@@ -42,11 +42,13 @@ check(!/Strict-Transport-Security[^\r\n]*(?:includeSubDomains|preload)/i.test(co
 check(/RewriteRule \^ https:\/\/ajnengenharia\.com\.br%\{REQUEST_URI\} \[R=301,L,NE\]/.test(config),
 	'O redirecionamento de www para o host canônico deve ser permanente após homologação.');
 const careerRouteRules = [
-	'RewriteRule ^(?:admin/)?carreiras(?:/.*)?$ - [R=410,L]',
-	'RewriteRule ^carreiras/?$ https://carreiras.ajnengenharia.com.br/carreiras/ [R=301,L,NE]',
+	'RewriteRule ^api/index\\.php$ - [L]',
+	'RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]',
+	'RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]',
 ];
 check(careerRouteRules.every((rule) => configLines.some((line) => line === rule)),
-	'As rotas de carreiras devem ser encaminhadas ao Worker canônico, sem rewrite interno estático.');
+	'API e páginas dinâmicas de carreiras devem usar PHP local, sem redirecionamento externo.');
+check(!config.includes('carreiras.ajnengenharia.com.br'), 'A hospedagem Premium não deve depender do Worker externo.');
 
 async function walk(directory) {
 	const entries = await readdir(directory, { withFileTypes: true });

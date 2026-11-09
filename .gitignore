@@ -22,6 +22,7 @@ pnpm-debug.log*
 # local backups and sensitive exports
 *.sql
 !worker/db/migrations/*.sql
+!hostinger/migrations/*.sql
 *.dump
 *.bak
 *.backup

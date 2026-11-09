@@ -46,15 +46,14 @@ test('keeps the fixed apex origin and does not pass through request host or port
 	assert.match(rule, /\[R=301,L,NE\]$/);
 });
 
-test('keeps career routes on the Worker canonical topology', () => {
-	assert.match(config, /sienna-mongoose-223157\\\.hostingersite\\\.com/);
+test('keeps career routes on Hostinger PHP same-origin, no Worker redirect', () => {
 	const expectedRules = [
-		'RewriteRule ^(?:admin/)?carreiras(?:/.*)?$ - [R=410,L]',
-		'RewriteRule ^carreiras/?$ https://carreiras.ajnengenharia.com.br/carreiras/ [R=301,L,NE]',
-		'RewriteRule ^admin/carreiras/?$ https://carreiras.ajnengenharia.com.br/admin/carreiras/ [R=301,L,NE]',
+		'RewriteRule ^api/index\\.php$ - [L]',
+		'RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]',
+		'RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]',
 	];
 	for (const expectedRule of expectedRules) {
 		assert.ok(configLines.some((line) => line === expectedRule));
 	}
-	assert.doesNotMatch(config, /RewriteRule \^carreiras\/\(\[\^\/\]\+\)\/\?\$ \/carreiras\/vaga/);
+	assert.doesNotMatch(config, /carreiras\.ajnengenharia\.com\.br/);
 });

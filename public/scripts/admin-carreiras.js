@@ -4,7 +4,7 @@
 (() => {
   let authToken = '';
   let currentUser = null;
-  let currentJobId = 'job-eng-seguranca';
+  let currentJobId = '';
   let listenersRegistered = false;
 
   function getConfiguredApiOrigin() {
@@ -455,8 +455,8 @@
   }
 
   async function loadDashboardData() {
-    loadJobs();
-    loadPipeline(currentJobId);
+    await loadJobs();
+    if (currentJobId) await loadPipeline(currentJobId);
   }
 
   // 1. Carrega Vagas
@@ -471,6 +471,10 @@
       });
       const data = await res.json();
       if (!res.ok) return;
+      if (!Array.isArray(data.jobs)) return;
+      if (!data.jobs.some((job) => job.id === currentJobId)) {
+        currentJobId = data.jobs[0]?.id || '';
+      }
 
       while (tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
 
@@ -541,6 +545,12 @@
     if (!boardEl) return;
 
     while (boardEl.firstChild) boardEl.removeChild(boardEl.firstChild);
+    if (!jobId) {
+      const hint = document.createElement('p');
+      hint.textContent = 'Cadastre uma vaga para visualizar o pipeline de recrutamento.';
+      boardEl.appendChild(hint);
+      return;
+    }
 
     try {
       const res = await fetch(getApiEndpoint(`/api/admin/pipeline/${encodeURIComponent(jobId)}`), {
@@ -699,7 +709,7 @@
         dlBtn.className = 'carreiras-button carreiras-button--secondary';
         dlBtn.style.padding = '0.35rem 0.75rem';
         dlBtn.style.fontSize = '0.8125rem';
-        dlBtn.textContent = 'Baixar Currículo (R2 Privado)';
+        dlBtn.textContent = 'Baixar Currículo Privado';
         dlBtn.addEventListener('click', () => downloadResume(cand.id));
         tdActions.appendChild(dlBtn);
         tr.appendChild(tdActions);
@@ -803,7 +813,7 @@
   }
 
   async function executeLgpdRequest(requestId) {
-    if (!confirm('Confirma a execução desta solicitação LGPD? Se for exclusão, todos os dados e arquivos do R2 serão eliminados de forma irreversível.')) {
+    if (!confirm('Confirma a execução desta solicitação LGPD? Se for exclusão, todos os dados e arquivos privados serão eliminados de forma irreversível.')) {
       return;
     }
 

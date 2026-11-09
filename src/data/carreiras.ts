@@ -20,13 +20,12 @@ export interface CareerJob {
 
 // Em conformidade estrita com o requisito P0 Item 2:
 // Nenhuma vaga fictícia ou em rascunho (draft) é pré-renderizada no HTML estático.
-// O portal público exibe exclusivamente vagas aprovadas e publicadas em tempo real via Cloudflare D1.
+// O portal público exibe vagas publicadas em tempo real pela API PHP da Hostinger.
 export const APPROVED_JOB_POSTINGS: CareerJob[] = [];
 
-// Chave pública do Cloudflare Turnstile parametrizável por ambiente (Staging vs Produção)
+// Turnstile é apenas o serviço antispam externo; API e dados ficam na Hostinger.
+// Nunca empacotar uma chave fictícia em produção.
 export const TURNSTILE_SITE_KEY =
   (typeof process !== 'undefined' && process.env?.PUBLIC_TURNSTILE_SITE_KEY) ||
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_TURNSTILE_SITE_KEY) ||
-  ((typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') || (typeof import.meta !== 'undefined' && import.meta.env?.PROD)
-    ? '0x4AAAAAAAx_PROD_SITE_KEY_x'
-    : '1x00000000000000000000AA');
+  '';

@@ -1,4 +1,5 @@
-const DEFAULT_CAREERS_ORIGIN = 'https://carreiras.ajnengenharia.com.br';
+// Hostinger Premium: o portal e a API residem no domínio institucional.
+const DEFAULT_CAREERS_ORIGIN = 'https://ajnengenharia.com.br';
 
 const careersEnvironment = (import.meta.env.PUBLIC_CAREERS_ENVIRONMENT ?? 'production').trim().toLowerCase();
 const configuredCareersOrigin = (import.meta.env.PUBLIC_CAREERS_ORIGIN ?? '').trim();
@@ -26,7 +27,7 @@ if (careersEnvironment === 'staging' && careersOrigin === DEFAULT_CAREERS_ORIGIN
 }
 
 if (careersEnvironment === 'production' && configuredCareersOrigin && careersOrigin !== DEFAULT_CAREERS_ORIGIN) {
-	throw new Error('Builds de produção devem usar https://carreiras.ajnengenharia.com.br.');
+    throw new Error('Builds de produção devem usar https://ajnengenharia.com.br.');
 }
 
 export function absoluteCareersUrl(path: string): string {

@@ -105,13 +105,13 @@ const jsonLd = [
 
         <form data-admin-reset-form>
           <div class="carreiras-field" style="margin-bottom: 1.25rem;">
-            <label class="carreiras-label" for="admin-new-password">Nova Senha (mínimo 8 caracteres)</label>
-            <input class="carreiras-input" id="admin-new-password" name="newPassword" type="password" required minlength="8" placeholder="••••••••••••" />
+          <label class="carreiras-label" for="admin-new-password">Nova Senha (mínimo 16 caracteres)</label>
+            <input class="carreiras-input" id="admin-new-password" name="newPassword" type="password" required minlength="16" placeholder="••••••••••••" />
           </div>
 
           <div class="carreiras-field" style="margin-bottom: 1.25rem;">
             <label class="carreiras-label" for="admin-confirm-password">Confirmar Nova Senha</label>
-            <input class="carreiras-input" id="admin-confirm-password" name="confirmPassword" type="password" required minlength="8" placeholder="••••••••••••" />
+            <input class="carreiras-input" id="admin-confirm-password" name="confirmPassword" type="password" required minlength="16" placeholder="••••••••••••" />
           </div>
 
           <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
@@ -387,12 +387,13 @@ const jsonLd = [
                   <select class="carreiras-select" id="new-user-role" name="role" required>
                     <option value="recruiter">Recrutador (recruiter)</option>
                     <option value="viewer">Visualizador (viewer)</option>
+                    <option value="dpo">DPO / Privacidade (dpo)</option>
                     <option value="super_admin">Administrador Geral (super_admin)</option>
                   </select>
                 </div>
                 <div class="carreiras-field">
                   <label class="carreiras-label" for="new-user-password">Senha Provisória *</label>
-                  <input class="carreiras-input" id="new-user-password" name="password" type="password" required minlength="8" placeholder="••••••••••••" />
+                  <input class="carreiras-input" id="new-user-password" name="password" type="password" required minlength="12" placeholder="••••••••••••" />
                 </div>
                 <div class="carreiras-form-full" style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
                   <button class="carreiras-button carreiras-button--primary" type="submit">Salvar Usuário</button>

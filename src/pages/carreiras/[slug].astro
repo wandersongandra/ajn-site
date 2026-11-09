@@ -234,9 +234,13 @@ const jsonLd = [
                 </div>
               </div>
 
-              <div class="carreiras-field carreiras-form-full">
-                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
-              </div>
+                <div class="carreiras-field carreiras-form-full">
+                  {TURNSTILE_SITE_KEY ? (
+                    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+                  ) : (
+                    <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
+                  )}
+                </div>
 
               <div class="carreiras-form-full" style="margin-top: 1rem;">
                 <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
@@ -250,6 +254,6 @@ const jsonLd = [
     </div>
   </div>
 
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  {TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
   <script src="/scripts/carreiras.js" defer></script>
 </BaseLayout>
