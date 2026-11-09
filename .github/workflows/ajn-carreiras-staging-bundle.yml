@@ -1,0 +1,54 @@
+name: Build AJN Careers isolated Hostinger staging bundle
+on:
+  push:
+    branches:
+      - deploy/ajn-carreiras-staging-20261109
+    paths-ignore:
+      - staging-release.tar.gz
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout approved staging source
+        uses: actions/checkout@v4
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Compile staging Astro site
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          PUBLIC_CAREERS_ENVIRONMENT: staging
+          PUBLIC_CAREERS_ORIGIN: https://lightskyblue-gnat-418094.hostingersite.com
+          PUBLIC_SITE_ORIGIN: https://lightskyblue-gnat-418094.hostingersite.com
+        run: npm run build
+      - name: Package PHP backend and stage-only public assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f dist/.htaccess
+          test -f dist/api/index.php
+          test -f hostinger/migrations/001_initial.sql
+          grep -q 'Disallow: /' dist/robots.txt
+          sed -i '/<IfModule mod_headers.c>/a\    Header always set X-Robots-Tag "noindex, nofollow, noarchive"' dist/.htaccess
+          tar -czf staging-release.tar.gz dist hostinger public/.htaccess public/api/index.php public/scripts/admin-carreiras.js public/scripts/carreiras.js
+          if tar -tzf staging-release.tar.gz | grep -Eq '(^|/)(config.php|\.env|resumes|[^/]+\.sql\.gz)$'; then
+            echo "Sensitive payload detected; refusing to publish"
+            exit 1
+          fi
+          sha256sum staging-release.tar.gz
+      - name: Publish bundle only to isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f staging-release.tar.gz
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: publish checked Hostinger careers staging bundle [skip ci]"
+          git push origin HEAD:refs/heads/deploy/ajn-carreiras-staging-20261109
