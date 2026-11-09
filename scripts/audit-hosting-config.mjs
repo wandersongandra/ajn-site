@@ -6,6 +6,7 @@ import { cspSourcesEqual, cspSourceIsExact, isAllowedResourceUrl } from './hosti
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
 const config = await readFile('public/.htaccess', 'utf8');
+const configLines = config.split(/\r?\n/).map((line) => line.trim());
 const header = (name) => config.match(new RegExp('^\\s*Header always set ' + name + ' "([^"]+)"', 'm'))?.[1] ?? '';
 const enforced = header('Content-Security-Policy');
 const reportOnly = header('Content-Security-Policy-Report-Only');
@@ -40,8 +41,11 @@ check(!/Strict-Transport-Security[^\r\n]*(?:includeSubDomains|preload)/i.test(co
 	'Não usar includeSubDomains/preload sem auditoria específica.');
 check(/RewriteRule \^ https:\/\/ajnengenharia\.com\.br%\{REQUEST_URI\} \[R=301,L,NE\]/.test(config),
 	'O redirecionamento de www para o host canônico deve ser permanente após homologação.');
-check(config.includes('https://staging-ajn-carreiras-api.workers.dev/carreiras/') &&
-	config.includes('https://carreiras.ajnengenharia.com.br/carreiras/'),
+const careerRouteRules = [
+	'RewriteRule ^carreiras/?$ https://staging-ajn-carreiras-api.workers.dev/carreiras/ [R=302,L,NE]',
+	'RewriteRule ^carreiras/?$ https://carreiras.ajnengenharia.com.br/carreiras/ [R=301,L,NE]',
+];
+check(careerRouteRules.every((rule) => configLines.some((line) => line === rule)),
 	'As rotas de carreiras devem ser encaminhadas ao Worker canônico, sem rewrite interno estático.');
 
 async function walk(directory) {

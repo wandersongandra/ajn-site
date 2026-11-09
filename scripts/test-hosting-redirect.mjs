@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const config = await readFile('public/.htaccess', 'utf8');
+const configLines = config.split(/\r?\n/).map((line) => line.trim());
 const condition = config.match(/^\s*RewriteCond \%\{HTTP_HOST\} (.+)$/m)?.[1] ?? '';
 const rule = config.match(/^\s*RewriteRule \^ (.+)$/m)?.[1] ?? '';
 const hostPattern = new RegExp(condition.match(/^(.+?) \[NC\]$/)?.[1] ?? '(?!)', 'i');
@@ -47,9 +48,14 @@ test('keeps the fixed apex origin and does not pass through request host or port
 
 test('keeps career routes on the Worker canonical topology', () => {
 	assert.match(config, /sienna-mongoose-223157\\\.hostingersite\\\.com/);
-  assert.ok(config.includes('https://staging-ajn-carreiras-api.workers.dev/carreiras/'));
-  assert.ok(config.includes('https://staging-ajn-carreiras-api.workers.dev/admin/carreiras/'));
-  assert.ok(config.includes('https://carreiras.ajnengenharia.com.br/carreiras/'));
-  assert.ok(config.includes('https://carreiras.ajnengenharia.com.br/admin/carreiras/'));
+	const expectedRules = [
+		'RewriteRule ^carreiras/?$ https://staging-ajn-carreiras-api.workers.dev/carreiras/ [R=302,L,NE]',
+		'RewriteRule ^admin/carreiras/?$ https://staging-ajn-carreiras-api.workers.dev/admin/carreiras/ [R=302,L,NE]',
+		'RewriteRule ^carreiras/?$ https://carreiras.ajnengenharia.com.br/carreiras/ [R=301,L,NE]',
+		'RewriteRule ^admin/carreiras/?$ https://carreiras.ajnengenharia.com.br/admin/carreiras/ [R=301,L,NE]',
+	];
+	for (const expectedRule of expectedRules) {
+		assert.ok(configLines.some((line) => line === expectedRule));
+	}
 	assert.doesNotMatch(config, /RewriteRule \^carreiras\/\(\[\^\/\]\+\)\/\?\$ \/carreiras\/vaga/);
 });
