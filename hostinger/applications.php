@@ -157,6 +157,9 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
         if (mb_strlen($name) < 3 || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($phone) < 8 || !ajn_valid_cpf((string) $cpf) || $city === '' || !preg_match('/^[A-Z]{2}$/D', $state) || !$consentTerms) {
             ajn_json(['error' => 'Dados cadastrais inválidos ou aceite de privacidade ausente.'], 400);
         }
+        if (!$job && !$consentRetention) {
+            ajn_json(['error' => 'Para participar do Banco de Talentos, autorize a retenção dos dados do currículo.'], 400);
+        }
         ajn_verify_turnstile($config, $_POST['turnstileToken'] ?? $_POST['cf-turnstile-response'] ?? null);
         $file = ajn_resume_upload($config);
         $secret = hex2bin($config['encryption_key'] ?? '');
@@ -194,7 +197,7 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
         $now = time();
         try {
             $db->beginTransaction();
-            $candidateValues = [$name, $phone, $city, $state, ajn_text($_POST['linkedinUrl'] ?? null, 500) ?: null, ajn_text($_POST['portfolioUrl'] ?? null, 500) ?: null, ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null, (!$job || $consentRetention) ? 1 : 0, $now, $candidateId];
+            $candidateValues = [$name, $phone, $city, $state, ajn_text($_POST['linkedinUrl'] ?? null, 500) ?: null, ajn_text($_POST['portfolioUrl'] ?? null, 500) ?: null, ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null, (int) $consentRetention, $now, $candidateId];
             if ($candidate) {
                 ajn_exec($db, 'UPDATE candidates SET full_name=?,phone=?,city=?,state=?,linkedin_url=?,portfolio_url=?,current_title=?,summary=?,is_talent_pool=?,updated_at=? WHERE id=?', $candidateValues);
             } else {
@@ -203,9 +206,11 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
                     [$candidateId, $name, $email, $phone, $cpfHash, '***.***.' . substr((string) $cpf, 6, 3) . '-' . substr((string) $cpf, 9), $city, $state,
                         ajn_text($_POST['linkedinUrl'] ?? null, 500) ?: null, ajn_text($_POST['portfolioUrl'] ?? null, 500) ?: null,
                         ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null,
-                        (!$job || $consentRetention) ? 1 : 0, $now, $now]
+                        (int) $consentRetention, $now, $now]
                 );
             }
+            // Garantir que apenas o currículo mais recente seja o atual, inclusive em recandidaturas.
+            ajn_exec($db, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1', [$candidateId]);
             ajn_exec($db,
                 'INSERT INTO resumes (id,candidate_id,file_key,original_filename,mime_type,file_size_bytes,file_sha256,is_current,uploaded_at) VALUES (?,?,?,?,?,?,?,1,?)',
                 [$resumeId, $candidateId, $key, $file['name'], $file['mime'], $file['size'], $hash, $now]
