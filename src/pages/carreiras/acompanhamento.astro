@@ -1,0 +1,209 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { serializeJsonLd } from '../../utils/site';
+import { TURNSTILE_SITE_KEY } from '../../data/carreiras';
+import { absoluteCareersUrl, careersOrigin } from '../../utils/careers';
+import '../../styles/carreiras.css';
+
+const title = 'Acompanhar Candidatura | AJN Consultoria e Engenharia';
+const description = 'Consulte o andamento da sua candidatura com o protocolo recebido ou solicite a exclusão dos seus dados de recrutamento.';
+const canonicalPath = '/carreiras/acompanhamento/';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: absoluteCareersUrl('/carreiras/') },
+      { '@type': 'ListItem', position: 3, name: 'Acompanhamento', item: absoluteCareersUrl('/carreiras/acompanhamento/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Acompanhamento de Candidatura — AJN Carreiras',
+    description: 'Portal de consulta segura do andamento de processos seletivos e canal de atendimento LGPD aos titulares.',
+    publisher: {
+      '@type': 'Organization',
+      name: 'AJN Consultoria e Engenharia',
+      sameAs: 'https://ajnengenharia.com.br',
+    },
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  canonicalOrigin={careersOrigin}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <nav class="carreiras-nav-bar" aria-label="Navegação interna de carreiras">
+        <a class="carreiras-nav-link" href="/carreiras/">← Ver vagas abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/" aria-current="page">Acompanhar candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Área do recrutador</a>
+      </nav>
+
+      <header class="carreiras-header">
+        <span class="carreiras-eyebrow">Acompanhamento</span>
+        <h1 class="carreiras-title">Consulte sua candidatura</h1>
+        <p class="carreiras-lead">
+          Digite o protocolo recebido ao enviar seu currículo para consultar o andamento da candidatura. Se perdeu o código, você pode solicitar a recuperação abaixo.
+        </p>
+      </header>
+
+      <div class="carreiras-form-container" style="margin-bottom: 3rem;">
+        <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+          Consultar andamento
+        </h2>
+        <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 1.75rem; text-align: center;">
+          Formato do código: <code>AJN-2026-XXXXXX</code>
+        </p>
+
+        <div class="carreiras-notice" data-notice role="alert"></div>
+
+        <form data-tracking-form>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 240px;">
+              <label class="sr-only" for="track-code-input">Código de acompanhamento</label>
+              <input
+                class="carreiras-input"
+                id="track-code-input"
+                name="code"
+                type="text"
+                required
+                placeholder="Ex: AJN-2026-X8K9M"
+                style="text-transform: uppercase; font-family: monospace; font-size: 1.125rem; text-align: center; letter-spacing: 0.05em;"
+              />
+            </div>
+            <button class="carreiras-button carreiras-button--primary" type="submit">
+              Consultar candidatura <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          {TURNSTILE_SITE_KEY ? (
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" style="margin-top: 1rem;"></div>
+          ) : (
+            <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
+          )}
+        </form>
+
+        <!-- Resultado da Consulta -->
+        <div class="admin-metric-card" data-tracking-result style="display: none; margin-top: 2rem; border-top: 3px solid var(--brand-action);">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+            <div>
+              <span class="carreiras-badge carreiras-badge--primary" data-track-dept>Segurança do Trabalho</span>
+              <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-top: 0.5rem;" data-track-job>Engenheiro(a) de Segurança</h3>
+            </div>
+            <span class="carreiras-badge" data-track-status>Em andamento</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase;">Código</span>
+              <div style="font-weight: 600; font-family: monospace;" data-track-code>AJN-2026-X8K9M</div>
+            </div>
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase;">Etapa Atual</span>
+              <div style="font-weight: 600; color: var(--brand-action);" data-track-stage>Triagem & Inscrição</div>
+            </div>
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase;">Data de Envio</span>
+              <div style="font-weight: 600;" data-track-date>—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recuperação segura de protocolo por confirmação do e-mail cadastrado -->
+      <section class="carreiras-form-container" aria-labelledby="carreiras-recovery-title" style="margin-bottom: 3rem;">
+        <h2 id="carreiras-recovery-title" style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.75rem;">
+          Esqueceu o código de acompanhamento?
+        </h2>
+        <p class="carreiras-help" style="margin-bottom: 1.5rem;">
+          Informe o e-mail e o CPF usados na candidatura. Se os dados corresponderem a um cadastro, enviaremos um código de verificação ao e-mail informado, válido por 15 minutos.
+        </p>
+
+        <form data-recovery-form>
+          <div class="carreiras-notice" data-notice role="alert" aria-live="polite"></div>
+          <div class="carreiras-form-grid">
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="recover-candidate-email">E-mail cadastrado *</label>
+              <input class="carreiras-input" id="recover-candidate-email" name="email" type="email" autocomplete="email" required placeholder="seu.email@exemplo.com" />
+            </div>
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="recover-candidate-cpf">CPF cadastrado *</label>
+              <input class="carreiras-input" id="recover-candidate-cpf" name="cpf" type="text" inputmode="numeric" required placeholder="000.000.000-00" />
+            </div>
+            <div class="carreiras-field carreiras-form-full" data-code-group style="display: none;">
+              <label class="carreiras-label" for="recover-candidate-code">Código de seis dígitos recebido por e-mail *</label>
+              <input class="carreiras-input" id="recover-candidate-code" name="recoveryCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" />
+            </div>
+            <div class="carreiras-field carreiras-form-full">
+              {TURNSTILE_SITE_KEY ? (
+                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+              ) : (
+                <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
+              )}
+            </div>
+            <div class="carreiras-form-full">
+              <button class="carreiras-button carreiras-button--secondary" type="submit">
+                Solicitar código de verificação
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Gestão de Dados Pessoais / LGPD Art. 18 -->
+      <section style="max-width: 760px; margin-inline: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-sm);">
+        <h2 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-bottom: 0.75rem;">
+          Solicitar exclusão dos seus dados
+        </h2>
+        <p style="font-size: 0.9375rem; line-height: 1.6; color: var(--text-soft); margin-bottom: 1.5rem;">
+          Use este formulário para pedir a exclusão dos dados enviados em candidaturas. A solicitação será analisada conforme a LGPD, inclusive quanto a eventuais obrigações de conservação. Para exercer outros direitos, consulte nossa <a href="/politica-de-privacidade/">Política de Privacidade</a>.
+        </p>
+
+        <form data-lgpd-form>
+          <div class="carreiras-form-grid">
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="lgpd-email">E-mail Cadastrado *</label>
+              <input class="carreiras-input" id="lgpd-email" name="email" type="email" required placeholder="seu.email@exemplo.com" />
+            </div>
+
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="lgpd-cpf">CPF para Validação de Identidade *</label>
+              <input class="carreiras-input" id="lgpd-cpf" name="cpf" type="text" required placeholder="000.000.000-00" />
+            </div>
+
+            <div class="carreiras-field carreiras-form-full">
+              <label class="carreiras-label" for="lgpd-reason">Motivo da Solicitação (opcional)</label>
+              <input class="carreiras-input" id="lgpd-reason" name="reason" type="text" placeholder="Ex: Não resido mais na região / Não procuro recolocação" />
+            </div>
+
+            <div class="carreiras-field carreiras-form-full">
+              {TURNSTILE_SITE_KEY ? (
+                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+              ) : (
+                <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
+              )}
+            </div>
+
+            <div class="carreiras-form-full">
+              <button class="carreiras-button carreiras-button--secondary" style="border-color: #c62828; color: #c62828;" type="submit">
+                Solicitar exclusão dos dados
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  {TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+  <script src="/scripts/carreiras.js?v=20261110-feedback" defer></script>
+</BaseLayout>

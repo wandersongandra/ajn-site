@@ -28,7 +28,8 @@ concurrency:
 
 jobs:
   browser-smoke:
-    runs-on: ubuntu-latest
+    # Playwright 1.56.1 has no Chromium dependency bundle for ubuntu-26.04 yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       PUBLIC_SITE_ORIGIN: https://ajnengenharia.com.br

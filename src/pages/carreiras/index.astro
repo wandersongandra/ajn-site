@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { APPROVED_JOB_POSTINGS } from '../../data/carreiras';
+import { serializeJsonLd } from '../../utils/site';
+import { absoluteCareersUrl, careersOrigin } from '../../utils/careers';
+import '../../styles/carreiras.css';
+
+const title = 'Carreiras e Vagas | AJN Consultoria e Engenharia';
+const description = 'Consulte as vagas publicadas pela AJN Consultoria e Engenharia ou cadastre seu currículo para futuras seleções.';
+const canonicalPath = '/carreiras/';
+
+const departments = Array.from(new Set(APPROVED_JOB_POSTINGS.map((j) => j.department)));
+const employmentTypes = Array.from(new Set(APPROVED_JOB_POSTINGS.map((j) => j.employmentType)));
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: absoluteCareersUrl('/carreiras/') },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description: description,
+    url: absoluteCareersUrl('/carreiras/'),
+    inLanguage: 'pt-BR',
+    publisher: {
+      '@type': 'Organization',
+      name: 'AJN Consultoria e Engenharia',
+      url: 'https://ajnengenharia.com.br',
+    },
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  canonicalOrigin={careersOrigin}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <header class="carreiras-header">
+        <span class="carreiras-eyebrow">Trabalhe na AJN</span>
+        <h1 class="carreiras-title">Vagas e oportunidades na AJN</h1>
+        <p class="carreiras-lead">
+          Consulte as oportunidades publicadas pela AJN Consultoria e Engenharia. Se não houver uma vaga para sua área, você também pode deixar seu currículo em nosso banco de talentos.
+        </p>
+      </header>
+
+      <nav class="carreiras-nav-bar" aria-label="Navegação interna de carreiras">
+        <a class="carreiras-nav-link" href="/carreiras/" aria-current="page">Vagas abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Área do recrutador</a>
+      </nav>
+
+      <section class="carreiras-filter-box" aria-label="Filtros de busca de vagas">
+        <form class="carreiras-filter-grid" data-carreiras-filters>
+          <div class="carreiras-field">
+            <label class="carreiras-label" for="filter-search">Buscar vaga</label>
+            <input class="carreiras-input" id="filter-search" name="q" type="search" placeholder="Cargo ou palavra-chave" />
+          </div>
+
+          <div class="carreiras-field">
+            <label class="carreiras-label" for="filter-department">Área de atuação</label>
+            <select class="carreiras-select" id="filter-department" name="department">
+              <option value="">Todas as áreas</option>
+              {departments.map((d) => <option value={d.toLowerCase()}>{d}</option>)}
+            </select>
+          </div>
+
+          <div class="carreiras-field">
+            <label class="carreiras-label" for="filter-type">Regime de contratação</label>
+            <select class="carreiras-select" id="filter-type" name="type">
+              <option value="">Todos os regimes</option>
+              {employmentTypes.map((t) => <option value={t.toLowerCase()}>{t}</option>)}
+            </select>
+          </div>
+        </form>
+      </section>
+
+      <section aria-label="Lista de vagas abertas">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink);">
+            Vagas publicadas (<span data-jobs-count aria-live="polite">{APPROVED_JOB_POSTINGS.length}</span>)
+          </h2>
+        </div>
+
+        <div class="carreiras-grid">
+          {APPROVED_JOB_POSTINGS.length === 0 ? (
+            <div class="carreiras-empty-state" data-job-empty-state>
+              <h3 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.75rem;">
+                Nenhuma vaga publicada no momento
+              </h3>
+              <p style="font-size: 1.0625rem; color: var(--text-soft); max-width: 540px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                Você pode cadastrar seu currículo para que a equipe avalie seu perfil quando surgirem oportunidades. O cadastro não garante convocação para uma seleção.
+              </p>
+              <a class="carreiras-button carreiras-button--primary" href="/carreiras/talentos/">
+                Cadastrar currículo <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          ) : (
+            APPROVED_JOB_POSTINGS.map((job) => (
+              <article
+                class="carreiras-card"
+                data-job-card
+                data-title={job.title}
+                data-department={job.department}
+                data-type={job.employmentType}
+                data-desc={job.description}
+              >
+                <div>
+                  <div class="carreiras-card-badges">
+                    <span class="carreiras-badge carreiras-badge--primary">{job.department}</span>
+                    <span class="carreiras-badge">{job.employmentType}</span>
+                    <span class="carreiras-badge">{job.experienceLevel}</span>
+                  </div>
+                  <h3 class="carreiras-card-title">{job.title}</h3>
+                  <p class="carreiras-card-desc">{job.description}</p>
+                </div>
+
+                <div>
+                  <div class="carreiras-card-meta">
+                    <span><strong>Local:</strong> {job.location}</span>
+                    {job.salaryIsDisclosed && (
+                      <span>
+                        <strong>Faixa salarial:</strong> R$ {job.salaryMin?.toLocaleString('pt-BR')} a R$ {job.salaryMax?.toLocaleString('pt-BR')}
+                      </span>
+                    )}
+                  </div>
+
+                  <a class="carreiras-button carreiras-button--primary" style="width: 100%;" href={`/carreiras/${job.slug}/`}>
+                    Ver detalhes e candidatar-se <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+        <p class="carreiras-filter-feedback" data-no-filter-results hidden role="status">Nenhuma vaga corresponde aos filtros. Tente outra palavra-chave ou selecione outra área.</p>
+        <p class="carreiras-filter-feedback carreiras-filter-feedback--error" data-jobs-error hidden role="status">Não foi possível consultar as vagas agora. Verifique sua conexão e atualize a página.</p>
+      </section>
+
+      <aside class="carreiras-callout" aria-label="Banco de talentos da AJN">
+        <div class="carreiras-callout-text">
+          <h2>Quer deixar seu currículo para outras oportunidades?</h2>
+          <p>
+            O banco de talentos reúne currículos de profissionais de segurança do trabalho, higiene ocupacional, treinamentos e engenharia. A equipe consulta os cadastros conforme as necessidades de contratação.
+          </p>
+        </div>
+        <a class="carreiras-button carreiras-button--secondary" style="background: #fff; color: var(--ink);" href="/carreiras/talentos/">
+          Enviar meu currículo <span aria-hidden="true">→</span>
+        </a>
+      </aside>
+    </div>
+  </div>
+
+  <script src="/scripts/carreiras.js?v=20261110-feedback" defer></script>
+</BaseLayout>

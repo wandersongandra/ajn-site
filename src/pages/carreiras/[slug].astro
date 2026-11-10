@@ -1,0 +1,258 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { APPROVED_JOB_POSTINGS, TURNSTILE_SITE_KEY } from '../../data/carreiras';
+import { serializeJsonLd } from '../../utils/site';
+import { absoluteCareersUrl, careersOrigin } from '../../utils/careers';
+import '../../styles/carreiras.css';
+
+export function getStaticPaths() {
+  return APPROVED_JOB_POSTINGS.map((job) => ({
+    params: { slug: job.slug },
+    props: { job },
+  }));
+}
+
+const { job } = Astro.props;
+
+const title = `${job.title} | Carreiras AJN`;
+const description = `Vaga de ${job.title} na AJN Consultoria e Engenharia em ${job.location}. Conheça os requisitos e candidate-se online.`;
+const canonicalPath = `/carreiras/${job.slug}/`;
+
+let parsedRequirements: string[] = [];
+try {
+  parsedRequirements = typeof job.requirements === 'string' && job.requirements.startsWith('[')
+    ? JSON.parse(job.requirements)
+    : [job.requirements];
+} catch {
+  parsedRequirements = [job.requirements];
+}
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: absoluteCareersUrl('/carreiras/') },
+      { '@type': 'ListItem', position: 3, name: job.title, item: absoluteCareersUrl(`/carreiras/${job.slug}/`) },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description,
+    datePosted: job.publishedAt?.toISOString(),
+    employmentType: job.employmentType === 'CLT' ? 'FULL_TIME' : 'CONTRACTOR',
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: 'AJN Consultoria e Engenharia',
+      sameAs: 'https://ajnengenharia.com.br',
+      logo: 'https://ajnengenharia.com.br/images/branding/ajn-logo-hd.webp',
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Belo Horizonte',
+        addressRegion: 'MG',
+        addressCountry: 'BR',
+      },
+    },
+    baseSalary: job.salaryIsDisclosed
+      ? {
+          '@type': 'MonetaryAmount',
+          currency: 'BRL',
+          value: {
+            '@type': 'QuantitativeValue',
+            minValue: job.salaryMin,
+            maxValue: job.salaryMax,
+            unitText: 'MONTH',
+          },
+        }
+      : undefined,
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  canonicalOrigin={careersOrigin}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page">
+    <div class="site-shell">
+      <nav class="carreiras-nav-bar" style="margin-top: 0;" aria-label="Navegação de retorno">
+        <a class="carreiras-nav-link" href="/carreiras/">← Voltar para todas as vagas</a>
+        <a class="carreiras-nav-link" href="#candidatura">Ir para formulário de inscrição ↓</a>
+      </nav>
+
+      <header class="carreiras-header" style="text-align: left; max-width: 100%; margin-bottom: 2.5rem;">
+        <div class="carreiras-card-badges" style="margin-bottom: 1rem;">
+          <span class="carreiras-badge carreiras-badge--primary">{job.department}</span>
+          <span class="carreiras-badge">{job.employmentType}</span>
+          <span class="carreiras-badge">{job.experienceLevel}</span>
+          <span class="carreiras-badge">{job.location}</span>
+        </div>
+        <h1 class="carreiras-title">{job.title}</h1>
+        {job.salaryIsDisclosed && (
+          <p style="font-size: 1.25rem; font-weight: 600; color: var(--brand-action); margin-top: 0.5rem;">
+            Faixa Salarial: R$ {job.salaryMin?.toLocaleString('pt-BR')} a R$ {job.salaryMax?.toLocaleString('pt-BR')} / mês
+          </p>
+        )}
+      </header>
+
+      <div class="carreiras-job-layout">
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow-sm);">
+          <section style="margin-bottom: 2rem;">
+            <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+              Descrição da Oportunidade
+            </h2>
+            <p style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);">
+              {job.description}
+            </p>
+          </section>
+
+          <section style="margin-bottom: 2rem;">
+            <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+              Requisitos Obrigatórios
+            </h2>
+            <ul style="list-style: disc; padding-left: 1.25rem; line-height: 1.8; color: var(--text-soft);">
+              {parsedRequirements.map((req) => <li>{req}</li>)}
+            </ul>
+          </section>
+
+          {job.differentials && (
+            <section style="margin-bottom: 2rem;">
+              <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+                Diferenciais Valorizados
+              </h2>
+              <p style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);">
+                {job.differentials}
+              </p>
+            </section>
+          )}
+
+          {job.benefits && (
+            <section>
+              <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
+                Benefícios Oferecidos
+              </h2>
+              <p style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);">
+                {job.benefits}
+              </p>
+            </section>
+          )}
+        </div>
+
+        <!-- Formulário de Inscrição Direta -->
+        <div class="carreiras-form-container" id="candidatura" style="max-width: 100%; margin: 0;">
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+            Candidatar-se à vaga
+          </h2>
+          <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
+            Informe seus dados e anexe um currículo em PDF, DOC ou DOCX, com até 5 MB.
+          </p>
+
+          <div class="carreiras-notice" data-notice role="alert"></div>
+
+          <form action={`/api/applications/jobs/${job.slug}/apply`} method="POST" enctype="multipart/form-data" data-application-form>
+            <div class="carreiras-form-grid">
+              <div class="carreiras-field carreiras-form-full">
+                <label class="carreiras-label" for="apply-name">Nome Completo *</label>
+                <input class="carreiras-input" id="apply-name" name="fullName" type="text" required minlength="3" placeholder="Seu nome completo" />
+              </div>
+
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="apply-email">E-mail *</label>
+                <input class="carreiras-input" id="apply-email" name="email" type="email" required placeholder="seu.email@exemplo.com" />
+              </div>
+
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="apply-phone">Telefone / WhatsApp *</label>
+                <input class="carreiras-input" id="apply-phone" name="phone" type="tel" required placeholder="(31) 99999-9999" />
+              </div>
+
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="apply-cpf">CPF (apenas dígitos) *</label>
+                <input class="carreiras-input" id="apply-cpf" name="cpf" type="text" required placeholder="000.000.000-00" />
+              </div>
+
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="apply-city">Cidade *</label>
+                <input class="carreiras-input" id="apply-city" name="city" type="text" required placeholder="Ex: Belo Horizonte" />
+              </div>
+
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="apply-state">Estado (UF) *</label>
+                <input class="carreiras-input" id="apply-state" name="state" type="text" required maxlength="2" placeholder="MG" style="text-transform: uppercase;" />
+              </div>
+
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="apply-title">Cargo / Formação Atual</label>
+                <input class="carreiras-input" id="apply-title" name="currentTitle" type="text" placeholder="Ex: Engenheiro de Segurança" />
+              </div>
+
+              <div class="carreiras-field carreiras-form-full">
+                <label class="carreiras-label" for="apply-linkedin">Perfil do LinkedIn (opcional)</label>
+                <input class="carreiras-input" id="apply-linkedin" name="linkedinUrl" type="url" placeholder="https://linkedin.com/in/seuperfil" />
+              </div>
+
+              <div class="carreiras-field carreiras-form-full">
+                <label class="carreiras-label" for="apply-summary">Breve Resumo Profissional</label>
+                <textarea class="carreiras-textarea" id="apply-summary" name="summary" rows="3" placeholder="Destaque suas principais experiências e projetos..."></textarea>
+              </div>
+
+              <div class="carreiras-field carreiras-form-full">
+                <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
+                <div class="carreiras-file-drop">
+                  <label for="apply-resume" style="cursor: pointer;">
+                    <span data-file-label style="font-size: 0.875rem; color: var(--brand-action); font-weight: 500;">
+                      Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
+                    </span>
+                  </label>
+                  <input id="apply-resume" name="resume" type="file" required accept=".pdf,.doc,.docx" style="position: absolute; opacity: 0; width: 1px; height: 1px;" />
+                </div>
+              </div>
+
+              <div class="carreiras-field carreiras-form-full">
+                <div class="carreiras-checkbox-group">
+                  <input id="apply-consent-terms" name="consentTerms" type="checkbox" value="true" required />
+                  <label class="carreiras-checkbox-label" for="apply-consent-terms">
+                    Concordo com o tratamento dos meus dados pessoais pela AJN Consultoria e Engenharia exclusivamente para fins de processos seletivos, nos termos da <a href="/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e da LGPD. *
+                  </label>
+                </div>
+
+                <div class="carreiras-checkbox-group">
+                  <input id="apply-consent-retention" name="consentRetention" type="checkbox" value="true" checked />
+                  <label class="carreiras-checkbox-label" for="apply-consent-retention">
+                    Autorizo a AJN a manter meu currículo no banco de talentos pelo período de até 2 anos para futuras oportunidades profissionais.
+                  </label>
+                </div>
+              </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  {TURNSTILE_SITE_KEY ? (
+                    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+                  ) : (
+                    <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
+                  )}
+                </div>
+
+              <div class="carreiras-form-full" style="margin-top: 1rem;">
+                <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
+                  Enviar candidatura
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+  <script src="/scripts/carreiras.js?v=20261110-feedback" defer></script>
+</BaseLayout>

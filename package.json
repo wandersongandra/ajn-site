@@ -8,8 +8,15 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/sync-worker-assets.mjs",
     "check": "astro check",
     "preview": "astro preview",
+    "test:backend": "vitest run",
+    "test:carreiras-interactions": "node --test scripts/test-carreiras-interactions.mjs",
+    "test:php": "php hostinger/tests/smoke.php && php hostinger/tests/contract.php",
+    "test:browser-carreiras": "node scripts/browser-carreiras.mjs",
+    "test:homologation-remote": "node scripts/test-remote-carreiras.mjs",
+    "test:staging-origin": "node scripts/validate-staging-origin.mjs",
     "astro": "astro",
     "audit:seo": "node scripts/audit-seo.mjs",
     "audit:fragments": "node scripts/audit-fragments.mjs",
@@ -54,6 +61,8 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.3.6",
+    "drizzle-orm": "^0.45.4",
+    "hono": "^4.13.17",
     "zod": "^4.6.5"
   },
   "allowScripts": {
@@ -61,7 +70,13 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@cloudflare/workers-types": "^5.20261109.1",
+    "@types/better-sqlite3": "^9.6.0",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-kit": "^0.31.11",
+    "playwright": "^1.56.1",
     "typescript": "^6.0.3",
+    "vitest": "^5.1.0",
     "yaml": "^2.9.1"
   }
 }

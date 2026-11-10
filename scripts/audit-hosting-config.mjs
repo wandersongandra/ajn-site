@@ -6,6 +6,7 @@ import { cspSourcesEqual, cspSourceIsExact, isAllowedResourceUrl } from './hosti
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
 const config = await readFile('public/.htaccess', 'utf8');
+const configLines = config.split(/\r?\n/).map((line) => line.trim());
 const header = (name) => config.match(new RegExp('^\\s*Header always set ' + name + ' "([^"]+)"', 'm'))?.[1] ?? '';
 const enforced = header('Content-Security-Policy');
 const reportOnly = header('Content-Security-Policy-Report-Only');
@@ -15,11 +16,14 @@ check(Boolean(reportOnly), 'A CSP candidata deve permanecer em Report-Only.');
 check(cspSourcesEqual(enforced, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']),
 	'CSP enforced não deve liberar imagens em qualquer origem HTTPS.');
 check(cspSourcesEqual(reportOnly, 'default-src', ["'self'"]) &&
-	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com']), 'CSP candidata deve restringir default/script a self.');
+	cspSourcesEqual(reportOnly, 'script-src', ["'self'", 'https://www.googletagmanager.com', 'https://challenges.cloudflare.com']), 'CSP candidata deve restringir default/script a self.');
 check(cspSourcesEqual(reportOnly, 'form-action', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'img-src', ["'self'", 'data:', 'https://www.google-analytics.com', 'https://region1.google-analytics.com']), 'CSP candidata deve restringir forms e imagens.');
-check(cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com']),
-  'CSP candidata deve permitir apenas endpoints de medição GA4 conhecidos.');
+check(cspSourcesEqual(enforced, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']) &&
+	cspSourcesEqual(reportOnly, 'connect-src', ["'self'", 'https://www.google-analytics.com', 'https://region1.google-analytics.com', 'https://challenges.cloudflare.com']),
+	  'CSP deve permitir apenas a API same-origin, endpoints de medição GA4 e Turnstile conhecidos.');
+check(cspSourcesEqual(reportOnly, 'frame-src', ["'self'", 'https://challenges.cloudflare.com']),
+  'CSP candidata deve permitir carregamento de frames do Turnstile.');
 check(cspSourcesEqual(reportOnly, 'style-src', ["'self'"]) &&
 	cspSourcesEqual(reportOnly, 'font-src', ["'self'"]),
 	'CSP candidata deve manter estilos e fontes em origem própria.');
@@ -37,6 +41,14 @@ check(!/Strict-Transport-Security[^\r\n]*(?:includeSubDomains|preload)/i.test(co
 	'Não usar includeSubDomains/preload sem auditoria específica.');
 check(/RewriteRule \^ https:\/\/ajnengenharia\.com\.br%\{REQUEST_URI\} \[R=301,L,NE\]/.test(config),
 	'O redirecionamento de www para o host canônico deve ser permanente após homologação.');
+const careerRouteRules = [
+	'RewriteRule ^api/index\\.php$ - [L]',
+	'RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]',
+	'RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]',
+];
+check(careerRouteRules.every((rule) => configLines.some((line) => line === rule)),
+	'API e páginas dinâmicas de carreiras devem usar PHP local, sem redirecionamento externo.');
+check(!config.includes('carreiras.ajnengenharia.com.br'), 'A hospedagem Premium não deve depender do Worker externo.');
 
 async function walk(directory) {
 	const entries = await readdir(directory, { withFileTypes: true });
