@@ -1222,7 +1222,7 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       });
       expect(closedHtmlRes.status).toBe(404);
       const closedHtml = await closedHtmlRes.text();
-      expect(closedHtml).toContain('não está mais aberta');
+      expect(closedHtml).toContain('Vaga indisponível');
 
       // 8. Vaga foi removida da listagem pública
       const updatedList = await app.request('/api/jobs');

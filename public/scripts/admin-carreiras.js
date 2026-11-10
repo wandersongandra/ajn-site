@@ -1,5 +1,5 @@
-// Painel Administrativo de Recrutamento — AJN Carreiras
-// Conformidade rigorosa com CSP: sem eval, sem innerHTML, sem Web Storage.
+// Painel de recrutamento da AJN.
+// Sem eval, innerHTML ou armazenamento no navegador.
 
 (() => {
   let authToken = '';
@@ -456,7 +456,7 @@
 
   async function loadDashboardData() {
     await loadJobs();
-    if (currentJobId) await loadPipeline(currentJobId);
+    await loadPipeline(currentJobId);
   }
 
   // 1. Carrega Vagas
@@ -481,6 +481,12 @@
       const jobSelect = document.querySelector('[data-pipeline-job-select]');
       if (jobSelect) {
         while (jobSelect.firstChild) jobSelect.removeChild(jobSelect.firstChild);
+        if (data.jobs.length === 0) {
+          const emptyOption = document.createElement('option');
+          emptyOption.value = '';
+          emptyOption.textContent = 'Nenhuma vaga cadastrada';
+          jobSelect.appendChild(emptyOption);
+        }
       }
 
       data.jobs.forEach((job) => {

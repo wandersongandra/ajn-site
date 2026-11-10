@@ -485,7 +485,7 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     );
     expect(listRes.status).toBe(200);
     const listHtml = await listRes.text();
-    expect(listHtml).toContain('Oportunidades Profissionais');
+    expect(listHtml).toContain('Vagas e oportunidades na AJN');
     expect(listHtml).toContain('Especialista em Higiene Ocupacional');
     expect(listHtml).toContain('"@type":"WebPage"');
     expect(listHtml).not.toContain('"@type":"JobPosting"'); // Sem JobPosting na listagem!

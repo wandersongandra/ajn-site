@@ -6,7 +6,7 @@ import { absoluteCareersUrl, careersOrigin } from '../../utils/careers';
 import '../../styles/carreiras.css';
 
 const title = 'Banco de Talentos | AJN Consultoria e Engenharia';
-const description = 'Cadastre seu currículo no Banco de Talentos da AJN Consultoria e Engenharia. Oportunidades contínuas em segurança do trabalho, engenharia e laudos.';
+const description = 'Envie seu currículo ao banco de talentos da AJN Consultoria e Engenharia para futuras oportunidades de trabalho.';
 const canonicalPath = '/carreiras/talentos/';
 
 const jsonLd = [
@@ -43,26 +43,26 @@ const jsonLd = [
   <div class="carreiras-page">
     <div class="site-shell">
       <nav class="carreiras-nav-bar" aria-label="Navegação interna de carreiras">
-        <a class="carreiras-nav-link" href="/carreiras/">← Ver Vagas Abertas</a>
-        <a class="carreiras-nav-link" href="/carreiras/talentos/" aria-current="page">Banco de Talentos</a>
-        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar Candidatura</a>
-        <a class="carreiras-nav-link" href="/admin/carreiras/">Acesso Recrutador</a>
+        <a class="carreiras-nav-link" href="/carreiras/">← Ver vagas abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/" aria-current="page">Banco de talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Área do recrutador</a>
       </nav>
 
       <header class="carreiras-header">
-        <span class="carreiras-eyebrow">Oportunidades Futuras</span>
-        <h1 class="carreiras-title">Banco de Talentos AJN Consultoria e Engenharia</h1>
+        <span class="carreiras-eyebrow">Banco de talentos</span>
+        <h1 class="carreiras-title">Deixe seu currículo com a AJN</h1>
         <p class="carreiras-lead">
-          Cadastre seu currículo em nossa base de talentos. Quando novas vagas compatíveis com suas competências forem abertas, nossa equipe de recrutamento entrará em contato direto com você.
+          Preencha seus dados e anexe seu currículo para futuras oportunidades. A equipe poderá consultar seu cadastro quando houver uma seleção compatível; o envio não garante contato ou contratação.
         </p>
       </header>
 
       <div class="carreiras-form-container">
         <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
-          Cadastro de Currículo Profissional
+          Cadastro de currículo
         </h2>
         <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 2rem; text-align: center;">
-          Seus dados são protegidos conforme as diretrizes da LGPD e armazenados com segurança.
+          Utilizaremos os dados informados para avaliar possíveis oportunidades. Consulte a Política de Privacidade para saber como são tratados.
         </p>
 
         <div class="carreiras-notice" data-notice role="alert"></div>
@@ -100,8 +100,8 @@ const jsonLd = [
             </div>
 
             <div class="carreiras-field">
-              <label class="carreiras-label" for="talent-title">Área de Atuação Principal</label>
-              <input class="carreiras-input" id="talent-title" name="currentTitle" type="text" placeholder="Ex: Engenharia de Segurança, Higienista..." />
+              <label class="carreiras-label" for="talent-title">Área de atuação</label>
+              <input class="carreiras-input" id="talent-title" name="currentTitle" type="text" placeholder="Ex.: Segurança do Trabalho" />
             </div>
 
             <div class="carreiras-field carreiras-form-full">
@@ -110,15 +110,14 @@ const jsonLd = [
             </div>
 
             <div class="carreiras-field carreiras-form-full">
-              <label class="carreiras-label" for="talent-summary">Resumo de Experiência e Competências</label>
-              <textarea class="carreiras-textarea" id="talent-summary" name="summary" rows="4" placeholder="Descreva suas áreas de interesse, principais laudos e projetos desenvolvidos..."></textarea>
+              <label class="carreiras-label" for="talent-summary">Experiência profissional (opcional)</label>
+              <textarea class="carreiras-textarea" id="talent-summary" name="summary" rows="4" placeholder="Conte brevemente onde trabalhou e quais atividades realiza"></textarea>
             </div>
 
             <div class="carreiras-field carreiras-form-full">
               <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
               <div class="carreiras-file-drop">
                 <label for="talent-resume" style="cursor: pointer;">
-                  <div style="font-size: 1.75rem; margin-bottom: 0.5rem;" aria-hidden="true">📄</div>
                   <span data-file-label style="font-size: 0.875rem; color: var(--brand-action); font-weight: 500;">
                     Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
                   </span>
@@ -153,7 +152,7 @@ const jsonLd = [
 
             <div class="carreiras-form-full" style="margin-top: 1.5rem;">
               <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
-                Cadastrar no Banco de Talentos <span aria-hidden="true">✓</span>
+                Enviar currículo <span aria-hidden="true">→</span>
               </button>
             </div>
           </div>

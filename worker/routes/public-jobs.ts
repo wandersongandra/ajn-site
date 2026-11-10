@@ -51,14 +51,13 @@ function renderNotFoundHtml(): string {
 <body>
   <div class="carreiras-page">
     <div class="site-shell" style="text-align: center; padding: 4rem 1.5rem;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;" aria-hidden="true">🔒</div>
-      <h1 class="carreiras-title">Esta oportunidade não está mais aberta</h1>
+      <h1 class="carreiras-title">Vaga indisponível</h1>
       <p class="carreiras-lead" style="max-width: 600px; margin: 0 auto 2rem;">
-        O processo seletivo para esta vaga foi encerrado ou preenchido por nossa equipe. Você pode conferir nossas vagas ativas ou cadastrar seu currículo em nosso Banco de Talentos.
+        Não encontramos uma vaga publicada neste endereço. Consulte as oportunidades disponíveis ou cadastre seu currículo.
       </p>
       <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a class="carreiras-button carreiras-button--primary" href="/carreiras/">Ver Vagas Abertas ←</a>
-        <a class="carreiras-button carreiras-button--secondary" href="/carreiras/talentos/">Cadastrar no Banco de Talentos ↗</a>
+        <a class="carreiras-button carreiras-button--primary" href="/carreiras/">Ver vagas publicadas</a>
+        <a class="carreiras-button carreiras-button--secondary" href="/carreiras/talentos/">Cadastrar currículo</a>
       </div>
     </div>
   </div>
@@ -76,21 +75,21 @@ function renderJobListHtml(jobs: any[], canonicalBase: string): string {
             <span class="carreiras-badge">${escapeHtml(job.location)}</span>
           </div>
           <h2 class="carreiras-card-title">${escapeHtml(job.title)}</h2>
-          <p class="carreiras-card-desc">${escapeHtml(job.description ? job.description.slice(0, 160) + '...' : '')}</p>
+          <p class="carreiras-card-desc">${escapeHtml(job.description ? job.description.slice(0, 160) + (job.description.length > 160 ? '…' : '') : '')}</p>
           <div style="margin-top: 1.5rem;">
             <a class="carreiras-button carreiras-button--primary" style="width: 100%; text-align: center;" href="/carreiras/${escapeHtml(job.slug)}/">
-              Ver Detalhes e Inscrever-se →
+              Ver detalhes e candidatar-se
             </a>
           </div>
         </article>
       `).join('\n')
     : `
-        <div class="carreiras-empty" style="text-align: center; padding: 3rem 1.5rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; grid-column: 1 / -1;">
-          <h2 style="font-size: 1.35rem; color: #0b1528; margin-bottom: 0.75rem;">Oportunidades em Atualização</h2>
+        <div class="carreiras-empty-state">
+          <h2 style="font-size: 1.35rem; color: var(--ink); margin-bottom: 0.75rem;">Nenhuma vaga publicada no momento</h2>
           <p style="color: #64748b; max-width: 540px; margin: 0 auto 1.5rem;">
-            No momento não há processos seletivos públicos com inscrições abertas. Cadastre seu currículo em nosso Banco de Talentos para ser contatado em futuras oportunidades.
+            Você pode deixar seu currículo no banco de talentos. O cadastro não garante convocação para uma seleção.
           </p>
-          <a class="carreiras-button carreiras-button--primary" href="/carreiras/talentos/">Cadastrar no Banco de Talentos ↗</a>
+          <a class="carreiras-button carreiras-button--primary" href="/carreiras/talentos/">Cadastrar currículo</a>
         </div>
       `;
 
@@ -117,18 +116,18 @@ function renderJobListHtml(jobs: any[], canonicalBase: string): string {
   <div class="carreiras-page">
     <div class="site-shell">
       <header class="carreiras-header">
-        <span class="carreiras-eyebrow">Recrutamento e Seleção</span>
-        <h1 class="carreiras-title">Oportunidades Profissionais</h1>
+        <span class="carreiras-eyebrow">Trabalhe na AJN</span>
+        <h1 class="carreiras-title">Vagas e oportunidades na AJN</h1>
         <p class="carreiras-lead">
-          Faça parte da AJN Consultoria e Engenharia. Trabalhe em projetos de alto impacto com segurança, ética e inovação.
+          Consulte as vagas publicadas pela AJN Consultoria e Engenharia. Você também pode cadastrar seu currículo para futuras oportunidades.
         </p>
       </header>
 
       <nav class="carreiras-nav-bar" aria-label="Navegação Carreiras">
-        <a class="carreiras-nav-link" href="/carreiras/" aria-current="page">Vagas Abertas</a>
-        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de Talentos</a>
-        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar Candidatura</a>
-        <a class="carreiras-nav-link" href="/admin/carreiras/">Acesso Recrutador</a>
+        <a class="carreiras-nav-link" href="/carreiras/" aria-current="page">Vagas abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/">Acompanhar candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Área do recrutador</a>
       </nav>
 
       <div class="carreiras-grid">
@@ -149,13 +148,13 @@ function renderJobHtml(
 ): string {
   const reqItems = requirements.map((r) => `<li>${escapeHtml(r)}</li>`).join('\n');
   const salaryHtml = job.salaryIsDisclosed && job.salaryMin
-    ? `<p style="font-size: 1.25rem; font-weight: 600; color: var(--brand-action, #166534); margin-top: 0.5rem;">Faixa Salarial: R$ ${job.salaryMin.toLocaleString('pt-BR')}${job.salaryMax ? ' a R$ ' + job.salaryMax.toLocaleString('pt-BR') : ''} / mês</p>`
+    ? `<p style="font-size: 1.25rem; font-weight: 600; color: var(--brand-action, #166534); margin-top: 0.5rem;">Faixa salarial: R$ ${job.salaryMin.toLocaleString('pt-BR')}${job.salaryMax ? ' a R$ ' + job.salaryMax.toLocaleString('pt-BR') : ''} / mês</p>`
     : '';
   const diffHtml = job.differentials
-    ? `<section style="margin-bottom: 2rem;"><h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Diferenciais Valorizados</h2><p style="font-size: 1.0625rem; line-height: 1.7; color: #475569;">${escapeHtml(job.differentials)}</p></section>`
+    ? `<section style="margin-bottom: 2rem;"><h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Diferenciais</h2><p style="font-size: 1.0625rem; line-height: 1.7; color: #475569;">${escapeHtml(job.differentials)}</p></section>`
     : '';
   const benHtml = job.benefits
-    ? `<section><h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Benefícios Oferecidos</h2><p style="font-size: 1.0625rem; line-height: 1.7; color: #475569;">${escapeHtml(job.benefits)}</p></section>`
+    ? `<section><h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Benefícios</h2><p style="font-size: 1.0625rem; line-height: 1.7; color: #475569;">${escapeHtml(job.benefits)}</p></section>`
     : '';
 
   return `<!DOCTYPE html>
@@ -174,8 +173,8 @@ function renderJobHtml(
   <div class="carreiras-page">
     <div class="site-shell">
       <nav class="carreiras-nav-bar" style="margin-top: 0;" aria-label="Navegação de retorno">
-        <a class="carreiras-nav-link" href="/carreiras/">← Voltar para todas as vagas</a>
-        <a class="carreiras-nav-link" href="#candidatura">Ir para formulário de inscrição ↓</a>
+        <a class="carreiras-nav-link" href="/carreiras/">← Voltar às vagas</a>
+        <a class="carreiras-nav-link" href="#candidatura">Ir ao formulário</a>
       </nav>
 
       <header class="carreiras-header" style="text-align: left; max-width: 100%; margin-bottom: 2.5rem;">
@@ -189,15 +188,15 @@ function renderJobHtml(
         ${salaryHtml}
       </header>
 
-      <div style="display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1.2fr); gap: 2.5rem; align-items: start; margin-bottom: 4rem;">
+      <div class="carreiras-job-layout">
         <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 2.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
           <section style="margin-bottom: 2rem;">
-            <h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Descrição da Oportunidade</h2>
+            <h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Sobre a vaga</h2>
             <p style="font-size: 1.0625rem; line-height: 1.7; color: #475569;">${escapeHtml(job.description)}</p>
           </section>
 
           <section style="margin-bottom: 2rem;">
-            <h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Requisitos Obrigatórios</h2>
+            <h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 1rem;">Requisitos</h2>
             <ul style="list-style: disc; padding-left: 1.25rem; line-height: 1.8; color: #475569;">
               ${reqItems}
             </ul>
@@ -208,8 +207,8 @@ function renderJobHtml(
         </div>
 
         <div class="carreiras-form-container" id="candidatura" style="max-width: 100%; margin: 0;">
-          <h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 0.5rem; text-align: center;">Inscreva-se nesta Vaga</h2>
-          <p style="font-size: 0.9375rem; color: #64748b; margin-bottom: 1.5rem; text-align: center;">Preencha seus dados e anexe seu currículo atualizado em PDF ou DOCX.</p>
+          <h2 style="font-size: 1.5rem; color: #0b1528; margin-bottom: 0.5rem; text-align: center;">Candidatar-se à vaga</h2>
+          <p style="font-size: 0.9375rem; color: #64748b; margin-bottom: 1.5rem; text-align: center;">Informe seus dados e anexe um currículo em PDF, DOC ou DOCX, com até 5 MB.</p>
           <div class="carreiras-notice" data-notice role="alert"></div>
           <form action="/api/applications/jobs/${escapeHtml(job.slug)}/apply" method="POST" enctype="multipart/form-data" data-application-form>
             <div class="carreiras-form-grid">
@@ -253,7 +252,6 @@ function renderJobHtml(
                 <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
                 <div class="carreiras-file-drop">
                   <label for="apply-resume" style="cursor: pointer;">
-                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;" aria-hidden="true">📄</div>
                     <span data-file-label style="font-size: 0.875rem; color: #166534; font-weight: 500;">
                       Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
                     </span>
@@ -280,7 +278,7 @@ function renderJobHtml(
               </div>
               <div class="carreiras-form-full" style="margin-top: 1rem;">
                 <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
-                  Confirmar e Enviar Candidatura <span aria-hidden="true">✓</span>
+                  Enviar candidatura
                 </button>
               </div>
             </div>
@@ -403,8 +401,13 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
       '@type': 'JobPosting',
       title: job.title,
       description: job.description,
-      datePosted: job.publishedAt ? new Date(job.publishedAt).toISOString() : new Date().toISOString(),
-      employmentType: job.employmentType === 'CLT' ? 'FULL_TIME' : job.employmentType === 'Estágio' ? 'INTERN' : 'CONTRACTOR',
+      datePosted: job.publishedAt ? new Date(job.publishedAt).toISOString() : undefined,
+      employmentType: {
+        CLT: 'FULL_TIME',
+        PJ: 'CONTRACTOR',
+        'Estágio': 'INTERN',
+        'Temporário': 'TEMPORARY',
+      }[job.employmentType as 'CLT' | 'PJ' | 'Estágio' | 'Temporário'],
       hiringOrganization: {
         '@type': 'Organization',
         name: 'AJN Consultoria e Engenharia',
@@ -415,8 +418,7 @@ export function createPublicJobsRoutes(dbFactory: (env: Env) => any) {
         '@type': 'Place',
         address: {
           '@type': 'PostalAddress',
-          addressLocality: 'Belo Horizonte',
-          addressRegion: 'MG',
+          addressLocality: job.location,
           addressCountry: 'BR',
         },
       },

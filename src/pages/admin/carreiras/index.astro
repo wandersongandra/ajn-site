@@ -5,7 +5,7 @@ import { careersOrigin } from '../../../utils/careers';
 import '../../../styles/carreiras.css';
 
 const title = 'Painel do Recrutador | AJN Carreiras';
-const description = 'Área restrita de gestão de recrutamento, pipeline de processos seletivos e conformidade LGPD da AJN Consultoria e Engenharia.';
+const description = 'Área restrita da AJN para gestão de vagas, candidaturas, recrutadores e solicitações de dados pessoais.';
 const canonicalPath = '/admin/carreiras/';
 
 const jsonLd = [
@@ -13,7 +13,7 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: 'Painel do Recrutador — AJN Carreiras',
-    description: 'Sistema administrativo de gestão de processos seletivos e banco de talentos.',
+    description: 'Área interna para acompanhar vagas, candidaturas e banco de talentos.',
   },
 ];
 ---
@@ -29,41 +29,41 @@ const jsonLd = [
     <div class="site-shell">
       <header class="carreiras-header">
         <span class="carreiras-eyebrow">Acesso Restrito</span>
-        <h1 class="carreiras-title">Portal do Recrutador — AJN Carreiras</h1>
+        <h1 class="carreiras-title">Painel de recrutamento da AJN</h1>
         <p class="carreiras-lead">
-          Gestão centralizada de processos seletivos, pipeline de recrutamento, banco de talentos e conformidade com a LGPD.
+          Acompanhe candidaturas, organize as etapas das seleções e administre as vagas publicadas pela empresa.
         </p>
       </header>
 
       <!-- Cartão de Login Administrativo -->
       <div class="carreiras-form-container" data-admin-login-card style="max-width: 480px; margin-inline: auto;">
         <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
-          Autenticação do Recrutador
+          Entrar na área de recrutamento
         </h2>
         <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
-          Área protegida por sessão criptográfica e controle de acesso baseado em funções (RBAC).
+          Entre com seu e-mail corporativo e senha. O código de autenticação será solicitado quando necessário.
         </p>
 
         <div class="carreiras-notice" data-login-notice role="alert"></div>
 
         <form data-admin-login-form>
           <div class="carreiras-field" style="margin-bottom: 1.25rem;">
-            <label class="carreiras-label" for="admin-email">E-mail Corporativo</label>
-            <input class="carreiras-input" id="admin-email" name="email" type="email" required placeholder="recrutamento@ajnengenharia.com.br" />
+            <label class="carreiras-label" for="admin-email">E-mail corporativo</label>
+            <input class="carreiras-input" id="admin-email" name="email" type="email" required autocomplete="username" placeholder="nome@ajnengenharia.com.br" />
           </div>
 
           <div class="carreiras-field" style="margin-bottom: 1.25rem;">
-            <label class="carreiras-label" for="admin-password">Senha de Acesso</label>
-            <input class="carreiras-input" id="admin-password" name="password" type="password" required minlength="8" placeholder="••••••••••••" />
+            <label class="carreiras-label" for="admin-password">Senha de acesso</label>
+            <input class="carreiras-input" id="admin-password" name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="Sua senha" />
           </div>
 
           <div class="carreiras-field" data-mfa-field style="display: none; margin-bottom: 1.25rem;">
-            <label class="carreiras-label" for="admin-mfa">Código de Segundo Fator (MFA)</label>
-            <input class="carreiras-input" id="admin-mfa" name="mfaCode" type="text" maxlength="6" placeholder="000000" style="text-align: center; letter-spacing: 0.2em; font-family: monospace;" />
+            <label class="carreiras-label" for="admin-mfa">Código do aplicativo autenticador</label>
+            <input class="carreiras-input" id="admin-mfa" name="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" style="text-align: center; letter-spacing: 0.2em; font-family: monospace;" />
           </div>
 
           <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
-            Entrar no Painel <span aria-hidden="true">→</span>
+            Entrar no painel
           </button>
 
           <div style="margin-top: 1rem; text-align: center;">
@@ -76,12 +76,12 @@ const jsonLd = [
         <!-- Formulário de Solicitação de Redefinição de Senha -->
         <form data-admin-forgot-form style="display: none;">
           <div class="carreiras-field" style="margin-bottom: 1.25rem;">
-            <label class="carreiras-label" for="admin-forgot-email">E-mail Corporativo</label>
-            <input class="carreiras-input" id="admin-forgot-email" name="forgotEmail" type="email" required placeholder="recrutamento@ajnengenharia.com.br" />
+            <label class="carreiras-label" for="admin-forgot-email">E-mail corporativo</label>
+            <input class="carreiras-input" id="admin-forgot-email" name="forgotEmail" type="email" required placeholder="nome@ajnengenharia.com.br" />
           </div>
 
           <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
-            Enviar Instruções por E-mail <span aria-hidden="true">✉</span>
+            Enviar instruções por e-mail
           </button>
 
           <div style="margin-top: 1rem; text-align: center;">
@@ -95,7 +95,7 @@ const jsonLd = [
       <!-- Cartão de Redefinição com Token (Ativado via ?resetToken=...) -->
       <div class="carreiras-form-container" data-admin-reset-card style="display: none; max-width: 480px; margin-inline: auto;">
         <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
-          Redefinição de Senha
+          Redefinir senha
         </h2>
         <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
           Crie uma nova senha segura para restaurar seu acesso administrativo.
@@ -105,17 +105,17 @@ const jsonLd = [
 
         <form data-admin-reset-form>
           <div class="carreiras-field" style="margin-bottom: 1.25rem;">
-          <label class="carreiras-label" for="admin-new-password">Nova Senha (mínimo 16 caracteres)</label>
+            <label class="carreiras-label" for="admin-new-password">Nova senha (mínimo de 16 caracteres)</label>
             <input class="carreiras-input" id="admin-new-password" name="newPassword" type="password" required minlength="16" placeholder="••••••••••••" />
           </div>
 
           <div class="carreiras-field" style="margin-bottom: 1.25rem;">
-            <label class="carreiras-label" for="admin-confirm-password">Confirmar Nova Senha</label>
+            <label class="carreiras-label" for="admin-confirm-password">Confirmar nova senha</label>
             <input class="carreiras-input" id="admin-confirm-password" name="confirmPassword" type="password" required minlength="16" placeholder="••••••••••••" />
           </div>
 
           <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
-            Gravar Nova Senha <span aria-hidden="true">✓</span>
+            Salvar nova senha
           </button>
         </form>
       </div>
@@ -125,7 +125,7 @@ const jsonLd = [
         <div class="admin-header">
           <div>
             <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.25rem;">
-              Olá, <span data-admin-user-name>Recrutador</span>
+              Olá, <span data-admin-user-name>recrutador</span>
             </h2>
             <div style="font-size: 0.875rem; color: var(--text-soft);">
               Perfil ativo: <span class="carreiras-badge carreiras-badge--primary" data-admin-user-role>recruiter</span>
@@ -134,7 +134,7 @@ const jsonLd = [
 
           <div style="display: flex; gap: 0.75rem;">
             <a class="carreiras-button carreiras-button--secondary" href="/carreiras/" target="_blank" rel="noopener noreferrer">
-              Ver Portal Público <span aria-hidden="true">↗</span>
+              Ver portal de vagas
             </a>
             <button class="carreiras-button carreiras-button--secondary" data-admin-logout type="button">
               Sair
@@ -145,22 +145,22 @@ const jsonLd = [
         <!-- Abas do Dashboard -->
         <div class="carreiras-nav-bar" style="justify-content: flex-start; margin-bottom: 2rem;">
           <button class="carreiras-nav-link" data-admin-tab="pipeline" aria-selected="true" type="button">
-            📊 Pipeline & Kanban
+            Etapas de seleção
           </button>
           <button class="carreiras-nav-link" data-admin-tab="candidates" aria-selected="false" type="button">
-            👥 Candidatos & R2
+            Candidatos e currículos
           </button>
           <button class="carreiras-nav-link" data-admin-tab="jobs" aria-selected="false" type="button">
-            💼 Vagas & Publicações
+            Vagas e publicações
           </button>
           <button class="carreiras-nav-link" data-admin-tab="lgpd" aria-selected="false" type="button">
-            🛡️ Gestão LGPD
+            Solicitações LGPD
           </button>
           <button class="carreiras-nav-link" data-admin-tab="audit" aria-selected="false" type="button">
-            📜 Trilha de Auditoria
+            Histórico de ações
           </button>
           <button class="carreiras-nav-link" data-admin-tab="users" aria-selected="false" type="button" data-admin-users-tab style="display: none;">
-            👤 Gestão de Recrutadores
+            Equipe de recrutamento
           </button>
         </div>
 
@@ -169,14 +169,14 @@ const jsonLd = [
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
             <div style="display: flex; align-items: center; gap: 1rem;">
               <label for="pipeline-select" style="font-weight: 600; font-size: 0.9375rem; color: var(--ink);">
-                Selecione a vaga para visualizar:
+                Selecione uma vaga:
               </label>
               <select class="carreiras-select" id="pipeline-select" data-pipeline-job-select style="max-width: 380px;">
-                <option value="job-eng-seguranca">Engenheiro(a) de Segurança do Trabalho</option>
+                <option value="">Carregando vagas…</option>
               </select>
             </div>
             <div style="font-size: 0.8125rem; color: var(--text-soft);">
-              💡 <em>Avaliações humanas exclusivas — triagem automatizada por IA desabilitada.</em>
+              A avaliação de candidatos é feita pela equipe de recrutamento.
             </div>
           </div>
 
@@ -188,17 +188,17 @@ const jsonLd = [
         <!-- Painel 2: Candidatos & Currículos -->
         <div data-admin-pane="candidates" style="display: none;">
           <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
-            Base de Candidatos & Banco de Talentos
+            Candidatos e banco de talentos
           </h3>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Nome do Candidato</th>
-                  <th>Contato (E-mail / Fone)</th>
+                  <th>Nome do candidato</th>
+                  <th>Contato (e-mail / telefone)</th>
                   <th>Localização</th>
-                  <th>Cargo / Formação</th>
-                  <th>Ações & Currículo</th>
+                  <th>Cargo / formação</th>
+                  <th>Ações e currículo</th>
                 </tr>
               </thead>
               <tbody data-candidates-tbody>
@@ -212,7 +212,7 @@ const jsonLd = [
         <div data-admin-pane="jobs" style="display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
             <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin: 0; color: var(--ink);">
-              Gestão de Vagas Corporativas
+              Vagas cadastradas
             </h3>
             <button class="carreiras-button carreiras-button--primary" data-toggle-job-form type="button">
               + Cadastrar ou editar vaga
@@ -291,7 +291,7 @@ const jsonLd = [
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Título da Vaga</th>
+                  <th>Título da vaga</th>
                   <th>Departamento</th>
                   <th>Local</th>
                   <th>Regime</th>
@@ -310,20 +310,20 @@ const jsonLd = [
         <!-- Painel 4: Gestão LGPD -->
         <div data-admin-pane="lgpd" style="display: none;">
           <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
-            Solicitações de Titulares (Artigo 18 da LGPD)
+            Solicitações de titulares de dados
           </h3>
           <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1rem;">
-            A exclusão definitiva elimina todos os dados cadastrais e expurga os arquivos armazenados no bucket Cloudflare R2 Privado de forma auditável e irreversível.
+            Confira os dados e o fundamento de cada solicitação antes de executar uma exclusão. A remoção de currículos pode ser irreversível.
           </p>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Tipo de Solicitação</th>
+                  <th>Tipo de solicitação</th>
                   <th>Titular</th>
-                  <th>Data do Pedido</th>
+                  <th>Data do pedido</th>
                   <th>Status</th>
-                  <th>Ação do DPO / Admin</th>
+                  <th>Ação do responsável</th>
                 </tr>
               </thead>
               <tbody data-lgpd-tbody>
@@ -336,14 +336,14 @@ const jsonLd = [
         <!-- Painel 5: Trilha de Auditoria -->
         <div data-admin-pane="audit" style="display: none;">
           <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
-            Registro Imutável de Eventos de Auditoria
+            Histórico de ações administrativas
           </h3>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Timestamp</th>
-                  <th>Ação Realizada</th>
+                  <th>Data e hora</th>
+                  <th>Ação realizada</th>
                   <th>Ator</th>
                   <th>Recurso</th>
                   <th>Endereço IP</th>
@@ -360,10 +360,10 @@ const jsonLd = [
         <div data-admin-pane="users" style="display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
             <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin: 0;">
-              Equipe de Recrutamento & Controle de Acesso
+              Equipe de recrutamento e permissões
             </h3>
             <button class="carreiras-button carreiras-button--primary" data-toggle-create-user-btn type="button">
-              + Cadastrar Novo Recrutador
+              + Cadastrar recrutador
             </button>
           </div>
 
@@ -371,32 +371,32 @@ const jsonLd = [
 
           <!-- Formulário de Criação de Usuário (Oculto por padrão) -->
           <div class="carreiras-form-container" data-create-user-card style="display: none; max-width: 600px; margin-bottom: 2rem;">
-            <h4 style="font-size: 1.125rem; margin-top: 0; margin-bottom: 1rem; color: var(--ink);">Novo Acesso Administrativo</h4>
+            <h4 style="font-size: 1.125rem; margin-top: 0; margin-bottom: 1rem; color: var(--ink);">Novo acesso administrativo</h4>
             <form data-create-user-form>
               <div class="carreiras-form-grid">
                 <div class="carreiras-field">
-                  <label class="carreiras-label" for="new-user-name">Nome Completo *</label>
+                  <label class="carreiras-label" for="new-user-name">Nome completo *</label>
                   <input class="carreiras-input" id="new-user-name" name="name" type="text" required placeholder="Ex: Ana Souza" />
                 </div>
                 <div class="carreiras-field">
-                  <label class="carreiras-label" for="new-user-email">E-mail Corporativo *</label>
+                  <label class="carreiras-label" for="new-user-email">E-mail corporativo *</label>
                   <input class="carreiras-input" id="new-user-email" name="email" type="email" required placeholder="ana@ajnengenharia.com.br" />
                 </div>
                 <div class="carreiras-field">
-                  <label class="carreiras-label" for="new-user-role">Função / Perfil (RBAC) *</label>
+                  <label class="carreiras-label" for="new-user-role">Perfil de acesso *</label>
                   <select class="carreiras-select" id="new-user-role" name="role" required>
-                    <option value="recruiter">Recrutador (recruiter)</option>
-                    <option value="viewer">Visualizador (viewer)</option>
-                    <option value="dpo">DPO / Privacidade (dpo)</option>
-                    <option value="super_admin">Administrador Geral (super_admin)</option>
+                    <option value="recruiter">Recrutador</option>
+                    <option value="viewer">Somente leitura</option>
+                    <option value="dpo">Responsável pela privacidade</option>
+                    <option value="super_admin">Administrador geral</option>
                   </select>
                 </div>
                 <div class="carreiras-field">
-                  <label class="carreiras-label" for="new-user-password">Senha Provisória *</label>
+                  <label class="carreiras-label" for="new-user-password">Senha provisória *</label>
                   <input class="carreiras-input" id="new-user-password" name="password" type="password" required minlength="12" placeholder="••••••••••••" />
                 </div>
                 <div class="carreiras-form-full" style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
-                  <button class="carreiras-button carreiras-button--primary" type="submit">Salvar Usuário</button>
+                  <button class="carreiras-button carreiras-button--primary" type="submit">Salvar usuário</button>
                   <button class="carreiras-button carreiras-button--secondary" data-cancel-create-user type="button">Cancelar</button>
                 </div>
               </div>

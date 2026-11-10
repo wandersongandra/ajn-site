@@ -6,7 +6,7 @@ import { absoluteCareersUrl, careersOrigin } from '../../utils/careers';
 import '../../styles/carreiras.css';
 
 const title = 'Acompanhar Candidatura | AJN Consultoria e Engenharia';
-const description = 'Consulte o status do seu processo seletivo ou solicite a gestão dos seus dados cadastrais conforme a LGPD na AJN Consultoria e Engenharia.';
+const description = 'Consulte o andamento da sua candidatura com o protocolo recebido ou solicite a exclusão dos seus dados de recrutamento.';
 const canonicalPath = '/carreiras/acompanhamento/';
 
 const jsonLd = [
@@ -43,23 +43,23 @@ const jsonLd = [
   <div class="carreiras-page">
     <div class="site-shell">
       <nav class="carreiras-nav-bar" aria-label="Navegação interna de carreiras">
-        <a class="carreiras-nav-link" href="/carreiras/">← Ver Vagas Abertas</a>
-        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de Talentos</a>
-        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/" aria-current="page">Acompanhar Candidatura</a>
-        <a class="carreiras-nav-link" href="/admin/carreiras/">Acesso Recrutador</a>
+        <a class="carreiras-nav-link" href="/carreiras/">← Ver vagas abertas</a>
+        <a class="carreiras-nav-link" href="/carreiras/talentos/">Banco de talentos</a>
+        <a class="carreiras-nav-link" href="/carreiras/acompanhamento/" aria-current="page">Acompanhar candidatura</a>
+        <a class="carreiras-nav-link" href="/admin/carreiras/">Área do recrutador</a>
       </nav>
 
       <header class="carreiras-header">
-        <span class="carreiras-eyebrow">Transparência & Acompanhamento</span>
-        <h1 class="carreiras-title">Acompanhamento de Candidatura & Privacidade</h1>
+        <span class="carreiras-eyebrow">Acompanhamento</span>
+        <h1 class="carreiras-title">Consulte sua candidatura</h1>
         <p class="carreiras-lead">
-          Insira seu código de acompanhamento exclusivo gerado no momento da candidatura para consultar a etapa atual do processo seletivo com total confidencialidade.
+          Digite o protocolo recebido ao enviar seu currículo para consultar o andamento da candidatura. Se perdeu o código, você pode solicitar a recuperação abaixo.
         </p>
       </header>
 
       <div class="carreiras-form-container" style="margin-bottom: 3rem;">
         <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
-          Consultar Andamento da Candidatura
+          Consultar andamento
         </h2>
         <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 1.75rem; text-align: center;">
           Formato do código: <code>AJN-2026-XXXXXX</code>
@@ -70,7 +70,7 @@ const jsonLd = [
         <form data-tracking-form>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 240px;">
-              <label class="sr-only" for="track-code-input">Código de Acompanhamento</label>
+              <label class="sr-only" for="track-code-input">Código de acompanhamento</label>
               <input
                 class="carreiras-input"
                 id="track-code-input"
@@ -82,7 +82,7 @@ const jsonLd = [
               />
             </div>
             <button class="carreiras-button carreiras-button--primary" type="submit">
-              Consultar Status <span aria-hidden="true">🔍</span>
+              Consultar candidatura <span aria-hidden="true">→</span>
             </button>
           </div>
           {TURNSTILE_SITE_KEY ? (
@@ -113,7 +113,7 @@ const jsonLd = [
             </div>
             <div>
               <span style="font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase;">Data de Envio</span>
-              <div style="font-weight: 600;" data-track-date>09/11/2026</div>
+              <div style="font-weight: 600;" data-track-date>—</div>
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ const jsonLd = [
           Esqueceu o código de acompanhamento?
         </h2>
         <p class="carreiras-help" style="margin-bottom: 1.5rem;">
-          Informe o e-mail e o CPF utilizados na candidatura. Se houver um cadastro correspondente, enviaremos um código de verificação válido por 15 minutos ao endereço já registrado.
+          Informe o e-mail e o CPF usados na candidatura. Se os dados corresponderem a um cadastro, enviaremos um código de verificação ao e-mail informado, válido por 15 minutos.
         </p>
 
         <form data-recovery-form>
@@ -141,7 +141,7 @@ const jsonLd = [
             </div>
             <div class="carreiras-field carreiras-form-full" data-code-group style="display: none;">
               <label class="carreiras-label" for="recover-candidate-code">Código de seis dígitos recebido por e-mail *</label>
-              <input class="carreiras-input" id="recover-candidate-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" />
+              <input class="carreiras-input" id="recover-candidate-code" name="recoveryCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" />
             </div>
             <div class="carreiras-field carreiras-form-full">
               {TURNSTILE_SITE_KEY ? (
@@ -162,10 +162,10 @@ const jsonLd = [
       <!-- Gestão de Dados Pessoais / LGPD Art. 18 -->
       <section style="max-width: 760px; margin-inline: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-sm);">
         <h2 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-bottom: 0.75rem;">
-          Seus Direitos como Titular de Dados (LGPD)
+          Solicitar exclusão dos seus dados
         </h2>
         <p style="font-size: 0.9375rem; line-height: 1.6; color: var(--text-soft); margin-bottom: 1.5rem;">
-          Em respeito ao Artigo 18 da Lei Geral de Proteção de Dados (Lei 13.709/2018), você pode solicitar a qualquer momento a confirmação da existência de tratamento, a portabilidade ou a <strong>exclusão definitiva</strong> dos seus dados e currículos do nosso banco.
+          Use este formulário para pedir a exclusão dos dados enviados em candidaturas. A solicitação será analisada conforme a LGPD, inclusive quanto a eventuais obrigações de conservação. Para exercer outros direitos, consulte nossa <a href="/politica-de-privacidade/">Política de Privacidade</a>.
         </p>
 
         <form data-lgpd-form>
@@ -195,7 +195,7 @@ const jsonLd = [
 
             <div class="carreiras-form-full">
               <button class="carreiras-button carreiras-button--secondary" style="border-color: #c62828; color: #c62828;" type="submit">
-                Solicitar Exclusão Definitiva de Dados (Art. 18 LGPD)
+                Solicitar exclusão dos dados
               </button>
             </div>
           </div>

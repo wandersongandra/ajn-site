@@ -1,7 +1,10 @@
 import { chromium } from 'playwright';
 
 const base = process.env.BASE_URL || 'http://localhost:4321';
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({
+  headless: true,
+  executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || undefined,
+});
 const failures = [];
 let assertions = 0;
 
@@ -140,7 +143,27 @@ for (const vp of viewports) {
     const pageErrors = [];
     page.on('pageerror', (err) => pageErrors.push(err.message));
 
-    const targetUrl = new URL(route, base).href;
+    if (route === '/carreiras/') {
+      await page.route('**/api/jobs', request => request.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ jobs: [
+          { slug: 'qa-engenharia', status: 'published', title: 'Engenheiro de Segurança', department: 'Engenharia', employmentType: 'CLT', location: 'Belo Horizonte - MG', description: 'Avaliações técnicas de segurança.' },
+          { slug: 'qa-administrativo', status: 'published', title: 'Assistente Administrativo', department: 'Administrativo', employmentType: 'PJ', location: 'Belo Horizonte - MG', description: 'Apoio às operações da empresa.' },
+        ] }),
+      }));
+    }
+    if (route === '/carreiras/vaga/') {
+      await page.route('**/api/jobs/vaga-qa', request => request.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ job: {
+          slug: 'vaga-qa', status: 'published', title: 'Vaga de validação', department: 'Engenharia', employmentType: 'CLT', experienceLevel: 'Pleno', location: 'Belo Horizonte - MG', description: 'Vaga usada no teste de candidatura.', requirements: ['Experiência na função'],
+        } }),
+      }));
+    }
+
+    const targetUrl = new URL(route === '/carreiras/vaga/' ? '/carreiras/vaga/?slug=vaga-qa' : route, base).href;
     const response = await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
     assert(response?.ok(), `HTTP 200 OK para ${route} em ${vp.name} (${response?.status()})`);
@@ -173,6 +196,24 @@ for (const vp of viewports) {
       await page.reload({ waitUntil: 'domcontentloaded' });
       await exerciseRestoredAdmin(page);
       assert(await page.locator('[data-jobs-tbody] tr').count() === 1, 'Listagem de vagas disponível após F5');
+    }
+
+    if (route === '/carreiras/') {
+      await page.waitForFunction(() => document.querySelectorAll('[data-job-card]').length === 2);
+      const areaFilter = page.locator('[data-carreiras-filters] [name="department"]');
+      assert((await areaFilter.locator('option').allTextContents()).includes('Administrativo'), `Filtro de áreas atualizado pela API (${vp.name})`);
+      await areaFilter.selectOption('engenharia');
+      assert(await page.locator('[data-job-card]:visible').count() === 1, `Filtro por área mostra uma vaga (${vp.name})`);
+      await page.locator('[data-carreiras-filters] [name="q"]').fill('termo-que-nao-existe');
+      assert(await page.locator('[data-job-card]:visible').count() === 0, `Busca sem resultados oculta os cartões (${vp.name})`);
+      assert(await page.locator('[data-no-filter-results]').isVisible(), `Busca sem resultados exibe explicação (${vp.name})`);
+      await page.locator('[data-carreiras-filters] [name="q"]').fill('');
+      assert(await page.locator('[data-no-filter-results]').isHidden(), `Explicação some ao limpar a busca (${vp.name})`);
+    }
+
+    if (route === '/carreiras/vaga/') {
+      await page.waitForSelector('[data-job-application-fields]:not([disabled])');
+      assert((await page.locator('[data-application-form]').getAttribute('action')) === '/api/applications/jobs/vaga-qa/apply', `Formulário habilitado apenas para a vaga confirmada (${vp.name})`);
     }
 
     if (route === '/carreiras/talentos/' || route === '/carreiras/vaga/') {
@@ -214,6 +255,16 @@ for (const vp of viewports) {
       assert(await recoveryForm.locator('[data-notice]').isVisible(), `Mensagem de recuperação visível em ${vp.name}`);
       assert(await recoveryForm.locator('[data-code-group]').isVisible(), `Campo de confirmação por e-mail liberado em ${vp.name}`);
 
+      await page.route('**/api/applications/verify-recovery', route => route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ applications: [{ trackingCode: 'AJN-2026-QA0001', jobTitle: 'Vaga de validação', department: 'Engenharia', status: 'Em análise', appliedAt: '2026-11-10T13:00:00Z' }] }),
+      }));
+      await recoveryForm.locator('[name="recoveryCode"]').fill('123456');
+      await recoveryForm.locator('button[type="submit"]').click();
+      await page.waitForFunction(() => document.querySelector('[data-track-code]')?.textContent === 'AJN-2026-QA0001');
+      assert(await page.locator('[data-tracking-result]').isVisible(), `Código recebido por e-mail recupera candidatura (${vp.name})`);
+
       await page.route('**/api/lgpd/deletion-request', route => route.fulfill({
         status: 400,
         contentType: 'application/json',
@@ -225,6 +276,18 @@ for (const vp of viewports) {
       await lgpdForm.locator('button[type="submit"]').press('Enter');
       await page.waitForFunction(() => document.querySelector('[data-lgpd-form] [data-notice]')?.textContent.includes('Solicitação de teste recusada.'));
       assert(await lgpdForm.locator('[data-notice]').isVisible(), `Mensagem LGPD visível em ${vp.name}`);
+    }
+
+    if (route === '/carreiras/vaga/') {
+      await page.route('**/api/jobs/vaga-indisponivel', request => request.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Serviço temporariamente indisponível' }),
+      }));
+      await page.goto(new URL('/carreiras/vaga/?slug=vaga-indisponivel', base).href, { waitUntil: 'domcontentloaded' });
+      await page.waitForSelector('#job-closed-box:visible');
+      assert(await page.locator('[data-job-application-fields]').isDisabled(), `Candidatura bloqueada quando API falha (${vp.name})`);
+      assert((await page.locator('[data-job-unavailable-title]').textContent()).includes('Não foi possível consultar'), `Falha de API não é confundida com vaga encerrada (${vp.name})`);
     }
 
     await page.close();

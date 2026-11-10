@@ -104,7 +104,7 @@ const jsonLd = [
         )}
       </header>
 
-      <div style="display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1.2fr); gap: 2.5rem; align-items: start; margin-bottom: 4rem;">
+      <div class="carreiras-job-layout">
         <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow-sm);">
           <section style="margin-bottom: 2rem;">
             <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
@@ -150,10 +150,10 @@ const jsonLd = [
         <!-- Formulário de Inscrição Direta -->
         <div class="carreiras-form-container" id="candidatura" style="max-width: 100%; margin: 0;">
           <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
-            Inscreva-se nesta Vaga
+            Candidatar-se à vaga
           </h2>
           <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
-            Preencha seus dados e anexe seu currículo atualizado em PDF ou DOCX.
+            Informe seus dados e anexe um currículo em PDF, DOC ou DOCX, com até 5 MB.
           </p>
 
           <div class="carreiras-notice" data-notice role="alert"></div>
@@ -209,7 +209,6 @@ const jsonLd = [
                 <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
                 <div class="carreiras-file-drop">
                   <label for="apply-resume" style="cursor: pointer;">
-                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;" aria-hidden="true">📄</div>
                     <span data-file-label style="font-size: 0.875rem; color: var(--brand-action); font-weight: 500;">
                       Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
                     </span>
@@ -244,7 +243,7 @@ const jsonLd = [
 
               <div class="carreiras-form-full" style="margin-top: 1rem;">
                 <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
-                  Confirmar e Enviar Candidatura <span aria-hidden="true">✓</span>
+                  Enviar candidatura
                 </button>
               </div>
             </div>

@@ -1,5 +1,5 @@
-// Client-side interactions para o Portal de Carreiras AJN
-// Conformidade rigorosa com CSP: sem eval, sem innerHTML, sem Web Storage.
+// Interações do portal de carreiras da AJN.
+// Mantém a política de conteúdo: sem eval, innerHTML ou armazenamento no navegador.
 
 function getConfiguredCareerApiOrigin() {
   if (typeof window === 'undefined' || !window.AJN_CARREIRAS_API_BASE) return '';
@@ -74,25 +74,66 @@ function initJobFilters() {
     if (countEl) {
       countEl.textContent = String(visibleCount);
     }
+    const noResults = document.querySelector('[data-no-filter-results]');
+    if (noResults) noResults.hidden = cards.length === 0 || visibleCount > 0;
   }
 
   filterForm.addEventListener('input', applyFilters);
   filterForm.addEventListener('change', applyFilters);
 
-  // Carregamento dinâmico direto da API (Item 4: eliminação de dependência funcional estática)
+  // A lista da API atualiza os filtros e os cartões publicados.
   (async () => {
     try {
       const res = await fetch(getApiEndpoint('/api/jobs'), { credentials: 'include' });
-      if (!res.ok) return;
+      if (!res.ok) throw new Error('Falha ao consultar vagas');
       const data = await res.json();
-      if (Array.isArray(data.jobs)) {
-        renderLiveJobs(data.jobs);
-        applyFilters();
-      }
+      if (!Array.isArray(data.jobs)) throw new Error('Resposta inválida da lista de vagas');
+      renderLiveJobs(data.jobs);
+      populateJobFilterOptions(filterForm, data.jobs);
+      const errorNotice = document.querySelector('[data-jobs-error]');
+      if (errorNotice) errorNotice.hidden = true;
+      applyFilters();
     } catch {
-      // Falha silenciosa de rede: preserva cartões estáticos de fallback
+      const errorNotice = document.querySelector('[data-jobs-error]');
+      if (errorNotice) errorNotice.hidden = false;
+      // Não apresentar uma lista vazia como resultado confirmado de uma API indisponível.
+      if (!document.querySelector('[data-job-card]')) {
+        const emptyState = document.querySelector('[data-job-empty-state]');
+        const countEl = document.querySelector('[data-jobs-count]');
+        if (emptyState) emptyState.hidden = true;
+        if (countEl) countEl.textContent = '—';
+      }
     }
   })();
+}
+
+function populateJobFilterOptions(filterForm, jobs) {
+  const filters = [
+    { field: 'department', property: 'department' },
+    { field: 'type', property: 'employmentType' },
+  ];
+
+  filters.forEach(({ field, property }) => {
+    const select = filterForm.querySelector(`[name="${field}"]`);
+    if (!select) return;
+    const previousSelection = select.value;
+    const labels = new Map();
+    jobs.forEach((job) => {
+      const label = typeof job[property] === 'string' ? job[property].trim() : '';
+      if (label && !labels.has(label.toLocaleLowerCase('pt-BR'))) {
+        labels.set(label.toLocaleLowerCase('pt-BR'), label);
+      }
+    });
+
+    select.replaceChildren(select.options[0]);
+    [...labels.entries()].sort((a, b) => a[1].localeCompare(b[1], 'pt-BR')).forEach(([value, label]) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = label;
+      select.appendChild(option);
+    });
+    select.value = labels.has(previousSelection) ? previousSelection : '';
+  });
 }
 
 function renderLiveJobs(jobs) {
@@ -108,21 +149,19 @@ function renderLiveJobs(jobs) {
 
   if (jobs.length === 0) {
     const emptyBox = document.createElement('div');
-    emptyBox.style.gridColumn = '1 / -1';
-    emptyBox.style.textAlign = 'center';
-    emptyBox.style.padding = '3rem 1rem';
+    emptyBox.className = 'carreiras-empty-state';
 
     const p1 = document.createElement('p');
     p1.style.fontSize = '1.125rem';
     p1.style.color = 'var(--text-soft)';
-    p1.textContent = 'No momento todas as oportunidades em aberto foram preenchidas.';
+    p1.textContent = 'Nenhuma vaga publicada no momento. Você pode deixar seu currículo para futuras oportunidades.';
 
     const p2 = document.createElement('p');
     p2.style.marginTop = '1rem';
     const talentLink = document.createElement('a');
     talentLink.className = 'carreiras-button carreiras-button--primary';
     talentLink.href = '/carreiras/talentos/';
-    talentLink.textContent = 'Cadastrar no Banco de Talentos';
+    talentLink.textContent = 'Cadastrar currículo';
     p2.appendChild(talentLink);
 
     emptyBox.appendChild(p1);
@@ -200,8 +239,8 @@ function renderLiveJobs(jobs) {
     const applyA = document.createElement('a');
     applyA.className = 'carreiras-button carreiras-button--primary';
     applyA.style.width = '100%';
-    applyA.href = `/carreiras/${job.slug}/`;
-    applyA.textContent = 'Ver detalhes e candidatar-se →';
+    applyA.href = `/carreiras/${encodeURIComponent(job.slug || '')}/`;
+    applyA.textContent = 'Ver detalhes e candidatar-se';
     botDiv.appendChild(applyA);
 
     card.appendChild(topDiv);
@@ -233,7 +272,13 @@ function updateJobsJsonLd(jobs) {
         '@type': 'JobPosting',
         title: job.title,
         description: job.description,
-        employmentType: job.employmentType === 'CLT' ? 'FULL_TIME' : 'CONTRACTOR',
+        employmentType: {
+          CLT: 'FULL_TIME',
+          PJ: 'CONTRACTOR',
+          'Estágio': 'INTERN',
+          'Temporário': 'TEMPORARY',
+        }[job.employmentType],
+        datePosted: job.publishedAt || undefined,
         hiringOrganization: {
           '@type': 'Organization',
           name: 'AJN Consultoria e Engenharia',
@@ -243,8 +288,7 @@ function updateJobsJsonLd(jobs) {
           '@type': 'Place',
           address: {
             '@type': 'PostalAddress',
-            addressLocality: 'Belo Horizonte',
-            addressRegion: 'MG',
+            addressLocality: job.location || undefined,
             addressCountry: 'BR',
           },
         },
@@ -259,6 +303,8 @@ function updateJobsJsonLd(jobs) {
 async function checkCurrentJobStatus() {
   const dynamicPage = document.querySelector('[data-dynamic-job-page]');
   const form = document.querySelector('[data-application-form]');
+  const applicationFields = dynamicPage?.querySelector('[data-job-application-fields]');
+  if (applicationFields) applicationFields.disabled = true;
 
   // Extrai o slug da URL atual (parâmetro ?slug= ou segmento /carreiras/:slug/)
   let slug = '';
@@ -280,52 +326,49 @@ async function checkCurrentJobStatus() {
     if (match) slug = match[1];
   }
 
-  if (!slug) return;
-
   const closedBox = document.getElementById('job-closed-box');
   const detailsContainer = document.getElementById('job-details-container');
+  const loadingNotice = dynamicPage?.querySelector('[data-job-loading]');
+  const unavailableTitle = closedBox?.querySelector('[data-job-unavailable-title]');
+  const unavailableMessage = closedBox?.querySelector('[data-job-unavailable-message]');
+
+  function showUnavailable(title, message) {
+    if (loadingNotice) loadingNotice.hidden = true;
+    if (detailsContainer) detailsContainer.style.display = 'none';
+    if (closedBox) closedBox.style.display = 'block';
+    if (unavailableTitle) unavailableTitle.textContent = title;
+    if (unavailableMessage) unavailableMessage.textContent = message;
+    if (applicationFields) applicationFields.disabled = true;
+    document.getElementById('dynamic-job-posting-jsonld')?.remove();
+  }
+
+  if (!slug) {
+    if (dynamicPage) showUnavailable('Vaga não localizada', 'Volte à lista de vagas para escolher uma oportunidade.');
+    return;
+  }
 
   try {
     const res = await fetch(getApiEndpoint(`/api/jobs/${encodeURIComponent(slug)}`), { credentials: 'include' });
 
-    if (res.status === 404 || !res.ok) {
-      // Vaga não encontrada ou encerrada
-      if (closedBox && detailsContainer) {
-        detailsContainer.style.display = 'none';
-        closedBox.style.display = 'block';
+    if (!res.ok) {
+      if (res.status === 404) {
+        showUnavailable('Vaga indisponível', 'Esta vaga não está aberta para candidaturas. Consulte a lista de oportunidades publicadas.');
+      } else {
+        showUnavailable('Não foi possível consultar a vaga', 'O serviço está temporariamente indisponível. Atualize a página ou consulte as demais vagas.');
       }
-
-      if (form) {
-        const noticeBox = findNotice(form);
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (noticeBox) {
-          showNotice(
-            noticeBox,
-            'Atenção: Esta oportunidade foi encerrada ou preenchida e não aceita novas inscrições no momento. Você ainda pode cadastrar seu currículo em nosso Banco de Talentos.',
-            'error'
-          );
-        }
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Inscrições Encerradas';
-        }
-        const inputs = form.querySelectorAll('input, textarea, select');
-        inputs.forEach((input) => {
-          input.disabled = true;
-        });
-      }
-
-      const existingLd = document.getElementById('dynamic-job-posting-jsonld');
-      if (existingLd) existingLd.remove();
       return;
     }
 
     const data = await res.json();
     const job = data.job;
-    if (!job) return;
+    if (!job || job.status !== 'published' || job.slug !== slug) {
+      showUnavailable('Vaga indisponível', 'Não foi possível confirmar esta oportunidade. Consulte as vagas publicadas.');
+      return;
+    }
 
     // Se estiver em uma página dinâmica de vaga, hidrata os dados completos no DOM
     if (dynamicPage) {
+      if (loadingNotice) loadingNotice.hidden = true;
       if (closedBox) closedBox.style.display = 'none';
       if (detailsContainer) detailsContainer.style.display = 'block';
 
@@ -402,6 +445,7 @@ async function checkCurrentJobStatus() {
       // Atualiza action do formulário de candidatura
       if (form) {
         form.setAttribute('action', `/api/applications/jobs/${encodeURIComponent(job.slug)}/apply`);
+        if (applicationFields) applicationFields.disabled = false;
       }
     }
 
@@ -416,8 +460,8 @@ async function checkCurrentJobStatus() {
       }
       jobScript.textContent = JSON.stringify(job.jsonLd);
     }
-  } catch (err) {
-    // Falha de conexão ou rede na verificação
+  } catch {
+    showUnavailable('Não foi possível consultar a vaga', 'Verifique sua conexão e tente novamente. Não recebemos nenhuma candidatura.');
   }
 }
 
@@ -452,6 +496,11 @@ function initApplicationForm() {
     e.preventDefault();
     hideNotice(noticeBox);
 
+    if (form.closest('[data-dynamic-job-page]') && form.querySelector('[data-job-application-fields]')?.disabled) {
+      showNotice(noticeBox, 'Aguarde a confirmação de que a vaga ainda está aberta.', 'error');
+      return;
+    }
+
     const formData = new FormData(form);
     const resume = formData.get('resume');
     if (!resume || !(resume instanceof File) || resume.size === 0) {
@@ -475,7 +524,7 @@ function initApplicationForm() {
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.setAttribute('data-orig-text', submitBtn.textContent || '');
-      submitBtn.textContent = 'Enviando candidatura com segurança...';
+      submitBtn.textContent = 'Enviando candidatura…';
     }
 
     try {
@@ -544,7 +593,7 @@ function initApplicationForm() {
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = submitBtn.getAttribute('data-orig-text') || 'Confirmar e Enviar Candidatura';
+        submitBtn.textContent = submitBtn.getAttribute('data-orig-text') || 'Enviar candidatura';
       }
     }
   });

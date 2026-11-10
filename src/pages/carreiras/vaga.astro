@@ -32,8 +32,8 @@ const jsonLd = [
   <div class="carreiras-page" data-dynamic-job-page>
     <div class="site-shell">
       <nav class="carreiras-nav-bar" style="margin-top: 0;" aria-label="Navegação de retorno">
-        <a class="carreiras-nav-link" href="/carreiras/">← Voltar para todas as vagas</a>
-        <a class="carreiras-nav-link" href="#candidatura">Ir para formulário de inscrição ↓</a>
+        <a class="carreiras-nav-link" href="/carreiras/">← Voltar às vagas</a>
+        <a class="carreiras-nav-link" href="#candidatura">Ir ao formulário</a>
       </nav>
 
       <noscript>
@@ -42,68 +42,68 @@ const jsonLd = [
         </div>
       </noscript>
 
-      <!-- Estado de Vaga Encerrada ou Não Encontrada -->
+      <p data-job-loading role="status" aria-live="polite">Consultando os dados da vaga…</p>
+
+      <!-- Exibido quando a consulta não confirma a vaga -->
       <div id="job-closed-box" style="display: none; text-align: center; padding: 4rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 4rem;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;" aria-hidden="true">🔒</div>
-        <h2 style="font-family: var(--font-display); font-size: 1.75rem; color: var(--ink); margin-bottom: 1rem;">
-          Esta oportunidade não está mais aberta
+        <h2 data-job-unavailable-title style="font-family: var(--font-display); font-size: 1.75rem; color: var(--ink); margin-bottom: 1rem;">
+          Vaga indisponível
         </h2>
-        <p style="font-size: 1.125rem; color: var(--text-soft); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6;">
-          O processo seletivo para esta vaga foi encerrado ou preenchido por nossa equipe. Você pode conferir nossas vagas ativas ou cadastrar seu currículo em nosso Banco de Talentos para futuras oportunidades.
+        <p data-job-unavailable-message style="font-size: 1.125rem; color: var(--text-soft); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6;">
+          A vaga não está disponível para candidaturas no momento. Consulte outras vagas ou cadastre seu currículo no banco de talentos.
         </p>
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
           <a class="carreiras-button carreiras-button--primary" href="/carreiras/">
-            Ver Vagas Abertas ←
+            Ver vagas publicadas
           </a>
           <a class="carreiras-button carreiras-button--secondary" href="/carreiras/talentos/">
-            Cadastrar no Banco de Talentos ↗
+            Cadastrar currículo
           </a>
         </div>
       </div>
 
-      <!-- Container Dinâmico da Vaga -->
-      <div id="job-details-container">
+      <!-- Detalhes apresentados somente após confirmação pela API -->
+      <div id="job-details-container" style="display: none;">
         <header class="carreiras-header" style="text-align: left; max-width: 100%; margin-bottom: 2.5rem;">
           <div class="carreiras-card-badges" style="margin-bottom: 1rem;">
-            <span class="carreiras-badge carreiras-badge--primary" data-job-department>Carregando departamento...</span>
-            <span class="carreiras-badge" data-job-type>CLT</span>
-            <span class="carreiras-badge" data-job-level>Nível técnico</span>
-            <span class="carreiras-badge" data-job-location>Belo Horizonte - MG</span>
+            <span class="carreiras-badge carreiras-badge--primary" data-job-department></span>
+            <span class="carreiras-badge" data-job-type></span>
+            <span class="carreiras-badge" data-job-level></span>
+            <span class="carreiras-badge" data-job-location></span>
           </div>
-          <h1 class="carreiras-title" data-job-title>Carregando dados da oportunidade...</h1>
+          <h1 class="carreiras-title" data-job-title></h1>
           <p data-job-salary style="font-size: 1.25rem; font-weight: 600; color: var(--brand-action); margin-top: 0.5rem; display: none;"></p>
         </header>
 
-        <div style="display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1.2fr); gap: 2.5rem; align-items: start; margin-bottom: 4rem;">
+        <div class="carreiras-job-layout">
           <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow-sm);">
             <section style="margin-bottom: 2rem;">
               <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
-                Descrição da Oportunidade
+                Sobre a vaga
               </h2>
               <p data-job-desc style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);">
-                Carregando descrição completa da vaga...
+                Descrição da vaga
               </p>
             </section>
 
             <section style="margin-bottom: 2rem;">
               <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
-                Requisitos Obrigatórios
+                Requisitos
               </h2>
               <ul data-job-requirements style="list-style: disc; padding-left: 1.25rem; line-height: 1.8; color: var(--text-soft);">
-                <li>Aguarde o carregamento dos requisitos técnicos...</li>
               </ul>
             </section>
 
             <section data-job-differentials-box style="margin-bottom: 2rem; display: none;">
               <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
-                Diferenciais Valorizados
+                Diferenciais
               </h2>
               <p data-job-differentials style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);"></p>
             </section>
 
             <section data-job-benefits-box style="display: none;">
               <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">
-                Benefícios Oferecidos
+                Benefícios
               </h2>
               <p data-job-benefits style="font-size: 1.0625rem; line-height: 1.7; color: var(--text-soft);"></p>
             </section>
@@ -112,15 +112,16 @@ const jsonLd = [
           <!-- Formulário de Inscrição Direta -->
           <div class="carreiras-form-container" id="candidatura" style="max-width: 100%; margin: 0;">
             <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
-              Inscreva-se nesta Vaga
+              Candidatar-se à vaga
             </h2>
             <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
-              Preencha seus dados e anexe seu currículo atualizado em PDF ou DOCX.
+              Informe seus dados e anexe um currículo em PDF, DOC ou DOCX, com até 5 MB.
             </p>
 
             <div class="carreiras-notice" data-notice role="alert"></div>
 
             <form action="/api/applications/talent-pool" method="POST" enctype="multipart/form-data" data-application-form>
+              <fieldset class="carreiras-form-fields" data-job-application-fields disabled>
               <div class="carreiras-form-grid">
                 <div class="carreiras-field carreiras-form-full">
                   <label class="carreiras-label" for="apply-name">Nome Completo *</label>
@@ -171,7 +172,6 @@ const jsonLd = [
                   <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
                   <div class="carreiras-file-drop">
                     <label for="apply-resume" style="cursor: pointer;">
-                      <div style="font-size: 1.75rem; margin-bottom: 0.5rem;" aria-hidden="true">📄</div>
                       <span data-file-label style="font-size: 0.875rem; color: var(--brand-action); font-weight: 500;">
                         Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
                       </span>
@@ -206,10 +206,11 @@ const jsonLd = [
 
                 <div class="carreiras-form-full" style="margin-top: 1rem;">
                   <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
-                    Confirmar e Enviar Candidatura <span aria-hidden="true">✓</span>
+                    Enviar candidatura
                   </button>
                 </div>
               </div>
+              </fieldset>
             </form>
           </div>
         </div>
