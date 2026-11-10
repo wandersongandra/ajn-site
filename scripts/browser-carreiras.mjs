@@ -74,15 +74,19 @@ async function installAdminSessionFixture(context, role = 'super_admin') {
   });
 }
 
-async function exerciseRestoredAdmin(page) {
-  await page.waitForSelector('[data-admin-dashboard]:visible');
-  assert(await page.locator('[data-admin-login-card]').isHidden(), 'Login oculto após restauração da sessão administrativa');
-
+async function dismissPrivacyNotice(page) {
   const privacyNotice = page.locator('#ajn-privacy-notice');
   if (await privacyNotice.isVisible()) {
     await privacyNotice.locator('[data-privacy-reject]').click();
     await privacyNotice.waitFor({ state: 'hidden' });
   }
+}
+
+async function exerciseRestoredAdmin(page) {
+  await page.waitForSelector('[data-admin-dashboard]:visible');
+  assert(await page.locator('[data-admin-login-card]').isHidden(), 'Login oculto após restauração da sessão administrativa');
+
+  await dismissPrivacyNotice(page);
 
   const tabs = ['candidates', 'jobs', 'lgpd', 'audit', 'users'];
   for (const tab of tabs) {
@@ -308,6 +312,7 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
   const page = await context.newPage();
   await page.goto(new URL('/admin/carreiras/', base).href);
   await page.locator('[data-admin-dashboard]').waitFor({ state: 'visible' });
+  await dismissPrivacyNotice(page);
   const allowed = {
     recruiter: ['pipeline', 'candidates', 'jobs', 'audit'],
     viewer: ['pipeline', 'candidates', 'jobs'],
@@ -368,6 +373,7 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
   }));
   await page.goto(new URL('/admin/carreiras/', base).href);
   await page.locator('[data-admin-dashboard]').waitFor({ state: 'visible' });
+  await dismissPrivacyNotice(page);
   await page.locator('[data-pipeline-board] button').first().waitFor({ state: 'visible' });
   await page.locator('[data-pipeline-board] button').first().click();
   const modal = page.locator('[data-move-stage-dialog]');
