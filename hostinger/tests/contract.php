@@ -29,6 +29,7 @@ $api = source_contract($repo . '/public/api/index.php');
 $htaccess = source_contract($repo . '/public/.htaccess');
 $careerScript = source_contract($repo . '/public/scripts/carreiras.js');
 $adminScript = source_contract($repo . '/public/scripts/admin-carreiras.js');
+$talentPage = source_contract($repo . '/src/pages/carreiras/talentos.astro');
 $frontendExecutable = preg_replace('/\/\/.*$/m', '', $careerScript . "\n" . $adminScript) ?? ($careerScript . $adminScript);
 
 check_contract('front controller privado', str_contains($api, 'AJN_CAREERS_BOOTSTRAP') && str_contains($api, 'require $bootstrap'));
@@ -45,6 +46,11 @@ check_contract('same-origin Apache routing', str_contains($htaccess, 'RewriteRul
 check_contract('frontend same-origin sem storage de tokens', !preg_match('/\b(?:localStorage|sessionStorage)\b/', $careerScript . $adminScript));
 check_contract('frontend sem sinks proibidos', !preg_match('/\b(?:innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\s*\(|new Function\s*\()/', $frontendExecutable));
 check_contract('SMTP fecha sockets em falha', str_contains($bootstrap, 'finally {') && str_contains($bootstrap, 'fclose($socket);'));
+check_contract('retenção do banco de talentos exige aceite explícito', str_contains($applications, 'if (!$job && !$consentRetention)') && !str_contains($applications, '(!$job || $consentRetention) ? 1 : 0') && str_contains($talentPage, 'name="consentRetention" type="checkbox" value="true" required'));
+$beginIndex = strpos($applications, '$db->beginTransaction();');
+$demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1');
+$insertIndex = strpos($applications, 'INSERT INTO resumes (id,candidate_id,file_key');
+check_contract('recandidatura desativa currículo antigo dentro da transação', $beginIndex !== false && $demoteIndex !== false && $insertIndex !== false && $beginIndex < $demoteIndex && $demoteIndex < $insertIndex);
 
 foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' — ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);
