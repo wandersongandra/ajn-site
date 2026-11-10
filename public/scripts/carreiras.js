@@ -296,7 +296,7 @@ async function checkCurrentJobStatus() {
       }
 
       if (form) {
-        const noticeBox = form.querySelector('[data-notice]');
+        const noticeBox = findNotice(form);
         const submitBtn = form.querySelector('button[type="submit"]');
         if (noticeBox) {
           showNotice(
@@ -428,7 +428,7 @@ function initApplicationForm() {
 
   const fileInput = form.querySelector('input[type="file"]');
   const fileLabel = form.querySelector('[data-file-label]');
-  const noticeBox = form.querySelector('[data-notice]');
+  const noticeBox = findNotice(form);
   const submitBtn = form.querySelector('button[type="submit"]');
 
   if (fileInput && fileLabel) {
@@ -556,7 +556,7 @@ function initTrackingForm() {
   if (!form) return;
 
   const resultContainer = document.querySelector('[data-tracking-result]');
-  const noticeBox = form.querySelector('[data-notice]');
+  const noticeBox = findNotice(form);
   const submitBtn = form.querySelector('button[type="submit"]');
 
   form.addEventListener('submit', async (e) => {
@@ -600,7 +600,7 @@ function initTrackingForm() {
   // Fluxo de recuperação de código com verificação de posse do e-mail
   const recoveryForm = document.querySelector('[data-recovery-form]');
   if (recoveryForm) {
-    const recNotice = recoveryForm.querySelector('[data-notice]');
+    const recNotice = findNotice(recoveryForm);
     const recBtn = recoveryForm.querySelector('button[type="submit"]');
 
     recoveryForm.addEventListener('submit', async (e) => {
@@ -713,7 +713,7 @@ function initLgpdForm() {
   const form = document.querySelector('[data-lgpd-form]');
   if (!form) return;
 
-  const noticeBox = form.querySelector('[data-notice]');
+  const noticeBox = findNotice(form);
   const submitBtn = form.querySelector('button[type="submit"]');
 
   form.addEventListener('submit', async (e) => {
@@ -766,6 +766,21 @@ function initLgpdForm() {
       }
     }
   });
+}
+
+function findNotice(form) {
+  // Alguns layouts colocam o aviso imediatamente antes do formulário.
+  // Garanta feedback acessível também quando não houver aviso no markup.
+  const inside = form.querySelector('[data-notice]');
+  if (inside) return inside;
+  const sibling = form.previousElementSibling;
+  if (sibling && sibling.matches('[data-notice]')) return sibling;
+  const notice = document.createElement('div');
+  notice.className = 'carreiras-notice';
+  notice.setAttribute('data-notice', '');
+  notice.setAttribute('role', 'alert');
+  form.prepend(notice);
+  return notice;
 }
 
 function showNotice(box, message, type) {
