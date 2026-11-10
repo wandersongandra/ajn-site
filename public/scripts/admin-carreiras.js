@@ -6,6 +6,30 @@
   let currentUser = null;
   let currentJobId = '';
   let listenersRegistered = false;
+  let pendingMove = null;
+  let lastMoveTrigger = null;
+
+  // Apenas apresentação: o backend continua sendo a autoridade das permissões.
+  const rolePermissions = {
+    recruiter: ['jobs:read', 'jobs:write', 'candidates:read', 'resumes:read', 'applications:read', 'applications:stage_move', 'audit:read'],
+    viewer: ['jobs:read', 'candidates:read', 'applications:read'],
+    dpo: ['candidates:read', 'lgpd:read', 'lgpd:execute', 'audit:read'],
+  };
+  const tabPermissions = {
+    pipeline: 'applications:read',
+    candidates: 'candidates:read',
+    jobs: 'jobs:read',
+    lgpd: 'lgpd:read',
+    audit: 'audit:read',
+    users: 'admin:manage',
+  };
+
+  function can(permission) {
+    if (!currentUser) return false;
+    if (currentUser.role === 'super_admin') return true;
+    if (Array.isArray(currentUser.permissions)) return currentUser.permissions.includes(permission);
+    return (rolePermissions[currentUser.role] || []).includes(permission);
+  }
 
   function getConfiguredApiOrigin() {
     if (typeof window === 'undefined' || !window.AJN_CARREIRAS_API_BASE) return '';
@@ -223,21 +247,24 @@
     tabButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const targetTab = btn.getAttribute('data-admin-tab');
-        tabButtons.forEach((b) => b.setAttribute('aria-selected', 'false'));
-        btn.setAttribute('aria-selected', 'true');
-
-        document.querySelectorAll('[data-admin-pane]').forEach((pane) => {
-          pane.style.display = pane.getAttribute('data-admin-pane') === targetTab ? 'block' : 'none';
-        });
-
-        if (targetTab === 'pipeline') void loadPipeline(currentJobId);
-        else if (targetTab === 'candidates') void loadCandidates();
-        else if (targetTab === 'jobs') void loadJobs();
-        else if (targetTab === 'lgpd') void loadLgpdRequests();
-        else if (targetTab === 'audit') void loadAuditLogs();
-        else if (targetTab === 'users') void loadAdminUsers();
+        showAdminPane(targetTab, true);
       });
     });
+
+    const moveDialog = document.querySelector('[data-move-stage-dialog]');
+    const moveForm = document.querySelector('[data-move-stage-form]');
+    if (moveDialog && moveForm) {
+      moveForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        void submitMoveStage(moveDialog, moveForm);
+      });
+      moveDialog.querySelector('[data-cancel-move-stage]')?.addEventListener('click', () => moveDialog.close());
+      moveDialog.addEventListener('close', () => {
+        pendingMove = null;
+        lastMoveTrigger?.focus();
+        lastMoveTrigger = null;
+      });
+    }
 
     const jobSelect = document.querySelector('[data-pipeline-job-select]');
     if (jobSelect) {
@@ -385,15 +412,45 @@
   function updateUserBadge() {
     const userBadge = document.querySelector('[data-admin-user-name]');
     const roleBadge = document.querySelector('[data-admin-user-role]');
-    const usersTab = document.querySelector('[data-admin-users-tab]');
 
     if (userBadge && currentUser) userBadge.textContent = currentUser.name;
     if (roleBadge && currentUser) roleBadge.textContent = currentUser.role;
 
-    if (usersTab && currentUser) {
-      const canManage = currentUser.role === 'super_admin' || (currentUser.permissions && currentUser.permissions.includes('admin:manage'));
-      usersTab.style.display = canManage ? 'inline-block' : 'none';
+    document.querySelectorAll('[data-admin-tab]').forEach((button) => {
+      const permission = tabPermissions[button.getAttribute('data-admin-tab')];
+      const allowed = Boolean(permission && can(permission));
+      button.hidden = !allowed;
+      button.style.display = allowed ? '' : 'none';
+      button.disabled = !allowed;
+    });
+
+    const addJobButton = document.querySelector('[data-toggle-job-form]');
+    if (addJobButton) {
+      const allowed = can('jobs:write');
+      addJobButton.hidden = !allowed;
+      addJobButton.style.display = allowed ? '' : 'none';
     }
+
+    const firstAllowed = ['pipeline', 'lgpd', 'candidates', 'jobs', 'audit', 'users']
+      .find((tab) => can(tabPermissions[tab]));
+    if (firstAllowed) showAdminPane(firstAllowed, false);
+  }
+
+  function showAdminPane(targetTab, loadData) {
+    if (!can(tabPermissions[targetTab])) return;
+    document.querySelectorAll('[data-admin-tab]').forEach((button) => {
+      button.setAttribute('aria-selected', String(button.getAttribute('data-admin-tab') === targetTab));
+    });
+    document.querySelectorAll('[data-admin-pane]').forEach((pane) => {
+      pane.style.display = pane.getAttribute('data-admin-pane') === targetTab ? 'block' : 'none';
+    });
+    if (!loadData) return;
+    if (targetTab === 'pipeline') void loadPipeline(currentJobId);
+    else if (targetTab === 'candidates') void loadCandidates();
+    else if (targetTab === 'jobs') void loadJobs();
+    else if (targetTab === 'lgpd') void loadLgpdRequests();
+    else if (targetTab === 'audit') void loadAuditLogs();
+    else if (targetTab === 'users') void loadAdminUsers();
   }
 
   function openJobForm(job = null) {
@@ -455,8 +512,14 @@
   }
 
   async function loadDashboardData() {
-    await loadJobs();
-    await loadPipeline(currentJobId);
+    if (can('jobs:read')) {
+      await loadJobs();
+      if (currentJobId && can('applications:read')) await loadPipeline(currentJobId);
+    } else if (can('lgpd:read')) {
+      await loadLgpdRequests();
+    } else if (can('candidates:read')) {
+      await loadCandidates();
+    }
   }
 
   // 1. Carrega Vagas
@@ -522,14 +585,18 @@
         tr.appendChild(tdCount);
 
         const tdActions = document.createElement('td');
-        const editBtn = document.createElement('button');
-        editBtn.type = 'button';
-        editBtn.className = 'carreiras-button carreiras-button--secondary';
-        editBtn.style.padding = '0.35rem 0.65rem';
-        editBtn.style.fontSize = '0.75rem';
-        editBtn.textContent = 'Editar';
-        editBtn.addEventListener('click', () => openJobForm(job));
-        tdActions.appendChild(editBtn);
+        if (can('jobs:write')) {
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'carreiras-button carreiras-button--secondary';
+          editBtn.style.padding = '0.35rem 0.65rem';
+          editBtn.style.fontSize = '0.75rem';
+          editBtn.textContent = 'Editar';
+          editBtn.addEventListener('click', () => openJobForm(job));
+          tdActions.appendChild(editBtn);
+        } else {
+          tdActions.textContent = 'Somente leitura';
+        }
         tr.appendChild(tdActions);
 
         tableBody.appendChild(tr);
@@ -610,23 +677,22 @@
             locP.textContent = `${cand.city} - ${cand.state}`;
             card.appendChild(locP);
 
-            const actions = document.createElement('div');
-            actions.style.marginTop = '0.75rem';
-            actions.style.display = 'flex';
-            actions.style.gap = '0.5rem';
-
-            const moveBtn = document.createElement('button');
-            moveBtn.type = 'button';
-            moveBtn.className = 'carreiras-button carreiras-button--secondary';
-            moveBtn.style.padding = '0.35rem 0.65rem';
-            moveBtn.style.fontSize = '0.75rem';
-            moveBtn.textContent = 'Mover Etapa';
-            moveBtn.addEventListener('click', () => {
-              promptMoveStage(cand.id, data.stages);
-            });
-            actions.appendChild(moveBtn);
-
-            card.appendChild(actions);
+            if (can('applications:stage_move')) {
+              const actions = document.createElement('div');
+              actions.style.marginTop = '0.75rem';
+              const moveBtn = document.createElement('button');
+              moveBtn.type = 'button';
+              moveBtn.className = 'carreiras-button carreiras-button--secondary';
+              moveBtn.style.padding = '0.35rem 0.65rem';
+              moveBtn.style.fontSize = '0.75rem';
+              moveBtn.textContent = 'Mover etapa';
+              moveBtn.setAttribute('aria-label', `Mover etapa de ${cand.fullName}`);
+              moveBtn.addEventListener('click', () => {
+                openMoveStageDialog(cand.id, cand.fullName, stage.id, data.stages, moveBtn);
+              });
+              actions.appendChild(moveBtn);
+              card.appendChild(actions);
+            }
             cardsList.appendChild(card);
           });
         }
@@ -637,17 +703,55 @@
     } catch {}
   }
 
-  async function promptMoveStage(applicationId, stages) {
-    const stageNames = stages.map((s, idx) => `${idx + 1}. ${s.name}`).join('\n');
-    const choice = prompt(`Selecione a nova etapa para o candidato:\n\n${stageNames}\n\nDigite o número correspondente (1 a ${stages.length}):`);
-    const num = parseInt(choice || '', 10);
-    if (!num || num < 1 || num > stages.length) return;
+  function openMoveStageDialog(applicationId, candidateName, currentStageId, stages, trigger) {
+    if (!can('applications:stage_move')) return;
+    const dialog = document.querySelector('[data-move-stage-dialog]');
+    const form = document.querySelector('[data-move-stage-form]');
+    if (!dialog || !form || typeof dialog.showModal !== 'function') return;
 
-    const targetStage = stages[num - 1];
-    const notes = prompt('Observações do recrutador (humano):') || '';
-    const ratingStr = prompt('Avaliação do candidato (1 a 5 estrelas):');
-    const rating = ratingStr ? parseInt(ratingStr, 10) : undefined;
+    const select = form.elements.namedItem('targetStageId');
+    if (!select) return;
+    form.reset();
+    select.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Selecione uma etapa';
+    select.appendChild(placeholder);
+    stages.filter((stage) => stage.id !== currentStageId).forEach((stage) => {
+      const option = document.createElement('option');
+      option.value = stage.id;
+      option.textContent = stage.name;
+      select.appendChild(option);
+    });
 
+    const description = dialog.querySelector('[data-move-stage-candidate]');
+    if (description) description.textContent = `Candidato: ${candidateName}. Selecione a etapa de destino.`;
+    const notice = dialog.querySelector('[data-move-stage-notice]');
+    if (notice) notice.style.display = 'none';
+    pendingMove = { applicationId };
+    lastMoveTrigger = trigger;
+    dialog.showModal();
+    select.focus();
+  }
+
+  async function submitMoveStage(dialog, form) {
+    if (!pendingMove || !can('applications:stage_move')) return;
+    const applicationId = pendingMove.applicationId;
+    const targetStageId = form.elements.namedItem('targetStageId')?.value || '';
+    const notes = form.elements.namedItem('notes')?.value.trim() || '';
+    const ratingStr = form.elements.namedItem('rating')?.value || '';
+    const rating = ratingStr ? Number(ratingStr) : undefined;
+    const notice = dialog.querySelector('[data-move-stage-notice]');
+    if (!targetStageId || (rating !== undefined && (!Number.isInteger(rating) || rating < 1 || rating > 5))) {
+      showNotice(notice, 'Selecione uma etapa e informe uma avaliação válida.', 'error');
+      return;
+    }
+
+    const submitButton = dialog.querySelector('[data-submit-move-stage]');
+    const cancelButton = dialog.querySelector('[data-cancel-move-stage]');
+    if (submitButton) submitButton.disabled = true;
+    if (cancelButton) cancelButton.disabled = true;
+    form.setAttribute('aria-busy', 'true');
     try {
       const res = await fetch(getApiEndpoint('/api/admin/pipeline/move-stage'), {
         method: 'POST',
@@ -655,21 +759,26 @@
         headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           applicationId,
-          targetStageId: targetStage.id,
+          targetStageId,
           rating,
           notes,
         }),
       });
 
       if (res.ok) {
-        alert('Candidato movimentado com sucesso!');
-        loadPipeline(currentJobId);
+        dialog.close();
+        showNotice(document.querySelector('[data-pipeline-notice]'), 'Etapa da candidatura atualizada com sucesso.', 'success');
+        void loadPipeline(currentJobId);
       } else {
-        const err = await res.json();
-        alert(err.error || 'Erro ao movimentar candidato.');
+        const err = await res.json().catch(() => ({}));
+        showNotice(notice, err.error || 'Não foi possível movimentar o candidato.', 'error');
       }
     } catch {
-      alert('Erro de conexão ao movimentar candidato.');
+      showNotice(notice, 'Erro de conexão ao movimentar o candidato.', 'error');
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+      if (cancelButton) cancelButton.disabled = false;
+      form.removeAttribute('aria-busy');
     }
   }
 
@@ -710,14 +819,18 @@
         tr.appendChild(tdTitle);
 
         const tdActions = document.createElement('td');
-        const dlBtn = document.createElement('button');
-        dlBtn.type = 'button';
-        dlBtn.className = 'carreiras-button carreiras-button--secondary';
-        dlBtn.style.padding = '0.35rem 0.75rem';
-        dlBtn.style.fontSize = '0.8125rem';
-        dlBtn.textContent = 'Baixar Currículo Privado';
-        dlBtn.addEventListener('click', () => downloadResume(cand.id));
-        tdActions.appendChild(dlBtn);
+        if (can('resumes:read')) {
+          const dlBtn = document.createElement('button');
+          dlBtn.type = 'button';
+          dlBtn.className = 'carreiras-button carreiras-button--secondary';
+          dlBtn.style.padding = '0.35rem 0.75rem';
+          dlBtn.style.fontSize = '0.8125rem';
+          dlBtn.textContent = 'Baixar currículo privado';
+          dlBtn.addEventListener('click', () => downloadResume(cand.id));
+          tdActions.appendChild(dlBtn);
+        } else {
+          tdActions.textContent = 'Acesso restrito';
+        }
         tr.appendChild(tdActions);
 
         tableBody.appendChild(tr);
@@ -739,6 +852,7 @@
       }
 
       const blob = await res.blob();
+      if (blob.size === 0) throw new Error('Arquivo vazio');
       const contentDisposition = res.headers.get('content-disposition');
       let filename = 'curriculo.pdf';
       if (contentDisposition) {
@@ -753,7 +867,8 @@
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // A liberação imediata pode invalidar a URL antes de o download começar.
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch {
       alert('Erro de conexão ao baixar currículo.');
     }
@@ -762,7 +877,9 @@
   // 4. Carrega Solicitações LGPD
   async function loadLgpdRequests() {
     const tableBody = document.querySelector('[data-lgpd-tbody]');
-    if (!tableBody) return;
+    if (!tableBody || !can('lgpd:read')) return;
+    const notice = document.querySelector('[data-lgpd-notice]');
+    if (notice) notice.style.display = 'none';
 
     try {
       const res = await fetch(getApiEndpoint('/api/admin/lgpd/requests'), {
@@ -770,9 +887,21 @@
         headers: getAuthHeaders(),
       });
       const data = await res.json();
-      if (!res.ok) return;
+      if (!res.ok) {
+        showNotice(notice, res.status === 403 ? 'Seu perfil não tem permissão para consultar solicitações LGPD.' : 'Não foi possível carregar as solicitações.', 'error');
+        return;
+      }
 
       while (tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
+      if (!Array.isArray(data.requests) || data.requests.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 5;
+        cell.textContent = 'Nenhuma solicitação de titular pendente ou registrada.';
+        row.appendChild(cell);
+        tableBody.appendChild(row);
+        return;
+      }
 
       data.requests.forEach((req) => {
         const tr = document.createElement('tr');
@@ -797,7 +926,7 @@
         tr.appendChild(tdStatus);
 
         const tdAction = document.createElement('td');
-        if (req.status === 'pending') {
+        if (req.status === 'pending' && can('lgpd:execute')) {
           const execBtn = document.createElement('button');
           execBtn.type = 'button';
           execBtn.className = 'carreiras-button carreiras-button--secondary';
@@ -815,7 +944,9 @@
 
         tableBody.appendChild(tr);
       });
-    } catch {}
+    } catch {
+      showNotice(notice, 'Erro de conexão ao consultar solicitações LGPD.', 'error');
+    }
   }
 
   async function executeLgpdRequest(requestId) {

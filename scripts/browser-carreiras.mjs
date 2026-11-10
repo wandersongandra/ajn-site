@@ -16,7 +16,7 @@ function assert(ok, description) {
   }
 }
 
-async function installAdminSessionFixture(context) {
+async function installAdminSessionFixture(context, role = 'super_admin') {
   const hostname = new URL(base).hostname;
   await context.addCookies([{
     name: 'ajn_admin_session',
@@ -33,7 +33,7 @@ async function installAdminSessionFixture(context) {
     let body = {};
 
     if (requestUrl.pathname.endsWith('/auth/me')) {
-      body = { user: { id: 'usr-browser', name: 'RH Browser', role: 'super_admin', permissions: ['admin:manage'] } };
+      body = { user: { id: 'usr-browser', name: 'RH Browser', role } };
     } else if (requestUrl.pathname.endsWith('/jobs') && route.request().method() === 'GET') {
       body = {
         jobs: [{
@@ -50,9 +50,12 @@ async function installAdminSessionFixture(context) {
         }],
       };
     } else if (requestUrl.pathname.includes('/pipeline/')) {
-      body = { stages: [{ id: 'new', name: 'Novos', candidates: [] }] };
+      body = { stages: [
+        { id: 'stage-triagem', name: 'Triagem & Inscrição', candidates: [{ id: 'application-fixture', fullName: 'Candidato Fictício', currentTitle: 'TST', city: 'BH', state: 'MG' }] },
+        { id: 'stage-requisitos', name: 'Análise de Requisitos', candidates: [] },
+      ] };
     } else if (requestUrl.pathname.endsWith('/candidates')) {
-      body = { candidates: [] };
+      body = { candidates: [{ id: 'candidate-fixture', fullName: 'Candidato Fictício', email: 'qa@example.invalid', phone: '31999999999', city: 'BH', state: 'MG', currentTitle: 'TST' }] };
     } else if (requestUrl.pathname.endsWith('/lgpd/requests')) {
       body = { requests: [] };
     } else if (requestUrl.pathname.endsWith('/audit')) {
@@ -128,6 +131,7 @@ const routes = [
 
 const viewports = [
   { name: 'mobile', width: 390, height: 844 },
+  { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
 ];
 
@@ -296,11 +300,102 @@ for (const vp of viewports) {
   await context.close();
 }
 
+// As permissões reais continuam sendo checadas pelo servidor; este bloco impede
+// que a interface ofereça ações sem acesso e testa o formulário de movimentação.
+for (const role of ['recruiter', 'viewer', 'dpo']) {
+  const context = await browser.newContext();
+  await installAdminSessionFixture(context, role);
+  const page = await context.newPage();
+  await page.goto(new URL('/admin/carreiras/', base).href);
+  await page.locator('[data-admin-dashboard]').waitFor({ state: 'visible' });
+  const allowed = {
+    recruiter: ['pipeline', 'candidates', 'jobs', 'audit'],
+    viewer: ['pipeline', 'candidates', 'jobs'],
+    dpo: ['candidates', 'lgpd', 'audit'],
+  }[role];
+  for (const tab of ['pipeline', 'candidates', 'jobs', 'lgpd', 'audit', 'users']) {
+    const visible = await page.locator(`[data-admin-tab="${tab}"]`).isVisible();
+    assert(visible === allowed.includes(tab), `Aba ${tab} respeita o perfil ${role}`);
+  }
+  if (role !== 'dpo') {
+    await page.locator('[data-pipeline-board] .pipeline-candidate-card').waitFor({ state: 'visible' });
+    assert((await page.locator('[data-pipeline-board] button').count() === 1) === (role === 'recruiter'), `Mover etapa restrito para ${role}`);
+    await page.locator('[data-admin-tab="jobs"]').click();
+    await page.locator('[data-jobs-tbody] tr').first().waitFor({ state: 'visible' });
+    assert((await page.locator('[data-jobs-tbody] button').count() === 1) === (role === 'recruiter'), `Editar vaga restrito para ${role}`);
+    assert((await page.locator('[data-toggle-job-form]').isVisible()) === (role === 'recruiter'), `Criar vaga restrito para ${role}`);
+  }
+  await page.locator('[data-admin-tab="candidates"]').click();
+  await page.locator('[data-candidates-tbody] tr').first().waitFor({ state: 'visible' });
+  assert((await page.locator('[data-candidates-tbody] button').count() === 1) === (role === 'recruiter'), `Download de currículo restrito para ${role}`);
+  if (role === 'dpo') {
+    await page.locator('[data-admin-tab="lgpd"]').click();
+    await page.locator('[data-lgpd-tbody] tr').first().waitFor({ state: 'visible' });
+    assert((await page.locator('[data-lgpd-tbody] td').first().textContent()).includes('Nenhuma solicitação'), 'LGPD exibe estado vazio claro');
+  }
+  await context.close();
+}
+
+{
+  const context = await browser.newContext();
+  await installAdminSessionFixture(context);
+  const page = await context.newPage();
+  let moveCount = 0;
+  let currentStage = 'stage-triagem';
+  let nativeDialogCount = 0;
+  page.on('dialog', () => { nativeDialogCount += 1; });
+  await page.route('**/api/admin/pipeline/**', async (route) => {
+    if (route.request().method() === 'POST') {
+      const data = route.request().postDataJSON();
+      assert(data.applicationId === 'application-fixture', 'Movimentação preserva ID da candidatura');
+      assert(data.targetStageId === 'stage-requisitos', 'Movimentação envia etapa selecionada');
+      assert(data.rating === 4 && data.notes === 'Validação humana fictícia', 'Movimentação envia nota e observações humanas');
+      moveCount += 1;
+      currentStage = data.targetStageId;
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
+    }
+    const candidate = { id: 'application-fixture', fullName: 'Candidato Fictício', currentTitle: 'TST', city: 'BH', state: 'MG' };
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ stages: [
+      { id: 'stage-triagem', name: 'Triagem & Inscrição', candidates: currentStage === 'stage-triagem' ? [candidate] : [] },
+      { id: 'stage-requisitos', name: 'Análise de Requisitos', candidates: currentStage === 'stage-requisitos' ? [candidate] : [] },
+    ] }) });
+  });
+  await page.route('**/api/admin/candidates/candidate-fixture/resume', route => route.fulfill({
+    status: 200,
+    contentType: 'application/pdf',
+    headers: { 'content-disposition': 'attachment; filename="curriculo.pdf"' },
+    body: '%PDF-1.4\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF',
+  }));
+  await page.goto(new URL('/admin/carreiras/', base).href);
+  await page.locator('[data-admin-dashboard]').waitFor({ state: 'visible' });
+  await page.locator('[data-pipeline-board] button').first().waitFor({ state: 'visible' });
+  await page.locator('[data-pipeline-board] button').first().click();
+  const modal = page.locator('[data-move-stage-dialog]');
+  assert(await modal.isVisible(), 'Movimentação abre diálogo acessível');
+  await modal.locator('[name="targetStageId"]').selectOption('stage-requisitos');
+  await modal.locator('[name="notes"]').fill('Validação humana fictícia');
+  await modal.locator('[name="rating"]').selectOption('4');
+  await modal.locator('[data-submit-move-stage]').click();
+  await modal.waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.querySelector('[data-pipeline-board]')?.textContent.includes('Candidato Fictício'));
+  assert(moveCount === 1, 'Movimentação envia somente uma solicitação');
+  assert(nativeDialogCount === 0, 'Movimentação não usa prompts ou alertas nativos');
+
+  await page.locator('[data-admin-tab="candidates"]').click();
+  await page.locator('[data-candidates-tbody] button').waitFor({ state: 'visible' });
+  const [download] = await Promise.all([
+    page.waitForEvent('download', { timeout: 10000 }),
+    page.locator('[data-candidates-tbody] button').click(),
+  ]);
+  assert(download.suggestedFilename() === 'curriculo.pdf', 'Download privado gera arquivo com nome correto');
+  await context.close();
+}
+
 await browser.close();
 
 if (failures.length > 0) {
   console.error(`\nTestes E2E de Carreiras FALHARAM com ${failures.length} erro(s) em ${assertions} asserções.`);
   process.exit(1);
 } else {
-  console.log(`\nTestes E2E de Carreiras PASSARAM com sucesso! ${assertions} asserções verificadas em mobile e desktop.`);
+  console.log(`\nTestes E2E de Carreiras PASSARAM com sucesso! ${assertions} asserções verificadas em mobile, tablet e desktop.`);
 }

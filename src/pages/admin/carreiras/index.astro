@@ -183,6 +183,43 @@ const jsonLd = [
           <div class="pipeline-board" data-pipeline-board>
             <!-- Colunas do Kanban renderizadas via JavaScript seguro -->
           </div>
+          <div class="carreiras-notice" data-pipeline-notice role="status" aria-live="polite"></div>
+
+          <dialog class="carreiras-stage-dialog" data-move-stage-dialog aria-labelledby="move-stage-title" aria-describedby="move-stage-description">
+            <form data-move-stage-form>
+              <div class="carreiras-stage-dialog__heading">
+                <span class="carreiras-eyebrow">Avaliação humana</span>
+                <h3 id="move-stage-title">Movimentar candidatura</h3>
+                <p id="move-stage-description" data-move-stage-candidate>Selecione a próxima etapa do processo seletivo.</p>
+              </div>
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="move-stage-target">Nova etapa *</label>
+                <select class="carreiras-select" id="move-stage-target" name="targetStageId" required>
+                  <option value="">Selecione uma etapa</option>
+                </select>
+              </div>
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="move-stage-notes">Observações do recrutador (opcional)</label>
+                <textarea class="carreiras-textarea" id="move-stage-notes" name="notes" maxlength="4000" rows="3" placeholder="Registre apenas informações relevantes para a seleção."></textarea>
+              </div>
+              <div class="carreiras-field">
+                <label class="carreiras-label" for="move-stage-rating">Avaliação humana (opcional)</label>
+                <select class="carreiras-select" id="move-stage-rating" name="rating">
+                  <option value="">Sem avaliação</option>
+                  <option value="1">1 estrela</option>
+                  <option value="2">2 estrelas</option>
+                  <option value="3">3 estrelas</option>
+                  <option value="4">4 estrelas</option>
+                  <option value="5">5 estrelas</option>
+                </select>
+              </div>
+              <div class="carreiras-notice" data-move-stage-notice role="alert" aria-live="assertive"></div>
+              <div class="carreiras-stage-dialog__actions">
+                <button class="carreiras-button carreiras-button--secondary" data-cancel-move-stage type="button">Cancelar</button>
+                <button class="carreiras-button carreiras-button--primary" data-submit-move-stage type="submit">Confirmar movimentação</button>
+              </div>
+            </form>
+          </dialog>
         </div>
 
         <!-- Painel 2: Candidatos & Currículos -->
@@ -315,6 +352,7 @@ const jsonLd = [
           <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1rem;">
             Confira os dados e o fundamento de cada solicitação antes de executar uma exclusão. A remoção de currículos pode ser irreversível.
           </p>
+          <div class="carreiras-notice" data-lgpd-notice role="status" aria-live="polite"></div>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
