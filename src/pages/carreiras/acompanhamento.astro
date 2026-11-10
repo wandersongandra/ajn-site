@@ -119,6 +119,46 @@ const jsonLd = [
         </div>
       </div>
 
+      <!-- Recuperação segura de protocolo por confirmação do e-mail cadastrado -->
+      <section class="carreiras-form-container" aria-labelledby="carreiras-recovery-title" style="margin-bottom: 3rem;">
+        <h2 id="carreiras-recovery-title" style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.75rem;">
+          Esqueceu o código de acompanhamento?
+        </h2>
+        <p class="carreiras-help" style="margin-bottom: 1.5rem;">
+          Informe o e-mail e o CPF utilizados na candidatura. Se houver um cadastro correspondente, enviaremos um código de verificação válido por 15 minutos ao endereço já registrado.
+        </p>
+
+        <form data-recovery-form>
+          <div class="carreiras-notice" data-notice role="alert" aria-live="polite"></div>
+          <div class="carreiras-form-grid">
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="recover-candidate-email">E-mail cadastrado *</label>
+              <input class="carreiras-input" id="recover-candidate-email" name="email" type="email" autocomplete="email" required placeholder="seu.email@exemplo.com" />
+            </div>
+            <div class="carreiras-field">
+              <label class="carreiras-label" for="recover-candidate-cpf">CPF cadastrado *</label>
+              <input class="carreiras-input" id="recover-candidate-cpf" name="cpf" type="text" inputmode="numeric" required placeholder="000.000.000-00" />
+            </div>
+            <div class="carreiras-field carreiras-form-full" data-code-group style="display: none;">
+              <label class="carreiras-label" for="recover-candidate-code">Código de seis dígitos recebido por e-mail *</label>
+              <input class="carreiras-input" id="recover-candidate-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" />
+            </div>
+            <div class="carreiras-field carreiras-form-full">
+              {TURNSTILE_SITE_KEY ? (
+                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+              ) : (
+                <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
+              )}
+            </div>
+            <div class="carreiras-form-full">
+              <button class="carreiras-button carreiras-button--secondary" type="submit">
+                Solicitar código de verificação
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
       <!-- Gestão de Dados Pessoais / LGPD Art. 18 -->
       <section style="max-width: 760px; margin-inline: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-sm);">
         <h2 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-bottom: 0.75rem;">
