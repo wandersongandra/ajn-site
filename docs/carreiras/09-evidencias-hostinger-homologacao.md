@@ -24,7 +24,7 @@ Em 10/11/2026, o painel de implantações da Hostinger para a produção institu
 | Download privado | **NÃO CONCLUSIVO** | Botão acionado; o navegador automatizado não confirmou evento de download; não classificar como PASS nem como FAIL até validar arquivo recebido e integridade |
 | Turnstile | **PENDENTE** | Contêiner `.cf-turnstile` presente no formulário; desafio válido/inválido e bloqueio server-side não executados |
 | LGPD administrativa | **PARCIAL** | Aba de solicitações acessível para o recrutador autenticado; solicitação/exclusão não foi executada |
-| Atualização do frontend | **PENDENTE** | Staging ainda apresenta cópia antiga: checkbox opcional de retenção pré-marcado e texto legado sobre bucket R2, embora o backend atual seja PHP/arquivo privado |
+| Atualização do frontend | **PASS em 10/11/2026, após a inspeção inicial** | Pacote incremental aplicado somente na homologação; retenção opcional desmarcada e formulário de vaga habilitado após ajuste de versão do JavaScript. Ver evidências adicionais abaixo. |
 
 Todos os dados do candidato observado eram **fictícios de teste**. Não usar currículos ou CPF reais em homologação.
 
@@ -42,6 +42,20 @@ Todos os dados do candidato observado eram **fictícios de teste**. Não usar cu
 ## Gate de liberação
 
 Somente recomendar implantação pública quando todos os itens críticos acima tiverem resultado comprovado. Um teste automatizado local ou a presença de uma interface não equivale a E2E remoto. O deploy de `main` pode afetar diretamente o site institucional pela integração GitHub/Hostinger; qualquer merge requer aprovação explícita de produção.
+
+## Atualização incremental de homologação — 10/11/2026
+
+- **Destino isolado:** `lightskyblue-gnat-418094.hostingersite.com`; produção `ajnengenharia.com.br` não modificada. O envio inicial de 42 MB pelo navegador não concluiu e foi abandonado sem extração.
+- **Transporte rastreável:** branch `deploy/ajn-carreiras-stage-bc3dad7-20261110`, commit `8bb6a7b05a92b437149ed53e71c8b1327f3944e4`, com pacote incremental codificado para transporte por Git; o servidor baixou e decodificou o artefato fora de `public_html`.
+- **Integridade do pacote:** SHA-256 `1a3316a04b633e156394e5f3bf5bb214cb33441f37aa4ff957913776f396090c`; nove arquivos: cinco páginas HTML, dois scripts, um CSS versionado e `robots.txt`. Conteúdo e caminhos listados antes da extração; conferência pós-publicação de quatro arquivos por SHA-256 bateu com o build local.
+- **Rollback:** arquivo `ajn-carreiras-stage-backup-pre-bc3dad7-20261110.tar.gz`, criado fora de `public_html`, contém os oito arquivos sobrescritos; os arquivos antigos do CSS e os backups anteriores permanecem preservados. A restauração **não** foi exercitada.
+- **Cache e correção:** o HTML novo apontava para os parâmetros antigos `?v=20261110-feedback` e `?v=20261110-session`, o que deixou o formulário indisponível no navegador apesar de a vaga carregar. As cinco páginas estáticas tiveram a versão alterada para `20261110-consent-gate`. O código-fonte equivalente foi salvo na PR #107, commit `c27a38d38b38f0f616a5923038350c3f44e6d77d` (ainda sem novo resultado de CI no momento desta anotação).
+- **Verificação visual real:** a vaga fictícia voltou a ter os campos habilitados; `consentRetention` começou `false`; a vaga e a listagem carregaram; as rotas `/carreiras/talentos/`, `/carreiras/acompanhamento/` e a página estática individual abriram. Nenhum currículo real foi submetido nesta rodada.
+- **API e controle de acesso:** `/api/health` respondeu `status=ok` e `environment=staging`; `GET /api/admin/jobs` sem cookie retornou HTTP 401; o caminho público `/ajn-carreiras-private/` retornou HTTP 404. Em sessão existente, `/api/admin/auth/me` confirmou perfil `recruiter` com MFA configurado, sem testar login do zero.
+- **Anti-indexação:** páginas da área apresentam `noindex,nofollow,noarchive` e `/carreiras/` também respondeu `X-Robots-Tag: noindex, nofollow, noarchive`. O arquivo `robots.txt` no disco tem `User-agent: * / Disallow: /`, mas a URL pública continuou mostrando a versão antiga (`Googlebot` bloqueado, demais robôs permitidos), inclusive após limpeza de cache da CDN; ainda precisa investigar o roteamento/cache da Hostinger. O modo de desenvolvimento CDN foi restaurado para desligado após o diagnóstico.
+- **Testes locais após correção:** `npm run build` (120 páginas), `npm run check` (0 erros, 0 warnings, 29 hints), 66 testes de backend, 5 testes de interação, auditorias de 170 páginas SEO e de hospedagem, 5 testes de política de scripts e 5 de redirecionamento — todos PASS. A suíte Playwright local ficou **não executada** por bloqueio do ambiente à inicialização do Chromium; não contar como regressão aprovada.
+
+**Veredito:** atualização visual e funcional de staging concluída nos caminhos testados; **produção ainda bloqueada** por SMTP, Turnstile real, MFA/login integral, download de arquivo sintético, LGPD/E2E e teste de restauração. Não fazer merge em `main` por esta evidência parcial.
 
 ### Nota histórica sobre o protótipo Cloudflare
 
