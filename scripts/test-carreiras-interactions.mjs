@@ -4,6 +4,15 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const script = readFileSync(new URL('../public/scripts/carreiras.js', import.meta.url), 'utf8');
+const applicationPage = readFileSync(new URL('../src/pages/carreiras/vaga.astro', import.meta.url), 'utf8');
+
+test('consentimento opcional para banco de talentos não vem pré-selecionado', () => {
+  const input = applicationPage.match(/<input\b[^>]*\bid="apply-consent-retention"[^>]*>/);
+  assert.ok(input, 'checkbox de retenção encontrado');
+  assert.match(input[0], /\bname="consentRetention"/);
+  assert.doesNotMatch(input[0], /\bchecked\b/);
+  assert.doesNotMatch(input[0], /\brequired\b/);
+});
 
 function createContext(document, fetchImpl = async () => ({ ok: false, status: 503 })) {
   const window = {

@@ -39,6 +39,15 @@ jobs:
       - name: Static build
         run: npm run build
 
+      - name: Careers backend security and integration tests
+        run: npm run test:backend
+
+      - name: Careers form and consent regression tests
+        run: npm run test:carreiras-interactions
+
+      - name: Hostinger PHP contracts and pure function smoke tests
+        run: npm run test:php
+
       - name: Performance and rendering-safety audit
         run: npm run audit:performance
 

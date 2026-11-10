@@ -1,5 +1,7 @@
 # AJN Carreiras — pendências reais para homologação
 
+> **Histórico do protótipo Cloudflare Worker.** A implantação de homologação atual usa PHP/PDO + MySQL/MariaDB na Hostinger, com armazenamento privado local. Para evidências reais e pendências atuais, consulte [`09-evidencias-hostinger-homologacao.md`](./09-evidencias-hostinger-homologacao.md). O gate remoto D1/R2 descrito abaixo não é aplicável à arquitetura Hostinger escolhida.
+
 ## Estado atual
 
 | Área | Estado | Evidência/limite |

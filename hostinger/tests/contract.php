@@ -30,6 +30,7 @@ $htaccess = source_contract($repo . '/public/.htaccess');
 $careerScript = source_contract($repo . '/public/scripts/carreiras.js');
 $adminScript = source_contract($repo . '/public/scripts/admin-carreiras.js');
 $talentPage = source_contract($repo . '/src/pages/carreiras/talentos.astro');
+$jobApplicationPage = source_contract($repo . '/src/pages/carreiras/vaga.astro');
 $frontendExecutable = preg_replace('/\/\/.*$/m', '', $careerScript . "\n" . $adminScript) ?? ($careerScript . $adminScript);
 
 check_contract('front controller privado', str_contains($api, 'AJN_CAREERS_BOOTSTRAP') && str_contains($api, 'require $bootstrap'));
@@ -47,6 +48,7 @@ check_contract('frontend same-origin sem storage de tokens', !preg_match('/\b(?:
 check_contract('frontend sem sinks proibidos', !preg_match('/\b(?:innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\s*\(|new Function\s*\()/', $frontendExecutable));
 check_contract('SMTP fecha sockets em falha', str_contains($bootstrap, 'finally {') && str_contains($bootstrap, 'fclose($socket);'));
 check_contract('retenção do banco de talentos exige aceite explícito', str_contains($applications, 'if (!$job && !$consentRetention)') && !str_contains($applications, '(!$job || $consentRetention) ? 1 : 0') && str_contains($talentPage, 'name="consentRetention" type="checkbox" value="true" required'));
+check_contract('retenção opcional em candidatura inicia desmarcada', str_contains($jobApplicationPage, 'id="apply-consent-retention" name="consentRetention" type="checkbox" value="true" />'));
 $beginIndex = strpos($applications, '$db->beginTransaction();');
 $demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1');
 $insertIndex = strpos($applications, 'INSERT INTO resumes (id,candidate_id,file_key');
