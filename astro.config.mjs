@@ -61,7 +61,9 @@ const redirectedPaths = new Set([
 /** @param {string} url */
 function isIndexableSitemapUrl(url) {
 	const pathname = new URL(url).pathname.replace(/\/+$/, '') || '/';
-	return !redirectedPaths.has(pathname);
+	return !redirectedPaths.has(pathname)
+		&& !pathname.startsWith('/admin/')
+		&& pathname !== '/carreiras/acompanhamento';
 }
 
 // https://astro.build/config
