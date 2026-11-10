@@ -1,49 +1,70 @@
 import type { MarketingContent } from '../types';
 
 export const elaboracaoProjetoCombateIncendio = {
-	slug: "elaboracao-projeto-combate-incendio", path: "/elaboracao-projeto-combate-incendio",
-	title: "Elaboração de projeto de combate a incêndio - AJN Consultoria e Engenharia",
-	description: "Elaboração de projeto de combate a incêndio vai muito além da simples instalação de equipamentos. envolve um planejamento minucioso que considera as...",
-	heading: "Elaboração de projeto de combate a incêndio",
+	slug: 'elaboracao-projeto-combate-incendio',
+	path: '/elaboracao-projeto-combate-incendio',
+	title: 'Elaboração de Projeto de Combate a Incêndio (PSCIP) | AJN',
+	description: 'Elaboração de projeto de combate a incêndio em Belo Horizonte e MG conforme as Instruções Técnicas do CBMMG para aprovação no INFOSCIP e emissão de AVCB.',
+	heading: 'Elaboração de Projeto de Combate a Incêndio e Pânico',
 	images: [
-		{ src: "/images/content/marketing/projeto-combate-incendio-preco/projeto-combate-incendio-preco-01.webp", alt: "Elaboração de projeto de combate a incêndio" },
-		{ src: "/images/content/marketing/projeto-combate-incendio-preco/projeto-combate-incendio-preco-03.webp", alt: "Elaboração de projeto de combate a incêndio" },
-		{ src: "/images/content/marketing/projeto-seguranca-incendio-panico/projeto-seguranca-incendio-panico-05.webp", alt: "Elaboração de projeto de combate a incêndio" },
+		{ src: '/images/content/marketing/projeto-combate-incendio-preco/projeto-combate-incendio-preco-01.webp', alt: 'Elaboração de projeto de combate a incêndio para edificações' },
+		{ src: '/images/content/marketing/projeto-combate-incendio-preco/projeto-combate-incendio-preco-03.webp', alt: 'Dimensionamento técnico de hidrantes, alarmes e rotas de fuga' },
+		{ src: '/images/content/marketing/projeto-seguranca-incendio-panico/projeto-seguranca-incendio-panico-05.webp', alt: 'Plantas técnicas e aprovação junto ao Corpo de Bombeiros' },
 	],
 	sections: [
-		{ heading: "elaboração de projeto de combate a incêndio: A Importância da Segurança Preventiva", paragraphs: [
-			{ segments: ["Em um cenário onde a prevenção de acidentes é indispensável, a", { bold: true, text: "elaboração de projeto de combate a incêndio" }, "se destaca como uma medida crucial para garantir a segurança de pessoas e patrimônios em edificações de diversos portes."] },
-			"A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, oferece serviços especializados nesse segmento, assegurando a conformidade com normas técnicas e legislações vigentes.",
-			{ segments: ["Com mais de 08 anos de experiência no mercado de engenharia, a empresa sediada em Belo Horizonte, MG, tem se destacado na", { bold: true, text: "elaboração de projeto de combate a incêndio" }, "para obtenção de AVCB/CLCB em edificações comerciais, residenciais e industriais."] },
-			"Além disso, a AJN Consultoria e Engenharia é especializada em fornecer medidas abrangentes de saúde e segurança no ambiente de trabalho, visando o bem-estar de colaboradores e clientes."
-		]
+		{
+			heading: 'Etapas da elaboração do projeto de combate a incêndio em MG',
+			paragraphs: [
+				'Em Minas Gerais, a elaboração do Projeto de Segurança Contra Incêndio e Pânico (PSCIP) segue o Decreto Estadual nº 47.998/2020 e as Instruções Técnicas (ITs) do Corpo de Bombeiros Militar de Minas Gerais (CBMMG). O trabalho de engenharia define exatamente quais medidas preventivas a edificação precisa instalar de acordo com a área construída, a altura, o uso e a carga de incêndio.',
+				'A AJN Consultoria e Engenharia desenvolve projetos novos, modificações de projetos aprovados e adequações de imóveis existentes em Belo Horizonte, Região Metropolitana e interior do estado.',
+			],
 		},
-		{ heading: "elaboração de projeto de combate a incêndio Personalizado e Legal", paragraphs: [
-			{ segments: ["A", { bold: true, text: "elaboração de projeto de combate a incêndio" }, "vai muito além da simples instalação de equipamentos. Envolve um planejamento minucioso que considera as características específicas de cada edificação, a fim de garantir a eficácia das medidas preventivas e corretivas."] },
-			"A equipe da AJN Consultoria e Engenharia está preparada para desenvolver projetos personalizados, levando em conta as necessidades e particularidades de cada cliente.",
-			"Além disso, a empresa se destaca pela preocupação em garantir a conformidade com as normas técnicas e legislações vigentes.",
-			{ segments: ["Ao optar pelos serviços da AJN, os clientes têm a tranquilidade de contar com uma", { bold: true, text: "elaboração de projeto de combate a incêndio" }, "que atende a todas as exigências legais, proporcionando segurança e prevenção de riscos no ambiente de trabalho."] }
-		]
+		{
+			heading: 'O que é dimensionado no projeto técnico',
+			paragraphs: [
+				'Cada edificação recebe o dimensionamento específico para o seu enquadramento (Projeto Técnico - PT ou Projeto Técnico Simplificado - PTS):',
+			],
+			lists: [
+				{
+					items: [
+						'Classificação da edificação por ocupação, altura, área total e levantamento da carga de incêndio específica (IT 09 do CBMMG);',
+						'Dimensionamento de saídas de emergência, larguras de escadas, rampas, portas corta-fogo e distâncias máximas a percorrer (IT 08);',
+						'Distribuição de unidades extintoras (IT 16), iluminação de emergência (IT 13) e sinalização fotoluminescente de orientação e salvamento (IT 15);',
+						'Cálculo hidráulico de rede de hidrantes e mangotinhos (IT 17), reserva técnica de incêndio (RTI), casa de bombas e chuveiros automáticos (sprinklers), quando exigidos;',
+						'Projeto de detecção e alarme de incêndio (IT 14 e NBR 17240), controle de fumaça e brigada de incêndio (IT 12).',
+					],
+				},
+			],
 		},
-		{ heading: "Serviços Complementares e Especializados", paragraphs: [
-			{ segments: ["Além da", { bold: true, text: "elaboração de projeto de combate a incêndio" }, ", a AJN Consultoria e Engenharia oferece uma ampla gama de serviços especializados em segurança do trabalho."] },
-			"Entre os principais serviços estão a prevenção e combate a incêndios, consultoria em segurança ocupacional, qualidade e saúde, além de consultoria ambiental e relatórios técnicos especializados.",
-			"A empresa também oferece serviços de certificação e treinamento em NRs, garantindo que os colaboradores estejam devidamente capacitados para lidar com emergências.",
-			"A mobilização de equipes especializadas para atuar em eventos ou situações de risco também faz parte do portfólio de serviços da AJN Consultoria e Engenharia."
-		]
-, subsections: [
-			{ heading: "Conte com a AJN Consultoria e Engenharia para a elaboração de projeto de combate a incêndio", paragraphs: [
-				{ segments: ["Diante da importância da segurança no ambiente de trabalho, contar com uma empresa especializada em", { bold: true, text: "elaboração de projeto de combate a incêndio" }, "é essencial para prevenir acidentes e proteger vidas."] },
-				"A AJN Consultoria e Engenharia se destaca no mercado por oferecer serviços de qualidade, personalizados e conforme a legislação vigente.",
-				{ segments: ["Se você busca soluções a", { bold: true, text: "elaboração de projeto de combate a incêndio" }, ", entre em contato com a AJN Consultoria e Engenharia. Nossa equipe está preparada para oferecer o suporte necessário e desenvolver projetos sob medida para a sua empresa."] },
-				"Garanta a segurança e tranquilidade que seu negócio merece, conte com a especialização da AJN Consultoria e Engenharia."
-			]
-			}
-		]
+		{
+			heading: 'Tramitação no INFOSCIP até a vistoria do AVCB',
+			paragraphs: [
+				'Além de entregar as pranchas gráficas, memoriais de cálculo e ART de projeto, nossa equipe conduz o protocolo eletrônico no sistema INFOSCIP do CBMMG, responde a eventuais notificações de análise e orienta a etapa posterior de execução e vistoria para emissão do AVCB.',
+				{
+					segments: [
+						'Conheça também a página oficial de ',
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						' e ',
+						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Para saber mais sobre Elaboração de projeto de combate a incêndio", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
+		{
+			heading: 'Solicite orçamento para elaboração do seu projeto',
+			paragraphs: [
+				'Informe a metragem aproximada do imóvel, o número de pavimentos, o endereço e o tipo de atividade exercida no local.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'solicite proposta técnica pelo site', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

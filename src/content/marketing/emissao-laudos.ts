@@ -3,41 +3,70 @@ import type { MarketingContent } from '../types';
 export const marketingDetailPage = {
 	slug: 'emissao-laudos',
 	path: '/emissao-laudos',
-	title: 'Emissão de laudos - AJN Consultoria e Engenharia',
-	description: 'Emissão de laudos técnicos para conformidade, segurança e saúde dos colaboradores.',
-	heading: 'Emissão de laudos',
+	title: 'Emissão de Laudos Técnicos de Engenharia e SST | AJN',
+	description: 'Emissão de laudos técnicos em Belo Horizonte e MG: LTCAT, insalubridade (NR-15), periculosidade (NR-16), vistorias de engenharia e medições ambientais com ART.',
+	heading: 'Emissão de Laudos Técnicos de Engenharia e Segurança',
 	images: [
-		{ src: '/images/featured/emissao-laudos-01.webp', alt: 'Emissão de laudos' },
-		{ src: '/images/content/emissao-laudos/emissao-laudos-02.webp', alt: 'Emissão de laudos' },
-		{ src: '/images/content/emissao-laudos/emissao-laudos-03.webp', alt: 'Emissão de laudos' },
+		{ src: '/images/featured/emissao-laudos-01.webp', alt: 'Emissão de laudos técnicos de engenharia e segurança do trabalho' },
+		{ src: '/images/content/emissao-laudos/emissao-laudos-02.webp', alt: 'Vistoria presencial e medições para emissão de laudos' },
+		{ src: '/images/content/emissao-laudos/emissao-laudos-03.webp', alt: 'Elaboração de pareceres e laudos técnicos com ART' },
 	],
 	sections: [
-		{ heading: 'A Relevância da emissão de laudos para a Gestão Empresarial', paragraphs: [
-			'A emissão de laudos é um processo fundamental para empresas que buscam manter a conformidade normativa, assegurar a segurança e saúde dos colaboradores, e otimizar suas operações.',
-			'Através da elaboração de documentos técnicos detalhados, é possível identificar riscos, necessidades de melhorias e adequações, além de fornecer subsídios para a tomada de decisões estratégicas.',
-			'Neste contexto, a AJN Consultoria e Engenharia se destaca como uma referência no mercado, oferecendo serviços especializados em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA) e contribuindo para a construção de ambientes organizacionais mais seguros e eficientes.',
-		] },
-		{ heading: 'A Elaboração de Laudos Técnicos', paragraphs: [
-			'A emissão de laudos envolve a elaboração de documentos técnicos que analisam condições específicas do ambiente de trabalho, máquinas, processos ou exposições.',
-			'Esses laudos são essenciais para identificar possíveis riscos à saúde e segurança dos colaboradores, bem como para avaliar a conformidade com as normas regulamentadoras.',
-			'Por meio de diagnósticos detalhados, é possível obter uma visão clara das condições operacionais da empresa e das medidas necessárias para assegurar a segurança e o bem-estar dos trabalhadores.',
-		] },
-		{ heading: 'Benefícios da emissão de laudos', paragraphs: [
-			'A emissão de laudos traz uma série de benefícios para as empresas, tais como a identificação e mitigação de riscos, a melhoria das condições de trabalho, o cumprimento das normas legais, a prevenção de acidentes e doenças ocupacionais, e a otimização dos processos operacionais.',
-			'Além disso, os laudos técnicos servem como base para a implementação de medidas de controle, adequações e planejamentos operacionais, contribuindo para a gestão responsável e eficiente do negócio.',
-		] },
-		{ heading: 'A Atuação da AJN Consultoria e Engenharia', paragraphs: [
-			'Fundada em 2023 em Belo Horizonte, Minas Gerais, a AJN Consultoria e Engenharia destaca-se no mercado pela sua especialização em QSSMA e pela capacidade de oferecer soluções personalizadas para cada cliente.',
-			'Com uma equipe qualificada e integrada, a empresa atua em diversas frentes, desde a consultoria em segurança do trabalho até a elaboração de laudos, perícias e projetos de combate a incêndio.',
-			'A AJN utiliza tecnologia de ponta e abordagens inovadoras para assegurar a excelência em seus serviços e contribuir para a construção de ambientes de trabalho mais seguros e saudáveis.',
-		] },
-		{ heading: 'Entre em contato', paragraphs: [
-			'Diante da importância da emissão de laudos para a gestão empresarial, é fundamental contar com o suporte de uma empresa especializada e comprometida com a segurança e saúde dos colaboradores.',
-			'A AJN Consultoria e Engenharia se destaca como uma parceira estratégica nesse processo, oferecendo serviços de alta qualidade e contribuindo para a melhoria contínua das condições de trabalho.',
-			'Não deixe de investir na emissão de laudos e proporcione a segurança e conformidade da sua empresa.',
-			'A segurança e o bem-estar dos colaboradores são prioridades para o sucesso de qualquer negócio.',
-			'Conte com a AJN Consultoria e Engenharia para obter os melhores serviços em QSSMA e assegurar um ambiente de trabalho seguro e saudável.',
-			'Entre em contato conosco e saiba como podemos ajudar a sua empresa a alcançar a excelência em segurança e saúde ocupacional!',
-		] },
+		{
+			heading: 'Como funciona a emissão de laudos técnicos na AJN',
+			paragraphs: [
+				'A emissão de um laudo técnico requer levantamento presencial no local da operação, coleta de evidências ou medições instrumentais e enquadramento nas normas regulamentadoras, previdenciárias ou da ABNT aplicáveis ao caso.',
+				'Sediada em Belo Horizonte, a AJN Consultoria e Engenharia emite laudos técnicos assinados por profissionais legalmente habilitados e acompanhados da respectiva Anotação de Responsabilidade Técnica (ART) junto ao CREA-MG.',
+			],
+		},
+		{
+			heading: 'Principais laudos e pareceres emitidos',
+			paragraphs: [
+				'Atendemos demandas trabalhistas, previdenciárias, contratuais e de regularização de imóveis:',
+			],
+			lists: [
+				{
+					items: [
+						'Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) para fins previdenciários, PPP eletrônico e evento S-2240 do eSocial;',
+						'Laudos de Insalubridade (NR-15) e de Periculosidade (NR-16) por setor, cargo ou função;',
+						'Relatórios de avaliações quantitativas de ruído, calor, vibração e agentes químicos (higiene ocupacional);',
+						'Pareceres de assistência técnica patronal em perícias judiciais trabalhistas;',
+						'Laudos técnicos e memoriais para processos de regularização e renovação de AVCB junto ao Corpo de Bombeiros (CBMMG).',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Informações necessárias para solicitar a emissão',
+			paragraphs: [
+				'Para elaborar o orçamento, avaliamos a finalidade do laudo (previdenciária, trabalhista, mobilização contratual ou regularização predial), o endereço da unidade e as atividades envolvidas.',
+				{
+					segments: [
+						'Veja também as páginas específicas de ',
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						', ',
+						{ text: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' },
+						' e ',
+						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' },
+						'.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Fale com a engenharia da AJN',
+			paragraphs: [
+				'Descreva qual laudo técnico sua empresa precisa emitir ou atualizar para receber nossa proposta detalhada.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'entre em contato pelo site', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

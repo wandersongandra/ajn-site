@@ -1,80 +1,69 @@
 import type { MarketingContent } from '../types';
 
 export const projetoIncendio = {
-	slug: "projeto-incendio", path: "/projeto-incendio",
-	title: "Projeto contra incêndio - AJN Consultoria e Engenharia",
-	description: "Projeto contra incêndio bem elaborado e implementado, os usuários da edificação podem desfrutar de maior tranquilidade e confiança em relação à sua...",
-	heading: "Projeto contra incêndio",
+	slug: 'projeto-incendio',
+	path: '/projeto-incendio',
+	title: 'Projeto Contra Incêndio para Empresas e Condomínios | AJN',
+	description: 'Elaboração e aprovação de projeto contra incêndio em Belo Horizonte e MG junto ao CBMMG. Projetos novos, modificações de layout e regularização para AVCB.',
+	heading: 'Projeto Contra Incêndio: Engenharia e Aprovação no CBMMG',
 	images: [
-		{ src: "/images/content/marketing/orcamento-projeto-combate-incendio/orcamento-projeto-combate-incendio-02.webp", alt: "Projeto contra incêndio" },
-		{ src: "/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-02.webp", alt: "Projeto contra incêndio" },
-		{ src: "/images/content/marketing/projeto-prevencao-incendio-panico/projeto-prevencao-incendio-panico-03.webp", alt: "Projeto contra incêndio" },
+		{ src: '/images/content/marketing/orcamento-projeto-combate-incendio/orcamento-projeto-combate-incendio-02.webp', alt: 'Desenvolvimento de projeto contra incêndio em Minas Gerais' },
+		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-02.webp', alt: 'Sistemas de detecção e alarme integrados ao projeto contra incêndio' },
+		{ src: '/images/content/marketing/projeto-prevencao-incendio-panico/projeto-prevencao-incendio-panico-03.webp', alt: 'Vistoria técnica de equipamentos preventivos contra incêndio' },
 	],
 	sections: [
-		{ heading: "Um Guia Completo para um projeto contra incêndio Eficaz", paragraphs: [
-			{ segments: ["Um", { bold: true, text: "projeto contra incêndio" }, "é essencial para assegurar a segurança de pessoas e patrimônios em edificações."] },
-			"Entre os principais benefícios desse tipo de projeto, destacam-se:"
-		]
-, subsections: [
-			{ heading: "Proteção da Vida e do Patrimônio", paragraphs: [
-				"O principal objetivo de um projeto é preservar vidas e bens em caso de incêndio.",
-				"Através da correta implementação de medidas preventivas e de combate ao fogo, é possível minimizar os danos e assegurar a evacuação segura de todos os ocupantes do local."
-			]
-			},
-			{ heading: "Redução de Riscos e Impactos", paragraphs: [
-				{ segments: ["Ao identificar e mitigar os riscos de incêndio em uma edificação, um", { bold: true, text: "projeto contra incêndio" }, "contribui para a redução dos impactos causados por eventuais sinistros."] },
-				"Isso inclui danos materiais, prejuízos financeiros e, principalmente, a preservação da integridade física das pessoas."
-			]
-			}
-		]
+		{
+			heading: 'Quando o projeto contra incêndio é obrigatório',
+			paragraphs: [
+				'Toda edificação de uso coletivo (comercial, industrial, logística, educacional, hospitalar ou residencial multifamiliar) precisa atender às medidas de segurança contra incêndio estabelecidas pela legislação estadual para obter ou renovar o Auto de Vistoria do Corpo de Bombeiros (AVCB) e o alvará de funcionamento.',
+				'A AJN Consultoria e Engenharia elabora projetos contra incêndio em Belo Horizonte e Minas Gerais tanto para empreendimentos em fase de construção quanto para imóveis já ocupados que precisam regularizar sua situação.',
+			],
 		},
-		{ heading: "Dicas para Elaboração de um projeto contra incêndio", paragraphs: [
-		]
-, subsections: [
-			{ heading: "Análise de Riscos e Necessidades Específicas", paragraphs: [
-				"Antes de iniciar a elaboração do projeto, é essencial realizar uma análise detalhada dos riscos de incêndio específicos do local.",
-				"Considerar as características da edificação, a quantidade de ocupantes, a presença de materiais inflamáveis e outros fatores é fundamental para definir as medidas adequadas de prevenção e combate ao fogo."
-			]
-			},
-			{ heading: "Escolha dos Materiais e Tecnologias Certificadas", paragraphs: [
-				"Ao selecionar os materiais e tecnologias a serem utilizados no projeto, é importante optar por produtos certificados que atendam às normas de segurança vigentes.",
-				"Desde sistemas de detecção de incêndio até equipamentos de combate, a qualidade e a adequação dos materiais são fundamentais para a eficácia do projeto."
-			]
-			}
-		]
+		{
+			heading: 'Fases do desenvolvimento do projeto na AJN',
+			paragraphs: [
+				'Conduzimos o processo técnico do levantamento inicial até a aprovação final:',
+			],
+			lists: [
+				{
+					items: [
+						'Diagnóstico preliminar e enquadramento normativo conforme área, altura, divisão de ocupação e carga de incêndio;',
+						'Vistoria e conferência arquitetônica em campo para compatibilizar a planta com as paredes, escadas, aberturas e instalações reais do imóvel;',
+						'Elaboração das pranchas técnicas de medidas de segurança, detalhes isométricos, quadros resumo e memoriais de cálculo;',
+						'Emissão de ART de projeto e protocolo digital no sistema INFOSCIP do CBMMG, com acompanhamento integral até o deferimento.',
+					],
+				},
+			],
 		},
-		{ heading: "Vantagens de Investir em Segurança Contra Incêndio", paragraphs: [
-		]
-, subsections: [
-			{ heading: "Cumprimento das Normas Legais", paragraphs: [
-				"A implementação de um projeto adequado é essencial para cumprir as normas e regulamentos de segurança contra incêndio estabelecidos pelas autoridades competentes.",
-				"Estar conforme a legislação é fundamental para evitar multas, interdições e assegurar a segurança do ambiente."
-			]
-			},
-			{ heading: "Tranquilidade e Confiança para os Usuários", paragraphs: [
-				{ segments: ["Ao contar com um", { bold: true, text: "projeto contra incêndio" }, "bem elaborado e implementado, os usuários da edificação podem desfrutar de maior tranquilidade e confiança em relação à sua segurança."] },
-				"Saber que medidas eficazes estão em vigor para prevenir e combater incêndios traz uma sensação de proteção e bem-estar."
-			]
-			}
-		]
+		{
+			heading: 'Modificação de projeto por alteração de layout ou área',
+			paragraphs: [
+				'Se o imóvel já possui projeto aprovado, mas passou por ampliação de área, construção de mezanino, fechamento de divisórias ou mudança de atividade econômica, é necessário elaborar a atualização ou modificação do projeto contra incêndio antes de solicitar nova vistoria.',
+				{
+					segments: [
+						'Saiba mais em nossas páginas de ',
+						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						' e ',
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Conheça a AJN Consultoria e Engenharia,", paragraphs: [
-			"A AJN Consultoria e Engenharia, empresa especializada em soluções técnicas voltadas a Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA), oferece serviços completos e personalizados para a elaboração e implementação de projetos contra incêndio.",
-			"Com especialização e comprometimento, a AJN promove a segurança e conformidade das edificações, proporcionando ambientes mais seguros e protegidos."
-		]
+		{
+			heading: 'Solicite análise técnica para o seu imóvel',
+			paragraphs: [
+				'Entre em contato com a equipe de engenharia da AJN informando o endereço, a metragem e a finalidade da edificação.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'envie uma mensagem pelo formulário', href: '/contato' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Entre em contato", paragraphs: [
-			{ segments: ["Proteger vidas e patrimônios é uma prioridade em qualquer ambiente, e um", { bold: true, text: "projeto contra incêndio" }, "eficaz desempenha um papel fundamental nesse processo."] },
-			"Ao seguir as dicas e diretrizes apresentadas neste guia, é possível assegurar a segurança e a tranquilidade de todos os envolvidos.",
-			"Invista na segurança contra incêndio e proteja o que realmente importa!",
-			"Para obter mais informações sobre como implementar um projeto eficaz em sua edificação, entre em contato com a AJN Consultoria e Engenharia.",
-			"Proteja seu espaço e proporcione a segurança de todos!",
-			"Conte conosco para proteger o que realmente importa!"
-		]
-		},
-		{ heading: "Para saber mais sobre Projeto contra incêndio", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
 	],
 } as const satisfies MarketingContent;

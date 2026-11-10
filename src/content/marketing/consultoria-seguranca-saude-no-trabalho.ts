@@ -2,77 +2,68 @@ import type { MarketingContent } from '../types';
 
 export const consultoriaSegurancaSaudeNoTrabalho = {
 	slug: "consultoria-seguranca-saude-no-trabalho", path: "/consultoria-seguranca-saude-no-trabalho",
-	title: "Consultoria segurança e saude no trabalho - AJN Consultoria e Engenharia",
-	description: "Consultoria segurança e saude no trabalho é essencial para as empresas, pois promove a proteção dos colaboradores, evita acidentes de trabalho, melhora a...",
-	heading: "Consultoria segurança e saude no trabalho",
+	title: "Consultoria em Segurança e Saúde no Trabalho (SST) | AJN Engenharia",
+	description: "Consultoria integrada em Segurança e Saúde no Trabalho (SST) em BH e MG: alinhamento técnico entre PGR (NR-01), PCMSO (NR-07), LTCAT e eventos do eSocial.",
+	heading: "Consultoria em Segurança e Saúde no Trabalho (SST)",
 	images: [
-		{ src: "/images/content/marketing/consultoria-seguranca-saude-no-trabalho/consultoria-seguranca-saude-no-trabalho-01.webp", alt: "Consultoria segurança e saude no trabalho" },
-		{ src: "/images/content/marketing/consultoria-seguranca-saude-no-trabalho/consultoria-seguranca-saude-no-trabalho-02.webp", alt: "Consultoria segurança e saude no trabalho" },
-		{ src: "/images/content/marketing/consultoria-seguranca-saude-no-trabalho/consultoria-seguranca-saude-no-trabalho-03.webp", alt: "Consultoria segurança e saude no trabalho" },
+		{ src: "/images/content/marketing/consultoria-seguranca-saude-no-trabalho/consultoria-seguranca-saude-no-trabalho-01.webp", alt: "Consultoria em segurança e saúde no trabalho" },
+		{ src: "/images/content/marketing/consultoria-seguranca-saude-no-trabalho/consultoria-seguranca-saude-no-trabalho-02.webp", alt: "Análise de riscos ocupacionais e saúde do trabalhador" },
+		{ src: "/images/content/marketing/consultoria-seguranca-saude-no-trabalho/consultoria-seguranca-saude-no-trabalho-03.webp", alt: "Acompanhamento de programas de SST em campo" },
 	],
 	sections: [
-		{ heading: "Transforme sua Empresa com consultoria segurança e saude no trabalho", paragraphs: [
-			{ segments: ["A", { bold: true, text: "consultoria segurança e saude no trabalho" }, "é um serviço especializado que visa integrar aspectos preventivos, organizacionais e ocupacionais para proteger os colaboradores e estruturar ambientes operacionais mais consistentes."] },
-			"Essa consultoria analisa riscos físicos, químicos, ergonômicos e mecânicos, define estratégias de controle e orienta programas de saúde, como exames e monitoramentos.",
-			"Com essa abordagem integrada, as equipes podem realizar suas funções com menor exposição a perigos, contribuindo para o aperfeiçoamento de rotinas e fortalecendo a conformidade normativa."
-		]
-, subsections: [
-			{ heading: "Importância da Consultoria para as Empresas", paragraphs: [
-				{ segments: ["A", { bold: true, text: "consultoria segurança e saude no trabalho" }, "é essencial para as empresas, pois promove a proteção dos colaboradores, evita acidentes de trabalho, melhora a qualidade de vida no ambiente laboral e contribui para a conformidade com as normas regulamentadoras."] },
-				"Além disso, a consultoria ajuda a identificar e controlar os riscos presentes no ambiente de trabalho, promovendo um ambiente mais seguro e saudável para todos os envolvidos."
+		{
+			heading: "Gestão conjunta de Engenharia de Segurança e Medicina Ocupacional",
+			paragraphs: [
+				"Na prática das empresas, separar a engenharia de segurança do controle médico ocupacional costuma gerar retrabalho: funções cadastradas com nomes divergentes, agentes nocivos avaliados de forma diferente entre o PGR e o LTCAT e exames médicos que não conversam com a exposição real do trabalhador.",
+				"A consultoria em Segurança e Saúde no Trabalho (SST) da AJN Consultoria e Engenharia unifica o diagnóstico de campo para que a documentação preventiva, previdenciária e médica mantenha total consistência técnica."
 			]
-			},
-			{ heading: "Principais Componentes da consultoria segurança e saude no trabalho", paragraphs: [
-				"Os principais componentes da consultoria em segurança e saúde no trabalho incluem a análise de riscos, a definição de estratégias de controle, a orientação de programas de saúde ocupacional, a elaboração de laudos e perícias, o desenvolvimento de projetos de combate a incêndio, entre outros.",
-				"Esses componentes são fundamentais para assegurar a eficácia da consultoria e promover um ambiente de trabalho seguro e saudável."
-			]
-			}
-		]
 		},
-		{ heading: "Benefícios da Consultoria em Segurança e Saúde no Trabalho", paragraphs: [
-		]
-, subsections: [
-			{ heading: "Redução de Acidentes e Doenças Ocupacionais", paragraphs: [
-				"Uma das principais vantagens da consultoria em segurança e saúde no trabalho é a redução de acidentes e doenças ocupacionais.",
-				"Ao identificar e controlar os riscos presentes no ambiente de trabalho, a consultoria ajuda a prevenir situações de perigo e a promover um ambiente mais seguro para todos os colaboradores."
+		{
+			heading: "Principais entregas da consultoria em SST",
+			paragraphs: [
+				"Atendemos empresas de diversos portes em Belo Horizonte e Minas Gerais com escopo técnico modular:"
+			],
+			lists: [
+				{
+					items: [
+						"Mapeamento de GHE (Grupos Homogêneos de Exposição) e descrição técnica das atividades por cargo;",
+						"Elaboração do PGR (NR-01) integrado ao planejamento do PCMSO (NR-07) e à emissão de ASOs;",
+						"Medições de higiene ocupacional (ruído, calor, agentes químicos e vibração) com equipamentos calibrados;",
+						"Elaboração de LTCAT para subsidiar o Perfil Profissiográfico Previdenciário (PPP eletrônico) e o evento S-2240 do eSocial;",
+						"Capacitações operacionais nas Normas Regulamentadoras aplicáveis (como NR-01, NR-06, NR-10, NR-12, NR-18, NR-33 e NR-35)."
+					]
+				}
 			]
-			},
-			{ heading: "Aumento da Produtividade e Moral dos Funcionários", paragraphs: [
-				"Com um ambiente de trabalho mais seguro e saudável, os colaboradores se sentem mais valorizados e motivados, o que contribui para o aumento da produtividade e da moral da equipe.",
-				"Além disso, a redução de acidentes e doenças ocupacionais também impacta positivamente na produtividade da empresa como um todo."
-			]
-			}
-		]
 		},
-		{ heading: "Como Implementar uma Consultoria em Segurança e Saúde no Trabalho", paragraphs: [
-			"Para implementar uma consultoria em segurança e saúde no trabalho de forma eficaz, é importante seguir alguns passos e dicas importantes.",
-			"Vamos abordar essas questões a seguir:"
-		]
-, subsections: [
-			{ heading: "Passos para Escolher a Consultoria Ideal", paragraphs: [
-				"Ao escolher uma consultoria em segurança e saúde no trabalho, é fundamental considerar a experiência e a especialização da empresa, a abordagem adotada, os serviços oferecidos, as referências de clientes anteriores e a capacidade de personalização das soluções.",
-				"Uma consultoria confiável e especializada pode fazer toda a diferença na implementação de práticas seguras e saudáveis no ambiente de trabalho."
+		{
+			heading: "Quando contratar uma revisão completa de SST",
+			paragraphs: [
+				"Mudanças de layout, abertura de novas filiais, mobilização de equipes em clientes industriais ou notificações do Ministério do Trabalho e do eSocial exigem revisão técnica imediata dos programas vigentes.",
+				{
+					segments: [
+						"Veja mais detalhes sobre o serviço de ",
+						{ text: "Assessoria e Consultoria em Saúde Ocupacional", href: "/servicos/assessoria-e-consultoria-em-saude-ocupacional" },
+						" e ",
+						{ text: "PCMSO e ASOs", href: "/servicos/pcmso-e-asos" },
+						"."
+					]
+				}
 			]
-			},
-			{ heading: "Dicas para Integrar as Práticas de Segurança no Dia a Dia da Empresa", paragraphs: [
-				"Além de contar com uma consultoria especializada, é importante integrar as práticas de segurança no dia a dia da empresa.",
-				"Isso inclui a realização de treinamentos regulares, a conscientização dos colaboradores sobre a importância da segurança no trabalho, a implementação de medidas preventivas e a criação de um ambiente de trabalho colaborativo e seguro para todos."
+		},
+		{
+			heading: "Solicite diagnóstico e proposta à AJN",
+			paragraphs: [
+				"Informe o ramo de atuação da empresa, a localização e o número de empregados para estruturarmos uma proposta sob medida.",
+				{
+					segments: [
+						"Ligue para ",
+						{ bold: true, text: "31 98473-4644" },
+						" ou ",
+						{ text: "fale com a AJN pelo formulário de contato", href: "/contato" },
+						"."
+					]
+				}
 			]
-			}
-		]
-		},
-		{ heading: "Invista na Segurança e Saúde no Trabalho para o Sucesso da sua Empresa!", paragraphs: [
-			"Investir em consultoria em segurança e saúde no trabalho é fundamental para assegurar a proteção dos colaboradores, reduzir acidentes e doenças ocupacionais, aumentar a produtividade e promover um ambiente de trabalho saudável e seguro.",
-			"Com a ajuda da AJN Consultoria e Engenharia, sua empresa pode transformar suas práticas de segurança e saúde, promovendo o bem-estar de todos os envolvidos.",
-			"Não deixe de priorizar a segurança e a saúde no trabalho, pois isso reflete diretamente no sucesso e na sustentabilidade do seu negócio.",
-			"A segurança e a saúde no trabalho são pilares fundamentais para o crescimento e a prosperidade de qualquer empresa.",
-			"Conte com a AJN Consultoria e Engenharia para obter soluções personalizadas e eficazes em segurança do trabalho, saúde ocupacional e gestão ambiental.",
-			"Transforme sua empresa e proporcione um ambiente de trabalho seguro e saudável para todos!"
-		]
-		},
-		{ heading: "Para saber mais sobre Consultoria segurança e saude no trabalho", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
 		}
 	],
 } as const satisfies MarketingContent;

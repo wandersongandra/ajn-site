@@ -1,52 +1,70 @@
 import type { MarketingContent } from '../types';
 
 export const servicosPcmso = {
-	slug: "servicos-pcmso", path: "/servicos-pcmso",
-	title: "Serviços de pcmso - AJN Consultoria e Engenharia",
-	description: "Serviços de pcmso pretendem identificar e prevenir possíveis doenças relacionadas ao ambiente de trabalho, promovendo a conformidade legal e melhorando...",
-	heading: "Serviços de pcmso",
+	slug: 'servicos-pcmso',
+	path: '/servicos-pcmso',
+	title: 'Serviços de PCMSO e Gestão de Exames Ocupacionais | AJN',
+	description: 'Serviços de PCMSO em Belo Horizonte e MG: elaboração do programa (NR-07), definição de grade de exames por GHE, acompanhamento de ASOs e suporte ao eSocial.',
+	heading: 'Serviços de PCMSO e Controle de Saúde Ocupacional',
 	images: [
-		{ src: "/images/content/marketing/pcmso-preco/pcmso-preco-02.webp", alt: "Serviços de pcmso" },
-		{ src: "/images/content/marketing/pcmso-preco/pcmso-preco-03.webp", alt: "Serviços de pcmso" },
-		{ src: "/images/content/marketing/empresa-pcmso/empresa-pcmso-03.webp", alt: "Serviços de pcmso" },
+		{ src: '/images/content/marketing/pcmso-preco/pcmso-preco-02.webp', alt: 'Serviços de PCMSO para empresas' },
+		{ src: '/images/content/marketing/pcmso-preco/pcmso-preco-03.webp', alt: 'Acompanhamento de exames ocupacionais e ASOs' },
+		{ src: '/images/content/marketing/empresa-pcmso/empresa-pcmso-03.webp', alt: 'Gestão integrada de saúde e segurança no trabalho' },
 	],
 	sections: [
-		{ heading: "serviços de pcmso: Mantenha a saúde de seus colaboradores em dia", paragraphs: [
-			"A segurança do trabalho é um tema crucial para qualquer empresa que se preocupa com o bem-estar de seus funcionários.",
-			{ segments: ["No ramo de engenharia, a AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, destaca-se por oferecer serviços especializados em", { bold: true, text: "serviços de pcmso" }, ", Segurança, Meio Ambiente e Saúde (QSMS) há mais de 8 anos."] },
-			{ segments: ["Localizada em Belo Horizonte, MG, a empresa se destaca pela excelência na prestação de", { bold: true, text: "serviços de pcmso" }, ", como projetos de Segurança contra incêndios para obtenção de AVCB/CLCB em edificações comerciais, residenciais e industriais de diversos portes."] },
-			"A empresa se destaca pela abrangência em medidas de saúde e segurança no ambiente de trabalho, incluindo projetos de segurança contra incêndio para a obtenção de licenças AVCB e CLCB.",
-			{ segments: ["Além disso, a AJN Consultoria e Engenharia oferece uma gama de", { bold: true, text: "serviços de pcmso" }, "que incluem prevenção e combate a incêndios, segurança ocupacional, consultoria ambiental, certificações, treinamentos em NRs, mobilização de equipe, entre outros."] }
-		]
+		{
+			heading: 'O que compõe a prestação de serviços de PCMSO',
+			paragraphs: [
+				'A gestão de saúde ocupacional de uma empresa envolve tanto o planejamento técnico do Programa de Controle Médico de Saúde Ocupacional (PCMSO - NR-07) quanto a rotina contínua de exames ligados a admissões, periódicos, mudanças de função, afastamentos e desligamentos.',
+				'A AJN Consultoria e Engenharia organiza os serviços de PCMSO em Belo Horizonte e Minas Gerais para que o RH e o setor de SST tenham clareza sobre quais exames cada função exige e mantenham a documentação alinhada com o PGR.',
+			],
 		},
-		{ heading: "Por que serviços de pcmso são essenciais para sua empresa?", paragraphs: [
-			"O Programa de Controle Médico de Saúde Ocupacional (PCMSO) é uma ferramenta fundamental para garantir a saúde e bem-estar dos colaboradores de uma empresa.",
-			{ segments: [{ bold: true, text: "Serviços de pcmso" }, "pretendem identificar e prevenir possíveis doenças relacionadas ao ambiente de trabalho, promovendo a conformidade legal e melhorando continuamente as condições laborais."] },
-			"Dessa forma, contribui para o aumento da produtividade e do bem-estar dos trabalhadores. A AJN Consultoria e Engenharia oferece um serviço completo de PCMSO, abrangendo desde a elaboração até a implementação e acompanhamento do programa.",
-			"Com a especialização da equipe da empresa, é possível assegurar que sua organização atenda a todas as exigências legais relacionadas à saúde ocupacional, garantindo a proteção da saúde de seus colaboradores."
-		]
+		{
+			heading: 'Atividades incluídas no suporte de saúde ocupacional',
+			paragraphs: [
+				'Conforme o escopo contratado pela empresa, o atendimento abrange:',
+			],
+			lists: [
+				{
+					items: [
+						'Análise técnica do inventário de riscos do PGR para parametrização da matriz de exames clínicos e complementares por função;',
+						'Emissão do documento-base do PCMSO sob coordenação de médico do trabalho;',
+						'Atendimento para exames admissionais, periódicos, de retorno ao trabalho, de mudança de riscos e demissionais com emissão de ASO;',
+						'Revisão técnica do programa quando surgem novas funções, setores ou agentes de exposição na operação;',
+						'Elaboração do relatório analítico anual do PCMSO e orientação para o evento S-2220 do eSocial.',
+					],
+				},
+			],
 		},
-		{ heading: "Vantagens de contar com os serviços de pcmso da AJN Consultoria e Engenharia", paragraphs: [
-			{ segments: ["Ao optar pelos", { bold: true, text: "serviços de pcmso" }, "da AJN Consultoria e Engenharia, sua empresa terá acesso a uma série de benefícios, tais como:"] }
-		]
-, lists: [
-			{ items: [
-				"Saúde e bem-estar dos colaboradores: o PCMSO contribui para a promoção da saúde e prevenção de doenças ocupacionais, garantindo um ambiente de trabalho mais seguro e saudável.",
-				"Conformidade legal: a empresa estará conforme as normas regulamentadoras, evitando possíveis sanções e penalidades.",
-				"Melhoria da produtividade: colaboradores saudáveis e seguros tendem a ser mais produtivos e engajados com suas atividades."
-			] }
-		]
-, subsections: [
-			{ heading: "Entre em contato e garanta a segurança e saúde de sua equipe", paragraphs: [
-				{ segments: ["Agora que você conhece a importância dos", { bold: true, text: "serviços de pcmso" }, "oferecidos pela AJN Consultoria e Engenharia, não deixe de investir na segurança e saúde de seus colaboradores."] },
-				"Entre em contato conosco para saber mais sobre como podemos ajudar a sua empresa a manter um ambiente de trabalho seguro e saudável."
-			]
-			}
-		]
+		{
+			heading: 'Mobilização rápida para contratos e obras',
+			paragraphs: [
+				'Em contratos industriais e obras civis, divergências entre os riscos descritos no PGR, o ASO do trabalhador e a função registrada bloqueiam a liberação em portaria. Nossa equipe confere a compatibilidade documental de ponta a ponta.',
+				{
+					segments: [
+						'Consulte a página principal do serviço de ',
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						' e nossa página sobre ',
+						{ text: 'Assessoria em Saúde Ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Para saber mais sobre Serviços de pcmso", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
+		{
+			heading: 'Solicite uma proposta de serviços de PCMSO',
+			paragraphs: [
+				'Compartilhe o número de colaboradores, as funções e a cidade da sua empresa para receber uma cotação detalhada.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'entre em contato com a AJN', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

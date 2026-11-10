@@ -1,32 +1,69 @@
 import type { MarketingContent } from '../types';
 
 export const projetoDeteccaoIncendio = {
-	slug: 'projeto-deteccao-incendio', path: '/projeto-deteccao-incendio',
-	title: 'Projeto de detecção de incêndio - AJN Consultoria e Engenharia',
-	description: 'Projeto de detecção de incêndio é essencial para garantir a segurança das pessoas e do patrimônio em edificações comerciais, residenciais e industriais.',
-	heading: 'Projeto de detecção de incêndio',
+	slug: 'projeto-deteccao-incendio',
+	path: '/projeto-deteccao-incendio',
+	title: 'Projeto de Detecção e Alarme de Incêndio (SDAI / NBR 17240) | AJN',
+	description: 'Elaboração de projeto de detecção e alarme de incêndio (SDAI) em BH e MG conforme IT 14 do CBMMG e ABNT NBR 17240. Dimensionamento de detectores, acionadores e centrais.',
+	heading: 'Projeto de Detecção e Alarme de Incêndio (SDAI)',
 	images: [
-		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-01.webp', alt: 'Projeto de detecção de incêndio' },
-		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-02.webp', alt: 'Projeto de detecção de incêndio' },
-		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-03.webp', alt: 'Projeto de detecção de incêndio' },
+		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-01.webp', alt: 'Projeto de detecção e alarme de incêndio SDAI' },
+		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-02.webp', alt: 'Dimensionamento de detectores de fumaça e acionadores manuais' },
+		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-03.webp', alt: 'Central de alarme de incêndio conforme NBR 17240 e IT 14' },
 	],
 	sections: [
-		{ heading: 'Por que investir em um projeto de detecção de incêndio?', paragraphs: [
-			'Um projeto de detecção de incêndio é essencial para garantir a segurança das pessoas e do patrimônio em edificações comerciais, residenciais e industriais.',
-			'Ao implementar medidas preventivas e sistemas de combate a incêndios, é possível minimizar os riscos e danos em caso de sinistros, preservando vidas e propriedades.',
-		] },
-		{ heading: 'Como a AJN Consultoria e Engenharia pode te ajudar?', paragraphs: [
-			'A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, oferece serviços especializados na elaboração de projeto de detecção de incêndio.',
-			'Com mais de 8 anos de experiência no mercado de engenharia, a empresa se destaca pela qualidade e eficiência de seus projetos, garantindo a conformidade com as normas técnicas e legislações vigentes.',
-		] },
-		{ heading: 'Vantagens de contar com a AJN Consultoria e Engenharia', paragraphs: [], lists: [{ items: ['Ampla experiência em projetos de segurança contra incêndios;', 'Equipe qualificada e especializada;', 'Conformidade com as normas e regulamentações vigentes;', 'Atendimento personalizado e soluções sob medida;', 'Compromisso com a segurança e a satisfação dos clientes.'] }] },
-		{ heading: 'Proteja seu patrimônio com um projeto de detecção de incêndio eficiente', paragraphs: [
-			'Um projeto de detecção de incêndio bem elaborado é a chave para prevenir e mitigar os riscos de incêndios em sua edificação.',
-			'Com a especialização da AJN Consultoria e Engenharia, você pode garantir a segurança e a tranquilidade necessárias para o seu negócio, além de estar conforme todas as exigências legais.',
-		], subsections: [{ heading: 'Entre em contato conosco e solicite um projeto de detecção de incêndio', paragraphs: [
-			'Se você busca um parceiro confiável para a elaboração de seu projeto de detecção de incêndio, entre em contato com a AJN Consultoria e Engenharia.',
-			'Nossa equipe está preparada para oferecer as melhores soluções em segurança do trabalho e engenharia, proporcionando a você e sua empresa a tranquilidade e a proteção necessárias. Não deixe a segurança em segundo plano, conte com quem entende do assunto!',
-		] }] },
-		{ heading: 'Para saber mais sobre Projeto de detecção de incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{
+			heading: 'Por que o sistema de detecção e alarme exige projeto específico',
+			paragraphs: [
+				'O Sistema de Detecção e Alarme de Incêndio (SDAI) tem a função de identificar fumaça, elevação anormal de temperatura ou chama nos primeiros minutos do sinistro, alertando imediatamente a brigada e os ocupantes da edificação. Para evitar pontos cegos ou disparos falsos constantes, o dimensionamento deve seguir a Instrução Técnica 14 (IT 14) do CBMMG e a norma ABNT NBR 17240.',
+				'A AJN Consultoria e Engenharia desenvolve projetos de detecção e alarme de incêndio em Belo Horizonte e Minas Gerais, integrados ao PSCIP da edificação ou detalhados para execução em campo.',
+			],
+		},
+		{
+			heading: 'Critérios técnicos definidos no projeto de detecção',
+			paragraphs: [
+				'O projeto especifica a tecnologia e a distribuição exata dos componentes conforme a geometria e o ambiente de cada setor:',
+			],
+			lists: [
+				{
+					items: [
+						'Seleção do tipo de detector para cada ambiente: óptico de fumaça para áreas administrativas e circulações, termovelocimétrico para copas/cozinhas e oficinas com poeira ou vapores, ou barreiras ópticas lineares (feixe) para galpões de pé-direito elevado;',
+						'Cálculo do raio de cobertura dos detectores em função da altura do teto, inclinação da cobertura e presença de vigas ou entre-forros;',
+						'Posicionamento de acionadores manuais (botoeiras quebra-vidro ou rearmáveis) e avisadores sonoros e visuais nas rotas de fuga conforme distâncias máximas de caminhamento;',
+						'Definição da central de alarme (endereçável ou convencional), autonomia de baterias, topologia dos laços e especificação de cabos blindados resistentes ao fogo.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Integração com o PSCIP e aprovação no Corpo de Bombeiros',
+			paragraphs: [
+				'Todas as pranchas e memoriais do sistema de detecção e alarme são compatibilizados com as demais medidas preventivas do imóvel para aprovação no INFOSCIP e conferência na vistoria de emissão do AVCB.',
+				{
+					segments: [
+						'Conheça também nossa página de ',
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						' e ',
+						{ text: 'Sistemas de Incêndio em BH', href: '/sistemas-incendio-bh' },
+						'.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Solicite orçamento para projeto de detecção de incêndio',
+			paragraphs: [
+				'Informe a área construída, o pé-direito e o uso da edificação para receber uma proposta técnica da AJN.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'fale com nossa engenharia pelo site', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

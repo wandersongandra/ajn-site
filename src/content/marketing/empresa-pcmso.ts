@@ -1,75 +1,70 @@
 import type { MarketingContent } from '../types';
 
 export const empresaPcmso = {
-	slug: "empresa-pcmso", path: "/empresa-pcmso",
-	title: "Empresa de pcmso - AJN Consultoria e Engenharia",
-	description: "Empresa de pcmso contribui para a redução de afastamentos por doenças ocupacionais, uma vez que atua de forma preventiva na identificação e controle de...",
-	heading: "Empresa de pcmso",
+	slug: 'empresa-pcmso',
+	path: '/empresa-pcmso',
+	title: 'Empresa de PCMSO em Belo Horizonte e MG | AJN Engenharia',
+	description: 'Procurando empresa de PCMSO em BH e MG? A AJN estrutura o Programa de Controle Médico de Saúde Ocupacional (NR-07) integrado ao PGR e aos exames ocupacionais.',
+	heading: 'Empresa de PCMSO: Estruturação e Acompanhamento Técnico',
 	images: [
-		{ src: "/images/content/marketing/pcmso-preco/pcmso-preco-01.webp", alt: "Empresa de pcmso" },
-		{ src: "/images/content/marketing/pcmso-preco/pcmso-preco-03.webp", alt: "Empresa de pcmso" },
-		{ src: "/images/content/marketing/empresa-pcmso/empresa-pcmso-03.webp", alt: "Empresa de pcmso" },
+		{ src: '/images/content/marketing/pcmso-preco/pcmso-preco-01.webp', alt: 'Atendimento técnico de empresa de PCMSO' },
+		{ src: '/images/content/marketing/pcmso-preco/pcmso-preco-03.webp', alt: 'Gestão de saúde ocupacional e exames periódicos' },
+		{ src: '/images/content/marketing/empresa-pcmso/empresa-pcmso-03.webp', alt: 'Integração entre engenharia de segurança e medicina ocupacional' },
 	],
 	sections: [
-		{ heading: "empresa de pcmso: promovendo Saúde e Segurança no Trabalho", paragraphs: [
-		]
-, subsections: [
-			{ heading: "Compreendendo o Serviço de uma empresa de pcmso", paragraphs: [
-				"O Programa de Controle Médico de Saúde Ocupacional (PCMSO) é uma ferramenta fundamental para empresas que buscam assegurar a saúde e segurança de seus colaboradores.",
-				"Ele consiste em um conjunto de ações que visam prevenir e controlar possíveis riscos à saúde dos trabalhadores, relacionados às atividades desempenhadas no ambiente de trabalho.",
-				"O PCMSO é regulamentado pela Norma Regulamentadora 7 (NR-7) e deve ser elaborado e implementado por uma empresa especializada nesse tipo de serviço."
-			]
-			},
-			{ heading: "Importância de um PCMSO Eficaz para a Saúde dos Funcionários", paragraphs: [
-				"Um PCMSO eficaz é essencial para promover a saúde e bem-estar dos funcionários de uma empresa.",
-				"Por meio desse programa, é possível identificar precocemente possíveis doenças ocupacionais, realizar exames médicos periódicos, monitorar a exposição a agentes nocivos, entre outras ações preventivas.",
-				"Além disso, um PCMSO bem estruturado contribui para a redução de acidentes de trabalho, afastamentos por doenças ocupacionais e aumenta a produtividade dos colaboradores."
-			]
-			}
-		]
+		{
+			heading: 'O que avaliar ao contratar uma empresa de PCMSO',
+			paragraphs: [
+				'Na escolha de uma empresa para elaborar e gerir o PCMSO (NR-07), o ponto principal é verificar como o prestador conecta a medicina do trabalho com a engenharia de segurança. Pela norma vigente, o médico responsável pelo PCMSO precisa apoiar-se no inventário de riscos do PGR para definir quais exames complementares são obrigatórios para cada função.',
+				'A AJN Consultoria e Engenharia atua de forma integrada em Belo Horizonte e Minas Gerais, evitando que o cliente receba um PCMSO desconectado da realidade operacional ou com cobranças de exames desnecessários.',
+			],
 		},
-		{ heading: "Benefícios de Contratar uma Empresa Especializada em PCMSO", paragraphs: [
-		]
-, subsections: [
-			{ heading: "Melhoria da Qualidade de Vida no Trabalho", paragraphs: [
-				"Ao contratar uma empresa especializada em PCMSO, a qualidade de vida no trabalho dos colaboradores é significativamente melhorada.",
-				"Isso ocorre devido à implementação de medidas preventivas, como a realização de exames médicos periódicos, a identificação de riscos à saúde e a promoção de ambientes de trabalho mais seguros e saudáveis."
-			]
-			},
-			{ heading: "Redução de Afastamentos e Aumento de Produtividade", paragraphs: [
-				{ segments: ["Uma", { bold: true, text: "empresa de pcmso" }, "contribui para a redução de afastamentos por doenças ocupacionais, uma vez que atua de forma preventiva na identificação e controle de possíveis riscos à saúde dos trabalhadores."] },
-				"Com isso, a produtividade da equipe é aumentada, uma vez que os colaboradores se encontram saudáveis e aptos a desempenhar suas funções de forma eficiente."
-			]
-			}
-		]
+		{
+			heading: 'Escopo de atendimento em saúde ocupacional',
+			paragraphs: [
+				'O suporte técnico é organizado conforme o porte do quadro de funcionários e a rotina de contratações da organização:',
+			],
+			lists: [
+				{
+					items: [
+						'Levantamento de cargos, setores e exposições ocupacionais em conjunto com a equipe de engenharia (PGR e LTCAT);',
+						'Elaboração e atualização do documento-base do PCMSO sob responsabilidade de médico habilitado;',
+						'Definição clara da grade de exames clínicos e complementares por função e Grupo Homogêneo de Exposição (GHE);',
+						'Orientação sobre prazos de vencimento de exames periódicos, retorno ao trabalho, mudança de riscos e emissão de ASOs;',
+						'Suporte na organização das informações para o evento S-2220 do eSocial e mobilização de colaboradores em contratos industriais e obras.',
+					],
+				},
+			],
 		},
-		{ heading: "Dicas para Escolher a Melhor empresa de pcmso", paragraphs: [
-		]
-, subsections: [
-			{ heading: "Avalie a Experiência e Credibilidade da Empresa", paragraphs: [
-				{ segments: ["Ao escolher uma", { bold: true, text: "empresa de pcmso" }, ", é fundamental avaliar sua experiência e credibilidade no mercado."] },
-				"Verifique se a empresa possui profissionais qualificados, conhecimento técnico adequado e referências positivas de clientes atendidos.",
-				"Uma empresa com experiência sólida tende a oferecer serviços de qualidade e confiança."
-			]
-			}
-		]
+		{
+			heading: 'Diferença entre a gestão do programa e os exames avulsos',
+			paragraphs: [
+				'Emitir Atestados de Saúde Ocupacional (ASOs) de forma avulsa não substitui a existência do PCMSO vigente e do relatório analítico exigido pela NR-07. Em fiscalizações trabalhistas ou auditorias de clientes, é o programa estruturado que comprova o controle médico das exposições.',
+				{
+					segments: [
+						'Confira também os detalhes em nossa página de ',
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						' e saiba como solicitar um ',
+						{ text: 'Orçamento de PCMSO', href: '/orcamento-pcmso' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Considere a Personalização dos Serviços Oferecidos", paragraphs: [
-			"Cada empresa possui necessidades específicas em relação à saúde ocupacional de seus colaboradores.",
-			{ segments: ["Por isso, é importante considerar a personalização dos serviços oferecidos pela", { bold: true, text: "empresa de pcmso" }, "."] },
-			"Opte por uma empresa que seja capaz de adequar seus serviços às demandas e características do seu negócio, promovendo um atendimento personalizado e eficaz."
-		]
+		{
+			heading: 'Peça uma proposta para sua empresa',
+			paragraphs: [
+				'Envie o segmento da empresa, a localização e o número de colaboradores para avaliarmos o escopo ideal de atendimento.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'entre em contato com a AJN', href: '/contato' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Entre em contato", paragraphs: [
-			{ segments: ["Ao escolher uma", { bold: true, text: "empresa de pcmso" }, ", como a AJN Consultoria e Engenharia, você está investindo na saúde e segurança dos seus colaboradores."] },
-			"Com serviços especializados em Qualidade, Saúde, Segurança e Meio Ambiente, a AJN oferece soluções completas e personalizadas para atender às necessidades da sua empresa.",
-			{ segments: ["Proporcione a saúde e bem-estar da sua equipe, escolhendo uma", { bold: true, text: "empresa de pcmso" }, "confiável e experiente como a AJN."] },
-			"Entre em contato com a AJN Consultoria e Engenharia e promova um ambiente de trabalho mais seguro e saudável para seus colaboradores!"
-		]
-		},
-		{ heading: "Para saber mais sobre Empresa de pcmso", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
 	],
 } as const satisfies MarketingContent;

@@ -1,53 +1,68 @@
 import type { MarketingContent } from '../types';
 
 export const projetoProtecaoIncendioPanico = {
-	slug: "projeto-protecao-incendio-panico", path: "/projeto-protecao-incendio-panico",
-	title: "Projeto de proteção contra incêndio e pânico - AJN Consultoria e Engenharia",
-	description: "Projeto de proteção contra incêndio e pânico que garante conformidade com a legislação vigente e normas técnicas específicas, proporcionando assim...",
-	heading: "Projeto de proteção contra incêndio e pânico",
+	slug: 'projeto-protecao-incendio-panico',
+	path: '/projeto-protecao-incendio-panico',
+	title: 'Projeto de Proteção Contra Incêndio e Pânico em BH e MG | AJN',
+	description: 'Elaboração de projeto de proteção contra incêndio e pânico em Belo Horizonte e MG: compartimentação, controle de fumaça, hidrantes, alarmes e aprovação no CBMMG.',
+	heading: 'Projeto de Proteção Contra Incêndio e Pânico',
 	images: [
-		{ src: "/images/content/marketing/consultoria-pcmso/consultoria-pcmso-02.webp", alt: "Projeto de proteção contra incêndio e pânico" },
-		{ src: "/images/content/marketing/orcamento-projeto-combate-incendio/orcamento-projeto-combate-incendio-02.webp", alt: "Projeto de proteção contra incêndio e pânico" },
-		{ src: "/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-02.webp", alt: "Projeto de proteção contra incêndio e pânico" },
+		{ src: '/images/content/marketing/consultoria-pcmso/consultoria-pcmso-02.webp', alt: 'Vistoria de engenharia para projeto de proteção contra incêndio e pânico' },
+		{ src: '/images/content/marketing/orcamento-projeto-combate-incendio/orcamento-projeto-combate-incendio-02.webp', alt: 'Detalhamento técnico de sistemas de proteção contra incêndio' },
+		{ src: '/images/content/marketing/projeto-deteccao-incendio/projeto-deteccao-incendio-02.webp', alt: 'Central e dispositivos de proteção contra incêndio e pânico' },
 	],
 	sections: [
-		{ heading: "A importância de um projeto de proteção contra incêndio e pânico", paragraphs: [
-			{ segments: ["Ter um", { bold: true, text: "projeto de proteção contra incêndio e pânico" }, "é essencial para garantir a segurança de pessoas e patrimônios em edificações comerciais, residenciais e industriais."] },
-			"Quando bem elaborado e implementado, esse tipo de projeto pode prevenir, detectar e combater incêndios de forma eficaz, evitando danos irreparáveis e, principalmente, preservando vidas."
-		]
+		{
+			heading: 'Arquitetura de proteção passiva e ativa em edificações',
+			paragraphs: [
+				'O projeto de proteção contra incêndio e pânico integra medidas construtivas (proteção passiva) e sistemas operacionais (proteção ativa) para conter a propagação do fogo e da fumaça entre setores de uma edificação, preservando a estabilidade estrutural e o tempo necessário para evacuação.',
+				'A AJN Consultoria e Engenharia atende construtoras, escritórios de arquitetura, indústrias e condomínios em Belo Horizonte e Minas Gerais na compatibilização e aprovação de projetos junto ao CBMMG.',
+			],
 		},
-		{ heading: "O papel da AJN Consultoria e Engenharia", paragraphs: [
-			"A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, destaca-se no mercado de segurança do trabalho por sua especialização na área de QSMS – Qualidade, Segurança, Meio Ambiente e Saúde.",
-			{ segments: ["Com mais de 08 anos de experiência, a empresa oferece serviços especializados na elaboração de", { bold: true, text: "projeto de proteção contra incêndio e pânico" }, "para obtenção de AVCB/CLCB, atendendo edificações de diversos portes e segmentos."] }
-		]
+		{
+			heading: 'Soluções técnicas contempladas no projeto de proteção',
+			paragraphs: [
+				'Em edificações de médio e grande porte, o projeto de proteção contra incêndio e pânico abrange:',
+			],
+			lists: [
+				{
+					items: [
+						'Estudo de compartimentação horizontal e vertical (IT 07 do CBMMG) para limitar áreas de risco e eventualmente otimizar a exigência de sistemas;',
+						'Especificação de resistência ao fogo das estruturas (TRRF - IT 06) e controle de materiais de acabamento e revestimento (CMAR - IT 38);',
+						'Dimensionamento de escadas pressurizadas ou enclausuradas à prova de fumaça e rotas de fuga acessíveis;',
+						'Projeto executivo de redes de hidrantes, mangotinhos, chuveiros automáticos (sprinklers) e sistemas de detecção e alarme endereçáveis;',
+						'Memoriais técnicos, ART e tramitação eletrônica no portal INFOSCIP.',
+					],
+				},
+			],
 		},
-		{ heading: "Serviços oferecidos pela AJN Consultoria e Engenharia", paragraphs: [
-			{ segments: ["A empresa se destaca por fornecer soluções abrangentes em saúde e segurança no local de trabalho, incluindo o", { bold: true, text: "projeto de proteção contra incêndio e pânico" }, "que garante conformidade com a legislação vigente e normas técnicas específicas, proporcionando assim tranquilidade e segurança para seus clientes."] }
-		]
-, lists: [
-			{ items: [
-				"Prevenção e combate a incêndios, com consultoria e projeto;",
-				"Segurança ocupacional, qualidade, saúde e consultoria ambiental;",
-				"Relatórios de especialistas e responsabilidade técnica;",
-				"Certificações e serviços de treinamento NRs;",
-				"Mobilização de equipe."
-			] }
-		]
+		{
+			heading: 'Compatibilização com projetos arquitetônicos e complementares',
+			paragraphs: [
+				'Envolver a engenharia de incêndio desde a concepção arquitetônica evita que reservas técnicas de água, casas de bombas, shafts de pressurização ou larguras de escadas precisem ser refeitos durante a obra.',
+				{
+					segments: [
+						'Conheça mais detalhes em nossa página de ',
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Por que escolher a AJN Consultoria e Engenharia?", paragraphs: [
-			{ segments: ["A equipe altamente qualificada da AJN Consultoria e Engenharia oferece atendimento personalizado, análises minuciosas e projetos sob medida para cada cliente, visando sempre a excelência na prestação de serviços e a satisfação total de quem confia em seu", { bold: true, text: "projeto de proteção contra incêndio e pânico" }, "."] }
-		]
-, subsections: [
-			{ heading: "Entre em contato e realize o projeto de proteção contra incêndio e pânico!", paragraphs: [
-				{ segments: ["Se você busca por um serviço de qualidade, confiável e eficiente em", { bold: true, text: "projeto de proteção contra incêndio e pânico" }, ", a AJN Consultoria e Engenharia é a parceira ideal para atender suas necessidades."] },
-				"Não deixe a segurança em segundo plano, entre em contato conosco e saiba mais sobre como podemos ajudar a proteger o seu patrimônio e as pessoas que você ama."
-			]
-			}
-		]
+		{
+			heading: 'Solicite uma proposta técnica à AJN',
+			paragraphs: [
+				'Envie os dados do empreendimento ou edificação existente para análise da nossa equipe de engenharia.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'solicite orçamento pelo site', href: '/contato' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Para saber mais sobre Projeto de proteção contra incêndio e pânico", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
 	],
 } as const satisfies MarketingContent;

@@ -3,35 +3,68 @@ import type { MarketingContent } from '../types';
 export const empresaCombateIncendio = {
 	slug: 'empresa-combate-incendio',
 	path: '/empresa-combate-incendio',
-	title: 'Empresa de combate a incêndio - AJN Consultoria e Engenharia',
-	description: 'Empresa de combate a incêndio ajn consultoria e engenharia destaca-se como uma prestadora de serviços especializados em engenharia de segurança, atuando...',
-	heading: 'Empresa de combate a incêndio',
+	title: 'Empresa de Engenharia de Combate a Incêndio em MG | AJN',
+	description: 'Empresa de engenharia de combate a incêndio em Belo Horizonte e MG: elaboração de projetos (PSCIP), aprovação no CBMMG, pré-vistoria e assessoria para AVCB.',
+	heading: 'Empresa de Engenharia de Combate a Incêndio e Regularização',
 	images: [
-		{ src: '/images/content/marketing/empresa-combate-incendio/empresa-combate-incendio-01.webp', alt: 'Empresa de combate a incêndio' },
-		{ src: '/images/content/marketing/empresa-combate-incendio/empresa-combate-incendio-02.webp', alt: 'Empresa de combate a incêndio' },
-		{ src: '/images/content/marketing/empresa-combate-incendio/empresa-combate-incendio-03.webp', alt: 'Empresa de combate a incêndio' },
+		{ src: '/images/content/marketing/empresa-combate-incendio/empresa-combate-incendio-01.webp', alt: 'Empresa de engenharia de combate a incêndio em Minas Gerais' },
+		{ src: '/images/content/marketing/empresa-combate-incendio/empresa-combate-incendio-02.webp', alt: 'Vistoria técnica e dimensionamento de sistemas contra incêndio' },
+		{ src: '/images/content/marketing/empresa-combate-incendio/empresa-combate-incendio-03.webp', alt: 'Projetos e regularização junto ao Corpo de Bombeiros CBMMG' },
 	],
 	sections: [
-		{ heading: 'Serviços Especializados em da empresa de combate a incêndio', paragraphs: [
-			'A empresa de combate a incêndio AJN Consultoria e Engenharia destaca-se como uma prestadora de serviços especializados em engenharia de segurança, atuando na projeção, instalação e manutenção de sistemas preventivos e de combate a chamas em edificações.',
-			'Com foco em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA), a empresa visa promover a conformidade com as normas técnicas da ABNT e do Corpo de Bombeiros (AVCB/CLCB), assegurando a proteção de vidas e patrimônios.',
-		] },
-		{ heading: 'Principais Serviços Oferecidos pela empresa de combate a incêndio', paragraphs: [
-			'A AJN Consultoria e Engenharia disponibiliza uma ampla gama de serviços voltados para a segurança contra incêndios, incluindo gestão e emissão de laudos e projetos de combate a incêndio em conformidade com o Corpo de Bombeiros.',
-			'Além disso, a empresa de combate a incêndio realiza a elaboração e implementação de planos de manutenção, operação e controle, bem como a instalação e manutenção de sistemas de refrigeração e climatização.',
-		], subsections: [{ heading: 'Projetos Personalizados e Conformidade Técnica', paragraphs: [
-			'A empresa de combate a incêndio se destaca pela capacidade de adaptar suas soluções às necessidades específicas de cada cliente, sempre priorizando a comunicação clara, o cumprimento de prazos e a entrega de soluções personalizadas.',
-			'Com um portfólio abrangente que engloba práticas de gestão relacionadas ao eSocial, meio ambiente, qualidade e saúde ocupacional, a AJN Consultoria e Engenharia assegura a conformidade técnica e regulatória em todas as suas operações.',
-		] }] },
-		{ heading: 'Missão e Valores da Empresa', paragraphs: [
-			'A missão da AJN Consultoria e Engenharia é fornecer serviços em QSSMA e gestão de equipamentos, contribuindo para a segurança, eficiência e conformidade das operações de seus clientes.',
-			'A empresa de combate a incêndio pauta sua atuação em valores como comunicação transparente, cumprimento rigoroso de prazos e oferecimento de soluções eficazes e sustentáveis, sempre adaptadas às demandas específicas de cada projeto ou contrato.',
-		] },
-		{ heading: 'Solicite Já os Serviços da AJN Consultoria e Engenharia!', paragraphs: [
-			'Se você busca por uma empresa de combate a incêndio que ofereça serviços especializados, personalizados e de alta qualidade, não hesite em entrar em contato com a AJN Consultoria e Engenharia.',
-			'Promovemos soluções sob medida para suas necessidades, assegurando a segurança e proteção de seus empreendimentos.',
-			'Confie em quem entende do assunto e conte com a expertise da AJN para manter seu patrimônio e colaboradores seguros!',
-		] },
-		{ heading: 'Para saber mais sobre Empresa de combate a incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{
+			heading: 'Atuação de engenharia em prevenção e combate a incêndio',
+			paragraphs: [
+				'Ao buscar uma empresa de combate a incêndio para regularizar um galpão, indústria, comércio ou condomínio, é importante contar com engenharia habilitada que domine as Instruções Técnicas do Corpo de Bombeiros Militar de Minas Gerais (CBMMG) e o funcionamento do sistema INFOSCIP.',
+				'Com sede em Belo Horizonte, a AJN Consultoria e Engenharia presta serviços técnicos de diagnóstico predial, elaboração e modificação de projetos (PSCIP/PPCIP) e assessoria técnica para obtenção e renovação de AVCB.',
+			],
+		},
+		{
+			heading: 'Serviços técnicos prestados pela AJN na área de incêndio',
+			paragraphs: [
+				'Acompanhamos o cliente em todas as etapas de engenharia exigidas pela legislação estadual:',
+			],
+			lists: [
+				{
+					items: [
+						'Vistoria técnica de diagnóstico em edificações existentes para levantar não conformidades e pendências físicas;',
+						'Levantamento arquitetônico e elaboração de Projeto Técnico (PT) ou Projeto Técnico Simplificado (PTS);',
+						'Dimensionamento de hidrantes, mangotinhos, bombas de incêndio, sprinklers, alarme e detecção (SDAI), iluminação de emergência, sinalização, extintores e saídas de emergência;',
+						'Tramitação eletrônica no portal INFOSCIP, resposta técnica a notificações de análise e emissão de ART;',
+						'Pré-vistoria de comissionamento em campo e solicitação de vistoria final do CBMMG para emissão do AVCB.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Integração com Segurança do Trabalho e QSSMA',
+			paragraphs: [
+				'Para clientes corporativos e industriais, a AJN também integra a engenharia de incêndio às demandas de Segurança e Saúde no Trabalho (PGR, LTCAT, PCMSO, laudos e treinamentos de NRs), centralizando a gestão técnica em um único parceiro.',
+				{
+					segments: [
+						'Conheça também nossas páginas de ',
+						{ text: 'Empresa de Combate a Incêndio em BH', href: '/empresa-combate-incendio-bh' },
+						' e ',
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						'.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Converse com a equipe técnica da AJN',
+			paragraphs: [
+				'Informe a localização do seu imóvel, a área construída e a sua necessidade atual para elaborarmos uma proposta sob medida.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'solicite contato pelo site', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

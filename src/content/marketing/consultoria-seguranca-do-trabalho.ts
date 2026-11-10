@@ -2,78 +2,70 @@ import type { MarketingContent } from '../types';
 
 export const consultoriaSegurancaDoTrabalho = {
 	slug: "consultoria-seguranca-do-trabalho", path: "/consultoria-seguranca-do-trabalho",
-	title: "Consultoria segurança do trabalho - AJN Consultoria e Engenharia",
-	description: "Consultoria segurança do trabalho para reduzir riscos, melhorar a conformidade e proteger colaboradores com soluções técnicas e preventivas.",
-	heading: "Consultoria segurança do trabalho",
+	title: "Consultoria em Segurança do Trabalho em BH e MG | AJN Engenharia",
+	description: "Consultoria em segurança do trabalho para indústrias, obras e empresas em BH e MG: elaboração de PGR, LTCAT, laudos técnicos, inspeções de campo e eSocial.",
+	heading: "Consultoria em Segurança do Trabalho para Empresas",
 	images: [
-		{ src: "/images/content/marketing/consultoria-pcmso/consultoria-pcmso-02.webp", alt: "Consultoria segurança do trabalho" },
-		{ src: "/images/content/marketing/consultoria-seguranca-do-trabalho/consultoria-seguranca-do-trabalho-02.webp", alt: "Consultoria segurança do trabalho" },
-		{ src: "/images/content/marketing/elaboracao-pgr/elaboracao-pgr-01.webp", alt: "Consultoria segurança do trabalho" },
+		{ src: "/images/content/marketing/consultoria-pcmso/consultoria-pcmso-02.webp", alt: "Consultoria em segurança do trabalho em campo" },
+		{ src: "/images/content/marketing/consultoria-seguranca-do-trabalho/consultoria-seguranca-do-trabalho-02.webp", alt: "Acompanhamento técnico de segurança operacional" },
+		{ src: "/images/content/marketing/elaboracao-pgr/elaboracao-pgr-01.webp", alt: "Avaliação de riscos ocupacionais e documentação de SST" },
 	],
 	sections: [
-		{ heading: "consultoria segurança do trabalho: Proteja Seu Negócio e Seus Colaboradores", paragraphs: [
-		]
-, subsections: [
-			{ heading: "1. Definição e Importância da consultoria segurança do trabalho", paragraphs: [
-				{ segments: ["A", { bold: true, text: "consultoria segurança do trabalho" }, "é um serviço especializado que visa auxiliar as empresas na identificação, avaliação e controle dos riscos presentes nas atividades laborais."] },
-				"Por meio de análises detalhadas dos ambientes, processos e operações, os consultores desenvolvem medidas preventivas e orientações para assegurar a segurança e a saúde dos colaboradores.",
-				"Essa consultoria é essencial para promover um ambiente de trabalho mais seguro e conforme as normas regulamentadoras."
+		{
+			heading: "Atuação técnica em Segurança do Trabalho para operações reais",
+			paragraphs: [
+				"Uma consultoria em segurança do trabalho precisa ir além da entrega formal de pastas e certificados. Nas operações industriais, comerciais, logísticas e da construção civil, a gestão de SST exige reconhecimento preciso dos riscos no local de trabalho, definição de medidas de controle viáveis e documentação consistente para fiscalizações e contratos.",
+				"Sediada em Belo Horizonte, a AJN Consultoria e Engenharia apoia empresas em Minas Gerais tanto em demandas pontuais de regularização documental quanto no acompanhamento técnico recorrente em campo."
 			]
-			},
-			{ heading: "2. Papel do Consultor de Segurança do Trabalho", paragraphs: [
-				"O consultor de segurança do trabalho desempenha um papel fundamental na implementação de práticas preventivas e na orientação das equipes sobre os procedimentos corretos a serem adotados.",
-				"Ele atua na identificação de possíveis riscos, na elaboração de planos de ação para mitigar essas ameaças e no acompanhamento contínuo das medidas de segurança.",
-				"Além disso, o consultor é responsável por promover a conscientização dos colaboradores sobre a importância de adotar comportamentos seguros no ambiente de trabalho.",
-				{ segments: ["Quando a demanda envolve gestão mais ampla, a AJN também reforça a conexão com", { text: "consultoria da qualidade", href: "/consultoria-da-qualidade" }, "e boas práticas internas."] }
-			]
-			}
-		]
 		},
-		{ heading: "Benefícios da consultoria segurança do trabalho", paragraphs: [
-		]
-, subsections: [
-			{ heading: "1. Redução de Acidentes e Doenças Ocupacionais", paragraphs: [
-				{ segments: ["A", { bold: true, text: "consultoria segurança do trabalho" }, "contribui significativamente para a redução de acidentes e doenças ocupacionais nas empresas."] },
-				"Ao identificar e controlar os riscos presentes nos processos de trabalho, os consultores ajudam a prevenir incidentes que poderiam resultar em lesões ou danos à saúde dos colaboradores.",
-				"Dessa forma, a empresa consegue manter um ambiente de trabalho mais seguro e saudável, promovendo o bem-estar de sua equipe."
+		{
+			heading: "Escopos atendidos pela consultoria de SST da AJN",
+			paragraphs: [
+				"O atendimento é moldado conforme o grau de risco e a estrutura interna de cada cliente:"
+			],
+			lists: [
+				{
+					items: [
+						"Elaboração e atualização do Programa de Gerenciamento de Riscos (PGR - NR-01), com inventário de riscos e plano de ação;",
+						"Emissão de Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) e laudos de insalubridade (NR-15) e periculosidade (NR-16);",
+						"Avaliações quantitativas de agentes físicos e químicos (dosimetria de ruído, calor, vibração, poeiras e vapores orgânicos);",
+						"Apoio na estruturação das informações técnicas para os eventos de SST no eSocial (S-2210, S-2220 e S-2240);",
+						"Inspeções técnicas de segurança em obras e plantas industriais, mobilização de terceiros e assistência técnica em perícias trabalhistas."
+					]
+				}
 			]
-			},
-			{ heading: "2. Aumento da Produtividade e Satisfação no Trabalho", paragraphs: [
-				"Com a implantação de medidas de segurança adequadas, as empresas podem observar um aumento na produtividade e na satisfação dos colaboradores.",
-				"Ambientes de trabalho seguros e saudáveis estimulam o engajamento da equipe, reduzem o absenteísmo e contribuem para a melhoria do clima organizacional.",
-				"Além disso, a valorização da segurança do trabalho demonstra o comprometimento da empresa com o bem-estar de seus funcionários, fortalecendo a relação de confiança e respeito mútuo."
-			]
-			}
-		]
 		},
-		{ heading: "Como Escolher uma consultoria segurança do trabalho?", paragraphs: [
-		]
-, subsections: [
-			{ heading: "1. Certificações e Experiência do Consultor", paragraphs: [
-				"Ao selecionar uma consultoria em segurança do trabalho, é essencial verificar as certificações e a experiência dos consultores envolvidos.",
-				"Profissionais qualificados e com conhecimento técnico sólido são capazes de oferecer soluções eficazes e personalizadas para atender às necessidades específicas de cada empresa.",
-				"Além disso, é importante avaliar a reputação da consultoria no mercado e buscar referências de clientes anteriores para assegurar a qualidade dos serviços prestados."
+		{
+			heading: "Integração com Saúde Ocupacional, Incêndio e Qualidade",
+			paragraphs: [
+				"Empresas que centralizam o suporte de engenharia conseguem manter coerência técnica entre o inventário do PGR, o PCMSO (NR-07) e os projetos de prevenção e combate a incêndio junto ao CBMMG.",
+				{
+					segments: [
+						"Consulte nossas páginas de ",
+						{ text: "Elaboração de PGR", href: "/elaboracao-pgr" },
+						", ",
+						{ text: "Emissão de LTCAT", href: "/emissao-ltcat" },
+						" e ",
+						{ text: "Consultoria da Qualidade", href: "/consultoria-da-qualidade" },
+						"."
+					]
+				}
 			]
-			},
-			{ heading: "2. Análise de Casos e Depoimentos de Clientes", paragraphs: [
-				"Antes de contratar uma consultoria em segurança do trabalho, é recomendável analisar casos de sucesso e depoimentos de clientes que já utilizaram os serviços da empresa.",
-				"Essas informações podem fornecer insights valiosos sobre a eficácia das soluções oferecidas, a capacidade de resolução de problemas e o nível de satisfação dos clientes atendidos.",
-				"Dessa forma, é possível tomar uma decisão mais informada e selecionar a consultoria que melhor se adequa às necessidades da sua empresa."
+		},
+		{
+			heading: "Converse com um engenheiro da AJN",
+			paragraphs: [
+				"Apresente o segmento da sua empresa, o número de colaboradores e a sua necessidade atual para avaliarmos o escopo técnico adequado.",
+				{
+					segments: [
+						"Ligue para ",
+						{ bold: true, text: "31 98473-4644" },
+						" ou ",
+						{ text: "solicite uma proposta técnica", href: "/contato" },
+						"."
+					]
+				}
 			]
-			}
-		]
-		},
-		{ heading: "Entre em contato com a AJN Consultoria e Engenharia", paragraphs: [
-			"Fundada em 2023 em Belo Horizonte, Minas Gerais, a AJN Consultoria e Engenharia é uma empresa referência em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA), oferecendo suporte técnico especializado para empresas que buscam manter a conformidade normativa e fortalecer suas operações internas.",
-			"Com foco em consultoria em segurança do trabalho, gestão ambiental, saúde ocupacional e projetos de combate a incêndio, a AJN se destaca pela personalização de soluções e pela capacidade de atender às demandas específicas de cada cliente.",
-			"Proteja seu negócio e seus colaboradores com a consultoria em segurança do trabalho da AJN Consultoria e Engenharia.",
-			"Proporcione um ambiente de trabalho seguro, saudável e conforme as normas regulamentadoras.",
-			"Entre em contato conosco e descubra como podemos ajudar a transformar a segurança do seu negócio!"
-		]
-		},
-		{ heading: "Para saber mais sobre Consultoria segurança do trabalho", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
 		}
 	],
 } as const satisfies MarketingContent;
