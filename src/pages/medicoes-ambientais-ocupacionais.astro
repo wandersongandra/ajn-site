@@ -31,7 +31,7 @@ const serviceSchema = {
   description: 'Avaliações instrumentais de agentes ocupacionais conforme demanda e escopo técnico definido previamente.',
 };
 ---
-<BaseLayout title="Medições Ambientais Ocupacionais | AJN Engenharia" description="Avaliações de ruído, calor e iluminamento ocupacional conforme o escopo e critérios técnicos aplicáveis. Consulte as modalidades e solicite orçamento à AJN." canonicalPath="/medicoes-ambientais-ocupacionais" ogImage="/images/medicoes/hero-medicoes-ocupacionais.webp">
+<BaseLayout title="Medições Ocupacionais em BH | Ruído, Calor e Luz | AJN" description="Medições ocupacionais em Belo Horizonte: dosimetria de ruído, avaliação de calor (IBUTG) e iluminamento. Consulte a AJN sobre o escopo técnico." canonicalPath="/medicoes-ambientais-ocupacionais" ogImage="/images/medicoes/hero-medicoes-ocupacionais.webp">
   <div class="ajn-measure">
     <nav class="ajn-measure__breadcrumb site-shell" aria-label="Navegação estrutural"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/servicos">Serviços</a><span aria-hidden="true">/</span><span aria-current="page">Medições ambientais</span></nav>
     <section class="ajn-measure__hero" aria-labelledby="medicoes-titulo">
@@ -41,8 +41,8 @@ const serviceSchema = {
       <div class="ajn-measure__hero-shade" aria-hidden="true"></div>
       <div class="site-shell ajn-measure__hero-content">
         <p class="ajn-measure__eyebrow">Higiene ocupacional / Instrumentação em campo</p>
-        <h1 id="medicoes-titulo">Medições ambientais para decisões de SST mais fundamentadas.</h1>
-        <p>Avaliar a exposição exige mais do que registrar um número. É preciso compreender o trabalho, aplicar o método adequado e interpretar o resultado em seu contexto.</p>
+        <h1 id="medicoes-titulo">Medições ocupacionais em Belo Horizonte.</h1>
+        <p>Dosimetria de ruído, avaliação de calor e iluminamento exigem conhecer as tarefas, aplicar o método adequado e interpretar os resultados no contexto real de trabalho.</p>
         <div class="ajn-measure__actions">
           <a class="ajn-measure__button ajn-measure__button--primary" href={whatsapp} target="_blank" rel="noopener noreferrer">Solicitar orçamento <span aria-hidden="true">↗</span></a>
           <a class="ajn-measure__button ajn-measure__button--ghost" href="#modalidades">Conhecer avaliações <span aria-hidden="true">↓</span></a>
@@ -63,7 +63,7 @@ const serviceSchema = {
           {modalidades.map((item) => (
             <article class="ajn-measure__card">
               <figure><img src={item.image} alt={item.alt} width="910" height="683" loading="lazy" decoding="async" /><figcaption>Imagem ilustrativa digital</figcaption></figure>
-              <div class="ajn-measure__card-copy"><span>{item.number} / Avaliação ocupacional</span><h3>{item.title}</h3><strong>{item.lead}</strong><p>{item.details}</p></div>
+              <div class="ajn-measure__card-copy" id={item.number === '01' ? 'dosimetria-de-ruido' : undefined}><span>{item.number} / Avaliação ocupacional</span><h3>{item.title}</h3><strong>{item.lead}</strong><p>{item.details}</p></div>
             </article>
           ))}
         </div>
@@ -89,7 +89,7 @@ const serviceSchema = {
 
     <section class="ajn-measure__closing" aria-labelledby="medicoes-contato"><div class="site-shell ajn-measure__closing-inner"><div><p class="ajn-measure__kicker">Vamos avaliar sua demanda</p><h2 id="medicoes-contato">Conte qual processo precisa ser avaliado.</h2><p>Descreva a unidade, atividades, agentes de interesse e o prazo. A AJN analisa as informações e define a proposta de atendimento.</p></div><div class="ajn-measure__closing-actions"><a class="ajn-measure__button ajn-measure__button--light" href={whatsapp} target="_blank" rel="noopener noreferrer">Solicitar orçamento por WhatsApp ↗</a><a href="/contato">Outros canais de atendimento →</a></div></div></section>
 
-    <nav class="ajn-measure__related site-shell" aria-label="Serviços e conteúdos relacionados"><span>Você também pode consultar</span><a href="/elaboracao-pgr">Elaboração de PGR ↗</a><a href="/emissao-ltcat">Emissão de LTCAT ↗</a><a href="/servicos/pericias-em-periculosidade-e-insalubridade">Perícias técnicas ↗</a><a href="/blog/higiene-ocupacional-como-planejar-avaliacoes-de-exposicao">Planejamento das avaliações ↗</a></nav>
+    <nav class="ajn-measure__related site-shell" aria-label="Serviços e conteúdos relacionados"><span>Você também pode consultar</span><a href="/blog/medicao-de-ruido-ocupacional-dosimetria-e-planejamento">Como planejar a dosimetria de ruído ↗</a><a href="/elaboracao-pgr">Elaboração de PGR ↗</a><a href="/emissao-ltcat">Emissão de LTCAT ↗</a><a href="/servicos/pericias-em-periculosidade-e-insalubridade">Perícias técnicas ↗</a><a href="/blog/higiene-ocupacional-como-planejar-avaliacoes-de-exposicao">Planejamento das avaliações ↗</a></nav>
   </div>
   <script type="application/ld+json" set:html={serializeJsonLd(serviceSchema)} />
 </BaseLayout>

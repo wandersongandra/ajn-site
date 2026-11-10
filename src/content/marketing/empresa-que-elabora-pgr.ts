@@ -3,53 +3,44 @@ import type { MarketingContent } from '../types';
 export const empresaQueElaboraPgr = {
 	slug: 'empresa-que-elabora-pgr',
 	path: '/empresa-que-elabora-pgr',
-	title: 'Empresa que elabora pgr - AJN Consultoria e Engenharia',
-	description: 'Empresa que elabora pgr traz diversos benefícios, tais como a customização do programa segundo as necessidades específicas de cada cliente.',
-	heading: 'Empresa que elabora pgr',
+	title: 'Consultoria em PGR em Belo Horizonte | AJN',
+	description: 'Consultoria para PGR em Belo Horizonte: inventário de riscos, plano de ação e avaliação das atividades. Entenda o escopo antes de contratar.',
+	heading: 'Consultoria em PGR e gerenciamento de riscos ocupacionais',
 	images: [
-		{ src: '/images/content/marketing/empresa-que-elabora-pgr/empresa-que-elabora-pgr-01.webp', alt: 'Empresa que elabora pgr' },
-		{ src: '/images/content/marketing/empresa-que-elabora-pgr/empresa-que-elabora-pgr-02.webp', alt: 'Empresa que elabora pgr' },
-		{ src: '/images/content/marketing/empresa-que-elabora-pgr/empresa-que-elabora-pgr-03.webp', alt: 'Empresa que elabora pgr' },
+		{ src: '/images/content/marketing/empresa-que-elabora-pgr/empresa-que-elabora-pgr-01.webp', alt: 'Imagem de apoio ao levantamento de riscos ocupacionais' },
+		{ src: '/images/content/marketing/empresa-que-elabora-pgr/empresa-que-elabora-pgr-02.webp', alt: 'Imagem de apoio ao planejamento de medidas preventivas' },
+		{ src: '/images/content/marketing/empresa-que-elabora-pgr/empresa-que-elabora-pgr-03.webp', alt: 'Imagem de apoio à documentação de segurança do trabalho' },
 	],
 	sections: [
 		{
-			heading: 'A importância da empresa que elabora pgr',
+			heading: 'O que observar ao contratar a elaboração do PGR',
 			paragraphs: [
-				{ segments: ['A ', { bold: true, text: 'empresa que elabora pgr' }, ' desempenha um papel fundamental na garantia da segurança e saúde dos trabalhadores, além de assegurar a conformidade com as normas regulatórias.'] },
-				'O Programa de Gerenciamento de Riscos (PGR) é essencial para identificar, avaliar e controlar os riscos ambientais e ocupacionais presentes nos ambientes de trabalho.',
+				'O Programa de Gerenciamento de Riscos (PGR) precisa refletir as atividades e os riscos efetivos da empresa. Antes de elaborar ou revisar a documentação, é necessário conhecer os ambientes, funções, tarefas e controles já existentes.',
+				'A AJN presta consultoria em segurança do trabalho em Belo Horizonte e região. A definição do escopo considera a situação da empresa e as exigências aplicáveis da NR-1, sem tratar o PGR como um documento padronizado para qualquer operação.',
 			],
 		},
 		{
-			heading: 'Serviços oferecidos pela empresa AJN Consultoria e Engenharia',
+			heading: 'Inventário de riscos e plano de ação',
 			paragraphs: [
-				'A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, oferece uma ampla gama de serviços especializados em segurança do trabalho.',
-				{ segments: ['A ', { bold: true, text: 'empresa que elabora pgr' }, ' atua na prevenção e combate a incêndios, segurança ocupacional, qualidade, saúde e consultoria ambiental, certificações e treinamentos em NRs, entre outros.'] },
+				'Na estrutura do PGR, o inventário registra a identificação e a avaliação dos riscos ocupacionais. O plano de ação organiza as medidas de prevenção necessárias, com acompanhamento e responsabilidades definidos segundo a realidade da organização.',
+				'Mudanças no processo, na exposição ou nas condições de trabalho podem demandar revisão das informações. Por isso, o levantamento e a participação das áreas operacionais fazem diferença.',
+				{ segments: ['Veja também como a AJN apresenta o serviço de ', { text: 'elaboração de PGR', href: '/elaboracao-pgr' }, '.'] },
 			],
 		},
 		{
-			heading: 'Vantagens de contratar uma empresa especializada em PGR',
+			heading: 'Quando são necessárias avaliações ocupacionais',
 			paragraphs: [
-				{ segments: ['A contratação de uma ', { bold: true, text: 'empresa que elabora pgr' }, ' traz diversos benefícios, tais como a customização do programa segundo as necessidades específicas de cada cliente, garantindo a eficácia na identificação e controle de riscos.'] },
-				'Além disso, contar com profissionais especializados proporciona maior segurança e tranquilidade no ambiente de trabalho.',
+				'Alguns riscos exigem avaliações técnicas complementares para apoiar a caracterização das condições de exposição. O método, os instrumentos e os critérios devem ser definidos para o agente e a finalidade do levantamento.',
+				{ segments: ['Conheça as modalidades de ', { text: 'medições ambientais ocupacionais', href: '/medicoes-ambientais-ocupacionais' }, ' disponibilizadas para avaliação de escopo.'] },
 			],
 		},
 		{
-			heading: 'empresa que elabora pgr sob medida',
+			heading: 'O que informar para pedir uma proposta',
 			paragraphs: [
-				'A empresa AJN Consultoria e Engenharia se destaca por oferecer serviços personalizados na elaboração de PGR, levando em consideração as particularidades de cada cliente.',
-				'Com especialização na área de segurança do trabalho, a equipe da empresa garante soluções eficientes e alinhadas às normas vigentes, promovendo ambientes de trabalho seguros e saudáveis.',
+				'Informe a atividade principal, localização das unidades, número de trabalhadores, funções, turnos e se a empresa já possui PGR ou inventário de riscos. Se houve alteração recente na operação, descreva o que mudou.',
+				'A análise inicial permite verificar as etapas de levantamento, eventuais visitas e os documentos que devem integrar o escopo solicitado.',
+				{ segments: ['Para conversar sobre a demanda, ', { text: 'entre em contato com a AJN', href: '/contato' }, '.'] },
 			],
-			subsections: [{
-				heading: 'Entre em contato com a empresa que elabora pgr',
-				paragraphs: [
-					{ segments: ['Se você busca garantir a segurança e a conformidade do seu ambiente de trabalho, não deixe de contatar a AJN Consultoria e Engenharia, ', { bold: true, text: 'empresa que elabora pgr' }, '.'] },
-					'Priorize a saúde e o bem-estar dos seus colaboradores, bem como a proteção do meio ambiente. Entre em contato conosco e saiba como podemos ajudar a sua empresa a manter um ambiente de trabalho seguro e conforme a legislação vigente.',
-				],
-			}] ,
-		},
-		{
-			heading: 'Para saber mais sobre Empresa que elabora pgr',
-			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
 		},
 	],
 } as const satisfies MarketingContent;

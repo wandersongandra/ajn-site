@@ -3,10 +3,11 @@ import path from 'node:path';
 
 // Pares remanescentes com risco histórico de título sobreposto (elétrica/elevação removidos).
 const expected = {
-	'/empresa-que-elabora-pgr': 'Consultoria para PGR e gerenciamento de riscos | AJN',
+	'/empresa-que-elabora-pgr': 'Consultoria em PGR em Belo Horizonte | AJN',
 	'/empresa-que-faz-pgr': 'Elaboração de PGR para empresas | AJN Consultoria e Engenharia',
 	'/pcmso-preco': 'Preço de PCMSO: fatores de escopo | AJN',
 	'/preco-pcmso': 'Orçamento de PCMSO para empresas | AJN',
+	'/orcamento-pcmso': 'Orçamento de PCMSO em Belo Horizonte | AJN',
 	'/projeto-prevencao-combate-incendio': 'Projeto de prevenção contra incêndio: orientação | AJN',
 	'/elaboracao-pgr': 'Elaboração de PGR e gestão de riscos ocupacionais | AJN',
 };

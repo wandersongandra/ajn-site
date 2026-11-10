@@ -13,7 +13,7 @@ const [landing,home,services,blog,menu,source]=await Promise.all([
 check((landing.match(/<h1\b/g)||[]).length===1,'Medições: precisa ter um H1.');
 const origin=process.env.PUBLIC_SITE_ORIGIN?.replace(/\/+$/,'')||'https://ajnengenharia.com.br';
 check(landing.includes('rel="canonical" href="'+origin+'/'+slug+'/\"'), 'Medições: canonical incorreta.');
-check(landing.includes('name="description"')&&landing.includes('Medições Ambientais Ocupacionais'),'Medições: SEO incompleto.');
+check(landing.includes('name="description"')&&landing.includes('Medições Ocupacionais em BH')&&landing.includes('dosimetria de ruído'),'Medições: SEO incompleto.');
 for(const word of ['NHO 01','NHO 06','NHO 11','NR-15','NR-17','IBUTG','iluminamento','LTCAT','PGR','relatório'])check(landing.includes(word),'Medições: falta contexto '+word);
 check(landing.includes('application/ld+json')&&landing.includes('\"@type\":\"Service\"'),'Medições: Schema Service ausente.');
 check(landing.includes('wa.me/5531984734644')&&landing.includes('href="/contato"'),'Medições: falta orçamento/contato.');
