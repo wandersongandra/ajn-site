@@ -169,6 +169,58 @@ for (const vp of viewports) {
       assert(await page.locator('[data-jobs-tbody] tr').count() === 1, 'Listagem de vagas disponível após F5');
     }
 
+    if (route === '/carreiras/talentos/' || route === '/carreiras/vaga/') {
+      // Regressão: o aviso fica fora do <form> no layout Astro original.
+      const application = page.locator('[data-application-form]');
+      const oversized = Buffer.alloc(5 * 1024 * 1024 + 1, 65);
+      await application.locator('input[type="file"]').setInputFiles({
+        name: 'qa-over-limit.pdf',
+        mimeType: 'application/pdf',
+        buffer: oversized,
+      });
+      const notice = page.locator('.carreiras-notice[data-notice]').first();
+      assert(await notice.isVisible(), `Aviso de currículo grande visível em ${route} (${vp.name})`);
+      assert((await notice.textContent()).includes('excede o limite'), `Erro de upload legível em ${route} (${vp.name})`);
+    }
+
+    if (route === '/carreiras/acompanhamento/') {
+      const recoveryForm = page.locator('[data-recovery-form]');
+      assert(await recoveryForm.count() === 1, `Recuperação de protocolo disponível em ${vp.name}`);
+      await page.route('**/api/applications/track/**', route => route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Protocolo QA inexistente.' }),
+      }));
+      await page.locator('[data-tracking-form] [name="code"]').fill('AJN-2026-ABCDEF');
+      await page.locator('[data-tracking-form] button[type="submit"]').click();
+      await page.waitForFunction(() => [...document.querySelectorAll('.carreiras-notice[data-notice]')].some(el => el.textContent.includes('Protocolo QA inexistente.')));
+      assert(await page.locator('.carreiras-notice[data-notice]').first().isVisible(), `Erro de acompanhamento visível em ${vp.name}`);
+
+      await page.route('**/api/applications/recover-tracking', route => route.fulfill({
+        status: 202,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, message: 'Código de teste enviado.' }),
+      }));
+      await recoveryForm.locator('[name="email"]').fill('qa@example.invalid');
+      await recoveryForm.locator('[name="cpf"]').fill('11144477735');
+      await recoveryForm.locator('button[type="submit"]').click();
+      await page.waitForFunction(() => document.querySelector('[data-recovery-form] [data-notice]')?.textContent.includes('Código de teste enviado.'));
+      assert(await recoveryForm.locator('[data-notice]').isVisible(), `Mensagem de recuperação visível em ${vp.name}`);
+      assert(await recoveryForm.locator('[data-code-group]').isVisible(), `Campo de confirmação por e-mail liberado em ${vp.name}`);
+
+      await page.route('**/api/lgpd/deletion-request', route => route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Solicitação de teste recusada.' }),
+      }));
+      const lgpdForm = page.locator('[data-lgpd-form]');
+      await lgpdForm.locator('[name="email"]').fill('qa@example.invalid');
+      await lgpdForm.locator('[name="cpf"]').fill('11144477735');
+      await lgpdForm.locator('button[type="submit"]').click();
+      await page.waitForFunction(() => document.querySelector('[data-lgpd-form] [data-notice]')?.textContent.includes('Solicitação de teste recusada.'));
+      assert(await lgpdForm.locator('[data-notice]').isVisible(), `Mensagem LGPD visível em ${vp.name}`);
+    }
+
     await page.close();
   }
 
