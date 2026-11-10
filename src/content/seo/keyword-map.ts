@@ -12,10 +12,10 @@ export interface KeywordMapEntry {
 export const keywordMap = {
 	'/': {
 		primaryKeyword: 'consultoria em segurança do trabalho',
-		secondaryKeywords: ['saúde ocupacional', 'laudos técnicos', 'eSocial', 'projetos de engenharia'],
+		secondaryKeywords: ['segurança do trabalho em Belo Horizonte', 'PGR', 'PCMSO', 'LTCAT', 'PPCIP'],
 		intent: 'comercial',
-		title: 'Consultoria em segurança do trabalho e engenharia | AJN',
-		description: 'Consultoria em segurança do trabalho e engenharia para empresas. Conheça os serviços da AJN em laudos, eSocial e projetos técnicos.',
+		title: 'Segurança do Trabalho e Engenharia em BH | AJN',
+		description: 'Consultoria em segurança do trabalho em Belo Horizonte: PGR, PCMSO, LTCAT, medições ocupacionais, eSocial SST e projetos PPCIP. Conheça a AJN.',
 	},
 	'/sobre-nos': {
 		primaryKeyword: 'AJN Consultoria e Engenharia',
@@ -117,17 +117,25 @@ export const keywordMap = {
 	},
 	'/servicos/projetos-de-combate-a-incendio-e-panico-ppcip': {
 		primaryKeyword: 'PPCIP',
-		secondaryKeywords: ['PPCIP', 'AVCB', 'CLCB', 'segurança contra incêndio'],
+		secondaryKeywords: ['projeto de combate a incêndio em BH', 'AVCB', 'CLCB', 'segurança contra incêndio'],
 		intent: 'comercial',
-		title: 'Projeto PPCIP de combate a incêndio e pânico | AJN',
-		description: 'Projetos PPCIP e documentação de segurança contra incêndio e pânico, incluindo regularização e renovação de AVCB/CLCB conforme a edificação.',
+		title: 'Projeto PPCIP em Belo Horizonte | AJN Engenharia',
+		description: 'PPCIP em Belo Horizonte: análise da edificação, projeto de prevenção contra incêndio e documentação para AVCB ou CLCB. Solicite avaliação à AJN.',
 	},
 	'/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros': {
-		primaryKeyword: 'regularização de imóveis junto ao Corpo de Bombeiros',
-		secondaryKeywords: ['AVCB', 'CLCB', 'projeto contra incêndio', 'adequação de imóveis'],
+		primaryKeyword: 'regularização AVCB e CLCB em Belo Horizonte',
+		secondaryKeywords: ['AVCB em BH', 'CLCB', 'renovação de AVCB', 'Corpo de Bombeiros de Minas Gerais'],
 		intent: 'transacional',
-		title: 'Regularização de imóveis junto ao Corpo de Bombeiros | AJN',
-		description: 'Análise da situação da edificação e apoio à elaboração de projetos e documentos para regularização e licenciamento.',
+		title: 'AVCB e CLCB em Belo Horizonte | Regularização | AJN',
+		description: 'Regularização de imóveis em Belo Horizonte: análise documental, AVCB, CLCB e renovação conforme a situação da edificação. Converse com a AJN.',
+	},
+	'/empresa-combate-incendio-bh': {
+		primaryKeyword: 'consultoria em segurança contra incêndio em Belo Horizonte',
+		secondaryKeywords: ['empresa de combate a incêndio BH', 'PPCIP', 'AVCB', 'CLCB'],
+		intent: 'comercial',
+		title: 'Consultoria em Segurança Contra Incêndio em BH | AJN',
+		description: 'Precisa de orientação sobre PPCIP, AVCB ou CLCB em Belo Horizonte? A AJN analisa o cenário da edificação e o escopo de regularização.',
+		heading: 'Consultoria em segurança contra incêndio em Belo Horizonte',
 	},
 	'/servicos/treinamento-de-nrs': {
 		primaryKeyword: 'treinamento de NRs',

@@ -7,8 +7,8 @@ const checks = [
 	['assessoria-e-consultoria-em-saude-ocupacional', 'Assessoria em saúde ocupacional para identificar riscos, apoiar programas de prevenção e orientar medidas de controle no ambiente de trabalho.'],
 	['gestao-ambiental', 'Gestão ambiental para empresas, com orientação sobre segregação, armazenamento, destinação de resíduos e conscientização das equipes.'],
 	['gestao-da-qualidade', 'Gestão da qualidade em obras com plano de qualidade, fichas de verificação, controle de materiais e acompanhamento técnico no local.'],
-	['projetos-de-combate-a-incendio-e-panico-ppcip', 'Projetos PPCIP e documentação de segurança contra incêndio e pânico, incluindo regularização e renovação de AVCB/CLCB conforme a edificação.'],
-	['regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros', 'Análise da situação da edificação e apoio à elaboração de projetos e documentos para regularização e licenciamento.'],
+	['projetos-de-combate-a-incendio-e-panico-ppcip', 'PPCIP em Belo Horizonte: análise da edificação, projeto de prevenção contra incêndio e documentação para AVCB ou CLCB. Solicite avaliação à AJN.'],
+	['regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros', 'Regularização de imóveis em Belo Horizonte: análise documental, AVCB, CLCB e renovação conforme a situação da edificação. Converse com a AJN.'],
 	['treinamento-de-nrs', 'Capacitações relacionadas às NRs e integração de novos funcionários, conforme atividade, modalidade e requisitos aplicáveis.'],
 ];
 

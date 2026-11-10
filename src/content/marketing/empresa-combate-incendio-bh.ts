@@ -3,48 +3,34 @@ import type { MarketingContent } from '../types';
 export const empresaCombateIncendioBh = {
 	slug: 'empresa-combate-incendio-bh',
 	path: '/empresa-combate-incendio-bh',
-	title: 'Empresa de combate a incêndio em bh - AJN Consultoria e Engenharia',
-	description: 'Empresa de combate a incêndio em BH especializada em projetos, laudos, AVCB e soluções técnicas para segurança e regularização de edifícios.',
+	title: 'Consultoria em segurança contra incêndio em BH | AJN',
+	description: 'Precisa de orientação sobre PPCIP, AVCB ou CLCB em Belo Horizonte? A AJN analisa o cenário da edificação e o escopo de regularização.',
 	heading: 'Empresa de combate a incêndio em bh',
 	images: [
-		{ src: '/images/content/marketing/empresa-combate-incendio-bh/empresa-combate-incendio-bh-01.webp', alt: 'Empresa de combate a incêndio em bh' },
-		{ src: '/images/content/marketing/empresa-combate-incendio-bh/empresa-combate-incendio-bh-02.webp', alt: 'Empresa de combate a incêndio em bh' },
-		{ src: '/images/content/marketing/empresa-combate-incendio-bh/empresa-combate-incendio-bh-03.webp', alt: 'Empresa de combate a incêndio em bh' },
+		{ src: '/images/content/marketing/empresa-combate-incendio-bh/empresa-combate-incendio-bh-01.webp', alt: 'Imagem de apoio sobre projetos e segurança contra incêndio' },
+		{ src: '/images/content/marketing/empresa-combate-incendio-bh/empresa-combate-incendio-bh-02.webp', alt: 'Imagem de apoio à documentação de prevenção contra incêndio' },
+		{ src: '/images/content/marketing/empresa-combate-incendio-bh/empresa-combate-incendio-bh-03.webp', alt: 'Imagem de apoio às medidas de proteção de edificações' },
 	],
 	sections: [
-		{ heading: 'AJN Consultoria e Engenharia: Referência como empresa de combate a incêndio em bh', paragraphs: [
-			'A AJN Consultoria e Engenharia é uma empresa de combate a incêndio em bh que atua de forma estratégica no mercado de consultoria e engenharia, oferecendo soluções completas em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA).',
-			'Com um portfólio técnico robusto e uma abordagem totalmente personalizada, a AJN atende empresas que precisam promover segurança, eficiência operacional e total conformidade com as normas legais e regulatórias.',
-			'Em um ambiente corporativo cada vez mais fiscalizado, contar com uma empresa de combate a incêndio em bh experiente não é apenas uma exigência legal, mas uma decisão inteligente para proteger pessoas, patrimônios e a continuidade do negócio.',
-			'A AJN se posiciona como parceira dos seus clientes, entregando não apenas documentos e projetos, mas soluções práticas, seguras e sustentáveis.',
+		{ heading: 'Projeto, prevenção e regularização de edificações', paragraphs: [
+			'Uma empresa que precisa regularizar seu imóvel em Belo Horizonte deve começar pelo enquadramento da edificação. O uso do espaço, a área, as condições de ocupação e as medidas de segurança existentes influenciam a documentação necessária.',
+			'A AJN atende demandas de consultoria e projetos relacionados à prevenção e ao combate a incêndio, incluindo a análise do escopo técnico e documental para processos junto ao Corpo de Bombeiros Militar de Minas Gerais.',
 		] },
-		{ heading: 'empresa de combate a incêndio em bh com foco em regularização e prevenção', paragraphs: [
-			'Como empresa de combate a incêndio em bh, a AJN Consultoria e Engenharia é especializada na gestão e emissão de laudos e projetos de combate a incêndio e pânico, incluindo AVCB e CLCB, sempre em conformidade com as exigências do Corpo de Bombeiros.',
-			'A atuação envolve desde o diagnóstico técnico inicial até o acompanhamento completo do processo de aprovação e regularização do imóvel.',
-			'Cada projeto desenvolvido pela empresa de combate a incêndio em bh AJN é pensado de forma individual, considerando o tipo de edificação, o grau de risco, a ocupação e as necessidades específicas do cliente.',
-			'Clientes que também precisam de empresa de elevador belo horizonte encontram na AJN uma solução integrada para segurança do edifício.',
-			'Isso assegura mais agilidade nas aprovações, redução de retrabalho e total segurança jurídica para a empresa contratante.',
-		], subsections: [{ heading: 'Engenharia aplicada à segurança e à eficiência operacional', paragraphs: [
-			'Além de ser reconhecida como empresa de combate a incêndio em bh, a AJN oferece soluções completas em engenharia, com destaque para a elaboração e implementação de Planos de Manutenção, Operação e Controle (PMOC).',
-			'Esses planos são essenciais para promover o bom funcionamento de sistemas de climatização e refrigeração, além de atender às exigências sanitárias e trabalhistas.',
-			'A empresa também atua na instalação e manutenção de sistemas de refrigeração e climatização, com emissão de laudos e responsabilidade técnica.',
-			'Essa integração entre engenharia, manutenção e segurança reforça o posicionamento da AJN como uma empresa de combate a incêndio em bh que entrega soluções completas e integradas.',
-		] }, { heading: 'Saúde, segurança ocupacional e treinamentos especializados', paragraphs: [
-			'A AJN vai além da engenharia e do combate a incêndios. A empresa oferece treinamentos técnicos e operacionais, voltados à segurança e saúde ocupacional, fortalecendo a cultura de prevenção dentro das organizações.',
-			'Essa atuação é essencial para empresas que desejam não apenas cumprir normas, mas proteger vidas.',
-			'Como empresa de combate a incêndio em bh, a AJN também atua com perícias técnicas em insalubridade e periculosidade, além da gestão de programas como PCMSO, ASOs e eSocial.',
-			'Essa abordagem integrada assegura que todas as frentes de QSSMA estejam alinhadas e em conformidade.',
-		] }] },
-		{ heading: 'Por que escolher a AJN como sua empresa de combate a incêndio em bh?', paragraphs: [
-			'Optar pela AJN Consultoria e Engenharia significa contar com uma empresa de combate a incêndio em bh que valoriza:',
-			'A missão da AJN é contribuir diretamente para a segurança e a eficiência das operações de seus clientes, entregando soluções que realmente funcionam no dia a dia.',
-		], lists: [{ items: ['Comunicação clara e transparente;', 'Cumprimento rigoroso de prazos;', 'Soluções personalizadas para cada cliente;', 'Alto nível técnico e atualização constante;', 'Foco em segurança, eficiência e sustentabilidade.'] }] },
-		{ heading: 'Invista em segurança, conformidade e tranquilidade', paragraphs: [
-			'A escolha de uma empresa de combate a incêndio em bh qualificada faz toda a diferença para evitar multas, interdições e riscos desnecessários.',
-			'Com a AJN Consultoria e Engenharia, sua empresa conta com um parceiro técnico confiável, preparado para atender demandas simples ou complexas com o mesmo nível de excelência.',
-			'Se você busca uma empresa de combate a incêndio em bh que una conhecimento técnico, compromisso e soluções sob medida, a AJN é a escolha certa.',
-			'Entre em contato, conheça nosso portfólio e descubra como podemos elevar o nível de segurança e conformidade da sua operação.',
+		{ heading: 'Quando buscar orientação para AVCB ou CLCB', paragraphs: [
+			'Uma mudança de ocupação, uma reforma ou a necessidade de renovar a documentação são situações em que vale avaliar a condição do imóvel antes de iniciar o processo. A modalidade de licenciamento e os documentos exigidos variam de acordo com o enquadramento feito pelo Corpo de Bombeiros.',
+			'AVCB e CLCB não devem ser tratados como documentos intercambiáveis para qualquer imóvel. A verificação inicial permite identificar quais informações reunir e se há necessidade de projeto, adequação ou acompanhamento documental.',
 		] },
-		{ heading: 'Para saber mais sobre Empresa de combate a incêndio em bh', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Quais informações ajudam na análise inicial', paragraphs: [
+			'Na primeira conversa, informe o endereço do imóvel, sua atividade principal, a área aproximada, as condições de uso e a demanda: projeto novo, regularização, adequação ou renovação.',
+			'Se houver planta, projeto anterior, documento de vistoria ou exigência formal do Corpo de Bombeiros, esses materiais ajudam a compreender o trabalho necessário. O escopo e os prazos devem ser avaliados a partir dessas informações.',
+		] },
+		{ heading: 'Serviços relacionados de segurança contra incêndio', paragraphs: [
+			{ segments: ['Para entender o desenvolvimento do projeto e a documentação técnica, consulte a página de ', { text: 'projetos PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' }, '.'] },
+			{ segments: ['Se a prioridade é verificar um processo existente ou a renovação de um documento, veja o serviço de ', { text: 'regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' }, '.'] },
+		] },
+		{ heading: 'Converse com a AJN sobre a sua edificação', paragraphs: [
+			'A orientação inicial ajuda a separar o que já está documentado do que ainda precisa ser levantado. A aprovação e a emissão de licenças dependem dos procedimentos e exigências da autoridade competente, sem garantia automática de resultado.',
+			{ segments: ['Para apresentar sua demanda e pedir uma avaliação de escopo, ', { text: 'entre em contato com a AJN', href: '/contato' }, '.'] },
+		] },
 	],
 } as const satisfies MarketingContent;
