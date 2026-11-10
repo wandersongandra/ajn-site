@@ -48,6 +48,9 @@ jobs:
       - name: Host redirect semantics regression test
         run: npm run test:hosting-redirect
 
+      - name: Search Console legacy redirect regression test
+        run: npm run test:gsc-legacy-redirects
+
       - name: Host policy origin and script parsing tests
         run: npm run test:hosting-policy
 

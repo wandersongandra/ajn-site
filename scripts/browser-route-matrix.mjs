@@ -1,6 +1,6 @@
 // Phase 4 acceptance matrix: every generated HTML route at mobile and desktop.
 import { chromium } from 'playwright';
-import { readdir } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const base = process.env.BASE_URL || 'http://127.0.0.1:4321';
@@ -27,6 +27,13 @@ async function collect(directory, prefix = '') {
 
 const routes = [...new Set(await collect('dist'))].sort();
 check(routes.length >= 160, `Matriz incompleta: ${routes.length} rotas HTML.`);
+// A matriz valida cada fallback contra seu destino 301 declarado, em vez de
+// pressupor que todos os antigos caminhos apontem para /servicos.
+const astroConfig = await readFile('astro.config.mjs', 'utf8');
+const redirectDestinations = new Map(
+	[...astroConfig.matchAll(/'([^']+)':\s*\{\s*destination:\s*'([^']+)',\s*status:\s*301\s*\}/g)]
+		.map(([, source, destination]) => [source, destination]),
+);
 const browser = await chromium.launch({ headless: true });
 try {
 	for (const scenario of [
@@ -43,9 +50,8 @@ try {
 			const errors = [];
 			page.on('pageerror', (error) => errors.push(error.message));
 			try {
-				// Static meta-refresh stubs (informacoes → mapa-site, and the 2026-10
-				// service-removal 301s → /servicos). Following them destroys the
-				// original document context, so validate the artifact via request.
+				// Seguir um meta-refresh apaga o contexto da rota original; validar
+				// diretamente o HTML estático e seu destino 301 equivalente.
 				const artifact = await context.request.get(new URL(route, base).href);
 				const body = await artifact.text();
 				const refreshMatch = body.match(/http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i)
@@ -53,10 +59,9 @@ try {
 				if (refreshMatch) {
 					const destination = refreshMatch[1];
 					check(artifact.ok(), `${scenario.name} ${route}: redirect artifact HTTP OK`);
-					const expected =
-						route === '/informacoes/' ? '/mapa-site' : '/servicos';
-					check(destination.includes(expected),
-						`${scenario.name} ${route}: fallback meta refresh incompleto (dest=${destination})`);
+					const expected = redirectDestinations.get(route.replace(/\/+$/, ''));
+					check(expected !== undefined && destination === expected,
+						`${scenario.name} ${route}: fallback meta refresh diverge do 301 (esperado=${expected ?? 'não cadastrado'}, dest=${destination})`);
 					continue;
 				}
 				const response = await page.goto(new URL(route, base).href, {

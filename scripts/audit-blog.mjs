@@ -10,6 +10,16 @@ const report = { archiveCards: 0, articles: 0, responsiveImages: 0, descriptions
 const articleTitles = new Map();
 const descriptions = new Map();
 let archiveHtml = '';
+// Os redirects legados do WordPress geram HTML no fallback estático do Astro.
+// Eles devem ser auditados como redirects, não como artigos editoriais.
+const astroConfig = await readFile('astro.config.mjs', 'utf8');
+const legacyBlogRedirects = new Map(
+	[...astroConfig.matchAll(/'(\/blog\/[^']+)':\s*\{\s*destination:\s*'([^']+)',\s*status:\s*301\s*\}/g)]
+		.map(([, source, destination]) => [source.slice('/blog/'.length) + '/index.html', destination]),
+);
+const seenLegacyBlogRedirects = new Set();
+const siteOrigin = (process.env.PUBLIC_SITE_ORIGIN ?? 'https://ajnengenharia.com.br').replace(/\/+$/, '');
+if (legacyBlogRedirects.size !== 3) failures.push('Esperados três redirects de artigos legados registrados no Astro.');
 
 async function collectHtml(dir) {
 	const entries = await readdir(dir, { withFileTypes: true });
@@ -57,6 +67,24 @@ for (const file of htmlFiles) {
 		if (report.archiveCards !== 34) failures.push('Arquivo do blog: esperados 34 cards; obtidos ' + report.archiveCards);
 		if (report.responsiveImages < 10) failures.push('Arquivo do blog: imagens responsivas insuficientes; confira widths/sizes.');
 		if (h1Count !== 1) failures.push('Arquivo do blog: esperado um H1, encontrado ' + h1Count);
+		continue;
+	}
+	if (legacyBlogRedirects.has(route)) {
+		const destination = legacyBlogRedirects.get(route);
+		const expectedRedirectTags = [
+			`<title>Redirecting to: ${destination}</title>`,
+			`<meta http-equiv="refresh" content="0;url=${destination}">`,
+			'<meta name="robots" content="noindex">',
+			`<link rel="canonical" href="${siteOrigin}${destination}">`,
+		];
+		for (const tag of expectedRedirectTags) {
+			if (!html.includes(tag)) failures.push(route + ': fallback de redirecionamento inválido: ' + tag);
+		}
+		seenLegacyBlogRedirects.add(route);
+		continue;
+	}
+	if (title.startsWith('Redirecting to:')) {
+		failures.push(route + ': fallback de redirecionamento não cadastrado na auditoria do blog.');
 		continue;
 	}
 
@@ -129,6 +157,10 @@ for (const file of htmlFiles) {
 		if (descriptions.has(description)) failures.push(route + ': descrição duplicada com ' + descriptions.get(description));
 		descriptions.set(description, route);
 	}
+}
+
+for (const route of legacyBlogRedirects.keys()) {
+	if (!seenLegacyBlogRedirects.has(route)) failures.push(route + ': fallback legado não foi gerado pelo build.');
 }
 
 if (report.articles !== 34) failures.push('Esperados 34 artigos HTML gerados, encontrados ' + report.articles);
