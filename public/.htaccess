@@ -10,6 +10,16 @@
     # Compatibilidade com o sitemap legado; enviar crawlers ao índice atual.
     RedirectMatch 301 ^/sitemap\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml
     RedirectMatch 301 ^/informacoes/?$ /mapa-site
+
+    # URLs editoriais do WordPress ainda rastreadas no Search Console (nov/2026).
+    # Redirecionar apenas quando há conteúdo atual equivalente; páginas alheias
+    # à atuação da AJN e arquivos de plugins antigos continuam retornando 404.
+    RedirectMatch 301 ^/blog/avcb-o-que-voce-precisa-saber-sobre-o-auto-de-vistoria-do-corpo-de-bombeiros/?$ /blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/
+    RedirectMatch 301 ^/blog/ltcat-evento-esocial-o-que-voce-precisa-saber-para-estar-atualizado/?$ /ltcat-evento-esocial/
+    RedirectMatch 301 ^/blog/sistemas-contra-incendio-bh-o-que-voce-precisa-saber/?$ /sistemas-incendio-bh/
+
+    # Endereços legados de regularização AVCB com serviço equivalente ativo.
+    RedirectMatch 301 ^/(regularizacao-avcb|avcb-auto-vistoria-do-corpo-bombeiros|renovacao-avcb-preco|renovacao-avcb|orcamento-avcb|avcb-custo|laudo-tecnico-avcb|avcb-orcamento|empresa-avcb)/?$ /servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/
 </IfModule>
 # Keep this file in the published output; verify the headers on the real host.
 <IfModule mod_headers.c>

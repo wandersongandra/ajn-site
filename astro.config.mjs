@@ -7,6 +7,19 @@ const site = (process.env.PUBLIC_SITE_ORIGIN || 'https://ajnengenharia.com.br').
 /** Rotas com HTTP 301 — não entram no sitemap. */
 const redirectedPaths = new Set([
 	'/informacoes',
+	// URLs antigas válidas substituídas por conteúdo equivalente (GSC nov/2026).
+	'/blog/avcb-o-que-voce-precisa-saber-sobre-o-auto-de-vistoria-do-corpo-de-bombeiros',
+	'/blog/ltcat-evento-esocial-o-que-voce-precisa-saber-para-estar-atualizado',
+	'/blog/sistemas-contra-incendio-bh-o-que-voce-precisa-saber',
+	'/regularizacao-avcb',
+	'/avcb-auto-vistoria-do-corpo-bombeiros',
+	'/renovacao-avcb-preco',
+	'/renovacao-avcb',
+	'/orcamento-avcb',
+	'/avcb-custo',
+	'/laudo-tecnico-avcb',
+	'/avcb-orcamento',
+	'/empresa-avcb',
 	'/analise-projetos-eletricos-bh',
 	'/elevacao-vertical',
 	'/elevador-bh',
@@ -73,6 +86,19 @@ export default defineConfig({
 	// Fallback estático do Astro; a hospedagem Apache aplica HTTP 301 via .htaccess.
 	redirects: {
 		'/informacoes': { destination: '/mapa-site', status: 301 },
+		// Fallback estático dos redirects Apache para rotas WordPress ainda visitadas.
+		'/blog/avcb-o-que-voce-precisa-saber-sobre-o-auto-de-vistoria-do-corpo-de-bombeiros': { destination: '/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/', status: 301 },
+		'/blog/ltcat-evento-esocial-o-que-voce-precisa-saber-para-estar-atualizado': { destination: '/ltcat-evento-esocial/', status: 301 },
+		'/blog/sistemas-contra-incendio-bh-o-que-voce-precisa-saber': { destination: '/sistemas-incendio-bh/', status: 301 },
+		'/regularizacao-avcb': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/avcb-auto-vistoria-do-corpo-bombeiros': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/renovacao-avcb-preco': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/renovacao-avcb': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/orcamento-avcb': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/avcb-custo': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/laudo-tecnico-avcb': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/avcb-orcamento': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
+		'/empresa-avcb': { destination: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/', status: 301 },
 		// content/remover-servicos-eletricos-elevadores
 		'/analise-projetos-eletricos-bh': { destination: '/servicos', status: 301 },
 		'/elevacao-vertical': { destination: '/servicos', status: 301 },

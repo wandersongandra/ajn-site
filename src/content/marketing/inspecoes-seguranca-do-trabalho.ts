@@ -3,8 +3,8 @@ import type { MarketingContent } from '../types';
 export const inspecoesSegurancaDoTrabalho = {
 	slug: 'inspecoes-seguranca-do-trabalho',
 	path: '/inspecoes-seguranca-do-trabalho',
-	title: 'Inspeções de segurança do trabalho - AJN Consultoria e Engenharia',
-	description: 'Inspeções de segurança do trabalho traz diversos benefícios para as empresas, como a redução de acidentes e afastamentos, o aumento da produtividade, a...',
+	title: 'Inspeções de segurança do trabalho | AJN Consultoria e Engenharia',
+	description: 'Inspeções de segurança do trabalho com registro de condições encontradas, prioridades e acompanhamento das ações corretivas. Conheça a atuação da AJN.',
 	heading: 'Inspeções de segurança do trabalho',
 	images: [
 		{ src: '/images/content/marketing/inspecoes-seguranca-do-trabalho/inspecoes-seguranca-do-trabalho-01.webp', alt: 'Inspeções de segurança do trabalho' },
@@ -13,73 +13,70 @@ export const inspecoesSegurancaDoTrabalho = {
 	],
 	sections: [
 		{
-			heading: 'inspeções de segurança do trabalho: Protegendo Seu Ambiente Laboral',
+			heading: 'O que observar em uma inspeção de segurança do trabalho',
 			paragraphs: [
-				'As inspeções de segurança do trabalho são fundamentais para assegurar a integridade dos colaboradores e a eficiência das operações.',
-				'Ao realizar inspeções regulares, as empresas podem identificar potenciais riscos e adotar medidas preventivas, promovendo um ambiente de trabalho mais seguro e saudável.',
-				'Além disso, as inspeções contribuem para o cumprimento das normas regulamentadoras e demonstram o compromisso da organização com a segurança de seus funcionários.',
+				'Uma inspeção começa pela observação do trabalho real: circulação de pessoas, uso de máquinas e ferramentas, organização do local, proteção coletiva e condições de acesso às atividades.',
+				'O levantamento deve registrar onde está o problema, quem pode ser exposto e quais medidas já existem. Fotografias, quando autorizadas, ajudam a documentar a situação encontrada.',
+				'O resultado serve para orientar prioridades e responsáveis. A inspeção não substitui avaliações quantitativas, laudos específicos ou outras análises exigidas para cada exposição.',
 			],
 			subsections: [{
-				heading: 'Benefícios das Inspeções para Sua Empresa',
+				heading: 'Registros que ajudam a acompanhar as correções',
 				paragraphs: [
-					'Realizar inspeções de segurança do trabalho traz diversos benefícios para as empresas, como a redução de acidentes e afastamentos, o aumento da produtividade, a melhoria do clima organizacional e a redução de custos com indenizações e processos trabalhistas.',
-					'Ao identificar e corrigir possíveis falhas e irregularidades, as inspeções ajudam a prevenir acidentes e a promover um ambiente de trabalho mais seguro e saudável para todos os colaboradores.',
+					'Um registro útil informa a localização, a condição observada, o risco associado, a medida recomendada, o responsável e o prazo acordado.',
+					'Na verificação seguinte, é possível conferir o que foi resolvido, o que continua pendente e se a medida adotada funciona nas condições de trabalho.',
 				],
 			}, {
-				heading: 'Impacto na Saúde e Segurança dos Funcionários',
+				heading: 'Participação de quem executa a atividade',
 				paragraphs: [
-					'As inspeções têm um impacto direto na saúde e segurança dos funcionários.',
-					'Ao identificar e corrigir condições de trabalho inadequadas, as inspeções contribuem para a prevenção de acidentes, doenças ocupacionais e lesões, promovendo o bem-estar e a integridade física dos trabalhadores.',
-					'Além disso, ao promover um ambiente de trabalho seguro, as inspeções ajudam a aumentar a motivação, o engajamento e a satisfação dos colaboradores.',
+					'Conversar com operadores, líderes e equipes de manutenção permite entender rotinas, improvisos e dificuldades que podem não aparecer apenas na observação visual.',
+					'Essas informações precisam ser conferidas com os responsáveis e incorporadas ao plano de ação, sem expor indevidamente os trabalhadores.',
 				],
 			}],
 		},
 		{
-			heading: 'Como Realizar inspeções de segurança do trabalho de Forma Eficiente',
-			paragraphs: ['Para assegurar a eficácia das inspeções, é importante seguir um processo bem estruturado e envolver os colaboradores no processo de identificação e correção de riscos.'],
+			heading: 'Como organizar uma inspeção de segurança do trabalho',
+			paragraphs: ['Antes da visita, defina quais áreas e atividades serão observadas e quais documentos, permissões e acompanhamentos serão necessários. A frequência depende dos riscos e da dinâmica da operação.'],
 			subsections: [{
-				heading: 'Passo a Passo para uma Inspeção Eficaz',
+				heading: 'Etapas do levantamento',
 				paragraphs: [],
 				lists: [{ items: [
-					'Planejamento: Defina os objetivos, os métodos e os responsáveis pela inspeção.',
-					'Identificação de Riscos: Avalie os ambientes, máquinas e processos de trabalho em busca de possíveis riscos.',
-					'Registro de Dados: Documente as observações, os problemas identificados e as ações corretivas necessárias.',
-					'Implementação de Medidas: Corrija as irregularidades identificadas e adote medidas preventivas para evitar acidentes futuros.',
-					'Avaliação e Monitoramento: Verifique a eficácia das ações corretivas e monitore continuamente as condições de trabalho.',
+					'Preparação: delimitar áreas, atividades, horários e responsáveis pelo acompanhamento.',
+					'Observação: verificar situações de risco, medidas de controle e condições reais de execução.',
+					'Registro: descrever achados com localização, evidências e prioridade de tratamento.',
+					'Plano de ação: definir medidas, responsáveis e prazos com a gestão da área.',
+					'Retorno: confirmar a execução das medidas e avaliar pendências que ainda exigem acompanhamento.',
 				]}],
 			}, {
-				heading: 'Dicas para Envolver os Funcionários no Processo',
+				heading: 'Como ouvir a equipe durante a visita',
 				paragraphs: [
-					'Para tornar as inspeções mais eficazes, é importante envolver os colaboradores no processo, incentivando a participação ativa na identificação e correção de riscos.',
-					'Promova treinamentos e capacitações sobre segurança do trabalho, incentive a comunicação aberta e transparente, e reconheça e valorize as contribuições dos funcionários para a melhoria das condições de trabalho.',
+					'Pergunte como a tarefa costuma ser feita e quais dificuldades aparecem durante a jornada. Compare as respostas com os procedimentos existentes e com o que foi observado.',
+					'Apresente os achados de forma objetiva aos responsáveis pela área e registre as decisões tomadas para que a equipe acompanhe as providências.',
 				],
 			}],
 		},
 		{
-			heading: 'Manutenção e Atualização das Inspeções de Segurança',
-			paragraphs: ['Para assegurar a eficácia das inspeções de segurança do trabalho, é essencial manter uma frequência adequada e atualizar as práticas conforme as normas regulamentadoras.'],
+			heading: 'Acompanhamento após a inspeção',
+			paragraphs: ['O relatório é o início do acompanhamento. Mudanças de processo, novos equipamentos, ocorrências e ações pendentes podem exigir uma nova verificação antes da próxima inspeção programada.'],
 			subsections: [{
-				heading: 'Frequência das Inspeções e Normas Regulamentadoras',
+				heading: 'Periodicidade conforme a atividade',
 				paragraphs: [
-					'As inspeções de segurança do trabalho devem ser realizadas periodicamente, segundo as normas regulamentadoras e as características específicas de cada ambiente de trabalho.',
-					'É importante seguir as diretrizes estabelecidas pela legislação trabalhista e manter um cronograma de inspeções para assegurar a segurança e a saúde dos colaboradores.',
+					'Não existe uma única frequência adequada para todos os ambientes. O cronograma deve considerar o perfil dos riscos, a operação, as exigências aplicáveis e o histórico de desvios.',
+					'Atividades críticas ou alterações relevantes na rotina podem justificar verificações adicionais.',
 				],
 			}],
 		},
 		{
 			heading: 'Como Utilizar os Resultados para Melhorar as Práticas de Segurança',
 			paragraphs: [
-				'Os resultados das inspeções de segurança do trabalho devem ser utilizados para identificar oportunidades de melhoria e implementar ações preventivas.',
-				'Analise os relatórios de inspeção, avalie os indicadores de segurança e saúde ocupacional e promova ações corretivas e preventivas para assegurar um ambiente de trabalho seguro e saudável para todos os colaboradores.',
+				'Consolide os achados por área, tipo de risco, prioridade e situação das ações. Isso ajuda a reconhecer problemas recorrentes e a direcionar os próximos levantamentos.',
+				'As medidas concluídas devem ser verificadas na prática. Quando uma solução não controla o risco, o plano precisa ser revisto.',
 			],
 		},
 		{
 			heading: 'Entre em contato',
 			paragraphs: [
-				'Investir em inspeções de segurança do trabalho é essencial para proteger seu ambiente laboral, assegurar a saúde e a segurança dos funcionários e promover a produtividade e o bem-estar no ambiente de trabalho.',
-				'Ao realizar inspeções regulares, identificar riscos e adotar medidas preventivas, as empresas demonstram seu compromisso com a segurança e a saúde dos colaboradores, fortalecendo a cultura de segurança e prevenção de acidentes.',
-				'Proteja sua equipe e promova um ambiente de trabalho seguro com inspeções de segurança do trabalho eficientes.',
-				'Conte com a especialização da AJN Consultoria e Engenharia para fortalecer a segurança e a saúde ocupacional na sua empresa.',
+				'Para definir o escopo de uma inspeção, informe à AJN o tipo de atividade, as áreas envolvidas, o local de atendimento e a principal necessidade da empresa.',
+				'A equipe poderá avaliar os documentos disponíveis e orientar os próximos passos para o levantamento e o acompanhamento das ações.',
 			],
 		},
 		{

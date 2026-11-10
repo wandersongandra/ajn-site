@@ -37,6 +37,7 @@
     "audit:assets": "node scripts/audit-asset-duplicates.mjs",
     "audit:hosting-config": "node scripts/audit-hosting-config.mjs",
     "test:hosting-redirect": "node --test scripts/test-hosting-redirect.mjs",
+    "test:gsc-legacy-redirects": "node --test scripts/test-gsc-legacy-redirects.mjs",
     "test:hosting-policy": "node --test scripts/test-hosting-policy.mjs",
     "test:live-security": "node --test scripts/test-live-security.mjs",
     "audit:live-security": "node scripts/audit-live-security.mjs",
