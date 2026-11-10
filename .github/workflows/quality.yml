@@ -178,3 +178,6 @@ jobs:
           npm run audit:fase7-seo
           npm run audit:editorial
           npm run audit:sst-seo
+
+      - name: Local intent and conversion SEO regression tests
+        run: npm run test:seo-leads

@@ -5,7 +5,7 @@ export const blogEventosEsocialSst = {
   slug: 'esocial-sst-diferencas-entre-s2210-s2220-e-s2240',
   path: '/blog/esocial-sst-diferencas-entre-s2210-s2220-e-s2240',
   title: 'S-2210, S-2220 e S-2240: eventos de SST no eSocial | AJN',
-  description: 'S-2210 registra CAT, S-2220 comunica monitoramento da saúde e S-2240 informa condições ambientais. Veja as diferenças e os cuidados nos dados enviados.',
+  description: 'Qual a diferença entre S-2210, S-2220 e S-2240 no eSocial SST? Entenda CAT, saúde ocupacional e exposições, além dos registros necessários ao envio.',
   heading: 'eSocial SST: o que muda entre S-2210, S-2220 e S-2240',
   pubDate: '2026-10-09',
   author: 'AJN Consultoria e Engenharia',
