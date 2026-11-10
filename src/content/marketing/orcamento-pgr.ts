@@ -15,13 +15,13 @@ export const orcamentoPgr = {
 		{ heading: 'A importância do orçamento pgr', paragraphs: [
 			'O Programa de Gerenciamento de Riscos (PGR) é fundamental para identificar, avaliar e controlar os riscos ambientais e ocupacionais em empresas.',
 			'Essencial para promover um ambiente de trabalho seguro e conforme normas regulatórias, o PGR ajuda a prevenir acidentes e doenças ocupacionais, além de mitigar impactos ambientais.',
-			'A AJN Consultoria e Engenharia oferece serviços especializados na elaboração de orçamento pgr, adaptados às necessidades específicas de cada cliente, garantindo a segurança e o bem-estar dos trabalhadores e a proteção ambiental.',
+			'A AJN Consultoria e Engenharia elabora propostas técnicas de orçamento PGR adaptadas às necessidades específicas de cada cliente, apoiando a gestão da segurança e da saúde dos trabalhadores.',
 		] },
 		{ heading: 'Conheça o orçamento pgr da AJN Consultoria e Engenharia', paragraphs: [
-			'A AJN Consultoria e Engenharia, sob a direção do engenheiro Antônio Jorlei, é uma empresa especializada em segurança do trabalho e orçamento pgr e atua no mercado de engenharia há mais de 8 anos.',
-			'Localizada em Belo Horizonte, MG, a empresa oferece serviços abrangentes para garantir a saúde e segurança no ambiente de trabalho, incluindo a elaboração de projetos de segurança contra incêndio para obtenção de AVCB/CLCB em edificações comerciais, residenciais e industriais de diversos portes.',
+			'A AJN Consultoria e Engenharia, sob a direção do engenheiro Antônio Jorlei, é uma empresa especializada em segurança do trabalho e elaboração de PGR em Belo Horizonte e Minas Gerais.',
+			'Localizada em Belo Horizonte, MG, a empresa presta atendimento técnico para estruturar a saúde e segurança no ambiente de trabalho, incluindo projetos de segurança contra incêndio para processos de AVCB/CLCB em edificações comerciais, residenciais e industriais.',
 		] },
-		{ heading: 'Serviços oferecidos pela AJN Consultoria e Engenharia', paragraphs: ['A AJN Consultoria e Engenharia oferece uma variedade de serviços para atender às necessidades de seus clientes, tais como:'], lists: [{ items: [
+		{ heading: 'Serviços oferecidos pela AJN Consultoria e Engenharia', paragraphs: ['A AJN Consultoria e Engenharia realiza outros serviços técnicos para empresas, tais como:'], lists: [{ items: [
 			'Prevenção e combate a incêndios, com consultoria e projeto',
 			'Segurança ocupacional, qualidade, saúde e consultoria ambiental',
 			'Relatórios de especialistas, relatórios de responsabilidade técnica',
@@ -29,8 +29,8 @@ export const orcamentoPgr = {
 			'Mobilização de equipe',
 		] }] },
 		{ heading: 'Elaboração de orçamento pgr personalizado', paragraphs: [
-			'A elaboração de um orçamento pgr personalizado é essencial para garantir a segurança e o bem-estar dos trabalhadores, bem como a proteção ambiental.',
-			'A AJN Consultoria e Engenharia oferece serviços especializados na elaboração de orçamento pgr, adaptados às necessidades específicas de cada cliente, visando atender às normas regulatórias e promover um ambiente de trabalho seguro e saudável.',
+			'A definição de um orçamento PGR dimensionado conforme os setores e funções da empresa é essencial para planejar o gerenciamento de riscos ocupacionais.',
+			'A AJN Consultoria e Engenharia desenvolve propostas de PGR adequadas à realidade operacional de cada estabelecimento, visando atender à NR-01 e promover um ambiente de trabalho seguro e saudável.',
 		], subsections: [{ heading: 'Entre em contato conosco', paragraphs: [
 			'Se você busca serviços especializados em segurança do trabalho, elaboração de Programa de Gerenciamento de Riscos (PGR) e projetos de segurança contra incêndio, entre em contato com a AJN Consultoria e Engenharia.',
 			'Nossa equipe de profissionais altamente qualificados está pronta para atender às suas necessidades e garantir a segurança e o bem-estar no seu local de trabalho. Aproveite para solicitar um orçamento pgr personalizado e sob medida para sua empresa.',

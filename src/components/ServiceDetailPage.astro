@@ -2,7 +2,7 @@
 import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { ServiceContent } from '../content/types';
-import { normalizeKeywordTerms } from '../utils/seo';
+import { getRelatedClusterLinks, normalizeKeywordTerms } from '../utils/seo';
 import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { page } = Astro.props;
+const clusterLinks = getRelatedClusterLinks(page.path);
 interface ServiceJsonLd {
 	'@context': 'https://schema.org';
 	'@type': 'Service';
@@ -60,6 +61,18 @@ const sections = page.sections.map((section, index) => index === 0 && section.he
 		</div>
 		<div class="service-detail-wp__content">
 			<ContentSections sections={sections} formatHeading={normalizeKeywordTerms} />
+			{clusterLinks.length > 0 && (
+				<nav class="content-sections" aria-label="Conteúdos e páginas relacionadas">
+					<section class="content-section">
+						<h2>Tópicos relacionados</h2>
+						<ul>
+							{clusterLinks.map((item) => (
+								<li><a href={item.href}>{item.label}</a></li>
+							))}
+						</ul>
+					</section>
+				</nav>
+			)}
 			<p class="page-cta"><a class="button" href="/contato/">Entre em contato</a></p>
 		</div>
 	</div>

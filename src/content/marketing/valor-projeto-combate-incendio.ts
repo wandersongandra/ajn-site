@@ -18,7 +18,7 @@ export const valorProjetoCombateIncendio = {
 		] },
 		{ heading: 'Conheça a AJN Consultoria e Engenharia', paragraphs: [
 			'A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, é uma empresa especializada em segurança do trabalho, com ampla experiência na elaboração de valor de projeto de combate a incêndio para obtenção de AVCB/CLCB em diversos tipos de edificações.',
-			'Localizada em Belo Horizonte, MG, a empresa atende clientes de pequeno, médio e grande porte, garantindo a conformidade com as normas técnicas e legislações vigentes.',
+			'Localizada em Belo Horizonte, MG, a empresa atende clientes de pequeno, médio e grande porte, desenvolvendo projetos alinhados às normas técnicas e legislações vigentes.',
 		] },
 		{ heading: 'Vantagens de Contar com a AJN Consultoria e Engenharia', paragraphs: [], lists: [{ items: [
 			'Projetos Personalizados: A empresa oferece soluções sob medida, considerando as necessidades específicas de cada cliente.',

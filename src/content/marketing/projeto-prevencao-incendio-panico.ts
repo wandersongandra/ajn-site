@@ -13,7 +13,7 @@ export const projetoPrevencaoIncendioPanico = {
 	sections: [
 		{ heading: "projeto de prevenção contra incêndio e pânico: A Importância da Segurança", paragraphs: [
 			{ segments: ["A segurança contra incêndios é um tema crucial em qualquer ambiente, seja ele comercial, residencial ou industrial. Nesse contexto, contar com um", { bold: true, text: "projeto de prevenção contra incêndio e pânico" }, "bem elaborado e eficiente é essencial para proteger vidas e patrimônios."] },
-			"A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, oferece serviços especializados nesse segmento, garantindo a conformidade com as normas técnicas e legislações vigentes."
+			"A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, atua tecnicamente nesse segmento, desenvolvendo projetos alinhados às normas técnicas e legislações vigentes."
 		]
 		},
 		{ heading: "Proteção Efetiva com projeto de prevenção contra incêndio e pânico", paragraphs: [
@@ -24,7 +24,7 @@ export const projetoPrevencaoIncendioPanico = {
 		},
 		{ heading: "Qualidade e Segurança em Primeiro Lugar no projeto de prevenção contra incêndio e pânico", paragraphs: [
 			"A AJN Consultoria e Engenharia atua no mercado de engenharia há mais de 08 anos, oferecendo serviços que primam pela qualidade, segurança e eficiência.",
-			{ segments: ["Com foco em QSMS – Qualidade, Segurança, Meio Ambiente e Saúde, a empresa se destaca pela excelência na realização de", { bold: true, text: "projeto de prevenção contra incêndio e pânico" }, "para obtenção de AVCB/CLCB em edificações de diversos portes."] }
+			{ segments: ["Com atuação em QSMS - Qualidade, Segurança, Meio Ambiente e Saúde, a empresa realiza", { bold: true, text: "projeto de prevenção contra incêndio e pânico" }, "para obtenção de AVCB/CLCB em edificações de diversos portes."] }
 		]
 		},
 		{ heading: "Serviços Especializados em Segurança do Trabalho", paragraphs: [

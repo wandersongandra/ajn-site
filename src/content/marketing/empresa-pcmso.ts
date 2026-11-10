@@ -43,7 +43,7 @@ export const empresaPcmso = {
 			}
 		]
 		},
-		{ heading: "Dicas para Escolher a Melhor empresa de pcmso", paragraphs: [
+		{ heading: "Critérios para escolher uma empresa de PCMSO", paragraphs: [
 		]
 , subsections: [
 			{ heading: "Avalie a Experiência e Credibilidade da Empresa", paragraphs: [

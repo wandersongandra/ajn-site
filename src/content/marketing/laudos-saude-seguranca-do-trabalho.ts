@@ -12,7 +12,7 @@ export const laudosSaudeSegurancaDoTrabalho = {
 	],
 	sections: [
 		{ heading: "Conheça a AJN Consultoria e Engenharia e seus serviços em laudos de saude e segurança do trabalho", paragraphs: [
-			{ segments: ["A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, oferece serviços especializados em", { bold: true, text: "laudos de saude e segurança do trabalho" }, ", implementando medidas abrangentes para garantir ambientes laborais seguros e conforme a legislação vigente."] },
+			{ segments: ["A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, atua na elaboração de", { bold: true, text: "laudos de saude e segurança do trabalho" }, ", implementando medidas técnicas para ambientes laborais seguros e de acordo com a legislação vigente."] },
 			"Com mais de 08 anos de experiência no mercado de engenharia, a empresa está localizada em Belo Horizonte, MG, e se destaca na elaboração de projetos de segurança contra incêndios para obtenção de AVCB/CLCB em edificações de diversos portes."
 		]
 		},

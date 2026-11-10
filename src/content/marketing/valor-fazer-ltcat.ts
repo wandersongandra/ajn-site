@@ -18,7 +18,7 @@ export const valorFazerLtcat = {
 		] },
 		{ heading: 'AJN Consultoria e Engenharia: especialistas em valor para fazer ltcat', paragraphs: [
 			'AJN Consultoria e Engenharia, sob a direção do engenheiro Antônio Jorlei, é uma empresa especializada em serviços de segurança do trabalho e valor para fazer ltcat.',
-			'Com mais de 08 anos de atuação no mercado e sede em Belo Horizonte, MG, a AJN destaca-se por fornecer medidas abrangentes de saúde e segurança para os locais de trabalho de seus clientes, além de projetos de segurança contra incêndio para a obtenção das licenças AVCB e CLCB.',
+			'Sediada em Belo Horizonte, MG, a AJN estrutura medidas técnicas de saúde e segurança para os locais de trabalho de seus clientes, além de projetos de segurança contra incêndio para processos de AVCB e CLCB.',
 			'Além disso, a empresa oferece uma gama de serviços que vão desde prevenção e combate a incêndios, consultoria em segurança ocupacional, qualidade e saúde, até valor para fazer ltcat e treinamentos em NRs.',
 			'A equipe altamente qualificada da AJN garante soluções personalizadas e eficientes para atender às necessidades específicas de cada cliente, sempre com foco na segurança e no bem-estar dos trabalhadores.',
 		] },

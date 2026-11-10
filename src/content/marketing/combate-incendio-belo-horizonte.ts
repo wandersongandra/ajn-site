@@ -3,56 +3,62 @@ import type { MarketingContent } from '../types';
 export const combateIncendioBeloHorizonte = {
 	slug: 'combate-incendio-belo-horizonte',
 	path: '/combate-incendio-belo-horizonte',
-	title: 'Combate a incêndio belo horizonte - AJN Consultoria e Engenharia',
-	description: 'Combate a incêndio belo horizonte? a ajn consultoria e engenharia é uma empresa renomada no setor, especializada em qualidade, saúde, segurança e meio...',
-	heading: 'Combate a incêndio belo horizonte',
+	title: 'Combate a Incêndio em Belo Horizonte | Projetos e AVCB | AJN',
+	description: 'Projetos e engenharia de combate a incêndio em Belo Horizonte: levantamento técnico, PPCIP, adequação normativa e suporte para AVCB e CLCB na AJN.',
+	heading: 'Combate a incêndio em Belo Horizonte',
 	images: [
-		{ src: '/images/content/marketing/combate-incendio-belo-horizonte/combate-incendio-belo-horizonte-01.webp', alt: 'Combate a incêndio belo horizonte' },
-		{ src: '/images/content/marketing/combate-incendio-belo-horizonte/combate-incendio-belo-horizonte-02.webp', alt: 'Combate a incêndio belo horizonte' },
-		{ src: '/images/content/marketing/combate-incendio-belo-horizonte/combate-incendio-belo-horizonte-03.webp', alt: 'Combate a incêndio belo horizonte' },
+		{ src: '/images/content/marketing/combate-incendio-belo-horizonte/combate-incendio-belo-horizonte-01.webp', alt: 'Combate a incêndio em Belo Horizonte' },
+		{ src: '/images/content/marketing/combate-incendio-belo-horizonte/combate-incendio-belo-horizonte-02.webp', alt: 'Projeto de prevenção e combate a incêndio em Belo Horizonte' },
+		{ src: '/images/content/marketing/combate-incendio-belo-horizonte/combate-incendio-belo-horizonte-03.webp', alt: 'Regularização de edificação junto ao Corpo de Bombeiros em BH' },
 	],
 	sections: [
 		{
-			heading: 'AJN Consultoria e Engenharia: Excelência em QSSMA e Soluções Completas em combate a incêndio belo horizonte',
+			heading: 'Engenharia e projetos de combate a incêndio em Belo Horizonte',
 			paragraphs: [
-				'Procurando por combate a incêndio belo horizonte? A AJN Consultoria e Engenharia é uma empresa renomada no setor, especializada em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA).',
-				'Nossa atuação abrange uma variedade de serviços técnicos especializados para promover a segurança e conformidade dos nossos clientes.',
-				'Um dos nossos principais serviços é a gestão e emissão de laudos e projetos de combate a incêndio belo horizonte, em conformidade com as normas do Corpo de Bombeiros.',
+				'A prevenção e o combate a incêndio em Belo Horizonte exigem projeto técnico elaborado de acordo com as Instruções Técnicas do Corpo de Bombeiros Militar de Minas Gerais (CBMMG) e com o uso real da edificação.',
+				'A AJN Consultoria e Engenharia atua em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA), atendendo empresas, condomínios, indústrias e comércios que precisam elaborar projetos ou regularizar imóveis.',
+				{
+					segments: [
+						'Veja também nossos serviços de ',
+						{ text: 'projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						' e ',
+						{ text: 'regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						'.',
+					],
+				},
 			],
 		},
 		{
-			heading: 'Projetos Personalizados de combate a incêndio belo horizonte',
+			heading: 'Elaboração de PPCIP e dimensionamento de medidas preventivas',
 			paragraphs: [
-				'Nossos profissionais altamente qualificados estão preparados para desenvolver projetos personalizados de combate a incêndio belo horizonte, assegurando a segurança e a proteção dos ocupantes de edificações.',
-				'Realizamos a elaboração e implementação de planos de manutenção, operação e controle (PMOC), atendendo às exigências legais e proporcionando tranquilidade aos nossos clientes.',
+				'Nossa equipe técnica desenvolve projetos de combate a incêndio em Belo Horizonte considerando área construída, altura, ocupação, carga de incêndio e capacidade de público da edificação.',
+				'O trabalho inclui o dimensionamento de sinalização de emergência, iluminação de emergência, extintores, saídas de emergência, sistemas de detecção e alarme, hidrantes e demais itens exigidos pela legislação estadual.',
 			],
 			subsections: [{
-				heading: 'Emissão de AVCB/CLCB em Belo Horizonte',
+				heading: 'Suporte técnico para obtenção e renovação de AVCB/CLCB',
 				paragraphs: [
-					'O Auto de Vistoria do Corpo de Bombeiros (AVCB) ou o Certificado de Licença do Corpo de Bombeiros (CLCB) são documentos essenciais para comprovar a segurança contra incêndio em edificações.',
-					'Na AJN Consultoria e Engenharia, realizamos a gestão e emissão desses documentos em Belo Horizonte, assegurando a conformidade e a segurança dos nossos clientes.',
+					'O Auto de Vistoria do Corpo de Bombeiros (AVCB) e o Certificado de Licença do Corpo de Bombeiros (CLCB) são emitidos pelo CBMMG para atestar que a edificação possui as medidas de segurança contra incêndio e pânico previstas nas normas.',
+					'A AJN faz o levantamento prévio do imóvel, elabora a documentação técnica necessária, orienta a correção de pendências e acompanha o processo até a vistoria em Belo Horizonte e região metropolitana.',
 				],
 			}],
 		},
 		{
-			heading: 'Manutenção de Sistemas de Refrigeração e Climatização',
+			heading: 'Vistoria prévia para edificações novas e existentes',
 			paragraphs: [
-				'Além dos serviços de combate a incêndio belo horizonte, também oferecemos a instalação e manutenção de sistemas de refrigeração e climatização.',
-				'Nossos técnicos especializados asseguram o bom funcionamento desses sistemas, contribuindo para o conforto e a segurança das edificações.',
+				'Imóveis que passaram por reforma, ampliação de área ou mudança de atividade geralmente precisam atualizar o projeto de prevenção contra incêndio antes de pedir nova vistoria.',
+				'Realizamos levantamentos no local para conferir os equipamentos instalados, comparar a situação física com o projeto aprovado e indicar os ajustes necessários antes do protocolo no Corpo de Bombeiros.',
 			],
 		},
 		{
-			heading: 'Consultoria Especializada em Segurança e Saúde Ocupacional',
+			heading: 'Consultoria em Segurança e Saúde Ocupacional',
 			paragraphs: [
-				'Na AJN Consultoria e Engenharia, a segurança e a saúde ocupacional dos nossos clientes são prioridades.',
-				'Oferecemos consultoria especializada em conformidade com as normas vigentes, realizamos treinamentos e elaboramos planos de gestão para promover ambientes de trabalho seguros em Belo Horizonte.',
-				'Se você busca serviços de consultoria e engenharia em Belo Horizonte para promover a segurança, conformidade e eficiência das suas operações, entre em contato conosco.',
-				'Na AJN Consultoria e Engenharia, estamos preparados para atender às suas necessidades e superar suas expectativas.',
-				'Proteja o seu patrimônio e promova a segurança de todos com os nossos serviços especializados em combate a incêndio belo horizonte.',
+				'Na AJN Consultoria e Engenharia, o projeto contra incêndio pode ser contratado junto com outros documentos e treinamentos de Segurança e Saúde no Trabalho (SST).',
+				'Realizamos consultoria técnica, treinamentos em Normas Regulamentadoras, elaboração de PGR, gestão de PCMSO e medições ambientais para empresas em Belo Horizonte.',
+				'Se você precisa avaliar um imóvel ou elaborar um projeto técnico contra incêndio e pânico, fale com nossa equipe para solicitar um orçamento.',
 			],
 		},
 		{
-			heading: 'Para saber mais sobre Combate a incêndio belo horizonte',
+			heading: 'Para saber mais sobre combate a incêndio em Belo Horizonte',
 			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
 		},
 	],

@@ -14,13 +14,13 @@ export const ltcatEventoEsocial = {
 		{ heading: "A importância do ltcat evento esocial para a segurança do trabalho", paragraphs: [
 			"A segurança do trabalho é um aspecto fundamental em qualquer empresa, visando proteger a integridade física e mental dos colaboradores, além de garantir a conformidade com as leis trabalhistas.",
 			"Nesse sentido, o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) é um documento essencial para avaliar os agentes nocivos presentes no ambiente laboral, assegurando o direito à aposentadoria especial e a saúde ocupacional.",
-			{ segments: ["A empresa AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, especialista em QSMS - Qualidade, Segurança, Meio Ambiente e Saúde, oferece serviços especializados na elaboração do", { bold: true, text: "ltcat evento esocial" }, "."] },
-			"Com mais de 08 anos de experiência no mercado de engenharia, a empresa se destaca por fornecer medidas abrangentes de saúde e segurança no trabalho, bem como projetos de segurança contra incêndio para obtenção de AVCB e CLCB."
+			{ segments: ["A empresa AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, especialista em QSMS - Qualidade, Segurança, Meio Ambiente e Saúde, atua na elaboração técnica do", { bold: true, text: "ltcat evento esocial" }, "."] },
+			"Com experiência no mercado de engenharia em Belo Horizonte (MG), a empresa estrutura medidas de saúde e segurança no trabalho, bem como projetos de segurança contra incêndio para processos de AVCB e CLCB."
 		]
 		},
 		{ heading: "Como o ltcat evento esocial pode beneficiar sua empresa", paragraphs: [
-			{ segments: ["A elaboração do", { bold: true, text: "ltcat evento esocial" }, "pela AJN Consultoria e Engenharia garante uma análise precisa dos agentes nocivos presentes no ambiente de trabalho, atendendo às exigências normativas e proporcionando segurança jurídica para a empresa e saúde para os colaboradores."] },
-			{ segments: ["Além disso, o", { bold: true, text: "ltcat evento esocial" }, "é um requisito essencial para cumprir as determinações do eSocial, garantindo a conformidade legal e evitando possíveis penalidades."] },
+			{ segments: ["A elaboração do", { bold: true, text: "ltcat evento esocial" }, "pela AJN Consultoria e Engenharia envolve a análise técnica dos agentes nocivos presentes no ambiente de trabalho, atendendo às exigências normativas e apoiando a segurança jurídica da empresa."] },
+			{ segments: ["Além disso, o", { bold: true, text: "ltcat evento esocial" }, "subsidia as informações enviadas ao eSocial (evento S-2240), apoiando a conformidade documental da organização."] },
 			{ segments: ["Com relatórios detalhados e informações precisas, o", { bold: true, text: "ltcat evento esocial" }, "é uma ferramenta indispensável para a gestão da segurança do trabalho e para a proteção da saúde dos trabalhadores."] },
 			"Ao contar com os serviços especializados da AJN Consultoria e Engenharia, sua empresa terá a garantia de estar conforme as normas vigentes e de oferecer um ambiente de trabalho seguro e saudável para todos."
 		]

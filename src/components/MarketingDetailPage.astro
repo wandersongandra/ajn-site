@@ -3,15 +3,36 @@ import ContentSections from './ContentSections.astro';
 import PageShell from './PageShell.astro';
 import type { MarketingContent } from '../content/types';
 import { Image } from 'astro:assets';
-import { getMarketingSeo, getRelatedService, normalizeKeywordTerms } from '../utils/seo';
+import { getMarketingSeo, getRelatedClusterLinks, getRelatedService, normalizeKeywordTerms } from '../utils/seo';
+import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
 
 interface Props {
 	page: MarketingContent;
 }
 
 const { page } = Astro.props;
-const heading = getMarketingSeo(page).heading;
+const seo = getMarketingSeo(page);
+const heading = seo.heading;
 const relatedService = getRelatedService(page.path);
+const clusterLinks = getRelatedClusterLinks(page.path).filter((item) => item.href !== relatedService?.href);
+const pageUrl = absoluteSiteUrl(page.path + '/');
+const serviceSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Service',
+	'@id': pageUrl + '#service',
+	name: heading,
+	description: seo.description,
+	url: pageUrl,
+	provider: {
+		'@type': 'Organization',
+		'@id': siteOrigin + '/#organization',
+		name: 'AJN Consultoria e Engenharia',
+	},
+	areaServed: [
+		{ '@type': 'City', name: 'Belo Horizonte' },
+		{ '@type': 'State', name: 'Minas Gerais' },
+	],
+};
 ---
 
 <PageShell heading={heading}>
@@ -43,7 +64,10 @@ const relatedService = getRelatedService(page.path);
 			<h2>Explore</h2>
 			<ul>
 				<li><a href="/servicos/">Nossos serviços</a></li>
-				{relatedService ? <li><a href={relatedService.href.endsWith('/') ? relatedService.href : relatedService.href + '/'}>{relatedService.label}</a></li> : null}
+				{relatedService ? <li><a href={relatedService.href}>{relatedService.label}</a></li> : null}
+				{clusterLinks.map((item) => (
+					<li><a href={item.href}>{item.label}</a></li>
+				))}
 				<li><a href="/sobre-nos/">Sobre a AJN</a></li>
 				<li><a href="/blog/">Conteúdo técnico</a></li>
 				<li><a href="/mapa-site/">Mapa do site</a></li>
@@ -52,3 +76,4 @@ const relatedService = getRelatedService(page.path);
 		</aside>
 	</div>
 </PageShell>
+<script type="application/ld+json" set:html={serializeJsonLd(serviceSchema)} />

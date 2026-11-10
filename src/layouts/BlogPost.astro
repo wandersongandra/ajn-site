@@ -41,6 +41,16 @@ const articleSchema = {
 	inLanguage: 'pt-BR',
 };
 
+const breadcrumbSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Home', item: absoluteSiteUrl('/') },
+		{ '@type': 'ListItem', position: 2, name: 'Blog', item: absoluteSiteUrl('/blog/') },
+		{ '@type': 'ListItem', position: 3, name: post.heading, item: absoluteSiteUrl(`${post.path}/`) },
+	],
+};
+
 const toc = post.sections.map((section, index) => ({
 	title: section.heading.trim(),
 	id: 'blog-secao-' + (index + 1),
@@ -73,6 +83,8 @@ const relatedServicesBySlug: Record<string, readonly { title: string; href: stri
   'esocial-sst-diferencas-entre-s2210-s2220-e-s2240': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
   'apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' }],
   'nr-10-documentacao-capacitacao-e-transicao-regulatoria': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
+  'nr-12-como-organizar-a-analise-de-riscos-de-maquinas': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }, { title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
+  'aep-e-aet-diferencas-e-quando-aplicar-cada-avaliacao': [{ title: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional' }],
   'higiene-ocupacional-como-planejar-avaliacoes-de-exposicao': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }, { title: 'Perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }],
   'medicao-de-ruido-ocupacional-dosimetria-e-planejamento': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
   'avaliacao-de-calor-ocupacional-ibutg-e-atividade': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
@@ -243,5 +255,5 @@ const galleryRemaining = galleryImages.slice(3);
 			</section>
 		)}
 	</div>
-	<script type="application/ld+json" set:html={serializeJsonLd(articleSchema)} />
+	<script type="application/ld+json" set:html={serializeJsonLd([articleSchema, breadcrumbSchema])} />
 </section>

@@ -16,8 +16,8 @@ export const projetoDeteccaoIncendio = {
 			'Ao implementar medidas preventivas e sistemas de combate a incêndios, é possível minimizar os riscos e danos em caso de sinistros, preservando vidas e propriedades.',
 		] },
 		{ heading: 'Como a AJN Consultoria e Engenharia pode te ajudar?', paragraphs: [
-			'A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, oferece serviços especializados na elaboração de projeto de detecção de incêndio.',
-			'Com mais de 8 anos de experiência no mercado de engenharia, a empresa se destaca pela qualidade e eficiência de seus projetos, garantindo a conformidade com as normas técnicas e legislações vigentes.',
+			'A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, atua na elaboração técnica de projeto de detecção de incêndio.',
+			'Sediada em Belo Horizonte (MG), a empresa desenvolve projetos dimensionados segundo as características da edificação e alinhados às normas técnicas e legislações vigentes.',
 		] },
 		{ heading: 'Vantagens de contar com a AJN Consultoria e Engenharia', paragraphs: [], lists: [{ items: ['Ampla experiência em projetos de segurança contra incêndios;', 'Equipe qualificada e especializada;', 'Conformidade com as normas e regulamentações vigentes;', 'Atendimento personalizado e soluções sob medida;', 'Compromisso com a segurança e a satisfação dos clientes.'] }] },
 		{ heading: 'Proteja seu patrimônio com um projeto de detecção de incêndio eficiente', paragraphs: [

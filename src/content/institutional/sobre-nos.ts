@@ -9,8 +9,8 @@ export const institutionalPage = {
 	lead: 'Segurança do trabalho, saúde ocupacional e serviços de engenharia para diferentes rotinas e atividades.',
 	introTitle: 'Nossa atuação',
 	intro: [
-		'A AJN Consultoria e Engenharia atua em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA). Entre os serviços estão consultoria, treinamentos, acompanhamento técnico e gestão de contratos.',
-		'O trabalho também abrange laudos e perícias, projetos de prevenção e combate a incêndio, PMOC e serviços técnicos relacionados a sistemas de climatização.',
+		'A AJN Consultoria e Engenharia atua em Qualidade, Saúde, Segurança e Meio Ambiente (QSSMA), com sede em Belo Horizonte (MG). Entre os serviços estão consultoria em segurança do trabalho, treinamentos em Normas Regulamentadoras, acompanhamento técnico em campo e gestão documental.',
+		'O trabalho abrange elaboração de programas e laudos ocupacionais (PGR, PCMSO, LTCAT, avaliações ambientais de ruído, calor e iluminamento e perícias de insalubridade e periculosidade), gestão de eventos de SST no eSocial, controle de qualidade em obras e engenharia de prevenção e combate a incêndio (PPCIP e regularização junto ao Corpo de Bombeiros).',
 	],
 	areasTitle: 'Áreas de atendimento',
 	areas: [

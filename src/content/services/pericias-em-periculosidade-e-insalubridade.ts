@@ -39,6 +39,13 @@ export const servicePage = {
       ],
     },
     {
+      heading: 'Assistência técnica em perícias trabalhistas',
+      paragraphs: [
+        'Além de elaborar laudos preventivos de insalubridade e periculosidade para orientar o enquadramento interno da empresa, a AJN atua na assistência técnica pericial em processos trabalhistas.',
+        'O trabalho do assistente técnico compreende a análise preliminar do processo, a formulação de quesitos técnicos estratégicos, o acompanhamento presencial da diligência pericial no local de trabalho e a elaboração de parecer técnico com fundamentação nas normas NR-15 e NR-16.',
+      ],
+    },
+    {
       heading: 'Peça uma avaliação à AJN',
       paragraphs: [
         'Informe a cidade, as funções, os ambientes, o tipo de atividade e a finalidade da avaliação. Assim podemos analisar os requisitos para uma proposta de serviço técnico.',

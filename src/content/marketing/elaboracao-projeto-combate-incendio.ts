@@ -13,7 +13,7 @@ export const elaboracaoProjetoCombateIncendio = {
 	sections: [
 		{ heading: "elaboração de projeto de combate a incêndio: A Importância da Segurança Preventiva", paragraphs: [
 			{ segments: ["Em um cenário onde a prevenção de acidentes é indispensável, a", { bold: true, text: "elaboração de projeto de combate a incêndio" }, "se destaca como uma medida crucial para garantir a segurança de pessoas e patrimônios em edificações de diversos portes."] },
-			"A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, oferece serviços especializados nesse segmento, assegurando a conformidade com normas técnicas e legislações vigentes.",
+			"A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, presta atendimento técnico nesse segmento, apoiando a adequação às normas técnicas e legislações vigentes.",
 			{ segments: ["Com mais de 08 anos de experiência no mercado de engenharia, a empresa sediada em Belo Horizonte, MG, tem se destacado na", { bold: true, text: "elaboração de projeto de combate a incêndio" }, "para obtenção de AVCB/CLCB em edificações comerciais, residenciais e industriais."] },
 			"Além disso, a AJN Consultoria e Engenharia é especializada em fornecer medidas abrangentes de saúde e segurança no ambiente de trabalho, visando o bem-estar de colaboradores e clientes."
 		]

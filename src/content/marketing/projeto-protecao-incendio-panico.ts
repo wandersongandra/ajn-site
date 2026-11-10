@@ -17,8 +17,8 @@ export const projetoProtecaoIncendioPanico = {
 		]
 		},
 		{ heading: "O papel da AJN Consultoria e Engenharia", paragraphs: [
-			"A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, destaca-se no mercado de segurança do trabalho por sua especialização na área de QSMS – Qualidade, Segurança, Meio Ambiente e Saúde.",
-			{ segments: ["Com mais de 08 anos de experiência, a empresa oferece serviços especializados na elaboração de", { bold: true, text: "projeto de proteção contra incêndio e pânico" }, "para obtenção de AVCB/CLCB, atendendo edificações de diversos portes e segmentos."] }
+			"A AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, atua no mercado de segurança do trabalho na área de QSMS - Qualidade, Segurança, Meio Ambiente e Saúde.",
+			{ segments: ["Com experiência técnica na área, a empresa atua na elaboração de", { bold: true, text: "projeto de proteção contra incêndio e pânico" }, "para processos de AVCB/CLCB, atendendo edificações de diversos portes e segmentos."] }
 		]
 		},
 		{ heading: "Serviços oferecidos pela AJN Consultoria e Engenharia", paragraphs: [

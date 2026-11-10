@@ -44,6 +44,8 @@ const organizationSchema = {
 	'@type': 'Organization',
 	'@id': `${siteOrigin}/#organization`,
 	name: site.name,
+	legalName: 'AJN Consultoria e Engenharia Ltda',
+	taxID: '50.970.588/0001-84',
 	url: siteOrigin,
 	logo: `${siteOrigin}/images/branding/logo.png`,
 	email: site.email,
@@ -56,6 +58,20 @@ const organizationSchema = {
 		postalCode: '31812-120',
 		addressCountry: 'BR',
 	},
+	areaServed: [
+		{ '@type': 'City', name: 'Belo Horizonte' },
+		{ '@type': 'State', name: 'Minas Gerais' },
+	],
+	contactPoint: [
+		{
+			'@type': 'ContactPoint',
+			telephone: site.phone,
+			email: site.email,
+			contactType: 'customer service',
+			areaServed: 'BR-MG',
+			availableLanguage: ['Portuguese'],
+		},
+	],
 	sameAs: [site.instagram, site.linkedin],
 };
 

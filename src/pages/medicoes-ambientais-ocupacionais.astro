@@ -27,8 +27,31 @@ const serviceSchema = {
   name: 'Avaliações e medições ambientais ocupacionais',
   serviceType: 'Higiene ocupacional e avaliação de agentes no ambiente de trabalho',
   provider: { '@type': 'Organization', name: 'AJN Consultoria e Engenharia', url: absoluteSiteUrl('/') },
-  url: absoluteSiteUrl('/medicoes-ambientais-ocupacionais'),
+  url: absoluteSiteUrl('/medicoes-ambientais-ocupacionais/'),
   description: 'Avaliações instrumentais de agentes ocupacionais conforme demanda e escopo técnico definido previamente.',
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.a,
+    },
+  })),
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: absoluteSiteUrl('/') },
+    { '@type': 'ListItem', position: 2, name: 'Serviços', item: absoluteSiteUrl('/servicos/') },
+    { '@type': 'ListItem', position: 3, name: 'Medições ambientais ocupacionais', item: absoluteSiteUrl('/medicoes-ambientais-ocupacionais/') },
+  ],
 };
 ---
 <BaseLayout title="Medições Ocupacionais em BH | Ruído, Calor e Luz | AJN" description="Medições ocupacionais em Belo Horizonte: dosimetria de ruído, avaliação de calor (IBUTG) e iluminamento. Consulte a AJN sobre o escopo técnico." canonicalPath="/medicoes-ambientais-ocupacionais" ogImage="/images/medicoes/hero-medicoes-ocupacionais.webp">
@@ -91,5 +114,5 @@ const serviceSchema = {
 
     <nav class="ajn-measure__related site-shell" aria-label="Serviços e conteúdos relacionados"><span>Você também pode consultar</span><a href="/blog/medicao-de-ruido-ocupacional-dosimetria-e-planejamento">Como planejar a dosimetria de ruído ↗</a><a href="/elaboracao-pgr">Elaboração de PGR ↗</a><a href="/emissao-ltcat">Emissão de LTCAT ↗</a><a href="/servicos/pericias-em-periculosidade-e-insalubridade">Perícias técnicas ↗</a><a href="/blog/higiene-ocupacional-como-planejar-avaliacoes-de-exposicao">Planejamento das avaliações ↗</a></nav>
   </div>
-  <script type="application/ld+json" set:html={serializeJsonLd(serviceSchema)} />
+  <script type="application/ld+json" set:html={serializeJsonLd([serviceSchema, faqSchema, breadcrumbSchema])} />
 </BaseLayout>
