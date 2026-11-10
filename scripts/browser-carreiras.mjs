@@ -294,7 +294,14 @@ for (const vp of viewports) {
       }));
       await page.goto(new URL('/carreiras/vaga/?slug=vaga-indisponivel', base).href, { waitUntil: 'domcontentloaded' });
       await page.waitForSelector('#job-closed-box:visible');
-      assert(await page.locator('[data-job-application-fields]').isDisabled(), `Candidatura bloqueada quando API falha (${vp.name})`);
+      const blockedFields = await page.locator('[data-job-application-fields]').evaluate((fieldset) => ({
+        disabled: fieldset.disabled,
+        hasDisabledAttribute: fieldset.hasAttribute('disabled'),
+        childrenDisabled: [...fieldset.querySelectorAll('input, select, textarea, button')]
+          .every((control) => control.matches(':disabled')),
+      }));
+      assert(blockedFields.disabled && blockedFields.hasDisabledAttribute && blockedFields.childrenDisabled,
+        `Candidatura bloqueada quando API falha (${vp.name}): ${JSON.stringify(blockedFields)}`);
       assert((await page.locator('[data-job-unavailable-title]').textContent()).includes('Não foi possível consultar'), `Falha de API não é confundida com vaga encerrada (${vp.name})`);
     }
 
