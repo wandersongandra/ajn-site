@@ -1,45 +1,69 @@
 import type { MarketingContent } from '../types';
 
 export const elaboracaoDoPgrPcmso = {
-	slug: "elaboracao-do-pgr-pcmso", path: "/elaboracao-do-pgr-pcmso",
-	title: "Elaboração do pgr e pcmso - AJN Consultoria e Engenharia",
-	description: "Elaboração do pgr e pcmso, garantindo que as empresas atendam às exigências legais e protejam a saúde de seus colaboradores....saiba mais sobre.",
-	heading: "Elaboração do pgr e pcmso",
+	slug: 'elaboracao-do-pgr-pcmso',
+	path: '/elaboracao-do-pgr-pcmso',
+	title: 'Elaboração do PGR e PCMSO Integrados | AJN Engenharia',
+	description: 'Elaboração do PGR e PCMSO de forma integrada conforme NR-01 e NR-07. Alinhamento entre inventário de riscos ocupacionais, plano de ação e exames médicos.',
+	heading: 'Elaboração do PGR e do PCMSO com Integração Técnica',
 	images: [
-		{ src: "/images/content/marketing/elaboracao-do-pgr-pcmso/elaboracao-do-pgr-pcmso-01.webp", alt: "Elaboração do pgr e pcmso" },
-		{ src: "/images/content/marketing/elaboracao-do-pgr-pcmso/elaboracao-do-pgr-pcmso-02.webp", alt: "Elaboração do pgr e pcmso" },
-		{ src: "/images/content/marketing/elaboracao-do-pgr-pcmso/elaboracao-do-pgr-pcmso-03.webp", alt: "Elaboração do pgr e pcmso" },
+		{ src: '/images/content/marketing/elaboracao-do-pgr-pcmso/elaboracao-do-pgr-pcmso-01.webp', alt: 'Elaboração do PGR e PCMSO para empresas' },
+		{ src: '/images/content/marketing/elaboracao-do-pgr-pcmso/elaboracao-do-pgr-pcmso-02.webp', alt: 'Levantamento de riscos ocupacionais para PGR e PCMSO' },
+		{ src: '/images/content/marketing/elaboracao-do-pgr-pcmso/elaboracao-do-pgr-pcmso-03.webp', alt: 'Acompanhamento de programas de engenharia e saúde ocupacional' },
 	],
 	sections: [
-		{ heading: "elaboração do pgr e pcmso: Saúde e Segurança do Trabalho em Belo Horizonte, MG", paragraphs: [
-			{ segments: ["A AJN Consultoria e Engenharia, pertencente ao renomado engenheiro Antônio Jorlei, é especializada em fornecer soluções abrangentes em Segurança do Trabalho como a", { bold: true, text: "elaboração do pgr e pcmso" }, "."] },
-			"Com mais de 08 anos de experiência no mercado de engenharia, a empresa destaca-se por sua especialização em QSMS – Qualidade, Segurança, Meio Ambiente e Saúde.",
-			"Localizada em Belo Horizonte, MG, a AJN é reconhecida por seus projetos de Segurança contra incêndios, essenciais para a obtenção de AVCB/CLCB em edificações comerciais, residenciais e industriais de diversos portes."
-		]
+		{
+			heading: 'Por que elaborar o PGR e o PCMSO de forma conjunta',
+			paragraphs: [
+				'Pela redação vigente da NR-01 e da NR-07, o Programa de Controle Médico de Saúde Ocupacional (PCMSO) deve ser construído com base nos riscos físicos, químicos, biológicos, ergonômicos e de acidentes identificados no Programa de Gerenciamento de Riscos (PGR).',
+				'Quando a empresa contrata o PGR e o PCMSO em momentos desconectados ou com bases de cargos diferentes, surgem divergências entre os riscos apontados no inventário e a grade de exames clínicos e complementares dos Atestados de Saúde Ocupacional (ASOs).',
+			],
 		},
-		{ heading: "Serviços Especializados em elaboração do pgr e pcmso", paragraphs: [
-			{ segments: ["A AJN Consultoria e Engenharia oferece diversos serviços, como prevenção e combate a incêndios, consultoria em segurança ocupacional, qualidade, saúde e meio ambiente, relatórios técnicos especializados, certificações e treinamentos em NRs, além da", { bold: true, text: "elaboração do pgr e pcmso" }, "."] },
-			"Com uma equipe qualificada e experiente, a empresa se destaca pela qualidade e eficiência na prestação de serviços voltados para a segurança e saúde dos trabalhadores."
-		]
+		{
+			heading: 'Como a AJN conduz a estruturação dos dois programas',
+			paragraphs: [
+				'A AJN Consultoria e Engenharia organiza o levantamento técnico em etapas coordenadas para que a documentação trabalhista e os eventos de SST no eSocial utilizem a mesma estrutura de setores, funções e Grupos Homogêneos de Exposição (GHE):',
+			],
+			lists: [
+				{
+					items: [
+						'Vistoria técnica nos ambientes de trabalho para reconhecimento dos processos produtivos, postos operacionais e medidas de proteção existentes;',
+						'Consolidação do inventário de riscos ocupacionais e do plano de ação do PGR conforme os critérios da NR-01;',
+						'Definição técnica de avaliações quantitativas de higiene ocupacional (como ruído, calor ou agentes químicos) quando necessárias para subsidiar o controle médico;',
+						'Planejamento do PCMSO pelo médico responsável (NR-07), vinculando cada risco identificado no PGR aos exames admissionais, periódicos, de retorno ao trabalho, de mudança de riscos e demissionais.',
+					],
+				},
+			],
 		},
-		{ heading: "elaboração do pgr e pcmso: Importância e Benefícios", paragraphs: [
-			"O Programa de Gerenciamento de Riscos (PGR) e o Programa de Controle Médico de Saúde Ocupacional (PCMSO) são fundamentais para garantir a segurança e a saúde dos trabalhadores.",
-			"O PGR pretende identificar, avaliar e controlar os riscos presentes no ambiente de trabalho, visando prevenir acidentes e doenças ocupacionais.",
-			"Já o PCMSO é essencial para monitorar e promover a saúde dos colaboradores, detectando precocemente possíveis problemas relacionados ao trabalho."
-		]
-, subsections: [
-			{ heading: "Conte com a AJN Consultoria e Engenharia para a elaboração do pgr e pcmso", paragraphs: [
-				{ segments: ["A AJN Consultoria e Engenharia oferece serviços completos de", { bold: true, text: "elaboração do pgr e pcmso" }, ", garantindo que as empresas atendam às exigências legais e protejam a saúde de seus colaboradores."] },
-				"Com profissionais altamente qualificados e especialização na área de Segurança do Trabalho, a empresa se destaca como uma parceira estratégica na promoção do bem-estar e da produtividade no ambiente laboral.",
-				{ segments: ["Se sua empresa busca garantir a conformidade legal, promover um ambiente de trabalho seguro e saudável e proteger a saúde de seus colaboradores, entre em contato com a AJN Consultoria e Engenharia para a", { bold: true, text: "elaboração do pgr e pcmso" }, "."] },
-				"Nossos especialistas estão preparados para oferecer soluções personalizadas e eficientes em Segurança do Trabalho. Agende uma consulta e conheça nossos serviços!"
-			]
-			}
-		]
+		{
+			heading: 'Quando revisar o PGR e o PCMSO da empresa',
+			paragraphs: [
+				'O inventário de riscos do PGR deve ser mantido atualizado sempre que ocorrerem mudanças em instalações, processos, matérias-primas, funções ou medidas de controle, além das revisões periódicas previstas na NR-01. Qualquer alteração de risco relevante no PGR deve refletir imediatamente no planejamento médico do PCMSO.',
+				{
+					segments: [
+						'Consulte também os detalhes sobre ',
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						' e o serviço de ',
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Para saber mais sobre Elaboração do pgr e pcmso", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
+		{
+			heading: 'Solicite orçamento para elaboração do PGR e PCMSO',
+			paragraphs: [
+				'Envie o CNPJ, a cidade da unidade, o segmento de atuação e a relação de funções com o número aproximado de empregados para receber uma proposta detalhada.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'entre em contato com a AJN', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

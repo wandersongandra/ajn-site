@@ -1,49 +1,70 @@
 import type { MarketingContent } from '../types';
 
 export const empresaQueFazLtcat = {
-	slug: "empresa-que-faz-ltcat", path: "/empresa-que-faz-ltcat",
-	title: "Empresa que faz ltcat - AJN Consultoria e Engenharia",
-	description: "Empresa que faz LTCAT: a AJN Consultoria e Engenharia realiza o levantamento técnico do LTCAT com análises criteriosas e relatórios detalhados.",
-	heading: "Empresa que faz ltcat",
+	slug: 'empresa-que-faz-ltcat',
+	path: '/empresa-que-faz-ltcat',
+	title: 'Empresa que Faz LTCAT em BH e MG: Como Contratar | AJN',
+	description: 'Procurando empresa que faz LTCAT em Belo Horizonte e MG? Conheça o escopo de vistoria, medições quantitativas, emissão de ART e base para o PPP e eSocial.',
+	heading: 'Empresa que Faz LTCAT: Levantamento e Emissão com ART',
 	images: [
-		{ src: "/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-01.webp", alt: "Empresa que faz ltcat" },
-		{ src: "/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-02.webp", alt: "Empresa que faz ltcat" },
-		{ src: "/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-03.webp", alt: "Empresa que faz ltcat" },
+		{ src: '/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-01.webp', alt: 'Vistoria técnica de empresa que faz LTCAT' },
+		{ src: '/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-02.webp', alt: 'Avaliação quantitativa de agentes nocivos para LTCAT' },
+		{ src: '/images/content/marketing/empresa-que-faz-ltcat/empresa-que-faz-ltcat-03.webp', alt: 'Elaboração de Laudo Técnico das Condições Ambientais do Trabalho' },
 	],
 	sections: [
-		{ heading: "AJN Consultoria e Engenharia: empresa que faz ltcat", paragraphs: [
-			{ segments: ["A", { bold: true, text: "empresa que faz ltcat" }, "AJN Consultoria e Engenharia, sob a liderança do engenheiro Antônio Jorlei, atua no mercado de segurança do trabalho com foco em Qualidade, Segurança, Meio Ambiente e Saúde (QSMS)."] },
-			"Sediada em Belo Horizonte, MG, a empresa também desenvolve projetos de segurança contra incêndio para processos de AVCB/CLCB em edificações de diversos portes e segmentos."
-		]
+		{
+			heading: 'Quem pode emitir o LTCAT e o que exigir ao contratar',
+			paragraphs: [
+				'Por determinação da Lei nº 8.213/1991 (Art. 58, § 1º), o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) deve ser expedido exclusivamente por engenheiro de segurança do trabalho ou médico do trabalho legalmente habilitado.',
+				'Ao contratar uma empresa que faz LTCAT, é indispensável verificar se o serviço inclui vistoria presencial no estabelecimento, medições quantitativas dos agentes nocivos conforme as metodologias da NHO/Fundacentro e do Decreto nº 3.048/1999 e emissão da respectiva Anotação de Responsabilidade Técnica (ART) no CREA ou registro médico.',
+			],
 		},
-		{ heading: "empresa que faz ltcat: Compromisso com a Excelência", paragraphs: [
-			"A AJN Consultoria e Engenharia estrutura medidas técnicas de saúde e segurança para ambientes de trabalho, além de projetos de segurança contra incêndio para processos de AVCB e CLCB.",
-			{ segments: ["A", { bold: true, text: "empresa que faz ltcat" }, "também atua em prevenção e combate a incêndios, consultoria em segurança ocupacional, qualidade, saúde e meio ambiente e relatórios técnicos."] }
-		]
+		{
+			heading: 'Como a AJN conduz a elaboração do LTCAT',
+			paragraphs: [
+				'A AJN Consultoria e Engenharia atende empresas em Belo Horizonte e em todo o estado de Minas Gerais seguindo etapas técnicas rigorosas:',
+			],
+			lists: [
+				{
+					items: [
+						'Levantamento de todos os setores, funções e descrições profissiográficas reais das atividades executadas;',
+						'Reconhecimento dos agentes físicos, químicos e biológicos listados no Anexo IV do Decreto nº 3.048/1999 e na Tabela 24 do eSocial;',
+						'Realização de medições instrumentais com equipamentos calibrados (como dosimetria de ruído, avaliação de calor por IBUTG, vibração e coleta de agentes químicos);',
+						'Avaliação técnica das medidas de proteção coletiva (EPC) e individual (EPI), verificando os requisitos de eficácia e rastreabilidade exigidos pela legislação previdenciária;',
+						'Emissão de parecer conclusivo por função/GHE para preenchimento seguro do PPP eletrônico e do evento S-2240 do eSocial.',
+					],
+				},
+			],
 		},
-		{ heading: "empresa que faz ltcat: Essencial para a Saúde Ocupacional e Conformidade Legal", paragraphs: [
-			"O Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) é um documento fundamental para a avaliação dos agentes nocivos presentes no ambiente laboral, subsidiando a comprovação de aposentadoria especial.",
-			"Para empresas e trabalhadores, o LTCAT representa conformidade legal e proteção da saúde ocupacional.",
-			{ segments: ["A", { bold: true, text: "empresa que faz ltcat" }, "AJN Consultoria e Engenharia atua na elaboração técnica do LTCAT, com levantamentos criteriosos e relatórios detalhados alinhados às normas e regulamentos vigentes."] }
-		]
+		{
+			heading: 'Por que o PGR não substitui o LTCAT',
+			paragraphs: [
+				'Enquanto o PGR (NR-01) tem finalidade trabalhista e preventiva, o LTCAT possui finalidade previdenciária (avaliação do direito à aposentadoria especial e alíquotas de financiamento do SAT/GIIL-RAT). Utilizar apenas o PGR para responder ao evento S-2240 expõe a empresa a autuações da Receita Federal.',
+				{
+					segments: [
+						'Veja mais detalhes em nossas páginas de ',
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						' e ',
+						{ text: 'Preço do LTCAT', href: '/ltcat-preco' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Engajamento e Segurança: Prioridades da empresa que faz ltcat", paragraphs: [
-			"A preocupação com a segurança e o bem-estar dos trabalhadores é uma prioridade constante da AJN Consultoria e Engenharia.",
-			{ segments: ["Ao oferecer serviços personalizados e soluções sob medida para cada cliente, a", { bold: true, text: "empresa que faz ltcat" }, "se destaca no mercado como uma parceira confiável na promoção de ambientes de trabalho seguros e saudáveis."] },
-			"Com uma equipe de profissionais altamente qualificados, a empresa se dedica a fornecer serviços de excelência e atender às necessidades específicas de cada cliente, garantindo a máxima satisfação e segurança em todas as etapas do processo."
-		]
-, subsections: [
-			{ heading: "Entre em Contato Conosco e Garanta a Segurança do seu Negócio", paragraphs: [
-				{ segments: ["Se você busca uma", { bold: true, text: "empresa que faz ltcat" }, "comprometida com a excelência em segurança do trabalho e saúde ocupacional, entre em contato com a AJN Consultoria e Engenharia."] },
-				"Nossa equipe está pronta para oferecer soluções personalizadas, análises precisas e serviços de alta qualidade para garantir a conformidade legal e a proteção da saúde de seus colaboradores.",
-				"Invista na segurança do seu negócio e conte conosco para superar as expectativas. Aguardamos o seu contato!"
-			]
-			}
-		]
+		{
+			heading: 'Solicite orçamento de LTCAT à AJN',
+			paragraphs: [
+				'Envie a cidade da unidade, o ramo de atividade e a relação de funções para receber uma proposta técnica detalhada.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'fale com nossa engenharia', href: '/contato' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Para saber mais sobre Empresa que faz ltcat", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
 	],
 } as const satisfies MarketingContent;

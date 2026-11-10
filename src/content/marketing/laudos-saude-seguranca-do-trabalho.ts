@@ -1,54 +1,72 @@
 import type { MarketingContent } from '../types';
 
 export const laudosSaudeSegurancaDoTrabalho = {
-	slug: "laudos-saude-seguranca-do-trabalho", path: "/laudos-saude-seguranca-do-trabalho",
-	title: "Laudos de saude e segurança do trabalho - AJN Consultoria e Engenharia",
-	description: "Laudos de saude e segurança do trabalho, a ajn consultoria e engenharia disponibiliza uma série de serviços especializados para empresas de diversos...",
-	heading: "Laudos de saude e segurança do trabalho",
+	slug: 'laudos-saude-seguranca-do-trabalho',
+	path: '/laudos-saude-seguranca-do-trabalho',
+	title: 'Laudos de Saúde e Segurança do Trabalho em BH e MG | AJN',
+	description: 'Elaboração de laudos de saúde e segurança do trabalho para empresas: LTCAT, Insalubridade (NR-15), Periculosidade (NR-16), PGR e medições ambientais com ART.',
+	heading: 'Laudos de Saúde e Segurança do Trabalho',
 	images: [
-		{ src: "/images/content/marketing/elaboracao-pgr/elaboracao-pgr-01.webp", alt: "Laudos de saude e segurança do trabalho" },
-		{ src: "/images/content/marketing/laudos-seguranca-do-trabalho/laudos-seguranca-do-trabalho-02.webp", alt: "Laudos de saude e segurança do trabalho" },
-		{ src: "/images/content/marketing/elaboracao-pgr/elaboracao-pgr-02.webp", alt: "Laudos de saude e segurança do trabalho" },
+		{ src: '/images/content/marketing/elaboracao-pgr/elaboracao-pgr-01.webp', alt: 'Vistoria para elaboração de laudos de saúde e segurança do trabalho' },
+		{ src: '/images/content/marketing/laudos-seguranca-do-trabalho/laudos-seguranca-do-trabalho-02.webp', alt: 'Avaliação técnica e medições ocupacionais em campo' },
+		{ src: '/images/content/marketing/elaboracao-pgr/elaboracao-pgr-02.webp', alt: 'Emissão de documentação técnica de SST com ART' },
 	],
 	sections: [
-		{ heading: "Conheça a AJN Consultoria e Engenharia e seus serviços em laudos de saude e segurança do trabalho", paragraphs: [
-			{ segments: ["A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, atua na elaboração de", { bold: true, text: "laudos de saude e segurança do trabalho" }, ", implementando medidas técnicas para ambientes laborais seguros e de acordo com a legislação vigente."] },
-			"Com mais de 08 anos de experiência no mercado de engenharia, a empresa está localizada em Belo Horizonte, MG, e se destaca na elaboração de projetos de segurança contra incêndios para obtenção de AVCB/CLCB em edificações de diversos portes."
-		]
+		{
+			heading: 'Quais laudos e programas compõem a documentação de SST',
+			paragraphs: [
+				'A regularidade trabalhista e previdenciária de uma empresa depende de um conjunto de laudos técnicos e programas que documentam as condições do ambiente de trabalho, fundamentam o pagamento ou a neutralização de adicionais e alimentam o eSocial.',
+				'A AJN Consultoria e Engenharia elabora laudos de saúde e segurança do trabalho em Belo Horizonte e Minas Gerais com levantamento presencial, instrumentação calibrada e emissão de Anotação de Responsabilidade Técnica (ART).',
+			],
 		},
-		{ heading: "A importância dos laudos de saude e segurança do trabalho", paragraphs: [
-			{ segments: ["Os", { bold: true, text: "laudos de saude e segurança do trabalho" }, "são essenciais para prevenir acidentes e doenças ocupacionais, proporcionando um ambiente de trabalho seguro para os colaboradores."] },
-			"Por meio de análises de riscos, elaboração de programas e realização de treinamentos, a consultoria em segurança do trabalho da AJN visa proteger os trabalhadores e reduzir custos relacionados a acidentes no ambiente laboral."
-		]
+		{
+			heading: 'Principais documentos técnicos elaborados pela AJN',
+			paragraphs: [
+				'Cada documento atende a uma norma específica e possui finalidade jurídica distinta:',
+			],
+			lists: [
+				{
+					items: [
+						'LTCAT (Laudo Técnico das Condições Ambientais do Trabalho): avalia a exposição a agentes nocivos físicos, químicos e biológicos para fins previdenciários (aposentadoria especial, PPP eletrônico e evento S-2240 do eSocial);',
+						'Laudo de Insalubridade (NR-15): verifica se as atividades ultrapassam os limites de tolerância fixados pelo Ministério do Trabalho e se os EPCs/EPIs neutralizam o agente;',
+						'Laudo de Periculosidade (NR-16): analisa operações com inflamáveis, explosivos, energia elétrica, radiações ionizantes ou segurança patrimonial;',
+						'PGR (NR-01) e PCMSO (NR-07): programas obrigatórios de gerenciamento de riscos ocupacionais e controle médico de saúde ocupacional;',
+						'Relatórios de Medições Ambientais: avaliações quantitativas de ruído, calor (IBUTG), vibração (VCI e VMB) e agentes químicos segundo as NHOs da Fundacentro.',
+					],
+				},
+			],
 		},
-		{ heading: "Serviços oferecidos pela AJN Consultoria e Engenharia", paragraphs: [
-			{ segments: ["Além de", { bold: true, text: "laudos de saude e segurança do trabalho" }, ", a AJN Consultoria e Engenharia disponibiliza uma série de serviços especializados para empresas de diversos setores. Entre os principais serviços oferecidos estão:"] }
-		]
-, lists: [
-			{ items: [
-				"Prevenção e combate a incêndios, com consultoria e projeto;",
-				"Segurança ocupacional, qualidade, saúde e consultoria ambiental;",
-				"Relatórios de especialistas e relatórios de responsabilidade técnica;",
-				"Certificações e serviços de treinamento em NRs;",
-				"Mobilização de equipe."
-			] }
-		]
+		{
+			heading: 'Como definir quais laudos sua empresa realmente precisa',
+			paragraphs: [
+				'Nem todo estabelecimento precisa contratar todos os laudos existentes. Na análise inicial do CNAE, das funções e dos processos produtivos, nossa engenharia indica apenas os documentos exigíveis para a sua operação e para os contratos que você atende.',
+				{
+					segments: [
+						'Consulte também nossas páginas sobre ',
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						', ',
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						' e ',
+						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Vantagens de contratar os serviços da AJN Consultoria e Engenharia", paragraphs: [
-			{ segments: ["Ao optar pelos serviços da AJN Consultoria e Engenharia em", { bold: true, text: "laudos de saude e segurança do trabalho" }, ", sua empresa terá a garantia de um ambiente de trabalho seguro, conforme as normas vigentes."] },
-			"Além disso, a consultoria especializada ajuda a evitar problemas legais e a proteger a integridade dos colaboradores, contribuindo para um ambiente de trabalho mais saudável e produtivo."
-		]
-, subsections: [
-			{ heading: "Entre em contato conosco e proteja o seu ambiente de trabalho com laudos de saude e segurança do trabalho", paragraphs: [
-				{ segments: ["Agora que você conhece os serviços oferecidos pela AJN Consultoria e Engenharia em", { bold: true, text: "laudos de saude e segurança do trabalho" }, ", não deixe de nos contatar para garantir a segurança e a saúde dos seus colaboradores."] },
-				"Estamos à disposição para oferecer soluções personalizadas e adequadas às necessidades da sua empresa. Proteja seu ambiente de trabalho e evite problemas futuros. Conte conosco!"
-			]
-			}
-		]
+		{
+			heading: 'Peça um orçamento de laudos de SST',
+			paragraphs: [
+				'Informe a cidade, o segmento da empresa e a quantidade de funções e colaboradores para receber uma proposta detalhada da AJN.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'fale com nossa equipe técnica', href: '/contato' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Para saber mais sobre Laudos de saude e segurança do trabalho", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
 	],
 } as const satisfies MarketingContent;

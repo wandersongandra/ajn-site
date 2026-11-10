@@ -1,55 +1,69 @@
 import type { MarketingContent } from '../types';
 
 export const laudosSst = {
-	slug: "laudos-sst", path: "/laudos-sst",
-	title: "Laudos de sst - AJN Consultoria e Engenharia",
-	description: "Laudos de sst são documentos fundamentais para avaliar as condições de trabalho em um ambiente laboral, identificando riscos e propondo medidas...",
-	heading: "Laudos de sst",
+	slug: 'laudos-sst',
+	path: '/laudos-sst',
+	title: 'Laudos de SST (Segurança e Saúde no Trabalho) | AJN Engenharia',
+	description: 'Emissão de laudos de SST em Belo Horizonte e MG: LTCAT, laudos de insalubridade e periculosidade, avaliações quantitativas de higiene ocupacional e PGR.',
+	heading: 'Laudos de SST: Engenharia de Segurança e Higiene Ocupacional',
 	images: [
-		{ src: "/images/content/marketing/valor-projeto-combate-incendio/valor-projeto-combate-incendio-01.webp", alt: "Laudos de sst" },
-		{ src: "/images/content/marketing/laudos-sst/laudos-sst-02.webp", alt: "Laudos de sst" },
-		{ src: "/images/content/marketing/laudos-sst/laudos-sst-03.webp", alt: "Laudos de sst" },
+		{ src: '/images/content/marketing/valor-projeto-combate-incendio/valor-projeto-combate-incendio-01.webp', alt: 'Levantamento técnico para emissão de laudos de SST' },
+		{ src: '/images/content/marketing/laudos-sst/laudos-sst-02.webp', alt: 'Avaliação de exposição ocupacional em ambiente produtivo' },
+		{ src: '/images/content/marketing/laudos-sst/laudos-sst-03.webp', alt: 'Documentação de segurança e saúde no trabalho com ART' },
 	],
 	sections: [
-		{ heading: "A Importância dos laudos de sst para a Saúde e Segurança no Trabalho", paragraphs: [
-			{ segments: ["Os", { bold: true, text: "laudos de sst" }, "são documentos fundamentais para avaliar as condições de trabalho em um ambiente laboral, identificando riscos e propondo medidas preventivas para garantir a saúde e segurança dos trabalhadores."] },
-			"Esses laudos são essenciais não apenas para a conformidade legal, mas também para a prevenção de acidentes e promoção de um ambiente de trabalho seguro."
-		]
+		{
+			heading: 'Como são elaborados os laudos de SST na prática',
+			paragraphs: [
+				'A emissão de laudos de SST exige diagnóstico presencial no ambiente onde o trabalho acontece. Não basta listar cargos a partir da folha de pagamento: é preciso avaliar o ciclo real da tarefa, o tempo de exposição em cada posto, as fontes geradoras de agentes físicos, químicos ou biológicos e a eficácia das proteções instaladas.',
+				'A AJN Consultoria e Engenharia realiza o levantamento completo de campo em Belo Horizonte e Minas Gerais para entregar laudos de SST tecnicamente defensáveis.',
+			],
 		},
-		{ heading: "AJN Consultoria e Engenharia: Especialistas em laudos de sst", paragraphs: [
-			"A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, é uma empresa especializada em oferecer serviços abrangentes de saúde e segurança no trabalho.",
-			{ segments: ["Localizada em Belo Horizonte, MG, a empresa se destaca por sua especialização na elaboração de", { bold: true, text: "laudos de sst" }, "detalhados e personalizados, que visam proteger os trabalhadores e melhorar as condições laborais."] }
-		]
+		{
+			heading: 'Escopo técnico de laudos e programas de SST',
+			paragraphs: [
+				'Atendemos empresas industriais, construtoras, prestadores de serviços, condomínios e comércios na emissão de:',
+			],
+			lists: [
+				{
+					items: [
+						'Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) conforme a Lei nº 8.213/1991 e o Decreto nº 3.048/1999;',
+						'Laudo Técnico de Insalubridade (NR-15) e Laudo Técnico de Periculosidade (NR-16) com parecer conclusivo por função;',
+						'Programa de Gerenciamento de Riscos (PGR - NR-01) e Programa de Controle Médico de Saúde Ocupacional (PCMSO - NR-07);',
+						'Avaliações quantitativas de ruído contínuo ou de impacto, calor (IBUTG), vibração ocupacional e agentes químicos aerodispersoides.',
+					],
+				},
+			],
 		},
-		{ heading: "Serviços Oferecidos pela AJN Consultoria e Engenharia", paragraphs: [
-		]
-, lists: [
-			{ items: [
-				"Prevenção e combate a incêndios, com consultoria e projeto;",
-				"Segurança ocupacional, qualidade, saúde e consultoria ambiental;",
-				"Relatórios de especialistas e responsabilidade técnica;",
-				"Certificações e serviços de treinamento NRs;",
-				"Mobilização de equipe especializada;",
-				"Laudos de SST personalizados e abrangentes."
-			] }
-		]
+		{
+			heading: 'Quando contratar ou revisar seus laudos de SST',
+			paragraphs: [
+				'A contratação é indicada na abertura de estabelecimentos, na mobilização de equipes para contratos em clientes, após reformas ou mudanças de máquinas e sempre que houver necessidade de atualizar a base técnica dos eventos do eSocial.',
+				{
+					segments: [
+						'Confira também nossas páginas sobre ',
+						{ text: 'Laudos de Segurança do Trabalho', href: '/laudos-seguranca-do-trabalho' },
+						' e ',
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Vantagens dos laudos de sst da AJN Consultoria e Engenharia", paragraphs: [
-			{ segments: ["Os", { bold: true, text: "laudos de sst" }, "elaborados pela AJN Consultoria e Engenharia se destacam pela sua precisão, análises detalhadas e recomendações específicas para cada cliente."] },
-			"Ao optar pelos serviços da empresa, os clientes garantem a proteção integral dos trabalhadores, o cumprimento das exigências legais e a melhoria contínua das condições de trabalho."
-		]
-, subsections: [
-			{ heading: "Proteção, Conformidade Legal e Bem-Estar dos Trabalhadores", paragraphs: [
-				{ segments: ["Investir em", { bold: true, text: "laudos de sst" }, "de qualidade é essencial para garantir a proteção dos trabalhadores, a conformidade legal da empresa e o bem-estar de todos os envolvidos."] },
-				"Com a AJN Consultoria e Engenharia, você pode ter a certeza de contar com um serviço especializado, que prioriza a segurança e a saúde no ambiente de trabalho.",
-				{ segments: ["Entre em contato conosco e saiba mais sobre como nossos serviços de", { bold: true, text: "laudos de sst" }, "podem beneficiar sua empresa. Proteja seus colaboradores, invista em segurança e promova um ambiente de trabalho saudável com a AJN Consultoria e Engenharia."] }
-			]
-			}
-		]
+		{
+			heading: 'Solicite uma proposta técnica à AJN',
+			paragraphs: [
+				'Envie os dados do seu estabelecimento e a relação de cargos ativos para dimensionarmos o levantamento de SST.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'solicite orçamento pelo formulário', href: '/contato' },
+						'.',
+					],
+				},
+			],
 		},
-		{ heading: "Para saber mais sobre Laudos de sst", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
-		]
-		}
 	],
 } as const satisfies MarketingContent;

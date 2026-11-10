@@ -3,54 +3,67 @@ import type { MarketingContent } from '../types';
 export const projetoSistemaCombateIncendio = {
 	slug: 'projeto-sistema-combate-incendio',
 	path: '/projeto-sistema-combate-incendio',
-	title: 'Projeto de sistema de combate a incêndio - AJN Consultoria e Engenharia',
-	description: 'Projeto de sistema de combate a incêndio bem elaborado proporciona uma série de benefícios, como a rápida detecção de incêndios, ação eficiente no...',
-	heading: 'Projeto de sistema de combate a incêndio',
+	title: 'Projeto de Sistema de Combate a Incêndio: Hidrantes, Alarme e Sprinklers | AJN',
+	description: 'Elaboração de projeto de sistema de combate a incêndio em BH e MG: cálculo hidráulico de hidrantes, casa de bombas, sprinklers, detecção e alarme.',
+	heading: 'Projeto de Sistema de Combate a Incêndio',
 	images: [
-		{ src: '/images/content/marketing/projeto-sistema-combate-incendio/projeto-sistema-combate-incendio-01.webp', alt: 'Projeto de sistema de combate a incêndio' },
-		{ src: '/images/content/marketing/projeto-sistema-combate-incendio/projeto-sistema-combate-incendio-02.webp', alt: 'Projeto de sistema de combate a incêndio' },
-		{ src: '/images/content/marketing/projeto-sistema-combate-incendio/projeto-sistema-combate-incendio-03.webp', alt: 'Projeto de sistema de combate a incêndio' },
+		{ src: '/images/content/marketing/projeto-sistema-combate-incendio/projeto-sistema-combate-incendio-01.webp', alt: 'Projeto de sistema de combate a incêndio com rede de hidrantes' },
+		{ src: '/images/content/marketing/projeto-sistema-combate-incendio/projeto-sistema-combate-incendio-02.webp', alt: 'Dimensionamento de casa de bombas e tubulação de incêndio' },
+		{ src: '/images/content/marketing/projeto-sistema-combate-incendio/projeto-sistema-combate-incendio-03.webp', alt: 'Engenharia de sistemas preventivos e de combate a incêndio' },
 	],
 	sections: [
 		{
-			heading: 'Por que investir em um projeto de sistema de combate a incêndio',
+			heading: 'Engenharia executiva para sistemas fixos e portáteis de combate',
 			paragraphs: [
-				'Um sistema de combate a incêndio é uma medida essencial para garantir a segurança de um local e prevenir tragédias.',
-				'Investir em um projeto de sistema de combate a incêndio é fundamental para garantir a conformidade com as normas técnicas e legislações vigentes, proporcionando segurança e tranquilidade para todos que frequentam o ambiente.',
+				'Para que uma instalação de combate a incêndio funcione quando acionada e seja aprovada em vistoria do Corpo de Bombeiros, cada subsistema precisa ser dimensionado por cálculo de engenharia. Tubulações subdimensionadas ou bombas selecionadas sem curva de perda de carga resultam em falta de pressão nos hidrantes mais desfavoráveis.',
+				'A AJN Consultoria e Engenharia desenvolve projetos completos de sistemas de combate a incêndio em Belo Horizonte e Minas Gerais, entregando plantas, detalhes isométricos e memoriais de cálculo prontos para aprovação e execução.',
 			],
 		},
 		{
-			heading: 'Os serviços oferecidos pela AJN Consultoria e Engenharia',
+			heading: 'Sistemas dimensionados no projeto técnico',
 			paragraphs: [
-				'A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, oferece uma gama de serviços especializados em segurança do trabalho.',
-				'Além de projetos de combate a incêndio para obtenção de AVCB/CLCB, a empresa também atua na prevenção e combate a incêndios, segurança ocupacional, qualidade, saúde e consultoria ambiental, entre outros.',
+				'Nosso escopo de engenharia abrange os principais sistemas exigidos pelo CBMMG e pelas normas da ABNT:',
+			],
+			lists: [
+				{
+					items: [
+						'Sistema de Hidrantes e Mangotinhos (IT 17 e NBR 13714): traçado da rede, diâmetros, perda de carga, pressão e vazão nos hidrantes mais desfavoráveis, especificação de bomba principal e bomba jockey e volume da Reserva Técnica de Incêndio (RTI);',
+						'Sistema de Chuveiros Automáticos / Sprinklers (IT 18 e NBR 10897): malha de distribuição, fator K dos bicos, válvulas de governo e alarme (VGA) e cálculo hidráulico por área de operação;',
+						'Sistema de Detecção e Alarme de Incêndio (IT 14 e NBR 17240): arquitetura da central, laços, detectores pontuais ou lineares, acionadores manuais e avisadores;',
+						'Unidades Extintoras, Iluminação de Emergência e Sinalização Fotoluminescente (ITs 13, 15 e 16).',
+					],
+				},
 			],
 		},
 		{
-			heading: 'A importância de um projeto de sistema de combate a incêndio personalizado',
+			heading: 'Documentação clara para cotação e montagem da obra',
 			paragraphs: [
-				'Cada ambiente possui suas particularidades e desafios específicos quando se trata de segurança contra incêndios.',
-				'Por isso, contar com um projeto de sistema de combate a incêndio personalizado e adaptado às necessidades do local é crucial para garantir a eficácia do sistema e a proteção de vidas e bens materiais.',
+				'Um projeto de sistema de combate a incêndio bem detalhado permite que o cliente cote a instalação com diferentes empreiteiras usando a mesma base técnica de materiais e diâmetros, evitando aditivos inesperados durante a montagem.',
+				{
+					segments: [
+						'Consulte também nossas páginas sobre ',
+						{ text: 'Sistemas de Incêndio em BH', href: '/sistemas-incendio-bh' },
+						' e ',
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						'.',
+					],
+				},
 			],
 		},
 		{
-			heading: 'Benefícios de um projeto de sistema de combate a incêndio bem elaborado',
+			heading: 'Fale com a engenharia da AJN',
 			paragraphs: [
-				'Um projeto de sistema de combate a incêndio bem elaborado proporciona uma série de benefícios, como a rápida detecção de incêndios, ação eficiente no combate às chamas, evacuação segura dos ocupantes, proteção do patrimônio e conformidade com as normas vigentes.',
-				'Além disso, a tranquilidade de saber que o local está adequadamente protegido contra incêndios é inestimável.',
+				'Envie as informações da sua edificação ou planta industrial para dimensionarmos o projeto do sistema de combate a incêndio.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'solicite orçamento pelo site', href: '/contato' },
+						'.',
+					],
+				},
 			],
-			subsections: [{
-				heading: 'Entre em contato com a AJN Consultoria e Engenharia',
-				paragraphs: [
-					' Se você busca garantir a segurança do seu ambiente e obter as licenças necessárias para seu funcionamento, entre em contato com a AJN Consultoria e Engenharia.',
-					'Nossa equipe de profissionais especializados está pronta para desenvolver um projeto de sistema de combate a incêndio sob medida para atender às suas necessidades.',
-					'Proteja o seu patrimônio e as vidas que frequentam o seu espaço. Entre em contato conosco e solicite um orçamento sem compromisso.',
-				],
-			}],
-		},
-		{
-			heading: 'Para saber mais sobre Projeto de sistema de combate a incêndio',
-			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
 		},
 	],
 } as const satisfies MarketingContent;

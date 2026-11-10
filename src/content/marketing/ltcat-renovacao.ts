@@ -3,43 +3,68 @@ import type { MarketingContent } from '../types';
 export const ltcatRenovacao = {
 	slug: 'ltcat-renovacao',
 	path: '/ltcat-renovacao',
-	title: 'Ltcat renovação - AJN Consultoria e Engenharia',
-	description: 'Ltcat renovação, os clientes podem contar com uma equipe de profissionais altamente qualificados e dedicados a oferecer soluções sob medida para cada...',
-	heading: 'Ltcat renovação',
+	title: 'Renovação e Atualização de LTCAT: Quando é Obrigatória | AJN',
+	description: 'Saiba quando fazer a renovação ou atualização do LTCAT da sua empresa conforme a Instrução Normativa do INSS e o Decreto 3.048/99. Atendimento em BH e MG.',
+	heading: 'Renovação e Atualização Técnica do LTCAT',
 	images: [
-		{ src: '/images/content/marketing/ltcat-renovacao/ltcat-renovacao-01.webp', alt: 'Ltcat renovação' },
-		{ src: '/images/content/marketing/ltcat-renovacao/ltcat-renovacao-02.webp', alt: 'Ltcat renovação' },
-		{ src: '/images/content/marketing/ltcat-renovacao/ltcat-renovacao-03.webp', alt: 'Ltcat renovação' },
+		{ src: '/images/content/marketing/ltcat-renovacao/ltcat-renovacao-01.webp', alt: 'Vistoria para renovação e atualização de LTCAT' },
+		{ src: '/images/content/marketing/ltcat-renovacao/ltcat-renovacao-02.webp', alt: 'Reavaliação de agentes nocivos e layout operacional' },
+		{ src: '/images/content/marketing/ltcat-renovacao/ltcat-renovacao-03.webp', alt: 'Atualização de laudo técnico previdenciário' },
 	],
 	sections: [
-		{ heading: 'A Importância da ltcat renovação para a Segurança do Trabalho', paragraphs: [
-			'A renovação do Laudo Técnico das Condições Ambientais do Trabalho (ltcat renovação) é um processo fundamental para garantir a segurança e a saúde dos colaboradores em um ambiente laboral.',
-			'Essa prática tem como principal objetivo avaliar os agentes nocivos presentes no local de trabalho, assegurando a conformidade legal e protegendo a saúde ocupacional dos trabalhadores.',
-			'Para empresas e trabalhadores, o ltcat renovação é um instrumento essencial que garante o direito à aposentadoria especial, proporcionando segurança jurídica e bem-estar no ambiente de trabalho.',
-			'Ao realizar a ltcat renovação, é possível identificar e mitigar os riscos ocupacionais, promovendo um ambiente mais seguro e saudável para todos.',
-		] },
-		{ heading: 'Conheça a ltcat renovação da AJN Consultoria e Engenharia', paragraphs: [
-			'A AJN Consultoria e Engenharia, liderada pelo engenheiro Antônio Jorlei, é uma empresa especializada em QSMS – Qualidade, Segurança, Meio Ambiente e Saúde, com mais de 08 anos de experiência no mercado de engenharia.',
-			'Localizada em Belo Horizonte, MG, a empresa oferece uma ampla gama de serviços voltados para a segurança do trabalho e projetos de prevenção contra incêndios.',
-			'Além disso, a AJN Consultoria e Engenharia destaca-se pela sua especialização na elaboração e ltcat renovação, fornecendo análises precisas e relatórios detalhados que atendem às normas regulamentadoras, garantindo a segurança e a saúde dos colaboradores.',
-		] },
-		{ heading: 'Vantagens da Parceria com a AJN Consultoria e Engenharia', paragraphs: [], lists: [{ items: [
-			'Profissionais qualificados e experientes em segurança do trabalho;',
-			'Serviços personalizados segundo as necessidades de cada cliente;',
-			'Atendimento ágil e eficiente, com foco na excelência e na satisfação do cliente;',
-			'Relatórios técnicos e laudos de alta qualidade, que cumprem todas as exigências legais;',
-			'Compromisso com a segurança, a saúde e o bem-estar dos colaboradores.',
-		] }] },
-		{ heading: 'O Processo de ltcat renovação com a AJN Consultoria e Engenharia', paragraphs: ['Ao optar pela parceria com a AJN Consultoria e Engenharia para a ltcat renovação, os clientes podem contar com uma equipe de profissionais altamente qualificados e dedicados a oferecer soluções sob medida para cada caso. O processo de inclui:'], lists: [{ items: [
-			'Avaliação minuciosa das condições ambientais de trabalho;',
-			'Análise detalhada dos agentes nocivos presentes no ambiente laboral;',
-			'Elaboração de relatórios técnicos completos e precisos;',
-			'Orientações para a implementação de medidas preventivas e corretivas;',
-			'Assessoria durante todo o processo de renovação do LTCAT.',
-		] }], subsections: [{ heading: 'Entre em Contato Conosco e Garanta a ltcat renovação', paragraphs: [
-			'Se você busca uma empresa especializada em segurança do trabalho e na renovação do LTCAT, conte com a AJN Consultoria e Engenharia.',
-			'Nossa equipe está preparada para oferecer as melhores soluções em saúde ocupacional, garantindo a segurança e o bem-estar dos seus colaboradores. Entre em contato conosco e saiba mais sobre nossos serviços!',
-		] }] },
-		{ heading: 'Para saber mais sobre Ltcat renovação', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{
+			heading: 'O LTCAT tem prazo de validade ou precisa de renovação?',
+			paragraphs: [
+				'Diferentemente de licenças com vencimento fixo em calendário, a legislação previdenciária (Lei nº 8.213/1991 e Instrução Normativa PRES/INSS nº 128/2022) estabelece que o LTCAT deve ser mantido atualizado sempre que ocorrerem alterações no ambiente de trabalho ou na organização das atividades.',
+				'Na prática, porém, manter um LTCAT antigo sem revisão por vários anos gera passivos graves quando a empresa muda máquinas, cria novas funções, substitui EPIs ou precisa comprovar a contemporaneidade dos dados no evento S-2240 do eSocial.',
+			],
+		},
+		{
+			heading: 'Situações que exigem a atualização imediata do LTCAT',
+			paragraphs: [
+				'De acordo com as normas previdenciárias, o laudo precisa ser revisto ou renovado sempre que houver:',
+			],
+			lists: [
+				{
+					items: [
+						'Mudança de layout das instalações, ampliação de galpão ou transferência de endereço;',
+						'Substituição ou acréscimo de máquinas, equipamentos ou matérias-primas e produtos químicos;',
+						'Adoção ou alteração de tecnologia de proteção coletiva (EPC), como enclausuramento acústico ou sistemas de exaustão;',
+						'Criação de novos cargos/funções ou alteração na rotina de exposição dos trabalhadores;',
+						'Atingimento de níveis de ação em avaliações ambientais que exijam novo monitoramento quantitativo.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Como a AJN realiza a revisão do seu LTCAT',
+			paragraphs: [
+				'Nossa equipe avalia o LTCAT anterior da empresa, confere in loco o que mudou nos setores produtivos, executa novas medições instrumentais onde houve alteração de processo e emite o laudo atualizado com nova ART, mantendo o histórico técnico preservado para emissões de PPP.',
+				{
+					segments: [
+						'Veja mais informações em nossa página de ',
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						' e ',
+						{ text: 'LTCAT e Evento eSocial', href: '/ltcat-evento-esocial' },
+						'.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Solicite a atualização do LTCAT da sua empresa',
+			paragraphs: [
+				'Informe à AJN Consultoria e Engenharia a data do seu último laudo e o porte atual da operação para avaliarmos o escopo de renovação.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'entre em contato conosco', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

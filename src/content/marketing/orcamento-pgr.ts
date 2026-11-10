@@ -3,38 +3,66 @@ import type { MarketingContent } from '../types';
 export const orcamentoPgr = {
 	slug: 'orcamento-pgr',
 	path: '/orcamento-pgr',
-	title: 'Orçamento pgr - AJN Consultoria e Engenharia',
-	description: 'Orçamento pgr, adaptados às necessidades específicas de cada cliente, visando atender às normas regulatórias e promover um ambiente de trabalho seguro e...',
-	heading: 'Orçamento pgr',
+	title: 'Orçamento de PGR (NR-01) para Empresas | AJN Engenharia',
+	description: 'Solicite orçamento de PGR em Belo Horizonte e MG. Veja quais dados informar sobre unidades, funções e processos para dimensionar o Programa de Gerenciamento de Riscos.',
+	heading: 'Orçamento de PGR conforme a NR-01',
 	images: [
-		{ src: '/images/content/marketing/orcamento-pgr/orcamento-pgr-01.webp', alt: 'Orçamento pgr' },
-		{ src: '/images/content/marketing/orcamento-pgr/orcamento-pgr-02.webp', alt: 'Orçamento pgr' },
-		{ src: '/images/content/marketing/orcamento-pgr/orcamento-pgr-03.webp', alt: 'Orçamento pgr' },
+		{ src: '/images/content/marketing/orcamento-pgr/orcamento-pgr-01.webp', alt: 'Orçamento de PGR para empresas' },
+		{ src: '/images/content/marketing/orcamento-pgr/orcamento-pgr-02.webp', alt: 'Vistoria técnica para orçamento de PGR' },
+		{ src: '/images/content/marketing/orcamento-pgr/orcamento-pgr-03.webp', alt: 'Análise de inventário de riscos e plano de ação' },
 	],
 	sections: [
-		{ heading: 'A importância do orçamento pgr', paragraphs: [
-			'O Programa de Gerenciamento de Riscos (PGR) é fundamental para identificar, avaliar e controlar os riscos ambientais e ocupacionais em empresas.',
-			'Essencial para promover um ambiente de trabalho seguro e conforme normas regulatórias, o PGR ajuda a prevenir acidentes e doenças ocupacionais, além de mitigar impactos ambientais.',
-			'A AJN Consultoria e Engenharia elabora propostas técnicas de orçamento PGR adaptadas às necessidades específicas de cada cliente, apoiando a gestão da segurança e da saúde dos trabalhadores.',
-		] },
-		{ heading: 'Conheça o orçamento pgr da AJN Consultoria e Engenharia', paragraphs: [
-			'A AJN Consultoria e Engenharia, sob a direção do engenheiro Antônio Jorlei, é uma empresa especializada em segurança do trabalho e elaboração de PGR em Belo Horizonte e Minas Gerais.',
-			'Localizada em Belo Horizonte, MG, a empresa presta atendimento técnico para estruturar a saúde e segurança no ambiente de trabalho, incluindo projetos de segurança contra incêndio para processos de AVCB/CLCB em edificações comerciais, residenciais e industriais.',
-		] },
-		{ heading: 'Serviços oferecidos pela AJN Consultoria e Engenharia', paragraphs: ['A AJN Consultoria e Engenharia realiza outros serviços técnicos para empresas, tais como:'], lists: [{ items: [
-			'Prevenção e combate a incêndios, com consultoria e projeto',
-			'Segurança ocupacional, qualidade, saúde e consultoria ambiental',
-			'Relatórios de especialistas, relatórios de responsabilidade técnica',
-			'Certificações e serviços de treinamento NRs',
-			'Mobilização de equipe',
-		] }] },
-		{ heading: 'Elaboração de orçamento pgr personalizado', paragraphs: [
-			'A definição de um orçamento PGR dimensionado conforme os setores e funções da empresa é essencial para planejar o gerenciamento de riscos ocupacionais.',
-			'A AJN Consultoria e Engenharia desenvolve propostas de PGR adequadas à realidade operacional de cada estabelecimento, visando atender à NR-01 e promover um ambiente de trabalho seguro e saudável.',
-		], subsections: [{ heading: 'Entre em contato conosco', paragraphs: [
-			'Se você busca serviços especializados em segurança do trabalho, elaboração de Programa de Gerenciamento de Riscos (PGR) e projetos de segurança contra incêndio, entre em contato com a AJN Consultoria e Engenharia.',
-			'Nossa equipe de profissionais altamente qualificados está pronta para atender às suas necessidades e garantir a segurança e o bem-estar no seu local de trabalho. Aproveite para solicitar um orçamento pgr personalizado e sob medida para sua empresa.',
-		] }] },
-		{ heading: 'Para saber mais sobre Orçamento pgr', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{
+			heading: 'Como é dimensionado o orçamento do PGR',
+			paragraphs: [
+				'O Programa de Gerenciamento de Riscos (PGR), exigido pela NR-01, deve refletir as condições reais de cada estabelecimento. Por isso, o orçamento técnico depende da complexidade dos processos produtivos, da quantidade de setores e funções, da localização das unidades e da necessidade de avaliações quantitativas de agentes ambientais.',
+				'A AJN Consultoria e Engenharia analisa o contexto operacional da empresa antes de emitir a proposta, diferenciando claramente o levantamento do inventário de riscos e plano de ação das eventuais medições instrumentais complementares.',
+			],
+		},
+		{
+			heading: 'Informações que agilizam a sua cotação de PGR',
+			paragraphs: [
+				'Ao solicitar seu orçamento, compartilhe os dados básicos do estabelecimento para que nossa equipe de engenharia possa delimitar o escopo com precisão:',
+			],
+			lists: [
+				{
+					items: [
+						'CNPJ, ramo de atividade (CNAE) e endereço da unidade ou canteiro de obras;',
+						'Relação de cargos/funções ativos e número aproximado de trabalhadores;',
+						'Resumo das principais operações executadas (ex.: escritório administrativo, comércio, oficina mecânica, indústria metalúrgica, construção civil);',
+						'Informação sobre documentos anteriores disponíveis (PGR vigente, LTCAT, PCMSO ou relatórios de medições);',
+						'Prazo desejado ou exigência específica de cliente contratante para mobilização.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'O que verificar ao comparar propostas de PGR',
+			paragraphs: [
+				'Confira se o orçamento prevê visita técnica presencial para reconhecimento de riscos, emissão de Anotação de Responsabilidade Técnica (ART) quando cabível e estruturação compatível com o envio de eventos de SST ao eSocial e com o PCMSO da empresa.',
+				{
+					segments: [
+						'Saiba mais sobre o escopo técnico em nossa página de ',
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						'.',
+					],
+				},
+			],
+		},
+		{
+			heading: 'Peça seu orçamento de PGR à AJN',
+			paragraphs: [
+				'Nossa equipe atende empresas em Belo Horizonte, Região Metropolitana e interior de Minas Gerais.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'envie os dados para orçamento', href: '/contato' },
+						'.',
+					],
+				},
+			],
+		},
 	],
 } as const satisfies MarketingContent;

@@ -3,57 +3,68 @@ import type { MarketingContent } from '../types';
 export const projetoSistemaIncendio = {
 	slug: 'projeto-sistema-incendio',
 	path: '/projeto-sistema-incendio',
-	title: 'Projeto de sistema de incêndio - AJN Consultoria e Engenharia',
-	description: 'Projeto de sistema de incêndio requer conhecimento técnico e especialização para garantir que todas as exigências das normas e legislações vigentes sejam...',
-	heading: 'Projeto de sistema de incêndio',
+	title: 'Projeto de Sistema de Incêndio para Edificações | AJN Engenharia',
+	description: 'Elaboração de projeto de sistema de incêndio em Belo Horizonte e MG. Dimensionamento de redes preventivas, aprovação no CBMMG e suporte técnico para AVCB.',
+	heading: 'Projeto de Sistema de Incêndio: Dimensionamento e Aprovação',
 	images: [
-		{ src: '/images/content/marketing/projeto-sistema-incendio/projeto-sistema-incendio-01.webp', alt: 'Projeto de sistema de incêndio' },
-		{ src: '/images/content/marketing/projeto-sistema-incendio/projeto-sistema-incendio-02.webp', alt: 'Projeto de sistema de incêndio' },
-		{ src: '/images/content/marketing/projeto-sistema-incendio/projeto-sistema-incendio-03.webp', alt: 'Projeto de sistema de incêndio' },
+		{ src: '/images/content/marketing/projeto-sistema-incendio/projeto-sistema-incendio-01.webp', alt: 'Projeto de sistema de incêndio em planta industrial e comercial' },
+		{ src: '/images/content/marketing/projeto-sistema-incendio/projeto-sistema-incendio-02.webp', alt: 'Detalhamento de rede de incêndio e dispositivos de segurança' },
+		{ src: '/images/content/marketing/projeto-sistema-incendio/projeto-sistema-incendio-03.webp', alt: 'Vistoria técnica de sistemas de incêndio em Minas Gerais' },
 	],
 	sections: [
 		{
-			heading: 'A importância do projeto de sistema de incêndio',
+			heading: 'Como compatibilizar o projeto de sistema de incêndio com a edificação',
 			paragraphs: [
-				'Quando se trata de segurança do trabalho, um dos aspectos mais cruciais a serem considerados é o projeto de sistema de incêndio. Essa medida preventiva é fundamental para proteger vidas e patrimônios, evitando danos irreparáveis em casos de incêndios.',
-				'É por isso que a AJN Consultoria e Engenharia se destaca no mercado, oferecendo serviços especializados na elaboração de projetos de combate a incêndio.',
+				'Cada edificação apresenta condicionantes próprios de arquitetura, estrutura e operação: pé-direito elevado em galpões, estocagem porta-paletes, subsolos de estacionamento ou circulação intensa de público. O projeto de sistema de incêndio precisa posicionar tubulações, abrigos, centrais e rotas de fuga sem inviabilizar a rotina do imóvel e cumprindo integralmente as Instruções Técnicas do CBMMG.',
+				'A AJN Consultoria e Engenharia desenvolve projetos de sistemas de incêndio em Belo Horizonte e Minas Gerais com foco na viabilidade construtiva e na aprovação técnica.',
 			],
 		},
 		{
-			heading: 'Conformidade com normas técnicas e legislações vigentes',
+			heading: 'Entregáveis que compõem o projeto técnico',
 			paragraphs: [
-				'A elaboração de um projeto de sistema de incêndio requer conhecimento técnico e especialização para garantir que todas as exigências das normas e legislações vigentes sejam atendidas.',
-				'Com uma equipe qualificada e experiente, a AJN Consultoria e Engenharia assegura que seus projetos estejam conforme todas as regulamentações, proporcionando segurança e tranquilidade aos seus clientes.',
+				'Ao contratar a AJN, sua empresa recebe o pacote técnico completo para tramitação e obra:',
+			],
+			lists: [
+				{
+					items: [
+						'Plantas baixas e cortes esquemáticos com locação de todos os equipamentos preventivos nas convenções gráficas do CBMMG;',
+						'Detalhes isométricos da rede de hidrantes, casa de bombas, barrilete e reservatório técnico;',
+						'Memoriais descritivos e memoriais de cálculo hidráulico, populacional e de carga de incêndio;',
+						'Anotação de Responsabilidade Técnica (ART) registrada no CREA-MG;',
+						'Protocolo e acompanhamento das análises no sistema INFOSCIP.',
+					],
+				},
 			],
 		},
 		{
-			heading: 'Serviços oferecidos pela AJN Consultoria e Engenharia',
-			paragraphs: [],
-			lists: [{ items: [
-				'Prevenção e combate a incêndios, com consultoria e projeto',
-				'Segurança ocupacional, qualidade, saúde e consultoria ambiental',
-				'Relatórios de especialistas e relatórios de responsabilidade técnica',
-				'Certificações e serviços de treinamento NRs',
-				'Mobilização de equipe qualificada e preparada',
-			]}],
-		},
-		{
-			heading: 'Profissionalismo e comprometimento no projeto de sistema de incêndio',
+			heading: 'Revisão de sistemas existentes para renovação de AVCB',
 			paragraphs: [
-				'O engenheiro Antônio Jorlei, responsável pela AJN Consultoria e Engenharia, é um profissional especializado em QSMS, com mais de 8 anos de experiência no mercado de engenharia.',
-				'Sua dedicação e especialização garantem que todo projeto de sistema de incêndio seja executado com profissionalismo e comprometimento, visando sempre a excelência e a satisfação dos clientes.',
+				'Em imóveis que já possuem rede instalada, realizamos o diagnóstico em campo para verificar se o sistema físico corresponde ao projeto aprovado ou se é necessário atualizar o projeto conforme as modificações ocorridas na edificação.',
+				{
+					segments: [
+						'Veja também nossas páginas sobre ',
+						{ text: 'Combate a Incêndio em Belo Horizonte', href: '/combate-incendio-belo-horizonte' },
+						' e ',
+						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						'.',
+					],
+				},
 			],
-			subsections: [{
-				heading: 'Entre em contato conosco!',
-				paragraphs: [
-					'Se você busca garantir a segurança e a proteção do seu patrimônio, conte com a AJN Consultoria e Engenharia.',
-					'Nossa equipe está preparada para oferecer soluções personalizadas e eficientes em projeto de sistema de incêndio. Entre em contato conosco e saiba como podemos ajudar a proteger o seu negócio!',
-				],
-			}],
 		},
 		{
-			heading: 'Para saber mais sobre Projeto de sistema de incêndio',
-			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
+			heading: 'Solicite uma proposta para o seu projeto',
+			paragraphs: [
+				'Informe a área construída, a localização e o segmento de uso do imóvel para receber nosso orçamento.',
+				{
+					segments: [
+						'Ligue para ',
+						{ bold: true, text: '31 98473-4644' },
+						' ou ',
+						{ text: 'entre em contato com a AJN', href: '/contato' },
+						'.',
+					],
+				},
+			],
 		},
 	],
 } as const satisfies MarketingContent;
