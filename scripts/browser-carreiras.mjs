@@ -161,6 +161,12 @@ for (const vp of viewports) {
     assert(metrics.hasHeader, `Cabeçalho padrão presente em ${route}`);
     assert(pageErrors.length === 0, `Zero erros JS em ${route} (${vp.name}): ${pageErrors.join(', ')}`);
 
+    const privacyDialog = page.locator('#ajn-privacy-notice');
+    if (await privacyDialog.isVisible()) {
+      await privacyDialog.locator('[data-privacy-reject]').click();
+      await privacyDialog.waitFor({ state: 'hidden' });
+    }
+
     if (route === '/admin/carreiras/') {
       await exerciseRestoredAdmin(page);
       await exerciseAdminJobCrud(page);
@@ -192,7 +198,7 @@ for (const vp of viewports) {
         body: JSON.stringify({ error: 'Protocolo QA inexistente.' }),
       }));
       await page.locator('[data-tracking-form] [name="code"]').fill('AJN-2026-ABCDEF');
-      await page.locator('[data-tracking-form] button[type="submit"]').click();
+      await page.locator('[data-tracking-form] button[type="submit"]').press('Enter');
       await page.waitForFunction(() => [...document.querySelectorAll('.carreiras-notice[data-notice]')].some(el => el.textContent.includes('Protocolo QA inexistente.')));
       assert(await page.locator('.carreiras-notice[data-notice]').first().isVisible(), `Erro de acompanhamento visível em ${vp.name}`);
 
@@ -203,7 +209,7 @@ for (const vp of viewports) {
       }));
       await recoveryForm.locator('[name="email"]').fill('qa@example.invalid');
       await recoveryForm.locator('[name="cpf"]').fill('11144477735');
-      await recoveryForm.locator('button[type="submit"]').click();
+      await recoveryForm.locator('button[type="submit"]').press('Enter');
       await page.waitForFunction(() => document.querySelector('[data-recovery-form] [data-notice]')?.textContent.includes('Código de teste enviado.'));
       assert(await recoveryForm.locator('[data-notice]').isVisible(), `Mensagem de recuperação visível em ${vp.name}`);
       assert(await recoveryForm.locator('[data-code-group]').isVisible(), `Campo de confirmação por e-mail liberado em ${vp.name}`);
@@ -216,7 +222,7 @@ for (const vp of viewports) {
       const lgpdForm = page.locator('[data-lgpd-form]');
       await lgpdForm.locator('[name="email"]').fill('qa@example.invalid');
       await lgpdForm.locator('[name="cpf"]').fill('11144477735');
-      await lgpdForm.locator('button[type="submit"]').click();
+      await lgpdForm.locator('button[type="submit"]').press('Enter');
       await page.waitForFunction(() => document.querySelector('[data-lgpd-form] [data-notice]')?.textContent.includes('Solicitação de teste recusada.'));
       assert(await lgpdForm.locator('[data-notice]').isVisible(), `Mensagem LGPD visível em ${vp.name}`);
     }
