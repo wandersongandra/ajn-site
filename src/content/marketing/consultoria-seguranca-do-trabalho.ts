@@ -14,7 +14,7 @@ export const consultoriaSegurancaDoTrabalho = {
 		{
 			heading: "Atuação técnica em Segurança do Trabalho para operações reais",
 			paragraphs: [
-				"Uma consultoria em segurança do trabalho precisa ir além da entrega formal de pastas e certificados. Nas operações industriais, comerciais, logísticas e da construção civil, a gestão de SST exige reconhecimento preciso dos riscos no local de trabalho, definição de medidas de controle viáveis e documentação consistente para fiscalizações e contratos.",
+				"Na prática das operações industriais, comerciais, logísticas e da construção civil, a consultoria em segurança do trabalho exige reconhecimento técnico dos riscos no local de atividade, definição de medidas de controle viáveis e documentação consistente para fiscalizações e contratos.",
 				"Sediada em Belo Horizonte, a AJN Consultoria e Engenharia apoia empresas em Minas Gerais tanto em demandas pontuais de regularização documental quanto no acompanhamento técnico recorrente em campo."
 			]
 		},

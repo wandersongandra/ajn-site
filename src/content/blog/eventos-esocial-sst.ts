@@ -34,9 +34,9 @@ export const blogEventosEsocialSst = {
       'Um único evento cobre toda a gestão de SST? Não. Os três registros tratam de assuntos distintos e dependem de dados confiáveis, documentos de origem e processos internos.'
     ] },
     { heading: 'Referências oficiais', paragraphs: [
-      { segments: [{ text: 'eSocial — documentação técnica e Manual de Orientação vigente', href: 'https://www.gov.br/esocial/pt-br/documentacao-tecnica' }] },
-      { segments: [{ text: 'eSocial — manual web de SST', href: 'https://www.gov.br/esocial/pt-br/empresas/manual-web-geral' }] },
-      { segments: [{ text: 'AJN — gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }] }
+      { segments: [{ text: 'eSocial: documentação técnica e Manual de Orientação vigente', href: 'https://www.gov.br/esocial/pt-br/documentacao-tecnica' }] },
+      { segments: [{ text: 'eSocial: manual web de SST', href: 'https://www.gov.br/esocial/pt-br/empresas/manual-web-geral' }] },
+      { segments: [{ text: 'AJN: gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

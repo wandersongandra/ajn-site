@@ -15,7 +15,7 @@ export const orcamentoProjetoCombateIncendio = {
 		{
 			heading: 'Como solicitar um orçamento preciso de projeto de combate a incêndio',
 			paragraphs: [
-				'Para elaborar um orçamento de Projeto de Segurança Contra Incêndio e Pânico (PSCIP) sem surpresas ou aditivos posteriores, a engenharia precisa primeiro identificar em qual modalidade do Decreto Estadual nº 47.998/2020 o imóvel se enquadra e quais sistemas preventivos são exigidos.',
+				'Para elaborar um orçamento preciso de Projeto de Segurança Contra Incêndio e Pânico (PSCIP), a engenharia verifica primeiro em qual modalidade do Decreto Estadual nº 47.998/2020 o imóvel se enquadra e quais sistemas preventivos são exigidos.',
 				'A AJN Consultoria e Engenharia analisa os dados preliminares da sua edificação em Belo Horizonte ou interior de Minas Gerais e apresenta uma proposta discriminando cada etapa técnica.',
 			],
 		},
@@ -39,7 +39,7 @@ export const orcamentoProjetoCombateIncendio = {
 		{
 			heading: 'O que está incluído na proposta técnica da AJN',
 			paragraphs: [
-				'Nossos orçamentos detalham de forma transparente o levantamento em campo (quando necessário), a elaboração das pranchas e memoriais de cálculo dos sistemas exigidos, a emissão da ART de projeto e o acompanhamento da análise no portal INFOSCIP até a aprovação.',
+				'Nossos orçamentos discriminam o levantamento em campo (quando necessário), a elaboração das pranchas e memoriais de cálculo dos sistemas exigidos, a emissão da ART de projeto e o acompanhamento da análise no portal INFOSCIP até a aprovação.',
 				{
 					segments: [
 						'Consulte também nossas páginas sobre ',

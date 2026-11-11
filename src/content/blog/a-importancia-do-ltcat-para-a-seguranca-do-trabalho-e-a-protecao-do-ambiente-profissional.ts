@@ -50,7 +50,7 @@ export const blogArticle = {
       {
         "segments": [
           {
-            "text": "Lei nº 8.213/1991 — art. 58",
+            "text": "Lei nº 8.213/1991: art. 58",
             "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
           }
         ]
@@ -58,7 +58,7 @@ export const blogArticle = {
       {
         "segments": [
           {
-            "text": "MTE — Programa de Gerenciamento de Riscos",
+            "text": "MTE: Programa de Gerenciamento de Riscos",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]
@@ -66,7 +66,7 @@ export const blogArticle = {
       {
         "segments": [
           {
-            "text": "eSocial — PPP eletrônico",
+            "text": "eSocial: PPP eletrônico",
             "href": "https://www.gov.br/esocial/pt-br/noticias/disponibilizacao-do-perfil-profissiografico-previdenciario-ppp-eletronico/"
           }
         ]

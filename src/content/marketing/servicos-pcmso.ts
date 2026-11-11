@@ -16,7 +16,7 @@ export const servicosPcmso = {
 			heading: 'O que compõe a prestação de serviços de PCMSO',
 			paragraphs: [
 				'A gestão de saúde ocupacional de uma empresa envolve tanto o planejamento técnico do Programa de Controle Médico de Saúde Ocupacional (PCMSO - NR-07) quanto a rotina contínua de exames ligados a admissões, periódicos, mudanças de função, afastamentos e desligamentos.',
-				'A AJN Consultoria e Engenharia organiza os serviços de PCMSO em Belo Horizonte e Minas Gerais para que o RH e o setor de SST tenham clareza sobre quais exames cada função exige e mantenham a documentação alinhada com o PGR.',
+				'A AJN Consultoria e Engenharia organiza os serviços de PCMSO em Belo Horizonte e Minas Gerais para que o RH e o setor de SST tenham clareza sobre quais exames cada função exige e mantenham a documentação coerente com o PGR.',
 			],
 		},
 		{
@@ -39,7 +39,7 @@ export const servicosPcmso = {
 		{
 			heading: 'Mobilização rápida para contratos e obras',
 			paragraphs: [
-				'Em contratos industriais e obras civis, divergências entre os riscos descritos no PGR, o ASO do trabalhador e a função registrada bloqueiam a liberação em portaria. Nossa equipe confere a compatibilidade documental de ponta a ponta.',
+				'Em contratos industriais e obras civis, divergências entre os riscos descritos no PGR, o ASO do trabalhador e a função registrada bloqueiam a liberação em portaria. Nossa equipe confere a compatibilidade entre esses documentos antes da apresentação ao contratante.',
 				{
 					segments: [
 						'Consulte a página principal do serviço de ',

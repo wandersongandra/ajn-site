@@ -32,8 +32,8 @@ export const blogNr12AnaliseDeRiscosDeMaquinas = {
       'A análise de risco pode ser copiada de outro equipamento? Não é adequado. Máquinas parecidas podem ter uso, acessórios, comandos, layout e perigos diferentes.'
     ] },
     { heading: 'Referências oficiais', paragraphs: [
-      { segments: [{ text: 'MTE — NR-12 vigente e materiais de aplicação', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-12-nr-12' }] },
-      { segments: [{ text: 'MTE — NR-1 e gerenciamento de riscos ocupacionais', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] }
+      { segments: [{ text: 'MTE: NR-12 vigente e materiais de aplicação', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-12-nr-12' }] },
+      { segments: [{ text: 'MTE: NR-1 e gerenciamento de riscos ocupacionais', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

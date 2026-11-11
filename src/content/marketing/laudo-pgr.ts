@@ -15,8 +15,8 @@ export const laudoPgr = {
 		{
 			heading: 'Por que o termo laudo PGR é tão buscado pelas empresas',
 			paragraphs: [
-				'É muito comum que gestores, contadores e setores de compras procurem pela expressão laudo PGR quando precisam regularizar a documentação de Segurança e Saúde no Trabalho. Tecnicamente, porém, o PGR (Programa de Gerenciamento de Riscos) não é um laudo estático, e sim um programa contínuo regulamentado pela Norma Regulamentadora nº 01 (NR-01).',
-				'Enquanto laudos como o LTCAT (previdenciário) e os laudos de insalubridade (NR-15) ou periculosidade (NR-16) emitem um parecer conclusivo sobre enquadramento legal, o PGR estrutura o gerenciamento de riscos ocupacionais da empresa no dia a dia.',
+				'Gestores, contadores e setores de compras costumam procurar pela expressão laudo PGR quando precisam regularizar a documentação de Segurança e Saúde no Trabalho. Tecnicamente, porém, o PGR (Programa de Gerenciamento de Riscos) não é um laudo estático, e sim um programa contínuo regulamentado pela Norma Regulamentadora nº 01 (NR-01).',
+				'Laudos como o LTCAT (previdenciário) e os laudos de insalubridade (NR-15) ou periculosidade (NR-16) emitem um parecer conclusivo sobre enquadramento legal. Já o PGR estrutura o gerenciamento de riscos ocupacionais da empresa no dia a dia.',
 			],
 		},
 		{

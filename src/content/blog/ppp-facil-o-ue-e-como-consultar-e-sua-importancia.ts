@@ -42,8 +42,8 @@ export const blogPppFacilOUeEComoConsultarESuaImportancia = {
     'O PPP eletrônico substitui uma análise previdenciária? Não. A decisão sobre direitos e períodos especiais depende dos requisitos legais e da avaliação do órgão competente.',
   ] },
   { heading: 'Fontes oficiais', paragraphs: [
-    { segments: [{ text: 'Gov.br — serviço de emissão do PPP eletrônico', href: 'https://www.gov.br/pt-br/servicos/emitir-ppp-eletronico-perfil-profissiografico-previdenciario' }] },
-    { segments: [{ text: 'eSocial — documentação técnica', href: 'https://www.gov.br/esocial/pt-br/documentacao-tecnica' }] },
+    { segments: [{ text: 'Gov.br: serviço de emissão do PPP eletrônico', href: 'https://www.gov.br/pt-br/servicos/emitir-ppp-eletronico-perfil-profissiografico-previdenciario' }] },
+    { segments: [{ text: 'eSocial: documentação técnica', href: 'https://www.gov.br/esocial/pt-br/documentacao-tecnica' }] },
   ] },
 ],
 } as const satisfies BlogContentData;

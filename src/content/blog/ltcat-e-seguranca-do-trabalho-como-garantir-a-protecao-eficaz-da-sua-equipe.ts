@@ -41,7 +41,7 @@ export const blogLtcatESegurancaDoTrabalhoComoGarantirAProtecaoEficazDaSuaEquipe
       {
         "segments": [
           {
-            "text": "Lei nº 8.213/1991 — art. 58",
+            "text": "Lei nº 8.213/1991: art. 58",
             "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
           }
         ]
@@ -49,7 +49,7 @@ export const blogLtcatESegurancaDoTrabalhoComoGarantirAProtecaoEficazDaSuaEquipe
       {
         "segments": [
           {
-            "text": "MTE — Gerenciamento de Riscos e PGR",
+            "text": "MTE: Gerenciamento de Riscos e PGR",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]

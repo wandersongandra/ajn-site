@@ -39,7 +39,7 @@ export const pcmsoProgramaControleMedicoSaudeOcupacional = {
 		{
 			heading: 'Relatório analítico e prontuário médico',
 			paragraphs: [
-				'Para cada exame realizado, o médico emite o Atestado de Saúde Ocupacional (ASO), enquanto os dados clínicos ficam resguardados sob sigilo em prontuário médico individual. Anualmente, o médico responsável deve elaborar o relatório analítico do PCMSO, avaliando a incidência de alterações nos exames por setor e função.',
+				'Para cada exame realizado, o médico emite o Atestado de Saúde Ocupacional (ASO), e os registros clínicos individuais permanecem sob sigilo em prontuário médico. Anualmente, o médico responsável elabora o relatório analítico do PCMSO, avaliando a incidência de alterações nos exames por setor e função.',
 				{
 					segments: [
 						'Saiba como contratar o programa em nossa página do serviço de ',

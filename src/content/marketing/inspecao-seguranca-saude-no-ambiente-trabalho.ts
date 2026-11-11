@@ -16,7 +16,7 @@ export const inspecaoSegurancaSaudeNoAmbienteTrabalho = {
 			heading: 'Como funciona a inspeção técnica no ambiente de trabalho',
 			paragraphs: [
 				'A inspeção de segurança e saúde no ambiente de trabalho consiste na verificação presencial das condições operacionais de um canteiro de obras, planta industrial, centro logístico ou estabelecimento comercial para identificar desvios antes que se tornem acidentes ou autuações.',
-				'Diferentemente de uma análise puramente documental, a vistoria em campo observa como as tarefas são executadas na prática, o estado de conservação de proteções coletivas (EPCs), a entrega e o uso de EPIs, a sinalização e a organização dos postos de trabalho.',
+				'Além da conferência documental, a vistoria em campo observa como as tarefas são executadas na prática, o estado de conservação de proteções coletivas (EPCs), a entrega e o uso de EPIs, a sinalização e a organização dos postos de trabalho.',
 			],
 		},
 		{

@@ -20,7 +20,7 @@ export const blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe = {
     "heading": "A exposição não se presume pelo nome do cargo",
     "paragraphs": [
       "O LTCAT precisa estar fundamentado nas condições de trabalho. Duas pessoas com a mesma função podem ter exposições diferentes conforme o ambiente, as tarefas, os produtos utilizados e as medidas de proteção existentes.",
-      "O enquadramento para fins previdenciários depende dos agentes e critérios previstos na legislação aplicável. Não basta apresentar uma lista genérica de 'riscos ocupacionais'."
+      "O enquadramento para fins previdenciários depende dos agentes e critérios previstos na legislação aplicável, exigindo análise técnica específica em vez de uma lista genérica de 'riscos ocupacionais'."
     ]
   },
   {
@@ -43,7 +43,7 @@ export const blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe = {
       {
         "segments": [
           {
-            "text": "Lei nº 8.213/1991 — art. 58",
+            "text": "Lei nº 8.213/1991: art. 58",
             "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
           }
         ]
@@ -51,7 +51,7 @@ export const blogLtcatEssencialParaASegurancaDoTrabalhoEProtecaoDaSuaEquipe = {
       {
         "segments": [
           {
-            "text": "MTE — Gerenciamento de Riscos e PGR",
+            "text": "MTE: Gerenciamento de Riscos e PGR",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]

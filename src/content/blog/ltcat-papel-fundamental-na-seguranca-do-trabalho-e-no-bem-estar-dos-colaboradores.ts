@@ -41,7 +41,7 @@ export const blogLtcatPapelFundamentalNaSegurancaDoTrabalhoENoBemEstarDosColabor
       {
         "segments": [
           {
-            "text": "Lei nº 8.213/1991 — art. 58",
+            "text": "Lei nº 8.213/1991: art. 58",
             "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
           }
         ]
@@ -49,7 +49,7 @@ export const blogLtcatPapelFundamentalNaSegurancaDoTrabalhoENoBemEstarDosColabor
       {
         "segments": [
           {
-            "text": "eSocial — PPP eletrônico",
+            "text": "eSocial: PPP eletrônico",
             "href": "https://www.gov.br/esocial/pt-br/noticias/disponibilizacao-do-perfil-profissiografico-previdenciario-ppp-eletronico/"
           }
         ]
@@ -57,7 +57,7 @@ export const blogLtcatPapelFundamentalNaSegurancaDoTrabalhoENoBemEstarDosColabor
       {
         "segments": [
           {
-            "text": "Manual eSocial — SST/S-2240",
+            "text": "Manual eSocial: SST/S-2240",
             "href": "https://www.gov.br/esocial/pt-br/empresas/manual-web-geral/manual-web-geral/"
           }
         ]

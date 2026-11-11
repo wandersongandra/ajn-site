@@ -16,20 +16,20 @@ export const valorFazerLtcat = {
 			heading: 'Como é calculado o valor para fazer o LTCAT',
 			paragraphs: [
 				'O valor para fazer o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) depende diretamente do esforço de engenharia necessário para avaliar os ambientes e quantificar os agentes nocivos presentes na empresa.',
-				'Enquanto atividades puramente administrativas ou comerciais sem exposição a agentes físicos, químicos ou biológicos demandam um levantamento objetivo para fundamentar a ausência de risco previdenciário, operações industriais, oficinas, hospitais e obras exigem medições instrumentais específicas.',
+				'Atividades administrativas ou comerciais sem exposição a agentes físicos, químicos ou biológicos demandam um levantamento técnico objetivo para fundamentar a ausência de risco previdenciário. Já operações industriais, oficinas, hospitais e obras exigem medições instrumentais específicas.',
 			],
 		},
 		{
 			heading: 'Itens que impactam o orçamento do laudo',
 			paragraphs: [
-				'Para elaborar uma proposta justa e transparente, a AJN Consultoria e Engenharia avalia:',
+				'Para elaborar a proposta técnica, a AJN Consultoria e Engenharia avalia:',
 			],
 			lists: [
 				{
 					items: [
-						'Localização e número de estabelecimentos (matriz, filiais ou frentes de serviço em BH e MG);',
+						'Localização e número de estabelecimentos (matriz, filiais ou canteiros de obra em BH e MG);',
 						'Quantidade de setores operacionais, funções ativas e possibilidade de agrupamento técnico em GHE;',
-						'Quantidade e tipo de medições quantitativas necessárias (dosimetria de ruído de jornada, estresse térmico IBUTG, vibração de corpo inteiro ou mãos e braços, amostragem e análise laboratorial de agentes químicos);',
+						'Quantidade e tipo de medições quantitativas necessárias (dosimetria de ruído, estresse térmico IBUTG, vibração de corpo inteiro ou mãos e braços, amostragem e análise laboratorial de agentes químicos);',
 						'Emissão de Anotação de Responsabilidade Técnica (ART) pelo engenheiro de segurança do trabalho responsável.',
 					],
 				},

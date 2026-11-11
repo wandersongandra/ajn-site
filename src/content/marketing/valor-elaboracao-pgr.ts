@@ -16,7 +16,7 @@ export const valorElaboracaoPgr = {
 			heading: 'Por que o valor da elaboração do PGR varia entre empresas',
 			paragraphs: [
 				'O valor para elaborar o Programa de Gerenciamento de Riscos (PGR) não é tabelado porque a NR-01 exige que o inventário de riscos e o plano de ação retratem a exposição real de cada ambiente operacional.',
-				'Um escritório administrativo com funções homogêneas demanda um tempo de levantamento técnico muito diferente de uma indústria metalúrgica, transportadora ou obra civil com múltiplas frentes de trabalho, máquinas rotativas, solda, inflamáveis e trabalho em altura.',
+				'Um escritório administrativo com funções homogêneas demanda um tempo de levantamento técnico muito diferente de uma indústria metalúrgica, transportadora ou obra civil com diversas áreas operacionais, máquinas rotativas, solda, inflamáveis e trabalho em altura.',
 			],
 		},
 		{

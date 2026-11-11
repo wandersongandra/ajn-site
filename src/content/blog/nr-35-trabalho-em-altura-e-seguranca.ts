@@ -23,7 +23,7 @@ export const blogNr35TrabalhoEmAlturaESeguranca = {
     "heading": "",
     "paragraphs": [
       "A NR-35 se aplica ao trabalho realizado acima de dois metros do nível inferior, quando houver risco de queda. Isso não significa que atividades em alturas menores estejam livres de medidas de prevenção: os perigos devem ser avaliados em qualquer situação. A primeira decisão de planejamento é verificar se a tarefa pode ser feita sem expor alguém à queda.",
-      "A norma trata de planejamento, organização, análise de risco, capacitação, autorização e sistemas de proteção. Não basta entregar um cinto: o acesso, os pontos de ancoragem, o resgate e as condições de execução precisam ser compatíveis com a tarefa."
+      "A norma trata de planejamento, organização, análise de risco, capacitação, autorização e sistemas de proteção. Além da entrega do cinto, o acesso, os pontos de ancoragem, o resgate e as condições de execução precisam ser compatíveis com a tarefa."
     ]
   },
   {
@@ -53,7 +53,7 @@ export const blogNr35TrabalhoEmAlturaESeguranca = {
       {
         "segments": [
           {
-            "text": "Ministério do Trabalho e Emprego — NR-35 vigente",
+            "text": "Ministério do Trabalho e Emprego: NR-35 vigente",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-35-nr-35"
           }
         ]
@@ -61,7 +61,7 @@ export const blogNr35TrabalhoEmAlturaESeguranca = {
       {
         "segments": [
           {
-            "text": "MTE — Alterações da NR-35 em 2026",
+            "text": "MTE: Alterações da NR-35 em 2026",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/setembro/trabalho-em-altura-veja-o-que-muda-nos-treinamentos-e-nas-escadas-fixas-verticais"
           }
         ]

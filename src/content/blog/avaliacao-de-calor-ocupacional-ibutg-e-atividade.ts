@@ -20,9 +20,9 @@ export const blogCalorOcupacional = {
     { heading: "Resultados e prevenção", paragraphs: ["A interpretação considera não apenas o número do índice, mas também a atividade e sua organização. Identificar condições críticas pode apoiar decisões sobre controles de engenharia, sombreamento, ventilação, barreiras, organização das tarefas e medidas de proteção.","A avaliação de calor não substitui o PGR, o PCMSO ou a análise médica de aptidão. Ela pode contribuir com esses processos, desde que o alcance e as limitações das medições estejam registrados."] },
     { heading: "Escopo antes da campanha", paragraphs: ["Ao solicitar a medição, descreva fontes de calor, setores envolvidos, turnos, tarefas, horários de pico e características da operação. A partir disso, a empresa e a equipe técnica definem o planejamento da avaliação."] },
     { heading: 'Referências e próximos passos', paragraphs: [
-      { segments: [{ text: "Fundacentro — Normas de Higiene Ocupacional", href: "https://www.gov.br/fundacentro/pt-br/centrais-de-conteudo/biblioteca/normas-de-higiene-ocupacional" }] },
-      { segments: [{ text: "MTE — Normas Regulamentadoras vigentes", href: "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes" }] },
-      { segments: [{ text: "AJN — Avaliações e Medições Ambientais Ocupacionais", href: "/medicoes-ambientais-ocupacionais" }] },
+      { segments: [{ text: "Fundacentro: Normas de Higiene Ocupacional", href: "https://www.gov.br/fundacentro/pt-br/centrais-de-conteudo/biblioteca/normas-de-higiene-ocupacional" }] },
+      { segments: [{ text: "MTE: Normas Regulamentadoras vigentes", href: "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes" }] },
+      { segments: [{ text: "AJN: Avaliações e Medições Ambientais Ocupacionais", href: "/medicoes-ambientais-ocupacionais" }] },
     ] }
   ],
 } as const satisfies BlogContentData;

@@ -15,7 +15,7 @@ export const ltcatRenovacao = {
 		{
 			heading: 'O LTCAT tem prazo de validade ou precisa de renovação?',
 			paragraphs: [
-				'Diferentemente de licenças com vencimento fixo em calendário, a legislação previdenciária (Lei nº 8.213/1991 e Instrução Normativa PRES/INSS nº 128/2022) estabelece que o LTCAT deve ser mantido atualizado sempre que ocorrerem alterações no ambiente de trabalho ou na organização das atividades.',
+				'A legislação previdenciária (Lei nº 8.213/1991 e Instrução Normativa PRES/INSS nº 128/2022) não fixa data de vencimento em calendário para o LTCAT, mas determina que o laudo seja atualizado sempre que ocorrerem alterações no ambiente de trabalho ou na organização das atividades.',
 				'Na prática, porém, manter um LTCAT antigo sem revisão por vários anos gera passivos graves quando a empresa muda máquinas, cria novas funções, substitui EPIs ou precisa comprovar a contemporaneidade dos dados no evento S-2240 do eSocial.',
 			],
 		},

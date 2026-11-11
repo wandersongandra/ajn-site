@@ -18,9 +18,9 @@ export const servicePage = {
         'Para organizar a rotina, é essencial definir quem fornece e valida cada informação e quem está autorizado a transmiti-la. O envio de um evento não substitui a elaboração dos documentos e avaliações exigidos pela legislação.',
       ],
       lists: [{ items: [
-        'S-2210 — Comunicação de Acidente de Trabalho (CAT), quando aplicável.',
-        'S-2220 — Monitoramento da Saúde do Trabalhador, com informações pertinentes ao ASO e exames.',
-        'S-2240 — Condições Ambientais do Trabalho — Agentes Nocivos, conforme as regras previdenciárias e o leiaute vigente.',
+        'S-2210: Comunicação de Acidente de Trabalho (CAT), quando aplicável.',
+        'S-2220: Monitoramento da Saúde do Trabalhador, com informações pertinentes ao ASO e exames.',
+        'S-2240: Condições Ambientais do Trabalho (Agentes Nocivos), conforme as regras previdenciárias e o leiaute vigente.',
       ] }],
     },
     {

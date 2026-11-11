@@ -50,7 +50,7 @@ export const blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho = {
       {
         "segments": [
           {
-            "text": "MTE — Orientações sobre o PGR",
+            "text": "MTE: Orientações sobre o PGR",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]
@@ -58,7 +58,7 @@ export const blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho = {
       {
         "segments": [
           {
-            "text": "MTE — NR-7 (PCMSO)",
+            "text": "MTE: NR-7 (PCMSO)",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022.pdf/view"
           }
         ]
@@ -66,7 +66,7 @@ export const blogElaboracaoDePgrEPcmsoConformidadeESegurancaNoTrabalho = {
       {
         "segments": [
           {
-            "text": "MTE — NR-1 vigente",
+            "text": "MTE: NR-1 vigente",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1"
           }
         ]

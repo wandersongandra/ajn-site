@@ -15,7 +15,7 @@ export const elaboracaoPgrPcmso = {
 		{
 			heading: 'Relação direta entre o inventário do PGR e os exames do PCMSO',
 			paragraphs: [
-				'Na gestão de Segurança e Saúde no Trabalho (SST), o PGR (NR-01) e o PCMSO (NR-07) funcionam de maneira complementar. Enquanto o PGR mapeia os perigos presentes nas instalações e classifica o nível de risco ocupacional de cada função, o PCMSO utiliza esse inventário para definir o monitoramento clínico e laboratorial dos empregados.',
+				'Na gestão de Segurança e Saúde no Trabalho (SST), o PGR (NR-01) e o PCMSO (NR-07) funcionam de maneira complementar. O PGR mapeia os perigos presentes nas instalações e classifica o nível de risco ocupacional de cada função, e o PCMSO utiliza esse inventário para definir o monitoramento clínico e laboratorial dos empregados.',
 				'Sem um inventário de riscos bem estruturado no PGR, o PCMSO fica sem base técnica para indicar exames complementares (como audiometria, espirometria, raio-X de tórax ou dosagens toxicológicas) ou para justificar a ausência de exposições específicas.',
 			],
 		},
@@ -38,7 +38,7 @@ export const elaboracaoPgrPcmso = {
 		{
 			heading: 'Informações necessárias para dimensionar a proposta',
 			paragraphs: [
-				'O escopo de elaboração varia conforme o grau de risco da atividade, a quantidade de estabelecimentos (CNPJs ou frentes de serviço), o número de trabalhadores e a necessidade de medições quantitativas de agentes físicos ou químicos.',
+				'O escopo de elaboração varia conforme o grau de risco da atividade, a quantidade de estabelecimentos (CNPJs ou canteiros de obra), o número de trabalhadores e a necessidade de medições quantitativas de agentes físicos ou químicos.',
 				{
 					segments: [
 						'Veja mais informações em nossas páginas dedicadas à ',

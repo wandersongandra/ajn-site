@@ -15,7 +15,7 @@ export const projetoCombateIncendioPanico = {
 		{
 			heading: 'Por que o projeto contempla tanto o combate ao incêndio quanto o controle de pânico',
 			paragraphs: [
-				'Em uma emergência real, a fumaça, a queda de energia e a dificuldade de orientação costumam causar acidentes graves antes mesmo da propagação das chamas. Por isso, o Projeto de Combate a Incêndio e Pânico (conhecido como PSCIP ou PPCIP) articula duas frentes indissociáveis: os sistemas de extinção do fogo e os meios seguros de abandono da edificação.',
+				'Em uma emergência real, a fumaça, a queda de energia e a dificuldade de orientação costumam causar acidentes graves antes mesmo da propagação das chamas. Por isso, o Projeto de Combate a Incêndio e Pânico (conhecido como PSCIP ou PPCIP) abrange tanto os sistemas de extinção do fogo quanto os meios seguros de abandono da edificação.',
 				'A AJN Consultoria e Engenharia elabora projetos completos em Belo Horizonte e Minas Gerais, compatibilizando a arquitetura existente com as exigências do Corpo de Bombeiros Militar de Minas Gerais (CBMMG).',
 			],
 		},
