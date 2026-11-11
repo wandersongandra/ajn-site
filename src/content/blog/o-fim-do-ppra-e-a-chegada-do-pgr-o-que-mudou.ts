@@ -47,7 +47,7 @@ export const blogOFimDoPpraEAChegadaDoPgrOQueMudou = {
       {
         "segments": [
           {
-            "text": "MTE — NR-1 vigente",
+            "text": "MTE: NR-1 vigente",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1"
           }
         ]
@@ -55,7 +55,7 @@ export const blogOFimDoPpraEAChegadaDoPgrOQueMudou = {
       {
         "segments": [
           {
-            "text": "MTE — Perguntas frequentes sobre o PGR",
+            "text": "MTE: Perguntas frequentes sobre o PGR",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]

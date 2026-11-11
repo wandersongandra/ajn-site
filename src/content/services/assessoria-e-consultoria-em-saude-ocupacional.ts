@@ -13,7 +13,7 @@ export const servicePage = {
 			"heading": "Informações",
 			"paragraphs": [
 				"Assessoria e Consultoria: Prestamos suporte técnico para identificar, avaliar e controlar riscos ocupacionais em diferentes setores. O atendimento inclui o levantamento das condições de trabalho, a elaboração de programas de prevenção, a emissão de laudos técnicos, treinamentos e a definição de medidas preventivas e corretivas exigidas pelas Normas Regulamentadoras (NRs).",
-				"Fornecimento de Mão de Obra Técnica: Além da consultoria, disponibilizamos profissionais habilitados, como técnicos e engenheiros de segurança do trabalho, para acompanhamento presencial e gestão de SST no empreendimento. Esses profissionais atuam na rotina da empresa cliente, conduzindo inspeções de segurança, acompanhando frentes de serviço, ministrando treinamentos e verificando o cumprimento dos procedimentos internos."
+				"Fornecimento de Mão de Obra Técnica: Além da consultoria, disponibilizamos profissionais habilitados, como técnicos e engenheiros de segurança do trabalho, para acompanhamento presencial e gestão de SST no empreendimento. Esses profissionais atuam na rotina da empresa cliente, conduzindo inspeções de segurança, acompanhando obras e áreas operacionais, ministrando treinamentos e verificando o cumprimento dos procedimentos internos."
 			]
 		},
 		{

@@ -32,8 +32,8 @@ export const blogAepEAetDiferencasEAplicacoes = {
       'A AEP pode ser feita sem observar a atividade? A abordagem deve ser adequada à situação de trabalho; dados documentais sem compreensão da tarefa podem deixar perigos e exigências importantes de fora.'
     ] },
     { heading: 'Referências oficiais', paragraphs: [
-      { segments: [{ text: 'MTE — NR-17 vigente', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17' }] },
-      { segments: [{ text: 'MTE — texto atualizado da NR-17', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-17-atualizada-2022.pdf' }] }
+      { segments: [{ text: 'MTE: NR-17 vigente', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17' }] },
+      { segments: [{ text: 'MTE: texto atualizado da NR-17', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-17-atualizada-2022.pdf' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

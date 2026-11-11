@@ -39,7 +39,7 @@ export const consultoriaDaQualidade = {
 		{
 			heading: 'Integração entre qualidade de execução e segurança',
 			paragraphs: [
-				'Quando a verificação técnica de qualidade caminha junto com a engenharia de segurança do trabalho, desvios de montagem, instalações provisórias inadequadas e falhas de especificação são corrigidos antes de comprometerem a operação ou gerarem acidentes.',
+				'Quando a verificação técnica de qualidade atua em conjunto com a engenharia de segurança do trabalho, desvios de montagem, instalações provisórias inadequadas e falhas de especificação são corrigidos antes de comprometerem a operação ou gerarem acidentes.',
 				{
 					segments: [
 						'Conheça também a página do serviço de ',

@@ -16,7 +16,7 @@ export const laudosSegurancaDoTrabalho = {
 		{
 			heading: 'Diferença entre laudos técnicos e programas de SST',
 			paragraphs: [
-				'Na gestão trabalhista e previdenciária, é fundamental distinguir os programas contínuos de gerenciamento (como o PGR da NR-01 e o PCMSO da NR-07) dos laudos técnicos conclusivos. Enquanto os programas organizam as ações preventivas ao longo do ano, os laudos de segurança do trabalho atestam tecnicamente se uma exposição gera direito a adicionais em folha ou aposentadoria especial.',
+				'Na gestão trabalhista e previdenciária, os programas contínuos de gerenciamento (como o PGR da NR-01 e o PCMSO da NR-07) cumprem papel diferente dos laudos técnicos conclusivos. Os programas organizam as ações preventivas ao longo do ano, e os laudos de segurança do trabalho atestam tecnicamente se uma exposição gera direito a adicionais em folha ou aposentadoria especial.',
 				'A AJN Consultoria e Engenharia elabora laudos de segurança do trabalho em Belo Horizonte e Minas Gerais com levantamento presencial, instrumentação de higiene ocupacional calibrada e emissão de Anotação de Responsabilidade Técnica (ART).',
 			],
 		},

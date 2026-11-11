@@ -43,7 +43,7 @@ export const blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosPar
       {
         "segments": [
           {
-            "text": "Lei nº 8.213/1991 — art. 58",
+            "text": "Lei nº 8.213/1991: art. 58",
             "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
           }
         ]
@@ -51,7 +51,7 @@ export const blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosPar
       {
         "segments": [
           {
-            "text": "MTE — PGR",
+            "text": "MTE: PGR",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]
@@ -59,7 +59,7 @@ export const blogLtcatNaSegurancaDoTrabalhoGarantindoProtecaoEReducaoDeRiscosPar
       {
         "segments": [
           {
-            "text": "eSocial — Eventos de SST",
+            "text": "eSocial: Eventos de SST",
             "href": "https://www.gov.br/esocial/pt-br/empresas/manual-web-geral/manual-web-geral/"
           }
         ]

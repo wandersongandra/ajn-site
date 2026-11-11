@@ -15,7 +15,7 @@ export const valorProjetoIncendio = {
 		{
 			heading: 'Diferença entre o custo do projeto, as taxas do CBMMG e a execução',
 			paragraphs: [
-				'Para planejar a regularização de um imóvel junto ao Corpo de Bombeiros, vale separar três parcelas distintas: o valor do projeto de engenharia (PSCIP), as taxas estaduais recolhidas via DAE (análise e vistoria do CBMMG) e o custo de compra e instalação física dos equipamentos.',
+				'No planejamento da regularização de um imóvel junto ao Corpo de Bombeiros, o custo total divide-se em três parcelas: o valor do projeto de engenharia (PSCIP), as taxas estaduais recolhidas via DAE (análise e vistoria do CBMMG) e o custo de compra e instalação física dos equipamentos.',
 				'Um projeto de incêndio bem estudado atua diretamente na terceira parcela, que é sempre a mais alta: ao aplicar corretamente as Instruções Técnicas do CBMMG, o engenheiro evita exigências desnecessárias na obra e dimensiona tubulações e equipamentos sem desperdício.',
 			],
 		},

@@ -15,7 +15,7 @@ export const empresaQueFazLtcat = {
 		{
 			heading: 'Quem pode emitir o LTCAT e o que exigir ao contratar',
 			paragraphs: [
-				'Por determinação da Lei nº 8.213/1991 (Art. 58, § 1º), o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) deve ser expedido exclusivamente por engenheiro de segurança do trabalho ou médico do trabalho legalmente habilitado.',
+				'Conforme o Art. 58, § 1º da Lei nº 8.213/1991, o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) deve ser expedido exclusivamente por engenheiro de segurança do trabalho ou médico do trabalho legalmente habilitado.',
 				'Ao contratar uma empresa que faz LTCAT, é indispensável verificar se o serviço inclui vistoria presencial no estabelecimento, medições quantitativas dos agentes nocivos conforme as metodologias da NHO/Fundacentro e do Decreto nº 3.048/1999 e emissão da respectiva Anotação de Responsabilidade Técnica (ART) no CREA ou registro médico.',
 			],
 		},
@@ -30,7 +30,7 @@ export const empresaQueFazLtcat = {
 						'Levantamento de todos os setores, funções e descrições profissiográficas reais das atividades executadas;',
 						'Reconhecimento dos agentes físicos, químicos e biológicos listados no Anexo IV do Decreto nº 3.048/1999 e na Tabela 24 do eSocial;',
 						'Realização de medições instrumentais com equipamentos calibrados (como dosimetria de ruído, avaliação de calor por IBUTG, vibração e coleta de agentes químicos);',
-						'Avaliação técnica das medidas de proteção coletiva (EPC) e individual (EPI), verificando os requisitos de eficácia e rastreabilidade exigidos pela legislação previdenciária;',
+						'Avaliação técnica das medidas de proteção coletiva (EPC) e individual (EPI), verificando os requisitos de eficácia, validade e registro de entrega exigidos pela legislação previdenciária;',
 						'Emissão de parecer conclusivo por função/GHE para preenchimento seguro do PPP eletrônico e do evento S-2240 do eSocial.',
 					],
 				},
@@ -39,7 +39,7 @@ export const empresaQueFazLtcat = {
 		{
 			heading: 'Por que o PGR não substitui o LTCAT',
 			paragraphs: [
-				'Enquanto o PGR (NR-01) tem finalidade trabalhista e preventiva, o LTCAT possui finalidade previdenciária (avaliação do direito à aposentadoria especial e alíquotas de financiamento do SAT/GIIL-RAT). Utilizar apenas o PGR para responder ao evento S-2240 expõe a empresa a autuações da Receita Federal.',
+				'O PGR (NR-01) tem finalidade trabalhista e preventiva, ao passo que o LTCAT possui finalidade previdenciária (avaliação do direito à aposentadoria especial e alíquotas de financiamento do SAT/GIIL-RAT). Utilizar apenas o PGR para responder ao evento S-2240 expõe a empresa a autuações da Receita Federal.',
 				{
 					segments: [
 						'Veja mais detalhes em nossas páginas de ',

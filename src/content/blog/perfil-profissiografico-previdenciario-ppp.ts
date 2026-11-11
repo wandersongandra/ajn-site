@@ -45,7 +45,7 @@ export const blogPerfilProfissiograficoPrevidenciarioPpp = {
       {
         "segments": [
           {
-            "text": "eSocial — Implantação do PPP eletrônico",
+            "text": "eSocial: Implantação do PPP eletrônico",
             "href": "https://www.gov.br/esocial/pt-br/noticias/disponibilizacao-do-perfil-profissiografico-previdenciario-ppp-eletronico/"
           }
         ]
@@ -53,7 +53,7 @@ export const blogPerfilProfissiograficoPrevidenciarioPpp = {
       {
         "segments": [
           {
-            "text": "eSocial — Eventos SST e S-2240",
+            "text": "eSocial: Eventos SST e S-2240",
             "href": "https://www.gov.br/esocial/pt-br/empresas/manual-web-geral/manual-web-geral/"
           }
         ]
@@ -61,7 +61,7 @@ export const blogPerfilProfissiograficoPrevidenciarioPpp = {
       {
         "segments": [
           {
-            "text": "Lei nº 8.213/1991 — art. 58",
+            "text": "Lei nº 8.213/1991: art. 58",
             "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
           }
         ]

@@ -22,7 +22,7 @@ export const elaboracaoPcmso = {
 		{
 			heading: 'O que deve constar no documento-base do PCMSO',
 			paragraphs: [
-				'Um PCMSO tecnicamente bem construído vai além de uma tabela genérica de exames:',
+				'O documento-base do PCMSO reúne os elementos técnicos exigidos pela NR-07:',
 			],
 			lists: [
 				{

@@ -15,7 +15,7 @@ export const laudosSst = {
 		{
 			heading: 'Como são elaborados os laudos de SST na prática',
 			paragraphs: [
-				'A emissão de laudos de SST exige diagnóstico presencial no ambiente onde o trabalho acontece. Não basta listar cargos a partir da folha de pagamento: é preciso avaliar o ciclo real da tarefa, o tempo de exposição em cada posto, as fontes geradoras de agentes físicos, químicos ou biológicos e a eficácia das proteções instaladas.',
+				'A emissão de laudos de SST exige levantamento presencial nos setores produtivos da empresa. A análise técnica avalia o ciclo real da tarefa, o tempo de exposição em cada posto, as fontes geradoras de agentes físicos, químicos ou biológicos e a eficácia das proteções instaladas.',
 				'A AJN Consultoria e Engenharia realiza o levantamento completo de campo em Belo Horizonte e Minas Gerais para entregar laudos de SST tecnicamente defensáveis.',
 			],
 		},

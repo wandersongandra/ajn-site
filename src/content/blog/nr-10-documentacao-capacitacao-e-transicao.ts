@@ -32,9 +32,9 @@ export const blogNr10DocumentacaoCapacitacaoETransicao = {
       'A publicação da nova NR-10 mudou as regras imediatamente? Não. A fonte oficial informa início de vigência em 1º de junho de 2027, sujeito aos prazos específicos descritos na Portaria.'
     ] },
     { heading: 'Referências oficiais', paragraphs: [
-      { segments: [{ text: 'MTE — página da NR-10, vigência atual e transição de 2027', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-10-nr-10' }] },
-      { segments: [{ text: 'MTE — NR-10 atualizada em 2026 (Portaria nº 737/2026)', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-10-atualizada-2026-1.pdf/view' }] },
-      { segments: [{ text: 'AJN — treinamentos de Normas Regulamentadoras', href: '/servicos/treinamento-de-nrs' }] }
+      { segments: [{ text: 'MTE: página da NR-10, vigência atual e transição de 2027', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-10-nr-10' }] },
+      { segments: [{ text: 'MTE: NR-10 atualizada em 2026 (Portaria nº 737/2026)', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-10-atualizada-2026-1.pdf/view' }] },
+      { segments: [{ text: 'AJN: treinamentos de Normas Regulamentadoras', href: '/servicos/treinamento-de-nrs' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

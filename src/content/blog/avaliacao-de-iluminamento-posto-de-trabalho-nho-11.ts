@@ -20,9 +20,9 @@ export const blogIluminamento = {
     { heading: "O que fazer com os valores encontrados", paragraphs: ["Um bom relatório não entrega apenas uma tabela de lux. Ele identifica posto ou área, critérios utilizados, condições observadas, valores medidos, possíveis limitações e medidas propostas quando a situação exigir.","As soluções podem envolver redistribuição de luminárias, manutenção, limpeza, redução de ofuscamento ou ajustes no posto. A decisão depende das necessidades visuais, do ambiente e do contexto de trabalho."] },
     { heading: "Iluminamento e documentos de SST", paragraphs: ["A medição pode integrar um processo de avaliação ergonômica e apoiar a gestão de riscos, mas não representa, por si só, caracterização de insalubridade. Se a empresa precisa de AEP, AET ou outro documento, o escopo deve ser definido separadamente.","Para solicitar avaliação, informe tipo de atividade, horários de operação e áreas ou postos que precisam ser examinados."] },
     { heading: 'Referências e próximos passos', paragraphs: [
-      { segments: [{ text: "Fundacentro — Normas de Higiene Ocupacional", href: "https://www.gov.br/fundacentro/pt-br/centrais-de-conteudo/biblioteca/normas-de-higiene-ocupacional" }] },
-      { segments: [{ text: "MTE — Normas Regulamentadoras vigentes", href: "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes" }] },
-      { segments: [{ text: "AJN — Avaliações e Medições Ambientais Ocupacionais", href: "/medicoes-ambientais-ocupacionais" }] },
+      { segments: [{ text: "Fundacentro: Normas de Higiene Ocupacional", href: "https://www.gov.br/fundacentro/pt-br/centrais-de-conteudo/biblioteca/normas-de-higiene-ocupacional" }] },
+      { segments: [{ text: "MTE: Normas Regulamentadoras vigentes", href: "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes" }] },
+      { segments: [{ text: "AJN: Avaliações e Medições Ambientais Ocupacionais", href: "/medicoes-ambientais-ocupacionais" }] },
     ] }
   ],
 } as const satisfies BlogContentData;

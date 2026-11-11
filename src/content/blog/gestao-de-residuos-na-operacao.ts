@@ -35,8 +35,8 @@ export const blogGestaoDeResiduosNaOperacao = {
 			'A separação para reciclagem resolve toda a gestão? Não. Segregação é uma etapa. Também é necessário organizar armazenamento, coleta, transporte e destinação conforme o tipo de resíduo e os requisitos aplicáveis.'
 		] },
 		{ heading: 'Referências e apoio', paragraphs: [
-			{ segments: [{ text: 'Lei nº 12.305/2010 — Política Nacional de Resíduos Sólidos', href: 'https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2010/lei/l12305.htm' }] },
-			{ segments: [{ text: 'AJN — gestão ambiental', href: '/servicos/gestao-ambiental' }] },
+			{ segments: [{ text: 'Lei nº 12.305/2010: Política Nacional de Resíduos Sólidos', href: 'https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2010/lei/l12305.htm' }] },
+			{ segments: [{ text: 'AJN: gestão ambiental', href: '/servicos/gestao-ambiental' }] },
 			'A AJN descreve apoio à organização de resíduos e a ações de orientação ambiental. Requisitos de monitoramento, licenciamento, estudos ou destinação devem ser avaliados por operação e confirmados no escopo contratado.'
 		] },
 	],

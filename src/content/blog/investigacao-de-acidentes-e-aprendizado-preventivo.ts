@@ -32,9 +32,9 @@ export const blogInvestigacaoDeAcidentesEAprendizadoPreventivo = {
       'A investigação substitui a CAT ou outros registros? Não. Comunicação, investigação interna e registros previdenciários ou legais têm finalidades diferentes e podem coexistir.'
     ] },
     { heading: 'Referências oficiais', paragraphs: [
-      { segments: [{ text: 'MTE — NR-1 vigente e gerenciamento de riscos', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
-      { segments: [{ text: 'MTE — página da NR-1, publicações e orientações', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
-      { segments: [{ text: 'AJN — inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }] }
+      { segments: [{ text: 'MTE: NR-1 vigente e gerenciamento de riscos', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
+      { segments: [{ text: 'MTE: página da NR-1, publicações e orientações', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
+      { segments: [{ text: 'AJN: inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

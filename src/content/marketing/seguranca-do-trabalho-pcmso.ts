@@ -15,7 +15,7 @@ export const segurancaDoTrabalhoPcmso = {
 		{
 			heading: 'Por que o PCMSO depende do levantamento de Segurança do Trabalho',
 			paragraphs: [
-				'O médico do trabalho não define exames complementares no escuro: ele precisa saber a quais agentes físicos, químicos, biológicos e ergonômicos cada função está exposta e em qual intensidade. Quem produz essa base técnica é a Engenharia de Segurança do Trabalho, por meio do PGR (NR-01) e das medições quantitativas de higiene ocupacional.',
+				'Para definir os exames complementares do PCMSO, o médico do trabalho precisa saber a quais agentes físicos, químicos, biológicos e ergonômicos cada função está exposta e em qual intensidade. Quem produz essa base técnica é a Engenharia de Segurança do Trabalho, por meio do PGR (NR-01) e das medições quantitativas de higiene ocupacional.',
 				'Quando uma atividade apresenta ruído acima do nível de ação, poeiras minerais, fumos metálicos, solventes orgânicos ou trabalho em altura (NR-35), essa informação técnica da engenharia determina os exames específicos que passarão a constar no PCMSO e no ASO do trabalhador.',
 			],
 		},
@@ -38,7 +38,7 @@ export const segurancaDoTrabalhoPcmso = {
 		{
 			heading: 'Evite divergências em auditorias e no eSocial',
 			paragraphs: [
-				'Manter a segurança do trabalho e o PCMSO alinhados evita que um trabalhador realize atividades críticas sem aptidão clínica registrada no ASO ou que o evento S-2220 apresente inconsistências perante o evento S-2240 no eSocial.',
+				'Manter a segurança do trabalho e o PCMSO compatibilizados evita que um trabalhador realize atividades críticas sem aptidão clínica registrada no ASO ou que o evento S-2220 apresente inconsistências perante o evento S-2240 no eSocial.',
 				{
 					segments: [
 						'Conheça nossas páginas de ',

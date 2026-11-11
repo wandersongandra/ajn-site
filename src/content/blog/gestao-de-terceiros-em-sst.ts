@@ -32,8 +32,8 @@ export const blogGestaoDeTerceirosEmSst = {
       'A mesma lista de documentos vale para qualquer prestador? Não. O conjunto depende do serviço, dos riscos, das NRs aplicáveis e dos requisitos contratuais. Evite pedir documentos sem relação com a atividade ou liberar o início apenas porque uma pasta foi preenchida.'
     ] },
     { heading: 'Referências oficiais', paragraphs: [
-      { segments: [{ text: 'MTE — NR-1 vigente, incluindo gerenciamento de riscos e organizações contratadas', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
-      { segments: [{ text: 'MTE — Programa de Gerenciamento de Riscos', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr' }] }
+      { segments: [{ text: 'MTE: NR-1 vigente, incluindo gerenciamento de riscos e organizações contratadas', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
+      { segments: [{ text: 'MTE: Programa de Gerenciamento de Riscos', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

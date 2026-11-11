@@ -16,7 +16,7 @@ export const segurancaDoTrabalhoLtcat = {
 			heading: 'Qual é o papel do LTCAT dentro da Segurança do Trabalho',
 			paragraphs: [
 				'Embora seja elaborado por engenheiro de segurança do trabalho ou médico do trabalho, o Laudo Técnico das Condições Ambientais do Trabalho (LTCAT) responde à legislação previdenciária (Lei nº 8.213/1991 e Decreto nº 3.048/1999). Sua função é documentar se o trabalhador esteve exposto de modo habitual e permanente a agentes nocivos capazes de ensejar aposentadoria especial.',
-				'Na rotina das empresas, porém, o levantamento técnico feito para o LTCAT caminha lado a lado com o gerenciamento de riscos ocupacionais (PGR) e com a avaliação de insalubridade (NR-15).',
+				'Na rotina das empresas, o levantamento técnico feito para o LTCAT compartilha dados de campo com o gerenciamento de riscos ocupacionais (PGR) e com a avaliação de insalubridade (NR-15).',
 			],
 		},
 		{

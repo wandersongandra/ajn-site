@@ -53,7 +53,7 @@ export const consultoriaSegurancaSaudeNoTrabalho = {
 		{
 			heading: "Solicite diagnóstico e proposta à AJN",
 			paragraphs: [
-				"Informe o ramo de atuação da empresa, a localização e o número de empregados para estruturarmos uma proposta sob medida.",
+				"Informe o ramo de atuação da empresa, a localização e o número de empregados para estruturarmos uma proposta compatível com a sua operação.",
 				{
 					segments: [
 						"Ligue para ",

@@ -106,7 +106,7 @@ export const keywordMap = {
 		secondaryKeywords: ['saúde ocupacional', 'exames ocupacionais', 'gestão de ASOs'],
 		intent: 'comercial',
 		title: 'PCMSO e ASO: gestão da saúde ocupacional | AJN',
-		description: 'Gestão de PCMSO e ASOs alinhada aos riscos ocupacionais, com acompanhamento de exames, documentos e retornos ao trabalho.',
+		description: 'Gestão de PCMSO e ASOs compatível com os riscos ocupacionais, com acompanhamento de exames, documentos e retornos ao trabalho.',
 	},
 	'/servicos/pericias-em-periculosidade-e-insalubridade': {
 		primaryKeyword: 'perícia de insalubridade e periculosidade',
@@ -493,7 +493,7 @@ export const keywordMap = {
 		secondaryKeywords: ['engenharia de segurança contra incêndio', 'aprovação no Corpo de Bombeiros', 'AVCB'],
 		intent: 'comercial',
 		title: 'Projeto Contra Incêndio para Empresas e Condomínios | AJN',
-		description: 'Elaboração de projeto contra incêndio sob medida para a ocupação e a área do imóvel, apoiando todas as etapas de regularização documental.',
+		description: 'Elaboração de projeto contra incêndio conforme a ocupação e a área do imóvel, apoiando todas as etapas de regularização documental.',
 		heading: 'Projeto contra incêndio para edificações',
 	},
 	'/projeto-prevencao-incendio-panico': {

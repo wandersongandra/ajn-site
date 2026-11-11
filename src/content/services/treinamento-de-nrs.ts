@@ -186,15 +186,13 @@ export const servicePage = {
 				{
 					"segments": [
 						"20 - Treinamento de NR 38 - ",
-						" ",
-						" ",
 						{
 							"href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-38-nr-38",
 							"text": "SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS"
-						},
-						"21 - Integração de Novos Funcionários: Este treinamento é oferecido aos novos colaboradores para familiarizá-los com as práticas de segurança da empresa, os riscos específicos do ambiente de trabalho e os procedimentos de emergência. É uma forma de garantir que todos comecem suas atividades com o conhecimento necessário para trabalhar de maneira segura."
+						}
 					]
-				}
+				},
+				"21 - Integração de Novos Funcionários: Este treinamento é oferecido aos novos colaboradores para familiarizá-los com as práticas de segurança da empresa, os riscos específicos do ambiente de trabalho e os procedimentos de emergência. É uma forma de orientar a equipe para iniciar suas atividades com conhecimento das regras de segurança aplicáveis."
 			]
 		}
 	]

@@ -29,7 +29,7 @@ export const blogLtcatNaSegurancaDoTrabalhoFortalecaAProtecaoDosSeusFuncionarios
     ]
   },
   {
-    "heading": "Como manter rastreabilidade",
+    "heading": "Como manter o histórico técnico",
     "paragraphs": [
       "Documente alterações de equipamento, registros de manutenção, avaliações ambientais e mudanças de função ou exposição. O histórico ajuda a esclarecer por que uma conclusão técnica era válida em determinado período.",
       "Evite conclusões padronizadas, como 'EPI eficaz' para todos os grupos, sem critério verificável. Informações usadas no PPP devem ser compatíveis com a avaliação correspondente."
@@ -41,7 +41,7 @@ export const blogLtcatNaSegurancaDoTrabalhoFortalecaAProtecaoDosSeusFuncionarios
       {
         "segments": [
           {
-            "text": "Lei nº 8.213/1991 — art. 58",
+            "text": "Lei nº 8.213/1991: art. 58",
             "href": "https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm"
           }
         ]
@@ -49,7 +49,7 @@ export const blogLtcatNaSegurancaDoTrabalhoFortalecaAProtecaoDosSeusFuncionarios
       {
         "segments": [
           {
-            "text": "MTE — PGR e medidas de prevenção",
+            "text": "MTE: PGR e medidas de prevenção",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]

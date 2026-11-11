@@ -48,7 +48,7 @@ export const blogSegurancaDoTrabalhoEPcmsoGestaoDaSaudeOcupacional = {
       {
         "segments": [
           {
-            "text": "MTE — Texto da NR-7",
+            "text": "MTE: Texto da NR-7",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022.pdf/view"
           }
         ]
@@ -56,7 +56,7 @@ export const blogSegurancaDoTrabalhoEPcmsoGestaoDaSaudeOcupacional = {
       {
         "segments": [
           {
-            "text": "Manual do eSocial — S-2220",
+            "text": "Manual do eSocial: S-2220",
             "href": "https://www.gov.br/esocial/pt-br/empresas/manual-web-geral/manual-web-geral/"
           }
         ]

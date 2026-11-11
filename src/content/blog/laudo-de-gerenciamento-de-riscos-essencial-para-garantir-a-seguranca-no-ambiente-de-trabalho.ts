@@ -48,7 +48,7 @@ export const blogLaudoDeGerenciamentoDeRiscosEssencialParaGarantirASegurancaNoAm
       {
         "segments": [
           {
-            "text": "MTE — Programa de Gerenciamento de Riscos",
+            "text": "MTE: Programa de Gerenciamento de Riscos",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/pgr"
           }
         ]
@@ -56,7 +56,7 @@ export const blogLaudoDeGerenciamentoDeRiscosEssencialParaGarantirASegurancaNoAm
       {
         "segments": [
           {
-            "text": "MTE — NR-1 atualizada",
+            "text": "MTE: NR-1 atualizada",
             "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1"
           }
         ]

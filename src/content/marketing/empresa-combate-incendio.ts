@@ -39,7 +39,7 @@ export const empresaCombateIncendio = {
 		{
 			heading: 'Integração com Segurança do Trabalho e QSSMA',
 			paragraphs: [
-				'Para clientes corporativos e industriais, a AJN também integra a engenharia de incêndio às demandas de Segurança e Saúde no Trabalho (PGR, LTCAT, PCMSO, laudos e treinamentos de NRs), centralizando a gestão técnica em um único parceiro.',
+				'Para clientes corporativos e industriais, a AJN também integra a engenharia de incêndio às demandas de Segurança e Saúde no Trabalho (PGR, LTCAT, PCMSO, laudos e treinamentos de NRs), concentrando o atendimento técnico na mesma equipe de engenharia.',
 				{
 					segments: [
 						'Conheça também nossas páginas de ',
@@ -54,7 +54,7 @@ export const empresaCombateIncendio = {
 		{
 			heading: 'Converse com a equipe técnica da AJN',
 			paragraphs: [
-				'Informe a localização do seu imóvel, a área construída e a sua necessidade atual para elaborarmos uma proposta sob medida.',
+				'Informe a localização do seu imóvel, a área construída e a sua necessidade atual para elaborarmos uma proposta técnica.',
 				{
 					segments: [
 						'Ligue para ',

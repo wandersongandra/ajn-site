@@ -33,8 +33,8 @@ export const blogAprEPermissaoDeTrabalho = {
       'Uma PT garante que o trabalho é seguro? Não. Ela documenta a autorização e as condições acordadas; as medidas ainda precisam ser implantadas, verificadas e mantidas.'
     ] },
     { heading: 'Referências oficiais', paragraphs: [
-      { segments: [{ text: 'MTE — NR-1 vigente, gerenciamento de riscos ocupacionais', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
-      { segments: [{ text: 'MTE — NR-10 e medidas preventivas de controle do risco elétrico', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-10-nr-10' }] }
+      { segments: [{ text: 'MTE: NR-1 vigente, gerenciamento de riscos ocupacionais', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
+      { segments: [{ text: 'MTE: NR-10 e medidas preventivas de controle do risco elétrico', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-10-nr-10' }] }
     ] }
   ]
 } as const satisfies BlogContentData;
