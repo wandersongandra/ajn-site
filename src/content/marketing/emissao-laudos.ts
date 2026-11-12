@@ -43,11 +43,11 @@ export const marketingDetailPage = {
 				{
 					segments: [
 						'Veja também as páginas específicas de ',
-						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat/' },
 						', ',
-						{ text: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' },
+						{ text: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade/' },
 						' e ',
-						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' },
+						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais/' },
 						'.',
 					],
 				},
@@ -62,7 +62,7 @@ export const marketingDetailPage = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'entre em contato pelo site', href: '/contato' },
+						{ text: 'entre em contato pelo site', href: '/contato/' },
 						'.',
 					],
 				},

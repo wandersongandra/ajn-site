@@ -42,9 +42,9 @@ export const consultoriaSegurancaSaudeNoTrabalho = {
 				{
 					segments: [
 						"Veja mais detalhes sobre o serviço de ",
-						{ text: "Assessoria e Consultoria em Saúde Ocupacional", href: "/servicos/assessoria-e-consultoria-em-saude-ocupacional" },
+						{ text: "Assessoria e Consultoria em Saúde Ocupacional", href: "/servicos/assessoria-e-consultoria-em-saude-ocupacional/" },
 						" e ",
-						{ text: "PCMSO e ASOs", href: "/servicos/pcmso-e-asos" },
+						{ text: "PCMSO e ASOs", href: "/servicos/pcmso-e-asos/" },
 						"."
 					]
 				}
@@ -59,7 +59,7 @@ export const consultoriaSegurancaSaudeNoTrabalho = {
 						"Ligue para ",
 						{ bold: true, text: "31 98473-4644" },
 						" ou ",
-						{ text: "fale com a AJN pelo formulário de contato", href: "/contato" },
+						{ text: "fale com a AJN pelo formulário de contato", href: "/contato/" },
 						"."
 					]
 				}

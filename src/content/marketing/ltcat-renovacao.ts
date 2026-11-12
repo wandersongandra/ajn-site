@@ -43,9 +43,9 @@ export const ltcatRenovacao = {
 				{
 					segments: [
 						'Veja mais informações em nossa página de ',
-						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat/' },
 						' e ',
-						{ text: 'LTCAT e Evento eSocial', href: '/ltcat-evento-esocial' },
+						{ text: 'LTCAT e Evento eSocial', href: '/ltcat-evento-esocial/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const ltcatRenovacao = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'entre em contato conosco', href: '/contato' },
+						{ text: 'entre em contato conosco', href: '/contato/' },
 						'.',
 					],
 				},

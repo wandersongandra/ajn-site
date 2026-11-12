@@ -1,0 +1,20 @@
+# AJN Consultoria e Engenharia
+
+> Consultoria e engenharia em segurança do trabalho, saúde ocupacional e prevenção contra incêndio em Belo Horizonte e Minas Gerais.
+
+## Site
+- Página inicial: https://ajnengenharia.com.br/
+- Serviços: https://ajnengenharia.com.br/servicos/
+- Blog técnico: https://ajnengenharia.com.br/blog/
+- Contato: https://ajnengenharia.com.br/contato/
+
+## Escopo
+- PGR, PCMSO e ASOs
+- LTCAT e avaliações ocupacionais
+- Gestão de SST e eSocial
+- Inspeções e treinamentos de NRs
+- Projetos e regularização de prevenção contra incêndio
+- Gestão ambiental e da qualidade
+
+## Observação
+As páginas do site são a fonte de verdade para informações atualizadas sobre serviços, escopo e atendimento.

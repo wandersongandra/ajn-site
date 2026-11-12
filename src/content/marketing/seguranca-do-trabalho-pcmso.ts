@@ -42,9 +42,9 @@ export const segurancaDoTrabalhoPcmso = {
 				{
 					segments: [
 						'Conheça nossas páginas de ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						' e ',
-						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' },
+						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const segurancaDoTrabalhoPcmso = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite uma proposta técnica', href: '/contato' },
+						{ text: 'solicite uma proposta técnica', href: '/contato/' },
 						'.',
 					],
 				},

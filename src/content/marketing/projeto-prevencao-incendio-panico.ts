@@ -43,7 +43,7 @@ export const projetoPrevencaoIncendioPanico = {
 				{
 					segments: [
 						'Veja também nossa página sobre ',
-						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' },
 						'.',
 					],
 				},
@@ -58,7 +58,7 @@ export const projetoPrevencaoIncendioPanico = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'fale conosco pelo formulário de contato', href: '/contato' },
+						{ text: 'fale conosco pelo formulário de contato', href: '/contato/' },
 						'.',
 					],
 				},

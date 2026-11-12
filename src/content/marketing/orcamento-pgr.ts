@@ -43,7 +43,7 @@ export const orcamentoPgr = {
 				{
 					segments: [
 						'Saiba mais sobre o escopo técnico em nossa página de ',
-						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr/' },
 						'.',
 					],
 				},
@@ -58,7 +58,7 @@ export const orcamentoPgr = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'envie os dados para orçamento', href: '/contato' },
+						{ text: 'envie os dados para orçamento', href: '/contato/' },
 						'.',
 					],
 				},

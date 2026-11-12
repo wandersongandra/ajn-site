@@ -25,7 +25,7 @@ check(!section.includes('Conte com a AJN para avaliar a demanda'),
 	'Copy genérica antiga não pode retornar.');
 
 const links = [...section.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>/g)].map(match => match[1]);
-check(links.length === 2 && links.includes('/contato') && links.includes('/servicos'),
+check(links.length === 2 && links.includes('/contato/') && links.includes('/servicos/'),
 	'Hero deve oferecer apenas contato e catálogo; sem CTAs duplicados.');
 const aside = section.match(/<aside\b[^>]*class="hero__panel"[^>]*>[\s\S]*?<\/aside>/)?.[0] ?? '';
 check(Boolean(aside) && aside.includes('aria-label="Principais frentes de atendimento da AJN"'),

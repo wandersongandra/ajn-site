@@ -43,9 +43,9 @@ export const empresaCombateIncendio = {
 				{
 					segments: [
 						'Conheça também nossas páginas de ',
-						{ text: 'Empresa de Combate a Incêndio em BH', href: '/empresa-combate-incendio-bh' },
+						{ text: 'Empresa de Combate a Incêndio em BH', href: '/empresa-combate-incendio-bh/' },
 						' e ',
-						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const empresaCombateIncendio = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite contato pelo site', href: '/contato' },
+						{ text: 'solicite contato pelo site', href: '/contato/' },
 						'.',
 					],
 				},

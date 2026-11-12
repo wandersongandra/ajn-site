@@ -27,7 +27,7 @@ for (const [name, route, word, marker] of cases) {
 const catalog = await readFile('dist/servicos/index.html', 'utf8');
 const home = await readFile('dist/index.html', 'utf8');
 for (const [, route] of cases) {
-  check(catalog.includes(`href="${route}"`), `Catálogo de serviços sem ligação para ${route}.`);
+  check(catalog.includes(`href="${route}/"`), `Catálogo de serviços sem ligação para ${route}/.`);
 }
 
 // Removidos: elétrica, SPDA e cabeamento não devem mais aparecer como oferta ativa.

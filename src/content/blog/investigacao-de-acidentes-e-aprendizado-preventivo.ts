@@ -34,7 +34,7 @@ export const blogInvestigacaoDeAcidentesEAprendizadoPreventivo = {
     { heading: 'Referências oficiais', paragraphs: [
       { segments: [{ text: 'MTE: NR-1 vigente e gerenciamento de riscos', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
       { segments: [{ text: 'MTE: página da NR-1, publicações e orientações', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-1' }] },
-      { segments: [{ text: 'AJN: inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }] }
+      { segments: [{ text: 'AJN: inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho/' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

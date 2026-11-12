@@ -22,7 +22,7 @@ export const blogCalorOcupacional = {
     { heading: 'Referências e próximos passos', paragraphs: [
       { segments: [{ text: "Fundacentro: Normas de Higiene Ocupacional", href: "https://www.gov.br/fundacentro/pt-br/centrais-de-conteudo/biblioteca/normas-de-higiene-ocupacional" }] },
       { segments: [{ text: "MTE: Normas Regulamentadoras vigentes", href: "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes" }] },
-      { segments: [{ text: "AJN: Avaliações e Medições Ambientais Ocupacionais", href: "/medicoes-ambientais-ocupacionais" }] },
+      { segments: [{ text: "AJN: Avaliações e Medições Ambientais Ocupacionais", href: "/medicoes-ambientais-ocupacionais/" }] },
     ] }
   ],
 } as const satisfies BlogContentData;

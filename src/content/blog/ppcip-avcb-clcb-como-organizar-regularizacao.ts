@@ -38,8 +38,8 @@ export const blogPpcipAvcbClcbComoOrganizarRegularizacao = {
 		{ heading: 'Fontes oficiais e serviços', paragraphs: [
 			{ segments: [{ text: 'CBMMG: normas técnicas de Segurança Contra Incêndio e Pânico', href: 'https://www.bombeiros.mg.gov.br/normastecnicas' }] },
 			{ segments: [{ text: 'CBMMG: serviços de Segurança Contra Incêndio e Pânico', href: 'https://www.bombeiros.mg.gov.br/servicos-sscip' }] },
-			{ segments: [{ text: 'AJN: projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' }] },
-			{ segments: [{ text: 'AJN: regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' }] }
+			{ segments: [{ text: 'AJN: projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' }] },
+			{ segments: [{ text: 'AJN: regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' }] }
 		] },
 	],
 } as const satisfies BlogContentData;

@@ -21,7 +21,7 @@ check(section.includes('Da indústria ao canteiro de obras'), 'Título original 
 check(section.includes('O atendimento considera a atividade, os riscos e os registros envolvidos.'), 'Texto técnico sobre o escopo não está presente.');
 check(!section.includes('Uma obra, uma indústria e um escritório têm rotinas diferentes.'),
 	'Texto genérico anterior ainda aparece.');
-check(/href="\/contato"[^>]*>[\s\S]*?Conversar com a AJN/.test(section),
+check(/href="\/contato\/"[^>]*>[\s\S]*?Conversar com a AJN/.test(section),
 	'CTA deve ir para o contato com linguagem direta.');
 const cards = [...section.matchAll(/<article\b[^>]*class="home-sector-card"[^>]*>/g)];
 check(cards.length === 4, `Esperados quatro setores, encontrados ${cards.length}.`);

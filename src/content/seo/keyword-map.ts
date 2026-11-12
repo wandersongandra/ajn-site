@@ -14,7 +14,7 @@ export const keywordMap = {
 		primaryKeyword: 'consultoria em segurança do trabalho',
 		secondaryKeywords: ['segurança do trabalho em Belo Horizonte', 'PGR', 'PCMSO', 'LTCAT', 'PPCIP'],
 		intent: 'comercial',
-		title: 'Segurança do Trabalho e Engenharia em BH | AJN',
+		title: 'Segurança do Trabalho e Engenharia em Belo Horizonte | AJN',
 		description: 'Consultoria em segurança do trabalho em Belo Horizonte: PGR, PCMSO, LTCAT, medições ocupacionais, eSocial SST e projetos PPCIP. Conheça a AJN.',
 	},
 	'/sobre-nos': {

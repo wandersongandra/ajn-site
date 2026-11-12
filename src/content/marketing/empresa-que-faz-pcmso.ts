@@ -42,9 +42,9 @@ export const empresaQueFazPcmso = {
 				{
 					segments: [
 						'Veja como funciona a composição de custos em nossa página sobre ',
-						{ text: 'Preço de PCMSO', href: '/preco-pcmso' },
+						{ text: 'Preço de PCMSO', href: '/preco-pcmso/' },
 						' e conheça o serviço de ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const empresaQueFazPcmso = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'envie sua solicitação de orçamento', href: '/contato' },
+						{ text: 'envie sua solicitação de orçamento', href: '/contato/' },
 						'.',
 					],
 				},

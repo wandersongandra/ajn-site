@@ -20,9 +20,9 @@ export const combateIncendioBeloHorizonte = {
 				{
 					segments: [
 						'Veja também nossos serviços de ',
-						{ text: 'projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						{ text: 'projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
 						' e ',
-						{ text: 'regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						{ text: 'regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const combateIncendioBeloHorizonte = {
 		},
 		{
 			heading: 'Para saber mais sobre combate a incêndio em Belo Horizonte',
-			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
+			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato/' }, ' e entre em contato por email.'] }],
 		},
 	],
 } as const satisfies MarketingContent;

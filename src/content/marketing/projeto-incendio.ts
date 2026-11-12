@@ -42,9 +42,9 @@ export const projetoIncendio = {
 				{
 					segments: [
 						'Saiba mais em nossas páginas de ',
-						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' },
 						' e ',
-						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const projetoIncendio = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'envie uma mensagem pelo formulário', href: '/contato' },
+						{ text: 'envie uma mensagem pelo formulário', href: '/contato/' },
 						'.',
 					],
 				},

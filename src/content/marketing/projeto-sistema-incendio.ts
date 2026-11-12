@@ -43,9 +43,9 @@ export const projetoSistemaIncendio = {
 				{
 					segments: [
 						'Veja também nossas páginas sobre ',
-						{ text: 'Combate a Incêndio em Belo Horizonte', href: '/combate-incendio-belo-horizonte' },
+						{ text: 'Combate a Incêndio em Belo Horizonte', href: '/combate-incendio-belo-horizonte/' },
 						' e ',
-						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const projetoSistemaIncendio = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'entre em contato com a AJN', href: '/contato' },
+						{ text: 'entre em contato com a AJN', href: '/contato/' },
 						'.',
 					],
 				},

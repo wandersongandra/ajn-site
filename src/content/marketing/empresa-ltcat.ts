@@ -34,14 +34,14 @@ export const empresaLtcat = {
       heading: 'Responsabilidade técnica e critérios previdenciários',
       paragraphs: [
         'A Lei nº 8.213/1991 prevê elaboração do LTCAT por médico do trabalho ou engenheiro de segurança do trabalho. A avaliação deve seguir critérios aplicáveis à caracterização da exposição a agentes nocivos, sem conclusões antecipadas sobre benefícios previdenciários.',
-        { segments: ['Para conhecer o documento em detalhes, veja ', { text: 'emissão de LTCAT', href: '/emissao-ltcat' }, '.'] },
+        { segments: ['Para conhecer o documento em detalhes, veja ', { text: 'emissão de LTCAT', href: '/emissao-ltcat/' }, '.'] },
       ],
     },
     {
       heading: 'Solicite uma proposta à AJN',
       paragraphs: [
         'Compartilhe a localização, as atividades e os documentos disponíveis. A AJN poderá avaliar a demanda e definir o próximo passo para a elaboração do laudo.',
-        { segments: ['Entre em contato com a ', { text: 'equipe da AJN', href: '/contato' }, '.'] },
+        { segments: ['Entre em contato com a ', { text: 'equipe da AJN', href: '/contato/' }, '.'] },
       ],
     },
   ],

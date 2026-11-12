@@ -40,9 +40,9 @@ export const laudoPgr = {
 				{
 					segments: [
 						'Para contratar a estruturação completa do programa, acesse nossa página de ',
-						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr/' },
 						' ou consulte a página de ',
-						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat/' },
 						' caso sua demanda seja previdenciária.',
 					],
 				},
@@ -57,7 +57,7 @@ export const laudoPgr = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite uma proposta técnica', href: '/contato' },
+						{ text: 'solicite uma proposta técnica', href: '/contato/' },
 						'.',
 					],
 				},

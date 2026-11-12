@@ -42,9 +42,9 @@ export const servicePage = {
         'Para solicitar atendimento à AJN, informe o ramo de atividade, a cidade, o número de trabalhadores e a situação atual do PCMSO e dos ASOs.',
         { segments: [
           'Veja quais informações reunir na ',
-          { text: 'página de orçamento de PCMSO', href: '/orcamento-pcmso' },
+          { text: 'página de orçamento de PCMSO', href: '/orcamento-pcmso/' },
           '. Depois, acesse a ',
-          { text: 'página de contato', href: '/contato' },
+          { text: 'página de contato', href: '/contato/' },
           ' para apresentar a demanda.',
         ] },
       ],

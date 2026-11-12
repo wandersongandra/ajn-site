@@ -43,9 +43,9 @@ export const valorProjetoIncendio = {
 				{
 					segments: [
 						'Confira também nossas páginas de ',
-						{ text: 'Preço de Projeto de Combate a Incêndio', href: '/projeto-combate-incendio-preco' },
+						{ text: 'Preço de Projeto de Combate a Incêndio', href: '/projeto-combate-incendio-preco/' },
 						' e ',
-						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+						{ text: 'Regularização de Imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const valorProjetoIncendio = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'peça seu orçamento pelo site', href: '/contato' },
+						{ text: 'peça seu orçamento pelo site', href: '/contato/' },
 						'.',
 					],
 				},

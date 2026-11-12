@@ -42,9 +42,9 @@ export const valorFazerLtcat = {
 				{
 					segments: [
 						'Confira também nossas páginas sobre ',
-						{ text: 'Preço do LTCAT', href: '/ltcat-preco' },
+						{ text: 'Preço do LTCAT', href: '/ltcat-preco/' },
 						' e ',
-						{ text: 'Orçamento de LTCAT', href: '/orcamento-ltcat' },
+						{ text: 'Orçamento de LTCAT', href: '/orcamento-ltcat/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const valorFazerLtcat = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite orçamento pelo site', href: '/contato' },
+						{ text: 'solicite orçamento pelo site', href: '/contato/' },
 						'.',
 					],
 				},

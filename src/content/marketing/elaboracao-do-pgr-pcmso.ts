@@ -42,9 +42,9 @@ export const elaboracaoDoPgrPcmso = {
 				{
 					segments: [
 						'Consulte também os detalhes sobre ',
-						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr/' },
 						' e o serviço de ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const elaboracaoDoPgrPcmso = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'entre em contato com a AJN', href: '/contato' },
+						{ text: 'entre em contato com a AJN', href: '/contato/' },
 						'.',
 					],
 				},

@@ -25,7 +25,7 @@ for (const title of ['Nossa atuação','Áreas de atendimento','O que orienta no
 	'Missão','Visão','Valores','Cada serviço começa com uma demanda concreta.']) {
 	check(about.includes(title), 'Informação institucional ausente: ' + title);
 }
-for (const url of ['#atuacao','/servicos','/contato']) {
+for (const url of ['#atuacao','/servicos/','/contato/']) {
 	check(about.includes(`href="${url}"`), 'Ação interna ausente: ' + url);
 }
 check(about.includes('id="atuacao"'), 'Âncora de atuação inexistente.');

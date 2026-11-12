@@ -43,9 +43,9 @@ export const empresaPcmso = {
 				{
 					segments: [
 						'Confira também os detalhes em nossa página de ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						' e saiba como solicitar um ',
-						{ text: 'Orçamento de PCMSO', href: '/orcamento-pcmso' },
+						{ text: 'Orçamento de PCMSO', href: '/orcamento-pcmso/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const empresaPcmso = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'entre em contato com a AJN', href: '/contato' },
+						{ text: 'entre em contato com a AJN', href: '/contato/' },
 						'.',
 					],
 				},

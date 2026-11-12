@@ -34,8 +34,8 @@ export const blogHigieneOcupacionalPlanejamentoDeAvaliacoes = {
     { heading: 'Referências oficiais', paragraphs: [
       { segments: [{ text: 'Fundacentro: Normas de Higiene Ocupacional', href: 'https://www.gov.br/fundacentro/pt-br/centrais-de-conteudo/biblioteca/normas-de-higiene-ocupacional' }] },
       { segments: [{ text: 'MTE: NR-9, avaliação e controle das exposições ocupacionais', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-9-nr-9' }] },
-      { segments: [{ text: 'AJN: Medições ambientais ocupacionais', href: '/medicoes-ambientais-ocupacionais' }] },
-      { segments: [{ text: 'AJN: perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }] }
+      { segments: [{ text: 'AJN: Medições ambientais ocupacionais', href: '/medicoes-ambientais-ocupacionais/' }] },
+      { segments: [{ text: 'AJN: perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade/' }] }
     ] }
   ]
 } as const satisfies BlogContentData;

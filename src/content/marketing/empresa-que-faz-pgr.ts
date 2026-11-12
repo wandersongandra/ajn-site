@@ -37,7 +37,7 @@ export const empresaQueFazPgr = {
         'O PGR previsto na NR-1 contém, no mínimo, inventário de riscos ocupacionais e plano de ação. Esses documentos devem representar as condições reais do estabelecimento e apoiar o acompanhamento das medidas de prevenção.',
         { segments: [
           'Para entender o conteúdo técnico, consulte nossa página sobre ',
-          { text: 'elaboração de PGR', href: '/elaboracao-pgr' },
+          { text: 'elaboração de PGR', href: '/elaboracao-pgr/' },
           '.',
         ] },
       ],
@@ -48,7 +48,7 @@ export const empresaQueFazPgr = {
         'A AJN Consultoria e Engenharia atende demandas de segurança do trabalho e documentação técnica. Descreva sua necessidade para verificarmos o escopo e as condições de atendimento.',
         { segments: [
           'Envie as informações pela nossa ',
-          { text: 'página de contato', href: '/contato' },
+          { text: 'página de contato', href: '/contato/' },
           '.',
         ] },
       ],

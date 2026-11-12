@@ -67,8 +67,8 @@ check(!homeHtml.includes('class="hero__controls"'), 'Decorative hero arrows unex
 const heroStart = html.indexOf('class="hero"');
 const heroEnd = html.indexOf('</section>', heroStart);
 const heroMarkup = html.slice(heroStart, heroEnd);
-check(/href="\/contato">Solicitar atendimento/.test(heroMarkup), 'Hero primary CTA does not target /contato');
-check(/href="\/servicos">Conhecer os serviços/.test(heroMarkup), 'Hero secondary CTA missing');
+check(/href="\/contato\/">Solicitar atendimento/.test(heroMarkup), 'Hero primary CTA does not target /contato');
+check(/href="\/servicos\/">Conhecer os serviços/.test(heroMarkup), 'Hero secondary CTA missing');
 // O processo é a última seção; o footer global continua com contato.
 const workflowStart = html.indexOf('class="differentials section"');
 const workflowEnd = workflowStart >= 0 ? html.indexOf('</section>', workflowStart) : -1;
@@ -85,7 +85,7 @@ check(!homeHtml.includes('class="home-contact-cta"') &&
 check(footerStart >= 0 && html.slice(footerStart).includes('href="/contato/"'),
 	'Footer must retain a path to the contact page.');
 
-check(homeHtml.includes('href="/servicos"'), 'Complete catalog link missing');
+check(homeHtml.includes('href="/servicos/"'), 'Complete catalog link missing');
 check(/<img\b[^>]*loading="lazy"/.test(homeHtml), 'Lazy-loaded images missing');
 check(!homeHtml.includes('Conheça as Nossas Soluções'), 'Unrefined heading returned');
 check(!homeHtml.includes('Saiba mais sobre os treinamentos'), 'Generic service copy returned');

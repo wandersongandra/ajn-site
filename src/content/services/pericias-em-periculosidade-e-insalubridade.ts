@@ -35,7 +35,7 @@ export const servicePage = {
       heading: 'Qual é a diferença para o LTCAT?',
       paragraphs: [
         'O LTCAT tem finalidade previdenciária, enquanto a avaliação de insalubridade ou periculosidade atende a critérios trabalhistas específicos. Mesmo que compartilhem levantamentos sobre o ambiente, os documentos não são automaticamente intercambiáveis.',
-        { segments: ['Entenda a ', { text: 'diferença entre LTCAT e insalubridade', href: '/laudo-ltcat-insalubridade' }, '.'] },
+        { segments: ['Entenda a ', { text: 'diferença entre LTCAT e insalubridade', href: '/laudo-ltcat-insalubridade/' }, '.'] },
       ],
     },
     {
@@ -49,7 +49,7 @@ export const servicePage = {
       heading: 'Peça uma avaliação à AJN',
       paragraphs: [
         'Informe a cidade, as funções, os ambientes, o tipo de atividade e a finalidade da avaliação. Assim podemos analisar os requisitos para uma proposta de serviço técnico.',
-        { segments: ['Entre em contato pela ', { text: 'página de atendimento', href: '/contato' }, '.'] },
+        { segments: ['Entre em contato pela ', { text: 'página de atendimento', href: '/contato/' }, '.'] },
         { segments: ['Fontes oficiais: ', { text: 'NR-15', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-15-nr-15' }, ' e ', { text: 'lista de Normas Regulamentadoras do MTE (NR-16)', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/' }, '.'] },
       ],
     },

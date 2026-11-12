@@ -42,9 +42,9 @@ export const laudosSst = {
 				{
 					segments: [
 						'Confira também nossas páginas sobre ',
-						{ text: 'Laudos de Segurança do Trabalho', href: '/laudos-seguranca-do-trabalho' },
+						{ text: 'Laudos de Segurança do Trabalho', href: '/laudos-seguranca-do-trabalho/' },
 						' e ',
-						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const laudosSst = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite orçamento pelo formulário', href: '/contato' },
+						{ text: 'solicite orçamento pelo formulário', href: '/contato/' },
 						'.',
 					],
 				},

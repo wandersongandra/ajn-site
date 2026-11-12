@@ -42,7 +42,7 @@ export const projetoCombateIncendioPanico = {
 				{
 					segments: [
 						'Veja mais detalhes em nossa página de ',
-						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
 						'.',
 					],
 				},
@@ -57,7 +57,7 @@ export const projetoCombateIncendioPanico = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'entre em contato com nossa engenharia', href: '/contato' },
+						{ text: 'entre em contato com nossa engenharia', href: '/contato/' },
 						'.',
 					],
 				},
