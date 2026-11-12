@@ -16,11 +16,11 @@ check(landing.includes('rel="canonical" href="'+origin+'/'+slug+'/\"'), 'Mediç�
 check(landing.includes('name="description"')&&landing.includes('Medições Ocupacionais em BH')&&landing.includes('dosimetria de ruído'),'Medições: SEO incompleto.');
 for(const word of ['NHO 01','NHO 06','NHO 11','NR-15','NR-17','IBUTG','iluminamento','LTCAT','PGR','relatório'])check(landing.includes(word),'Medições: falta contexto '+word);
 check(landing.includes('application/ld+json')&&landing.includes('\"@type\":\"Service\"'),'Medições: Schema Service ausente.');
-check(landing.includes('wa.me/5531984734644')&&landing.includes('href="/contato"'),'Medições: falta orçamento/contato.');
+check(landing.includes('wa.me/5531984734644')&&landing.includes('href="/contato/"'),'Medições: falta orçamento/contato.');
 check(landing.includes('Imagem ilustrativa criada digitalmente'),'Medições: imagens digitais sem aviso visível.');
 check(!/acreditad[ao]|certificad[ao]|garantia de insalubridade/i.test(source),'Medições: alegação técnica não fundamentada.');
-check(home.includes('id="ajn-measure-home-title"') && home.includes('href="/'+slug+'"'),'Medições: destaque da Home ausente.');
-check(services.includes('href="/'+slug+'"'),'Medições: serviço ausente do catálogo.');
+check(home.includes('id="ajn-measure-home-title"') && home.includes('href="/'+slug+'/"'),'Medições: destaque da Home ausente.');
+check(services.includes('href="/'+slug+'/"'),'Medições: serviço ausente do catálogo.');
 check(menu.includes("href: '/"+slug+"/'"),'Medições: serviço ausente do menu.');
 check(services.includes('13 serviços'),'Medições: contador do catálogo não foi atualizado.');
 const articles=[
@@ -30,9 +30,9 @@ const articles=[
 ];
 for(const slug of articles){
  const html=await read('dist/blog/'+slug+'/index.html');
- check(blog.includes('href="/blog/'+slug+'"'),'Blog: artigo novo ausente do índice: '+slug);
+ check(blog.includes('href="/blog/'+slug+'/"'),'Blog: artigo novo ausente do índice: '+slug);
  check((html.match(/<h1\b/g)||[]).length===1,'Blog: H1 inválido em '+slug);
- check(html.includes('href="/medicoes-ambientais-ocupacionais"'),'Blog: link ao serviço ausente em '+slug);
+ check(html.includes('href="/medicoes-ambientais-ocupacionais/"'),'Blog: link ao serviço ausente em '+slug);
  check(html.includes('Imagem ilustrativa criada digitalmente'),'Blog: aviso de mídia sintética ausente em '+slug);
 }
 const files=[
