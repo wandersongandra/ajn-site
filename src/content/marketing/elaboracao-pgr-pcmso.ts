@@ -42,9 +42,9 @@ export const elaboracaoPgrPcmso = {
 				{
 					segments: [
 						'Veja mais informações em nossas páginas dedicadas à ',
-						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr/' },
 						' e ao serviço de ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const elaboracaoPgrPcmso = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite um orçamento', href: '/contato' },
+						{ text: 'solicite um orçamento', href: '/contato/' },
 						'.',
 					],
 				},
