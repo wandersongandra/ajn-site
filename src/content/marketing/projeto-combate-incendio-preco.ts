@@ -43,9 +43,9 @@ export const projetoCombateIncendioPreco = {
 				{
 					segments: [
 						'Confira também nossas páginas sobre ',
-						{ text: 'Orçamento de Projeto de Combate a Incêndio', href: '/orcamento-projeto-combate-incendio' },
+						{ text: 'Orçamento de Projeto de Combate a Incêndio', href: '/orcamento-projeto-combate-incendio/' },
 						' e ',
-						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const projetoCombateIncendioPreco = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'peça seu orçamento pelo site', href: '/contato' },
+						{ text: 'peça seu orçamento pelo site', href: '/contato/' },
 						'.',
 					],
 				},
