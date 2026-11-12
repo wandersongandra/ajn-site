@@ -147,6 +147,17 @@ function trimMetaDescription(value: string): string {
 	return `${shortened}.`;
 }
 
+function ensureMetaDescription(value: string, heading: string): string {
+	const cleaned = value.replace(/\s+/g, ' ').trim();
+	if (cleaned.length >= 120) return trimMetaDescription(cleaned);
+
+	const suffix = /preço|orçamento|valor/i.test(heading)
+		? ' Consulte a AJN para definir o escopo técnico da sua empresa.'
+		: ' Conheça o escopo e fale com a AJN para avaliar a sua demanda.';
+	const sentence = /[.!?]$/.test(cleaned) ? cleaned : `${cleaned}.`;
+	return trimMetaDescription(`${sentence}${suffix}`);
+}
+
 function paragraphText(value: ContentParagraphValue): string {
 	if (typeof value === 'string') return value;
 	return value.segments.map((segment) => typeof segment === 'string' ? segment : segment.text).join(' ');
@@ -223,7 +234,8 @@ function inferIntent(path: string): SearchIntent {
 
 export function getSeoMetadata(path: string, fallback: { title: string; description: string }): { title: string; description: string } {
 	const explicit = keywordMap[path as keyof typeof keywordMap];
-	return explicit ? { title: explicit.title, description: explicit.description } : fallback;
+	const metadata = explicit ? { title: explicit.title, description: explicit.description } : fallback;
+	return { ...metadata, description: ensureMetaDescription(metadata.description, metadata.title) };
 }
 
 export function getRelatedService(path: string): { href: string; label: string } | undefined {
