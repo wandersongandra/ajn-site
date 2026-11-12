@@ -43,9 +43,9 @@ export const pcmsoProgramaControleMedicoSaudeOcupacional = {
 				{
 					segments: [
 						'Saiba como contratar o programa em nossa página do serviço de ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						' ou peça um ',
-						{ text: 'Orçamento de PCMSO', href: '/orcamento-pcmso' },
+						{ text: 'Orçamento de PCMSO', href: '/orcamento-pcmso/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const pcmsoProgramaControleMedicoSaudeOcupacional = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'fale com nossa equipe', href: '/contato' },
+						{ text: 'fale com nossa equipe', href: '/contato/' },
 						'.',
 					],
 				},
