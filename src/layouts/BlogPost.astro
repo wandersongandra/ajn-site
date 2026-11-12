@@ -60,41 +60,41 @@ const related = getRelatedBlogPosts(post.path);
 
 // Links só aparecem quando há uma página de serviço existente e compatível.
 const relatedServicesBySlug: Record<string, readonly { title: string; href: string }[]> = {
-  'laudo-tecnico-das-condicoes-ambientais-de-trabalho-ltcat': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-papel-fundamental-na-seguranca-do-trabalho-e-no-bem-estar-dos-colaboradores': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'orcamento-eficiente-para-ltcat-passos-essenciais-para-garantir-a-seguranca-no-trabalho': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-e-seguranca-do-trabalho-como-garantir-a-protecao-eficaz-da-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-e-seguranca-do-trabalho-como-proteger-sua-empresa-com-eficiencia': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-guia-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-na-seguranca-do-trabalho-fortaleca-a-protecao-dos-seus-funcionarios-eficazmente': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'seguranca-do-trabalho-e-ltcat-conformidade-e-protecao-previdenciaria': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-guia-essencial-para-garantir-seguranca-do-trabalho-eficaz': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-essencial-para-a-seguranca-do-trabalho-e-protecao-da-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'ltcat-na-seguranca-do-trabalho-garantindo-protecao-e-reducao-de-riscos-para-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat' }],
-  'o-fim-do-ppra-e-a-chegada-do-pgr-o-que-mudou': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr' }],
-  'laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr' }],
-  'elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr' }, { title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos' }],
-  'seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional': [{ title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos' }],
-  'ppp-facil-o-ue-e-como-consultar-e-sua-importancia': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
-  'perfil-profissiografico-previdenciario-ppp': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
-  'nr-35-trabalho-em-altura-e-seguranca': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
-  'gestao-de-terceiros-em-sst-documentos-mobilizacao-e-controles': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' }],
-  'esocial-sst-diferencas-entre-s2210-s2220-e-s2240': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social' }],
-  'apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho' }],
-  'nr-10-documentacao-capacitacao-e-transicao-regulatoria': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
-  'nr-12-como-organizar-a-analise-de-riscos-de-maquinas': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }, { title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs' }],
-  'aep-e-aet-diferencas-e-quando-aplicar-cada-avaliacao': [{ title: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional' }],
-  'higiene-ocupacional-como-planejar-avaliacoes-de-exposicao': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }, { title: 'Perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' }],
-  'medicao-de-ruido-ocupacional-dosimetria-e-planejamento': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
-  'avaliacao-de-calor-ocupacional-ibutg-e-atividade': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
-  'avaliacao-de-iluminamento-posto-de-trabalho-nho-11': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' }],
-  'investigacao-de-acidentes-como-transformar-registros-em-prevencao': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho' }],
-  'gestao-de-residuos-como-organizar-a-rotina-da-operacao': [{ title: 'Gestão ambiental', href: '/servicos/gestao-ambiental' }],
-  'controle-de-qualidade-em-obras-registros-inspecoes-e-desvios': [{ title: 'Gestão da qualidade', href: '/servicos/gestao-da-qualidade' }],
+  'laudo-tecnico-das-condicoes-ambientais-de-trabalho-ltcat': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-papel-fundamental-na-seguranca-do-trabalho-e-no-bem-estar-dos-colaboradores': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'orcamento-eficiente-para-ltcat-passos-essenciais-para-garantir-a-seguranca-no-trabalho': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-e-seguranca-do-trabalho-como-garantir-a-protecao-eficaz-da-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-e-seguranca-do-trabalho-como-proteger-sua-empresa-com-eficiencia': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-guia-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-na-seguranca-do-trabalho-fortaleca-a-protecao-dos-seus-funcionarios-eficazmente': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'seguranca-do-trabalho-e-ltcat-conformidade-e-protecao-previdenciaria': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-guia-essencial-para-garantir-seguranca-do-trabalho-eficaz': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-essencial-para-a-seguranca-do-trabalho-e-protecao-da-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'ltcat-na-seguranca-do-trabalho-garantindo-protecao-e-reducao-de-riscos-para-sua-equipe': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional': [{ title: 'Elaboração de LTCAT', href: '/emissao-ltcat/' }],
+  'o-fim-do-ppra-e-a-chegada-do-pgr-o-que-mudou': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr/' }],
+  'laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr/' }],
+  'elaboracao-de-pgr-e-pcmso-conformidade-e-seguranca-no-trabalho': [{ title: 'Elaboração de PGR', href: '/elaboracao-pgr/' }, { title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' }],
+  'seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional': [{ title: 'Gestão de PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' }],
+  'ppp-facil-o-ue-e-como-consultar-e-sua-importancia': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social/' }],
+  'perfil-profissiografico-previdenciario-ppp': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social/' }],
+  'nr-35-trabalho-em-altura-e-seguranca': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs/' }],
+  'gestao-de-terceiros-em-sst-documentos-mobilizacao-e-controles': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho/' }],
+  'esocial-sst-diferencas-entre-s2210-s2220-e-s2240': [{ title: 'Gestão de SST no eSocial', href: '/servicos/gestao-do-e-social/' }],
+  'apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco': [{ title: 'Consultoria em segurança do trabalho', href: '/consultoria-seguranca-do-trabalho/' }],
+  'nr-10-documentacao-capacitacao-e-transicao-regulatoria': [{ title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs/' }],
+  'nr-12-como-organizar-a-analise-de-riscos-de-maquinas': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho/' }, { title: 'Treinamentos de NRs', href: '/servicos/treinamento-de-nrs/' }],
+  'aep-e-aet-diferencas-e-quando-aplicar-cada-avaliacao': [{ title: 'Assessoria e consultoria em saúde ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional/' }],
+  'higiene-ocupacional-como-planejar-avaliacoes-de-exposicao': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais/' }, { title: 'Perícias de insalubridade e periculosidade', href: '/servicos/pericias-em-periculosidade-e-insalubridade/' }],
+  'medicao-de-ruido-ocupacional-dosimetria-e-planejamento': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais/' }],
+  'avaliacao-de-calor-ocupacional-ibutg-e-atividade': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais/' }],
+  'avaliacao-de-iluminamento-posto-de-trabalho-nho-11': [{ title: 'Avaliações e Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais/' }],
+  'investigacao-de-acidentes-como-transformar-registros-em-prevencao': [{ title: 'Inspeções de segurança do trabalho', href: '/inspecoes-seguranca-do-trabalho/' }],
+  'gestao-de-residuos-como-organizar-a-rotina-da-operacao': [{ title: 'Gestão ambiental', href: '/servicos/gestao-ambiental/' }],
+  'controle-de-qualidade-em-obras-registros-inspecoes-e-desvios': [{ title: 'Gestão da qualidade', href: '/servicos/gestao-da-qualidade/' }],
   'ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel': [
-    { title: 'Projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
-    { title: 'Regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' },
+    { title: 'Projetos de combate a incêndio e pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
+    { title: 'Regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' },
   ],
 };
 const relatedServices = relatedServicesBySlug[post.slug] ?? [];
@@ -127,7 +127,7 @@ const galleryRemaining = galleryImages.slice(3);
 		<nav class="breadcrumb" aria-label="Breadcrumb">
 			<a href="/">Home</a>
 			<span aria-hidden="true">/</span>
-			<a href="/blog">Blog</a>
+			<a href="/blog/">Blog</a>
 			<span aria-hidden="true">/</span>
 			<span aria-current="page">{post.heading}</span>
 		</nav>
@@ -141,7 +141,7 @@ const galleryRemaining = galleryImages.slice(3);
 						<span>Publicado em </span>
 						<time datetime={post.pubDate.toISOString()}>{formattedDate}</time>
 						{post.author === 'Admin'
-              ? <span> · Por <a href="/sobre-nos">AJN Consultoria e Engenharia</a></span>
+              ? <span> · Por <a href="/sobre-nos/">AJN Consultoria e Engenharia</a></span>
               : <span> · Por {post.author}</span>}
 						{post.updatedAt && <span> · Atualizado em <time datetime={post.updatedAt.toISOString()}>{formattedUpdated}</time></span>}
 					</p>
@@ -182,7 +182,7 @@ const galleryRemaining = galleryImages.slice(3);
 						<h2 id="blog-contact-title">Quer avaliar esse tema na sua empresa?</h2>
 						<p>{ctaDescription}</p>
 					</div>
-					<a href="/contato">Conversar com a AJN <span aria-hidden="true">→</span></a>
+					<a href="/contato/">Conversar com a AJN <span aria-hidden="true">→</span></a>
 				</aside>
 
 				{relatedServices.length > 0 && (
@@ -222,8 +222,8 @@ const galleryRemaining = galleryImages.slice(3);
 						</a>
 					)}
 					<div class="blog-article__actions">
-						<a href="/blog">← Voltar para o blog</a>
-						<a href="/contato">Falar com a AJN →</a>
+						<a href="/blog/">← Voltar para o blog</a>
+						<a href="/contato/">Falar com a AJN →</a>
 					</div>
 				</footer>
 			</article>
@@ -237,7 +237,7 @@ const galleryRemaining = galleryImages.slice(3);
 						<p>Continue a leitura</p>
 						<h2 id="blog-related-heading">Artigos do mesmo assunto</h2>
 					</div>
-					<a href="/blog">Ver blog completo →</a>
+					<a href="/blog/">Ver blog completo →</a>
 				</div>
 				<div class="blog-related__grid">
 					{related.map((item) => (
