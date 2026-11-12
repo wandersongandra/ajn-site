@@ -40,14 +40,14 @@ export const emissaoLtcat = {
       heading: 'LTCAT, PGR e laudo de insalubridade são documentos diferentes',
       paragraphs: [
         'O LTCAT atende a finalidade previdenciária. O PGR organiza o gerenciamento de riscos ocupacionais na NR-1. A caracterização trabalhista de insalubridade segue critérios próprios, incluindo a NR-15. Não se deve presumir que um desses documentos substitui os demais.',
-        { segments: ['Leia também sobre a ', { text: 'diferença entre LTCAT e laudo de insalubridade', href: '/laudo-ltcat-insalubridade' }, '.'] },
+        { segments: ['Leia também sobre a ', { text: 'diferença entre LTCAT e laudo de insalubridade', href: '/laudo-ltcat-insalubridade/' }, '.'] },
       ],
     },
     {
       heading: 'Avalie a emissão do LTCAT com a AJN',
       paragraphs: [
         'Descreva o estabelecimento, as atividades e a documentação disponível. Com essas informações, verificamos as condições de atendimento e os levantamentos previstos na proposta.',
-        { segments: ['Para solicitar uma avaliação, ', { text: 'fale com a AJN', href: '/contato' }, '.'] },
+        { segments: ['Para solicitar uma avaliação, ', { text: 'fale com a AJN', href: '/contato/' }, '.'] },
         { segments: ['Referência legal: ', { text: 'Lei nº 8.213/1991, art. 58', href: 'https://www.planalto.gov.br/ccivil_03/leis/l8213compilado.htm' }, '.'] },
       ],
     },
