@@ -24,9 +24,11 @@ const legacyTopicsBySlug: Record<string, BlogTopic> = {
 	'a-importancia-do-ltcat-para-a-seguranca-do-trabalho-e-a-protecao-do-ambiente-profissional': 'Laudos e avaliações técnicas',
 };
 
+const canonicalBlogPath = (path: string) => path === '/' ? '/' : path.replace(/\/+$/, '') + '/';
+
 const archivedPosts = blogPages.map((post) => ({
 	title: post.heading,
-	href: post.path,
+	href: canonicalBlogPath(post.path),
 	image: post.image.src,
 	alt: post.image.alt,
 	description: post.description,
@@ -48,12 +50,13 @@ export const blogTopics = [...new Set(blogPosts.map((post) => post.topic))];
 
 /** Related posts are chosen by overlapping editorial topics, never by recency alone. */
 export function getRelatedBlogPosts(href: string, limit = 3) {
-	const current = blogPosts.find((post) => post.href === href);
+	const canonicalHref = canonicalBlogPath(href);
+	const current = blogPosts.find((post) => post.href === canonicalHref);
 	if (!current) return [];
 
 	const currentTags = new Set(current.tags.map((tag) => tag.toLocaleLowerCase('pt-BR')));
 	return blogPosts
-		.filter((post) => post.href !== href)
+		.filter((post) => post.href !== canonicalHref)
 		.map((post) => ({
 			post,
 			score: (post.topic === current.topic ? 10 : 0)
