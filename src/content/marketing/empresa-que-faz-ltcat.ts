@@ -43,9 +43,9 @@ export const empresaQueFazLtcat = {
 				{
 					segments: [
 						'Veja mais detalhes em nossas páginas de ',
-						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat/' },
 						' e ',
-						{ text: 'Preço do LTCAT', href: '/ltcat-preco' },
+						{ text: 'Preço do LTCAT', href: '/ltcat-preco/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const empresaQueFazLtcat = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'fale com nossa engenharia', href: '/contato' },
+						{ text: 'fale com nossa engenharia', href: '/contato/' },
 						'.',
 					],
 				},
