@@ -42,9 +42,9 @@ export const projetoSistemaCombateIncendio = {
 				{
 					segments: [
 						'Consulte também nossas páginas sobre ',
-						{ text: 'Sistemas de Incêndio em BH', href: '/sistemas-incendio-bh' },
+						{ text: 'Sistemas de Incêndio em BH', href: '/sistemas-incendio-bh/' },
 						' e ',
-						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' },
+						{ text: 'Projetos de Combate a Incêndio e Pânico (PPCIP)', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const projetoSistemaCombateIncendio = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite orçamento pelo site', href: '/contato' },
+						{ text: 'solicite orçamento pelo site', href: '/contato/' },
 						'.',
 					],
 				},
