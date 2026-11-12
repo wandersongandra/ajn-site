@@ -33,7 +33,7 @@ export const blogControleDeQualidadeEmObrasEServicos = {
 		] },
 		{ heading: 'Referência de serviço', paragraphs: [
 			{ segments: [{ text: 'MTE: NR-18 vigente, para consultar requisitos de segurança e saúde na indústria da construção', href: 'https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-18-nr-18' }] },
-			{ segments: [{ text: 'AJN: gestão da qualidade em obras e serviços contratados', href: '/servicos/gestao-da-qualidade' }] },
+			{ segments: [{ text: 'AJN: gestão da qualidade em obras e serviços contratados', href: '/servicos/gestao-da-qualidade/' }] },
 			'Escopo, critérios, documentos e entregáveis são definidos para cada contrato. A proposta deve identificar interfaces com contratante, executores e responsáveis técnicos.'
 		] },
 	],
