@@ -37,14 +37,14 @@ export const orcamentoPcmso = {
 			heading: 'Programa médico e gestão dos ASOs: escopos diferentes',
 			paragraphs: [
 				'A elaboração do programa e a definição clínica dos exames cabem ao profissional médico legalmente habilitado. A organização de agendas, vencimentos e documentos de ASO pode fazer parte de uma frente administrativa de saúde ocupacional, conforme o contrato.',
-				{ segments: ['Para entender o funcionamento dessa gestão, consulte a página de ', { text: 'PCMSO e ASOs da AJN', href: '/servicos/pcmso-e-asos' }, '.'] },
+				{ segments: ['Para entender o funcionamento dessa gestão, consulte a página de ', { text: 'PCMSO e ASOs da AJN', href: '/servicos/pcmso-e-asos/' }, '.'] },
 			],
 		},
 		{
 			heading: 'Receba uma avaliação de escopo da AJN',
 			paragraphs: [
 				'A AJN atende empresas de Belo Horizonte e região conforme a demanda e a viabilidade de atendimento. Envie as informações disponíveis; a equipe poderá orientar a próxima etapa e o que deve constar na proposta.',
-				{ segments: ['Para iniciar, ', { text: 'solicite um orçamento pelo contato da AJN', href: '/contato' }, '.'] },
+				{ segments: ['Para iniciar, ', { text: 'solicite um orçamento pelo contato da AJN', href: '/contato/' }, '.'] },
 			],
 		},
 	],
