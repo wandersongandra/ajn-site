@@ -43,9 +43,9 @@ export const laudosSegurancaDoTrabalho = {
 				{
 					segments: [
 						'Consulte também nossas páginas sobre ',
-						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat/' },
 						' e ',
-						{ text: 'Laudo LTCAT e Insalubridade', href: '/laudo-ltcat-insalubridade' },
+						{ text: 'Laudo LTCAT e Insalubridade', href: '/laudo-ltcat-insalubridade/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const laudosSegurancaDoTrabalho = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite uma proposta técnica', href: '/contato' },
+						{ text: 'solicite uma proposta técnica', href: '/contato/' },
 						'.',
 					],
 				},
