@@ -46,7 +46,7 @@ export const servicePage = {
     {
       heading: 'Atendimento e referências',
       paragraphs: [
-        { segments: ['Solicite uma avaliação pela ', { text: 'página de contato da AJN', href: '/contato' }, '.'] },
+        { segments: ['Solicite uma avaliação pela ', { text: 'página de contato da AJN', href: '/contato/' }, '.'] },
         { segments: ['Fonte oficial: ', { text: 'documentação técnica do eSocial', href: 'https://www.gov.br/esocial/pt-br/documentacao-tecnica/documentacao-tecnica' }, ' e ', { text: 'manual do módulo SST', href: 'https://www.gov.br/esocial/pt-br/empresas/manual-web-geral' }, '.'] },
       ],
     },
