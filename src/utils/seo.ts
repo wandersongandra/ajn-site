@@ -238,8 +238,13 @@ export function getSeoMetadata(path: string, fallback: { title: string; descript
 	return { ...metadata, description: ensureMetaDescription(metadata.description, metadata.title) };
 }
 
+function canonicalInternalHref(href: string): string {
+	return href === '/' ? '/' : href.replace(/\/+$/, '') + '/';
+}
+
 export function getRelatedService(path: string): { href: string; label: string } | undefined {
-	return relatedServices.find(({ pattern }) => pattern.test(path));
+	const service = relatedServices.find(({ pattern }) => pattern.test(path));
+	return service ? { href: canonicalInternalHref(service.href), label: service.label } : undefined;
 }
 
 export function getRelatedClusterLinks(path: string): readonly { href: string; label: string }[] {
@@ -260,7 +265,7 @@ export function getRelatedClusterLinks(path: string): readonly { href: string; l
 	for (const idx of candidateIndices) {
 		const item = cluster[idx];
 		if (item && item.href !== normalized && !links.some((existing) => existing.href === item.href)) {
-			links.push(item);
+			links.push({ href: canonicalInternalHref(item.href), label: item.label });
 			if (links.length === 4) break;
 		}
 	}
