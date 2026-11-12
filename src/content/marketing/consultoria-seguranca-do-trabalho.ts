@@ -42,11 +42,11 @@ export const consultoriaSegurancaDoTrabalho = {
 				{
 					segments: [
 						"Consulte nossas páginas de ",
-						{ text: "Elaboração de PGR", href: "/elaboracao-pgr" },
+						{ text: "Elaboração de PGR", href: "/elaboracao-pgr/" },
 						", ",
-						{ text: "Emissão de LTCAT", href: "/emissao-ltcat" },
+						{ text: "Emissão de LTCAT", href: "/emissao-ltcat/" },
 						" e ",
-						{ text: "Consultoria da Qualidade", href: "/consultoria-da-qualidade" },
+						{ text: "Consultoria da Qualidade", href: "/consultoria-da-qualidade/" },
 						"."
 					]
 				}
@@ -61,7 +61,7 @@ export const consultoriaSegurancaDoTrabalho = {
 						"Ligue para ",
 						{ bold: true, text: "31 98473-4644" },
 						" ou ",
-						{ text: "solicite uma proposta técnica", href: "/contato" },
+						{ text: "solicite uma proposta técnica", href: "/contato/" },
 						"."
 					]
 				}
