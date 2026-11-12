@@ -51,8 +51,8 @@ test('PPCIP e regularização explicam escopo e limites sem promessa de aprovaç
 
 test('página de consultoria encaminha às duas ofertas relacionadas', () => {
 	assert.match(title(pages.consultoria), /Segurança Contra Incêndio em BH/);
-	assert.match(pages.consultoria, /href="\/servicos\/projetos-de-combate-a-incendio-e-panico-ppcip"/);
-	assert.match(pages.consultoria, /href="\/servicos\/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros"/);
+	assert.match(pages.consultoria, /href="\/servicos\/projetos-de-combate-a-incendio-e-panico-ppcip\/"/);
+	assert.match(pages.consultoria, /href="\/servicos\/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros\/"/);
 	assert.doesNotMatch(pages.consultoria, /empresa de elevador belo horizonte|total segurança jurídica|aprovação automática garantida/i);
 });
 
@@ -69,22 +69,22 @@ test('PCMSO e PGR orientam a contratação sem repetição artificial de palavra
 		assert.match(pages[key], /<link rel="canonical" href="https:\/\/ajnengenharia\.com\.br\//);
 		assert.match(pages[key], /<meta name="robots" content="index,follow/);
 		assert.ok(metaDescription(pages[key]).length > 90, `${key}: descrição deve esclarecer o serviço`);
-		assert.match(pages[key], /href="\/contato/"/);
+		assert.match(pages[key], /href="\/contato\/"/);
 		assert.doesNotMatch(pages[key], /garantia de aprovação|sem burocracia|preço único garantido/i);
 	}
 	assert.match(pages.orcamentoPcmso, /profissional médico legalmente habilitado/);
-	assert.match(pages.orcamentoPcmso, /href="\/servicos\/pcmso-e-asos"/);
-	assert.match(pages.pcmsoService, /href="\/orcamento-pcmso/"/);
+	assert.match(pages.orcamentoPcmso, /href="\/servicos\/pcmso-e-asos\/"/);
+	assert.match(pages.pcmsoService, /href="\/orcamento-pcmso\/"/);
 	assert.match(pages.consultoriaPgr, /inventário de riscos e plano de ação/i);
-	assert.match(pages.consultoriaPgr, /href="\/medicoes-ambientais-ocupacionais/"/);
+	assert.match(pages.consultoriaPgr, /href="\/medicoes-ambientais-ocupacionais\/"/);
 });
 
 test('medição de ruído conecta pesquisa informativa à avaliação e ao contato', () => {
 	assert.match(title(pages.medicoes), /Medições Ocupacionais em BH/);
 	assert.match(metaDescription(pages.medicoes), /dosimetria de ruído/);
 	assert.match(pages.medicoes, /id="dosimetria-de-ruido"/);
-	assert.match(pages.medicoes, /href="\/blog\/medicao-de-ruido-ocupacional-dosimetria-e-planejamento"/);
+	assert.match(pages.medicoes, /href="\/blog\/medicao-de-ruido-ocupacional-dosimetria-e-planejamento\/"/);
 	assert.match(title(pages.ruido), /Dosimetria de ruído ocupacional/);
 	assert.match(pages.ruido, /href="\/medicoes-ambientais-ocupacionais\/#dosimetria-de-ruido"/);
-	assert.match(pages.ruido, /href="\/contato/"/);
+	assert.match(pages.ruido, /href="\/contato\/"/);
 });
