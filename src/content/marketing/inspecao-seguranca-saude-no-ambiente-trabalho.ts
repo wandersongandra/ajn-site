@@ -43,9 +43,9 @@ export const inspecaoSegurancaSaudeNoAmbienteTrabalho = {
 				{
 					segments: [
 						'Veja também nossa página sobre ',
-						{ text: 'Inspeções de Segurança do Trabalho', href: '/inspecoes-seguranca-do-trabalho' },
+						{ text: 'Inspeções de Segurança do Trabalho', href: '/inspecoes-seguranca-do-trabalho/' },
 						' e ',
-						{ text: 'Mobilização e Acompanhamento Técnico', href: '/mobilizacao-pessoal-equipamentos' },
+						{ text: 'Mobilização e Acompanhamento Técnico', href: '/mobilizacao-pessoal-equipamentos/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const inspecaoSegurancaSaudeNoAmbienteTrabalho = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite contato pelo site', href: '/contato' },
+						{ text: 'solicite contato pelo site', href: '/contato/' },
 						'.',
 					],
 				},
