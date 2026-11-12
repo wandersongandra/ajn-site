@@ -22,7 +22,7 @@ const usedTopics = blogTopics.filter((topic) => blogPosts.some((post) => post.to
 		<h2 id="blog-topics-title">Assuntos</h2>
 		<nav aria-label="Filtrar blog por assunto">
 			<ul class="blog-sidebar__topic-list">
-				<li><a href="/blog" data-blog-topic="">Todos os artigos <span>{blogPosts.length}</span></a></li>
+				<li><a href="/blog/" data-blog-topic="">Todos os artigos <span>{blogPosts.length}</span></a></li>
 				{usedTopics.map((topic) => (
 					<li>
 						<a href={'/blog?tema=' + encodeURIComponent(topic)} data-blog-topic={topic}>
