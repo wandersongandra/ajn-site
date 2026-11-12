@@ -42,9 +42,9 @@ export const laudosSegurancaDoTrabalhoEsocial = {
 				{
 					segments: [
 						'Veja mais detalhes em nossas páginas sobre ',
-						{ text: 'LTCAT e Evento eSocial', href: '/ltcat-evento-esocial' },
+						{ text: 'LTCAT e Evento eSocial', href: '/ltcat-evento-esocial/' },
 						' e ',
-						{ text: 'Assessoria em Saúde Ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional' },
+						{ text: 'Assessoria em Saúde Ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const laudosSegurancaDoTrabalhoEsocial = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'fale com a AJN pelo site', href: '/contato' },
+						{ text: 'fale com a AJN pelo site', href: '/contato/' },
 						'.',
 					],
 				},
