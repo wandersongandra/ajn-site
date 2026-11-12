@@ -27,7 +27,7 @@ const cards = [...html.matchAll(/<article\b[^>]*data-service-card\b[^>]*>[\s\S]*
 check(cards.length === 13, `Deveria haver 13 cartões de serviço; encontrados ${cards.length}.`);
 check((html.match(/data-service-group\b/g) ?? []).length === 3, 'Catálogo deve agrupar os serviços em três áreas de atendimento.');
 check(html.includes('aria-label="Laudos e programas mais procurados"'), 'Links para PGR e LTCAT ausentes.');
-check(html.includes('href="/elaboracao-pgr"') && html.includes('href="/emissao-ltcat"'), 'Acesso direto a PGR/LTCAT ausente.');
+check(html.includes('href="/elaboracao-pgr/"') && html.includes('href="/emissao-ltcat/"'), 'Acesso direto a PGR/LTCAT ausente.');
 check(html.includes('data-service-results') && html.includes('role="status"'), 'Contador acessível ausente.');
 check(html.includes('aria-controls="service-catalog-grid"'), 'Campo de pesquisa não vinculado ao grid.');
 check(css.includes('grid-template-columns: repeat(3, minmax(0, 1fr))'), 'Grade desktop não configurada.');
