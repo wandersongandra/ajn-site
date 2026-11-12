@@ -42,9 +42,9 @@ export const consultoriaPcmso = {
 				{
 					segments: [
 						'Acesse também nossas páginas sobre ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						' e ',
-						{ text: 'Elaboração de PGR e PCMSO', href: '/elaboracao-pgr-pcmso' },
+						{ text: 'Elaboração de PGR e PCMSO', href: '/elaboracao-pgr-pcmso/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const consultoriaPcmso = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite contato pelo formulário', href: '/contato' },
+						{ text: 'solicite contato pelo formulário', href: '/contato/' },
 						'.',
 					],
 				},
