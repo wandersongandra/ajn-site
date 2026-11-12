@@ -49,7 +49,7 @@ export const elaboracaoPgr = {
         'Informe a atividade da empresa, a cidade do estabelecimento e o tipo de documentação ou acompanhamento necessário. Com esses dados, poderemos avaliar o atendimento e encaminhar uma proposta adequada.',
         { segments: [
           'Para dar início, ',
-          { text: 'entre em contato com a AJN', href: '/contato' },
+          { text: 'entre em contato com a AJN', href: '/contato/' },
           '.',
         ] },
       ],
