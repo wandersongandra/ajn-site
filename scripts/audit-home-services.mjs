@@ -76,7 +76,7 @@ check(optimizedBytes > 0 && originalBytes > 0 && optimizedBytes < originalBytes,
 if (optimizedBytes && originalBytes) {
 	console.log(`[home-services] Fotos do catálogo: PNG original ${Math.round(originalBytes / 1024)} KiB; WebP padrão ${Math.round(optimizedBytes / 1024)} KiB; economia ${Math.round((1 - optimizedBytes / originalBytes) * 100)}%.`);
 }
-check(section.includes('href="/servicos"') && section.includes('Consultar todos os serviços'),
+check(section.includes('href="/servicos/"') && section.includes('Consultar todos os serviços'),
 	'Link para catálogo integral ausente.');
 check(!section.includes('solutions-carousel') && !section.includes('01 / 06'),
 	'Carrossel automático ou numeração decorativa reapareceu.');
