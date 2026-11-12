@@ -42,9 +42,9 @@ export const periciasInsalubridadePericulosidade = {
 				{
 					segments: [
 						'Conheça também a página do serviço de ',
-						{ text: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade' },
+						{ text: 'Perícias em Periculosidade e Insalubridade', href: '/servicos/pericias-em-periculosidade-e-insalubridade/' },
 						' e nossa página sobre ',
-						{ text: 'Laudo LTCAT e Insalubridade', href: '/laudo-ltcat-insalubridade' },
+						{ text: 'Laudo LTCAT e Insalubridade', href: '/laudo-ltcat-insalubridade/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const periciasInsalubridadePericulosidade = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'fale com nossa engenharia', href: '/contato' },
+						{ text: 'fale com nossa engenharia', href: '/contato/' },
 						'.',
 					],
 				},
