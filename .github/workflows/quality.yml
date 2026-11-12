@@ -18,6 +18,7 @@ jobs:
     env:
       PUBLIC_SITE_ORIGIN: https://sienna-mongoose-223157.hostingersite.com
       PUBLIC_ALLOW_INDEXING: 'false'
+      PUBLIC_CONTACT_ENDPOINT: https://api.opengscgandra.tech/contact
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
