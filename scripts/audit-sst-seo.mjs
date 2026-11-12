@@ -35,11 +35,11 @@ for (const [route, required] of cases) {
   if (indexing === 'true' && /\bnoindex\b/i.test(robots)) failures.push(`${route}: build de produção contém noindex`);
   if (indexing === 'false' && !/\bnoindex\b/i.test(robots)) failures.push(`${route}: build de preview deve conter noindex`);
   if ((html.match(/<h1\b/g) ?? []).length !== 1) failures.push(`${route}: H1 duplicado ou ausente`);
-  if (!html.includes('href="/contato"')) failures.push(`${route}: falta link para contato`);
+  if (!html.includes('href="/contato/"')) failures.push(`${route}: falta link para contato`);
   for (const word of required) if (!html.includes(word)) failures.push(`${route}: conteúdo necessário ausente: ${word}`);
 }
 const blog = await readFile('dist/blog/ltcat-guia-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho/index.html','utf8');
-if (!blog.includes('class="blog-article__service-links"') || !blog.includes('href="/emissao-ltcat"')) {
+if (!blog.includes('class="blog-article__service-links"') || !blog.includes('href="/emissao-ltcat/"')) {
   failures.push('Blog LTCAT: links para serviços reais ausentes.');
 }
 if (failures.length) {
