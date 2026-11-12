@@ -69,14 +69,14 @@ test('PCMSO e PGR orientam a contratação sem repetição artificial de palavra
 		assert.match(pages[key], /<link rel="canonical" href="https:\/\/ajnengenharia\.com\.br\//);
 		assert.match(pages[key], /<meta name="robots" content="index,follow/);
 		assert.ok(metaDescription(pages[key]).length > 90, `${key}: descrição deve esclarecer o serviço`);
-		assert.match(pages[key], /href="\/contato"/);
+		assert.match(pages[key], /href="\/contato/"/);
 		assert.doesNotMatch(pages[key], /garantia de aprovação|sem burocracia|preço único garantido/i);
 	}
 	assert.match(pages.orcamentoPcmso, /profissional médico legalmente habilitado/);
 	assert.match(pages.orcamentoPcmso, /href="\/servicos\/pcmso-e-asos"/);
-	assert.match(pages.pcmsoService, /href="\/orcamento-pcmso"/);
+	assert.match(pages.pcmsoService, /href="\/orcamento-pcmso/"/);
 	assert.match(pages.consultoriaPgr, /inventário de riscos e plano de ação/i);
-	assert.match(pages.consultoriaPgr, /href="\/medicoes-ambientais-ocupacionais"/);
+	assert.match(pages.consultoriaPgr, /href="\/medicoes-ambientais-ocupacionais/"/);
 });
 
 test('medição de ruído conecta pesquisa informativa à avaliação e ao contato', () => {
@@ -86,5 +86,5 @@ test('medição de ruído conecta pesquisa informativa à avaliação e ao conta
 	assert.match(pages.medicoes, /href="\/blog\/medicao-de-ruido-ocupacional-dosimetria-e-planejamento"/);
 	assert.match(title(pages.ruido), /Dosimetria de ruído ocupacional/);
 	assert.match(pages.ruido, /href="\/medicoes-ambientais-ocupacionais\/#dosimetria-de-ruido"/);
-	assert.match(pages.ruido, /href="\/contato"/);
+	assert.match(pages.ruido, /href="\/contato/"/);
 });
