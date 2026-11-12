@@ -43,7 +43,7 @@ export const valorElaboracaoPgr = {
 				{
 					segments: [
 						'Conheça a metodologia de trabalho da AJN em nossa página sobre ',
-						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr/' },
 						'.',
 					],
 				},
@@ -58,7 +58,7 @@ export const valorElaboracaoPgr = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'fale com nossa equipe técnica', href: '/contato' },
+						{ text: 'fale com nossa equipe técnica', href: '/contato/' },
 						'.',
 					],
 				},
