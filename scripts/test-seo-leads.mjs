@@ -27,7 +27,7 @@ function metaDescription(html) {
 }
 
 test('páginas comerciais usam intenção local sem oferecer serviços removidos', () => {
-	assert.match(title(pages.home), /Segurança do Trabalho.*BH.*AJN/);
+	assert.match(title(pages.home), /Segurança do Trabalho.*(?:BH|Belo Horizonte).*AJN/);
 	assert.match(metaDescription(pages.home), /PGR, PCMSO, LTCAT/);
 	assert.doesNotMatch(metaDescription(pages.home), /projetos elétricos|elevadores|SPDA/i);
 
