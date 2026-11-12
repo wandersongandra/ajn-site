@@ -43,9 +43,9 @@ export const servicosPcmso = {
 				{
 					segments: [
 						'Consulte a página principal do serviço de ',
-						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos' },
+						{ text: 'PCMSO e ASOs', href: '/servicos/pcmso-e-asos/' },
 						' e nossa página sobre ',
-						{ text: 'Assessoria em Saúde Ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional' },
+						{ text: 'Assessoria em Saúde Ocupacional', href: '/servicos/assessoria-e-consultoria-em-saude-ocupacional/' },
 						'.',
 					],
 				},
@@ -60,7 +60,7 @@ export const servicosPcmso = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'entre em contato com a AJN', href: '/contato' },
+						{ text: 'entre em contato com a AJN', href: '/contato/' },
 						'.',
 					],
 				},
