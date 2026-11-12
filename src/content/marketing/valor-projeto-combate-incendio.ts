@@ -42,9 +42,9 @@ export const valorProjetoCombateIncendio = {
 				{
 					segments: [
 						'Veja também nossas páginas sobre ',
-						{ text: 'Orçamento de Projeto de Combate a Incêndio', href: '/orcamento-projeto-combate-incendio' },
+						{ text: 'Orçamento de Projeto de Combate a Incêndio', href: '/orcamento-projeto-combate-incendio/' },
 						' e ',
-						{ text: 'Elaboração de Projeto de Combate a Incêndio', href: '/elaboracao-projeto-combate-incendio' },
+						{ text: 'Elaboração de Projeto de Combate a Incêndio', href: '/elaboracao-projeto-combate-incendio/' },
 						'.',
 					],
 				},
@@ -59,7 +59,7 @@ export const valorProjetoCombateIncendio = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite orçamento pelo formulário', href: '/contato' },
+						{ text: 'solicite orçamento pelo formulário', href: '/contato/' },
 						'.',
 					],
 				},
