@@ -43,7 +43,7 @@ export const consultoriaDaQualidade = {
 				{
 					segments: [
 						'Conheça também a página do serviço de ',
-						{ text: 'Gestão da Qualidade', href: '/servicos/gestao-da-qualidade' },
+						{ text: 'Gestão da Qualidade', href: '/servicos/gestao-da-qualidade/' },
 						' e veja como estruturamos o controle técnico para o seu contrato.',
 					],
 				},
@@ -58,7 +58,7 @@ export const consultoriaDaQualidade = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'solicite contato técnico', href: '/contato' },
+						{ text: 'solicite contato técnico', href: '/contato/' },
 						'.',
 					],
 				},
