@@ -25,12 +25,12 @@ export const empresaCombateIncendioBh = {
 			'Se houver planta, projeto anterior, documento de vistoria ou exigência formal do Corpo de Bombeiros, esses materiais ajudam a compreender o trabalho necessário. O escopo e os prazos devem ser avaliados a partir dessas informações.',
 		] },
 		{ heading: 'Serviços relacionados de segurança contra incêndio', paragraphs: [
-			{ segments: ['Para entender o desenvolvimento do projeto e a documentação técnica, consulte a página de ', { text: 'projetos PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip' }, '.'] },
-			{ segments: ['Se a prioridade é verificar um processo existente ou a renovação de um documento, veja o serviço de ', { text: 'regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros' }, '.'] },
+			{ segments: ['Para entender o desenvolvimento do projeto e a documentação técnica, consulte a página de ', { text: 'projetos PPCIP', href: '/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/' }, '.'] },
+			{ segments: ['Se a prioridade é verificar um processo existente ou a renovação de um documento, veja o serviço de ', { text: 'regularização de imóveis junto ao Corpo de Bombeiros', href: '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/' }, '.'] },
 		] },
 		{ heading: 'Converse com a AJN sobre a sua edificação', paragraphs: [
 			'A orientação inicial ajuda a separar o que já está documentado do que ainda precisa ser levantado. A aprovação e a emissão de licenças dependem dos procedimentos e exigências da autoridade competente, sem garantia automática de resultado.',
-			{ segments: ['Para apresentar sua demanda e pedir uma avaliação de escopo, ', { text: 'entre em contato com a AJN', href: '/contato' }, '.'] },
+			{ segments: ['Para apresentar sua demanda e pedir uma avaliação de escopo, ', { text: 'entre em contato com a AJN', href: '/contato/' }, '.'] },
 		] },
 	],
 } as const satisfies MarketingContent;
