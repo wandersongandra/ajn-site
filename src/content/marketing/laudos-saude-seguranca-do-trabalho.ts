@@ -43,11 +43,11 @@ export const laudosSaudeSegurancaDoTrabalho = {
 				{
 					segments: [
 						'Consulte também nossas páginas sobre ',
-						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat' },
+						{ text: 'Emissão de LTCAT', href: '/emissao-ltcat/' },
 						', ',
-						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr' },
+						{ text: 'Elaboração de PGR', href: '/elaboracao-pgr/' },
 						' e ',
-						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais' },
+						{ text: 'Medições Ambientais Ocupacionais', href: '/medicoes-ambientais-ocupacionais/' },
 						'.',
 					],
 				},
@@ -62,7 +62,7 @@ export const laudosSaudeSegurancaDoTrabalho = {
 						'Ligue para ',
 						{ bold: true, text: '31 98473-4644' },
 						' ou ',
-						{ text: 'fale com nossa equipe técnica', href: '/contato' },
+						{ text: 'fale com nossa equipe técnica', href: '/contato/' },
 						'.',
 					],
 				},
