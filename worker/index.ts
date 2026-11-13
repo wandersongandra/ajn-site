@@ -122,6 +122,7 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     c.header('Content-Security-Policy', "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com; media-src 'self'; worker-src 'self'; manifest-src 'self'");
     c.header('Permissions-Policy', 'accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()');
     await next();
+    return;
   });
 
   // Middleware: CORS restrito exclusivamente a origens autorizadas (sem wildcards)
@@ -156,6 +157,7 @@ export function createCarreirasApp(customDbFactory?: (env: Env) => any) {
     }
 
     await next();
+    return;
   });
 
   // Health check endpoint

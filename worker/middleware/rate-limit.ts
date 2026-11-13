@@ -112,7 +112,7 @@ export function rateLimiter(options: { max: number; windowSeconds: number; keyPr
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
       '127.0.0.1';
 
     const isProductionOrStaging =
@@ -256,5 +256,6 @@ export function rateLimiter(options: { max: number; windowSeconds: number; keyPr
     }
 
     await next();
+    return;
   });
 }

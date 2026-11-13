@@ -17,7 +17,7 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
       '127.0.0.1';
     const userAgent = c.req.header('user-agent') || 'Unknown';
 
@@ -270,7 +270,7 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
     if (!token && cookieHeader) {
       const match = cookieHeader.match(/ajn_admin_session=([^;]+)/);
       if (match) {
-        const candidateCookie = match[1].trim();
+        const candidateCookie = match[1]?.trim() ?? '';
         if (candidateCookie && candidateCookie !== 'undefined' && candidateCookie !== 'null') {
           token = candidateCookie;
         }
@@ -301,7 +301,7 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
       '127.0.0.1';
     const userAgent = c.req.header('user-agent') || 'Unknown';
 
@@ -400,7 +400,7 @@ export function createAdminAuthRoutes(dbFactory: (env: Env) => any) {
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
       '127.0.0.1';
     const userAgent = c.req.header('user-agent') || 'Unknown';
 

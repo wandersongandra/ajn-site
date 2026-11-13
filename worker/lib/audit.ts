@@ -3,14 +3,14 @@ import { generateRandomToken } from './crypto';
 
 export interface AuditEventParams {
   db: any;
-  actorId?: string;
+  actorId?: string | undefined;
   actorType: 'admin' | 'candidate' | 'system' | 'anonymous';
   action: string;
   resource: 'auth' | 'job' | 'candidate' | 'resume' | 'application' | 'lgpd' | 'system';
-  resourceId?: string;
-  details?: Record<string, any>;
-  ipAddress?: string;
-  userAgent?: string;
+  resourceId?: string | undefined;
+  details?: Record<string, any> | undefined;
+  ipAddress?: string | undefined;
+  userAgent?: string | undefined;
 }
 
 export async function logAuditEvent(params: AuditEventParams): Promise<void> {

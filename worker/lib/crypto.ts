@@ -20,7 +20,7 @@ export function generateTrackingCode(): string {
   crypto.getRandomValues(array);
   let code = '';
   for (let i = 0; i < 6; i++) {
-    code += chars[array[i] % chars.length];
+    code += chars[(array[i] ?? 0) % chars.length];
   }
   return `AJN-${year}-${code}`;
 }
@@ -111,7 +111,7 @@ export function generateTotpSecret(byteLength = 20): string {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
   let bits = '';
   for (let i = 0; i < bytes.length; i++) {
-    bits += bytes[i].toString(2).padStart(8, '0');
+    bits += (bytes[i] ?? 0).toString(2).padStart(8, '0');
   }
   let base32 = '';
   for (let i = 0; i < bits.length; i += 5) {
@@ -163,12 +163,12 @@ async function generateTotpForStep(base32Secret: string, step: number): Promise<
 
   const signature = await crypto.subtle.sign('HMAC', cryptoKey, counterBuffer);
   const sigBytes = new Uint8Array(signature);
-  const offset = sigBytes[sigBytes.length - 1] & 0x0f;
+  const offset = (sigBytes[sigBytes.length - 1] ?? 0) & 0x0f;
   const binary =
-    ((sigBytes[offset] & 0x7f) << 24) |
-    ((sigBytes[offset + 1] & 0xff) << 16) |
-    ((sigBytes[offset + 2] & 0xff) << 8) |
-    (sigBytes[offset + 3] & 0xff);
+    (((sigBytes[offset] ?? 0) & 0x7f) << 24) |
+    (((sigBytes[offset + 1] ?? 0) & 0xff) << 16) |
+    (((sigBytes[offset + 2] ?? 0) & 0xff) << 8) |
+    ((sigBytes[offset + 3] ?? 0) & 0xff);
 
   const otp = binary % 1000000;
   return otp.toString().padStart(6, '0');

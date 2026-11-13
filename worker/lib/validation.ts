@@ -33,7 +33,7 @@ export const resumeFileValidation = {
   allowedExtensions: new Set(['pdf', 'doc', 'docx']),
 };
 
-export function validateResumeBuffer(filename: string, mime: string, buffer: Uint8Array): { valid: boolean; error?: string } {
+export function validateResumeBuffer(filename: string, _mime: string, buffer: Uint8Array): { valid: boolean; error?: string } {
   if (buffer.length > resumeFileValidation.maxSizeBytes) {
     return { valid: false, error: 'O arquivo excede o limite máximo permitido de 5 MB.' };
   }

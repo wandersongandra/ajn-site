@@ -24,6 +24,7 @@ export function createAdminUsersRoutes(dbFactory: (env: Env) => any) {
       return c.json({ error: 'Permissão insuficiente. Apenas administradores podem gerenciar recrutadores.' }, 403);
     }
     await next();
+    return;
   });
 
   // 1. Listagem de usuários administrativos e recrutadores
@@ -55,7 +56,7 @@ export function createAdminUsersRoutes(dbFactory: (env: Env) => any) {
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
       '127.0.0.1';
     const userAgent = c.req.header('user-agent') || 'Unknown';
 
@@ -137,7 +138,7 @@ export function createAdminUsersRoutes(dbFactory: (env: Env) => any) {
     const ip =
       c.req.header('cf-connecting-ip') ||
       c.req.header('x-real-ip') ||
-      c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ||
       '127.0.0.1';
     const userAgent = c.req.header('user-agent') || 'Unknown';
 

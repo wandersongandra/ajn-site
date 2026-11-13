@@ -19,7 +19,7 @@ export const authMiddleware = (dbFactory: (env: Env) => any) =>
     if (!token && cookieHeader) {
       const match = cookieHeader.match(/ajn_admin_session=([^;]+)/);
       if (match) {
-        const candidateCookie = match[1].trim();
+        const candidateCookie = match[1]?.trim() ?? '';
         if (candidateCookie && candidateCookie !== 'undefined' && candidateCookie !== 'null') {
           token = candidateCookie;
         }
@@ -78,6 +78,7 @@ export const authMiddleware = (dbFactory: (env: Env) => any) =>
 
     c.set('user', authUser);
     await next();
+    return;
   });
 
 export const requirePermission = (permission: string) =>

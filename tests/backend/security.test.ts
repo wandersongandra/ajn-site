@@ -911,6 +911,8 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       // Confirma que o e-mail foi despachado
       expect(sentTestEmails.length).toBeGreaterThan(0);
       const sent = sentTestEmails[sentTestEmails.length - 1];
+      expect(sent).toBeDefined();
+      if (!sent) throw new Error('Email de teste não registrado');
       expect(sent.to).toBe('candidato.email@empresa.com');
       expect(sent.subject).toContain('Código de Acesso');
     });

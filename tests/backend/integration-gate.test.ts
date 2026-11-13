@@ -339,6 +339,8 @@ describe('INTEGRAÇÃO LOCAL COM FIXTURES — AJN CARREIRAS (não é prova remot
     formData.append('resume', pdfBlob, 'curriculo_candidato.pdf');
 
     // 3. Submissão
+    expect(insertedJob).toBeDefined();
+    if (!insertedJob) throw new Error('Vaga de teste não inserida');
     const applyRes = await app.request(
       `/api/applications/jobs/${insertedJob.slug}/apply`,
       {

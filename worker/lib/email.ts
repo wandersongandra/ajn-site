@@ -9,8 +9,8 @@ export interface EmailOptions {
 
 export interface EmailResult {
   success: boolean;
-  messageId?: string;
-  error?: string;
+  messageId?: string | undefined;
+  error?: string | undefined;
 }
 
 // Armazenamento em memória para inspeção em testes automatizados
@@ -29,7 +29,7 @@ export function generateSecureOtp(digits = 6): string {
   const max = Math.pow(10, digits);
   const buffer = new Uint32Array(1);
   crypto.getRandomValues(buffer);
-  const otp = buffer[0] % max;
+  const otp = (buffer[0] ?? 0) % max;
   return otp.toString().padStart(digits, '0');
 }
 
@@ -37,8 +37,7 @@ export function generateSecureOtp(digits = 6): string {
 export function maskEmail(email: string): string {
   const parts = email.split('@');
   if (parts.length !== 2) return '***@***.***';
-  const name = parts[0];
-  const domain = parts[1];
+  const [name = '', domain = ''] = parts;
   if (name.length <= 2) {
     return `${name.charAt(0)}***@${domain}`;
   }
