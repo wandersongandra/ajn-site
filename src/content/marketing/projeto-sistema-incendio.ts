@@ -53,7 +53,7 @@ export const projetoSistemaIncendio = {
 		},
 		{
 			heading: 'Para saber mais sobre Projeto de sistema de incêndio',
-			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }],
+			paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }],
 		},
 	],
 } as const satisfies MarketingContent;

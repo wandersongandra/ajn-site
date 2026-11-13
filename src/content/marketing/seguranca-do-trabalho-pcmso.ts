@@ -43,6 +43,6 @@ export const segurancaDoTrabalhoPcmso = {
 			'Com ampla experiência em soluções técnicas voltadas à Qualidade, Saúde, Segurança e Meio Ambiente, a AJN oferece serviços personalizados e adequados às necessidades de cada cliente.',
 			'Entre em contato conosco e saiba como podemos ajudar a sua empresa a alcançar excelência em segurança do trabalho e saúde ocupacional.',
 		] },
-		{ heading: 'Para saber mais sobre Segurança do trabalho pcmso', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Segurança do trabalho pcmso', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

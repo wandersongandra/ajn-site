@@ -36,6 +36,6 @@ export const plataformaElevatoriaPreco = {
 			'Se você deseja obter mais informações sobre plataforma elevatória preço justo, conhecer nossos serviços de consultoria e engenharia ou solicitar um orçamento personalizado, entre em contato com a AJN Consultoria e Engenharia.',
 			'Estamos à disposição para atendê-lo e oferecer as melhores soluções para o sucesso do seu projeto. Invista em segurança, eficiência e qualidade com a AJN!',
 		] },
-		{ heading: 'Para saber mais sobre Plataforma elevatória preço', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Plataforma elevatória preço', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

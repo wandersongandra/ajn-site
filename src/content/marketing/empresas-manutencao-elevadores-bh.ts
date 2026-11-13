@@ -39,6 +39,6 @@ export const empresasManutencaoElevadoresBh = {
 			'Entre em contato conosco para saber mais sobre nossas soluções e como podemos ajudar a manter seus elevadores em perfeitas condições de funcionamento.',
 			'Não deixe a segurança e a eficiência de seus equipamentos em segundo plano. Conte com a expertise da AJN para promover a excelência na manutenção dos elevadores em seu edifício ou empresa.',
 		] },
-		{ heading: 'Para saber mais sobre Empresas de manutenção de elevadores em bh', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Empresas de manutenção de elevadores em bh', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

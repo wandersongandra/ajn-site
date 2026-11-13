@@ -29,6 +29,6 @@ export const elevacaoVertical = {
 			'Se você busca soluções especializadas em elevação vertical, segurança e conformidade para seus projetos de engenharia, entre em contato com a AJN Consultoria e Engenharia.',
 			'Nossa equipe está preparada para oferecer suporte técnico de alta qualidade e contribuir para o sucesso e eficiência de suas operações.',
 		] },
-		{ heading: 'Para saber mais sobre Elevação vertical', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Elevação vertical', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

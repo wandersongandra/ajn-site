@@ -41,7 +41,7 @@ export const laudosSegurancaDoTrabalhoEsocial = {
 		]
 		},
 		{ heading: "Para saber mais sobre Laudos segurança do trabalho esocial", paragraphs: [
-			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "clique aqui", href: "/contato" }, " e entre em contato por email."] }
+			{ segments: ["Ligue para ", { bold: true, text: "31 98473-4644" }, " ou ", { text: "entre em contato com a AJN", href: "/contato" }, " pelo e-mail."] }
 		]
 		}
 	],

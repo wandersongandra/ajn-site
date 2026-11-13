@@ -35,6 +35,6 @@ export const servicoProjetoEletrico = {
 			'Se você busca por um serviço de projeto elétrico de alta qualidade, realizado por uma empresa especializada e comprometida com a segurança e eficiência de suas instalações, não hesite em contatar a AJN Consultoria e Engenharia.',
 			'Nossa equipe está preparada para atender às suas demandas e promover o sucesso do seu projeto elétrico. Entre em contato conosco e solicite um orçamento sem compromisso!',
 		] },
-		{ heading: 'Para saber mais sobre Serviço de projeto elétrico', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Serviço de projeto elétrico', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

@@ -37,6 +37,6 @@ export const projetosEletricosOrcamento = {
 			'Aproveite para conhecer mais sobre nossos serviços e descubra como podemos ajudar a tornar seus projetos uma realidade de sucesso.',
 			'Conte com a expertise e o profissionalismo da AJN Consultoria e Engenharia. Estamos ansiosos para colaborar com você!',
 		] },
-		{ heading: 'Para saber mais sobre Projetos eletricos orçamento', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Projetos eletricos orçamento', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

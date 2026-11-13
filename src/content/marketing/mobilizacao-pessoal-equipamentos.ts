@@ -34,6 +34,6 @@ export const mobilizacaoPessoalEquipamentos = {
 			'Entre em contato conosco e saiba como podemos ajudar a otimizar a mobilização de pessoal e equipamentos em sua empresa.',
 			'Deixe-nos ser seu parceiro na busca pela excelência operacional e pelo sucesso de seus projetos. A AJN Consultoria e Engenharia está aqui para ajudar!',
 		] }] },
-		{ heading: 'Para saber mais sobre Mobilização de pessoal e equipamentos', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Mobilização de pessoal e equipamentos', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

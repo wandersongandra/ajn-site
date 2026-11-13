@@ -46,6 +46,6 @@ export const valorProjetoIncendio = {
 			'Para obter mais informações sobre projetos de incêndio e serviços de consultoria em segurança, entre em contato com a AJN Consultoria e Engenharia e proporcione a proteção do seu patrimônio com soluções personalizadas e eficazes.',
 			'A segurança do seu negócio não pode esperar, proteja-se agora!',
 		] },
-		{ heading: 'Para saber mais sobre Valor projeto de incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Valor projeto de incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

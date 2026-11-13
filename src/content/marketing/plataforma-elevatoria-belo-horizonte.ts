@@ -29,6 +29,6 @@ export const plataformaElevatoriaBeloHorizonte = {
 			'Nossa equipe está preparada para atender às suas necessidades com eficiência, segurança e comprometimento.',
 			'Entre em contato conosco e saiba mais sobre como podemos ajudar no seu projeto com plataforma elevatória em Belo Horizonte!',
 		] },
-		{ heading: 'Para saber mais sobre Plataforma elevatória belo horizonte', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Plataforma elevatória belo horizonte', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

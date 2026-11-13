@@ -28,6 +28,6 @@ export const projetosEletricosPrediais = {
 			'Contando com uma equipe multidisciplinar e comprometida com a excelência, a empresa se destaca pela qualidade de seus serviços e pela capacidade de oferecer soluções personalizadas de acordo com as necessidades de cada cliente.',
 			'Se você busca por projetos elétricos prediais que unam qualidade, segurança e eficiência energética, a AJN é a parceira ideal. Entre em contato conosco e saiba mais sobre como podemos contribuir para o sucesso do seu empreendimento!',
 		] }] },
-		{ heading: 'Para saber mais sobre Projetos elétricos prediais', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Projetos elétricos prediais', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

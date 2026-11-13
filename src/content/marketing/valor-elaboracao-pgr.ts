@@ -29,6 +29,6 @@ export const valorElaboracaoPgr = {
 			'Nossa equipe está preparada para atender às suas necessidades, oferecendo um serviço de qualidade, confiável que valoriza a segurança e o bem-estar dos colaboradores. Entre em contato conosco e solicite um orçamento sem compromisso.',
 			'Estamos à disposição para ajudar a sua empresa a garantir um ambiente de trabalho seguro e conforme as normas vigentes. Não deixe a segurança do seu negócio para depois, conte conosco para oferecer as melhores soluções em segurança do trabalho.',
 		] }] },
-		{ heading: 'Para saber mais sobre Valor para elaboração de pgr', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Valor para elaboração de pgr', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

@@ -45,6 +45,6 @@ export const empresaCombateIncendioBh = {
 			'Se você busca uma empresa de combate a incêndio em bh que una conhecimento técnico, compromisso e soluções sob medida, a AJN é a escolha certa.',
 			'Entre em contato, conheça nosso portfólio e descubra como podemos elevar o nível de segurança e conformidade da sua operação.',
 		] },
-		{ heading: 'Para saber mais sobre Empresa de combate a incêndio em bh', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Empresa de combate a incêndio em bh', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

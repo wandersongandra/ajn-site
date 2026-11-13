@@ -31,6 +31,6 @@ export const orcamentoProjetoEletrico = {
 			'Não deixe de investir na segurança e eficiência do seu projeto elétrico. Solicite agora mesmo seu orçamento com a AJN e tenha a certeza de contar com os melhores profissionais do mercado.',
 			'Contate-nos hoje mesmo e leve a excelência da AJN para o seu projeto elétrico!',
 		] },
-		{ heading: 'Para saber mais sobre Orçamento de projeto elétrico', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Orçamento de projeto elétrico', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

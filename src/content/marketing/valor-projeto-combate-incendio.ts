@@ -29,6 +29,6 @@ export const valorProjetoCombateIncendio = {
 			'Se você busca garantir a segurança e a conformidade do seu empreendimento no que diz respeito ao combate a incêndios, entre em contato com a AJN Consultoria e Engenharia.',
 			'Nossa equipe de profissionais qualificados está pronta para atendê-lo e oferecer as melhores soluções em valor de projeto de combate a incêndio. Não deixe a segurança em segundo plano, conte com quem entende do assunto!',
 		] }] },
-		{ heading: 'Para saber mais sobre Valor de projeto de combate a incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Valor de projeto de combate a incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

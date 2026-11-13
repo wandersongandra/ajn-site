@@ -27,6 +27,6 @@ export const projetoDeteccaoIncendio = {
 			'Se você busca um parceiro confiável para a elaboração de seu projeto de detecção de incêndio, entre em contato com a AJN Consultoria e Engenharia.',
 			'Nossa equipe está preparada para oferecer as melhores soluções em segurança do trabalho e engenharia, proporcionando a você e sua empresa a tranquilidade e a proteção necessárias. Não deixe a segurança em segundo plano, conte com quem entende do assunto!',
 		] }] },
-		{ heading: 'Para saber mais sobre Projeto de detecção de incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Projeto de detecção de incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

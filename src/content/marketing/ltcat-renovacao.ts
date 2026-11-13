@@ -40,6 +40,6 @@ export const ltcatRenovacao = {
 			'Se você busca uma empresa especializada em segurança do trabalho e na renovação do LTCAT, conte com a AJN Consultoria e Engenharia.',
 			'Nossa equipe está preparada para oferecer as melhores soluções em saúde ocupacional, garantindo a segurança e o bem-estar dos seus colaboradores. Entre em contato conosco e saiba mais sobre nossos serviços!',
 		] }] },
-		{ heading: 'Para saber mais sobre Ltcat renovação', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Ltcat renovação', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

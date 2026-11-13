@@ -34,6 +34,6 @@ export const projetosInstalacoesEletricasPrediais = {
 			'Nossos especialistas estão disponíveis para entender suas necessidades e apresentar as melhores alternativas para promover o pleno funcionamento e a segurança elétrica do seu edifício.',
 			'Não deixe de investir em projetos de instalações elétricas prediais de excelência. Entre em contato conosco e solicite um orçamento sem compromisso!',
 		] },
-		{ heading: 'Para saber mais sobre Projetos de instalações elétricas prediais', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Projetos de instalações elétricas prediais', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

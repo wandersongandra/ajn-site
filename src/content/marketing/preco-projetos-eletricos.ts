@@ -30,6 +30,6 @@ export const precoProjetosEletricos = {
 			'Se você busca por soluções eficientes e confiáveis em projetos elétricos, conte com a expertise da AJN Consultoria e Engenharia.',
 			'Entre em contato conosco e saiba mais sobre nossos serviços e como podemos ajudar a tornar o seu projeto uma realidade de sucesso!',
 		] },
-		{ heading: 'Para saber mais sobre Preço de projetos eletricos', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Preço de projetos eletricos', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

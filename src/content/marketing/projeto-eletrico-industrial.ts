@@ -33,6 +33,6 @@ export const projetoEletricoIndustrial = {
 			'Invista na segurança e eficiência das instalações elétricas da sua indústria com a expertise da AJN Consultoria e Engenharia.',
 			'Entre em contato conosco e saiba como podemos ajudar a impulsionar o seu negócio por meio de projeto elétrico industrial de qualidade e performance.',
 		] },
-		{ heading: 'Para saber mais sobre Projeto elétrico industrial', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Projeto elétrico industrial', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

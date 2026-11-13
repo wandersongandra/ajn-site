@@ -40,6 +40,6 @@ export const ltcatPreco = {
 			'Conte com a experiência e a especialização da AJN Consultoria e Engenharia para elaborar o ltcat preço de forma eficiente e precisa, garantindo a segurança e a saúde dos seus colaboradores.',
 			'Entre em contato conosco e saiba mais sobre como podemos ajudar a sua empresa a estar conforme as normas de segurança do trabalho. Proteja seus colaboradores e garanta o sucesso do seu negócio com a AJN Consultoria e Engenharia!',
 		] }] },
-		{ heading: 'Para saber mais sobre Ltcat preço', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Ltcat preço', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

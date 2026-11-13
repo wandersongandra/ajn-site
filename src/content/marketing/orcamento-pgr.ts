@@ -35,6 +35,6 @@ export const orcamentoPgr = {
 			'Se você busca serviços especializados em segurança do trabalho, elaboração de Programa de Gerenciamento de Riscos (PGR) e projetos de segurança contra incêndio, entre em contato com a AJN Consultoria e Engenharia.',
 			'Nossa equipe de profissionais altamente qualificados está pronta para atender às suas necessidades e garantir a segurança e o bem-estar no seu local de trabalho. Aproveite para solicitar um orçamento pgr personalizado e sob medida para sua empresa.',
 		] }] },
-		{ heading: 'Para saber mais sobre Orçamento pgr', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Orçamento pgr', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

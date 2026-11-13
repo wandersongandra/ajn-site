@@ -33,6 +33,6 @@ export const valorFazerLtcat = {
 			'A segurança e o bem-estar dos trabalhadores são prioridades para a AJN, e nosso compromisso é fornecer serviços de excelência que contribuam para um ambiente de trabalho seguro e saudável.',
 			'Entre em contato conosco e saiba mais sobre como podemos ajudar a sua empresa a obter o melhor valor para fazer ltcat e a promover a segurança do trabalho de forma eficaz.',
 		] }] },
-		{ heading: 'Para saber mais sobre Valor para fazer ltcat', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Valor para fazer ltcat', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

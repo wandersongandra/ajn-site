@@ -43,6 +43,6 @@ export const segurancaDoTrabalhoLtcat = {
 			'Proteja seus colaboradores, promova a segurança no trabalho e alcance o sucesso empresarial com a ajuda da AJN!',
 			'Proporcione a segurança e o bem-estar dos seus colaboradores com a segurança do trabalho ltcat! Entre em contato com a AJN Consultoria e Engenharia e fortaleça a gestão de riscos da sua empresa!',
 		] },
-		{ heading: 'Para saber mais sobre Segurança do trabalho ltcat', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Segurança do trabalho ltcat', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

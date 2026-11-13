@@ -32,6 +32,6 @@ export const empresaCombateIncendio = {
 			'Promovemos soluções sob medida para suas necessidades, assegurando a segurança e proteção de seus empreendimentos.',
 			'Confie em quem entende do assunto e conte com a expertise da AJN para manter seu patrimônio e colaboradores seguros!',
 		] },
-		{ heading: 'Para saber mais sobre Empresa de combate a incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Empresa de combate a incêndio', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;

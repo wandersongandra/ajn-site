@@ -31,6 +31,6 @@ export const plataformaElevatoria = {
 			'Entre em contato conosco para saber mais sobre os diferentes tipos de plataformas elevatórias disponíveis e como elas podem impulsionar o desempenho e a segurança da sua empresa.',
 			'Conte com a expertise da AJN Consultoria e Engenharia para encontrar a solução ideal para o seu negócio. Invista em segurança, eficiência e produtividade com as plataformas elevatórias da AJN!',
 		] }] },
-		{ heading: 'Para saber mais sobre Plataforma elevatória', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'clique aqui', href: '/contato' }, ' e entre em contato por email.'] }] },
+		{ heading: 'Para saber mais sobre Plataforma elevatória', paragraphs: [{ segments: ['Ligue para ', { bold: true, text: '31 98473-4644' }, ' ou ', { text: 'entre em contato com a AJN', href: '/contato' }, ' pelo e-mail.'] }] },
 	],
 } as const satisfies MarketingContent;
