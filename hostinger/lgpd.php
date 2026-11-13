@@ -59,10 +59,9 @@ function ajn_admin_lgpd(PDO $db, string $method, string $path, array $config): n
         if (!in_array($request['status'], ['pending', 'in_analysis'], true)) ajn_json(['error' => 'Solicitação já atendida.'], 409);
         $candidateId = $request['candidate_id'];
         if ($request['request_type'] === 'erasure') {
-            $directory = realpath($config['resume_directory'] ?? '');
-            $publicRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
+            $directory = ajn_private_resume_dir($config, false);
             $files = ajn_list($db, 'SELECT file_key FROM resumes WHERE candidate_id=?', [$candidateId]);
-            if (!$directory || !$publicRoot || str_starts_with($directory . '/', $publicRoot . '/')) ajn_json(['error' => 'Armazenamento privado não configurado.'], 503);
+            if (!$directory) ajn_json(['error' => 'Armazenamento privado não configurado.'], 503);
             foreach ($files as $file) {
                 if (!preg_match('/^[a-f0-9-]{36}\.(pdf|doc|docx)$/D', (string) $file['file_key'])) ajn_json(['error' => 'Arquivo privado inválido.'], 503);
                 $filename = $directory . DIRECTORY_SEPARATOR . $file['file_key'];

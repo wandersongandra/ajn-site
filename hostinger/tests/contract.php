@@ -82,8 +82,48 @@ check_contract('logout limpa dados do navegador', str_contains($admin, 'Clear-Si
 check_contract('painel administrativo sem cache', str_contains($htaccess, 'no-store, max-age=0') &&
     str_contains($htaccess, 'SetEnvIf Request_URI "^/admin(/|$)" AJN_ADMIN_AREA=1') &&
     str_contains($htaccess, 'env=AJN_ADMIN_AREA') && !str_contains($htaccess, '<If '));
+$functional = source_contract($root . '/tests/functional.php');
+$smoke = source_contract($root . '/tests/smoke.php');
+
+$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional];
+$allPhpValid = true;
+foreach ($phpFilesToParse as $phpSource) {
+    try {
+        token_get_all($phpSource, TOKEN_PARSE);
+    } catch (ParseError) {
+        $allPhpValid = false;
+    }
+}
+check_contract('todos os scripts PHP compilam sem ParseError', $allPhpValid);
+check_contract('storage privado normalizado entre sistemas e reutilizado em upload/download/LGPD',
+    str_contains($bootstrap, 'function ajn_private_resume_dir(array $config, bool $requireWritable = false): ?string') &&
+    str_contains($applications, 'ajn_private_resume_dir($config, true)') &&
+    str_contains($applications, 'ajn_private_resume_dir($config, false)') &&
+    str_contains($lgpd, 'ajn_private_resume_dir($config, false)'));
+check_contract('URLs externas opcionais restritas a http/https sem credenciais',
+    str_contains($bootstrap, 'function ajn_optional_http_url(') &&
+    str_contains($applications, 'ajn_optional_http_url($_POST[\'linkedinUrl\']') &&
+    str_contains($applications, 'ajn_optional_http_url($_POST[\'portfolioUrl\']'));
+check_contract('curingas LIKE escapados nas consultas de vagas',
+    str_contains($bootstrap, 'function ajn_escape_like(') &&
+    str_contains($app, "ESCAPE '!'"));
+check_contract('SMTP exige TLS >= 1.2 com validação de certificado e peer_name',
+    str_contains($bootstrap, "'verify_peer' => true") &&
+    str_contains($bootstrap, "'verify_peer_name' => true") &&
+    str_contains($bootstrap, "'allow_self_signed' => false") &&
+    str_contains($bootstrap, 'STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT'));
+check_contract('página SSR de vaga envia CSP e Permissions-Policy',
+    str_contains($app, "Content-Security-Policy:") &&
+    str_contains($app, "Permissions-Policy:"));
+check_contract('login equaliza tempo para usuário inexistente/inativo',
+    substr_count($admin, 'password_verify($password,') >= 2);
+check_contract('Apache/LiteSpeed desativa listagem e bloqueia dotfiles fora .well-known',
+    str_contains($htaccess, 'Options -Indexes') &&
+    str_contains($htaccess, 'RewriteRule (^|/)\.(?!well-known'));
+check_contract('token de reset é removido da barra de endereço imediatamente após leitura',
+    str_contains($adminScript, 'window.history.replaceState({}, document.title, window.location.pathname)'));
 check_contract('módulo sem travessão ou reticência tipográfica', !preg_match('/[\x{2013}\x{2014}\x{2026}]/u',
-    $bootstrap . $app . $admin . $applications . $lgpd . $careerScript . $adminScript));
+    $bootstrap . $app . $admin . $applications . $lgpd . $functional . $careerScript . $adminScript));
 
 $beginIndex = strpos($applications, '$db->beginTransaction();');
 $demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1');

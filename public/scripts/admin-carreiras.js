@@ -85,6 +85,9 @@
     registerAdminEventListeners(elements, resetToken);
 
     if (resetToken && resetCard && resetForm) {
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
       setAuthView(elements, false);
       resetCard.style.display = 'block';
       return;

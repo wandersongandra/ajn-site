@@ -1,6 +1,25 @@
 import { z } from 'zod';
 import { isValidCpf } from './crypto';
 
+const optionalHttpUrl = (message: string) =>
+  z
+    .string()
+    .trim()
+    .refine(
+      (val) => {
+        if (!val) return true;
+        try {
+          const parsed = new URL(val);
+          return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && !parsed.username && !parsed.password;
+        } catch {
+          return false;
+        }
+      },
+      { message },
+    )
+    .optional()
+    .or(z.literal(''));
+
 export const candidateSchema = z.object({
   fullName: z.string().trim().min(3, 'Nome deve conter no mínimo 3 caracteres').max(120, 'Nome muito longo'),
   email: z.string().trim().email('E-mail inválido').max(150),
@@ -8,8 +27,8 @@ export const candidateSchema = z.object({
   cpf: z.string().trim().refine((val) => isValidCpf(val), { message: 'CPF inválido' }),
   city: z.string().trim().min(2, 'Cidade inválida').max(100),
   state: z.string().trim().length(2, 'Estado deve conter 2 letras (ex: MG)').toUpperCase(),
-  linkedinUrl: z.string().trim().url('URL do LinkedIn inválida').optional().or(z.literal('')),
-  portfolioUrl: z.string().trim().url('URL do portfólio inválida').optional().or(z.literal('')),
+  linkedinUrl: optionalHttpUrl('URL do LinkedIn inválida'),
+  portfolioUrl: optionalHttpUrl('URL do portfólio inválida'),
   currentTitle: z.string().trim().max(100).optional().or(z.literal('')),
   summary: z.string().trim().max(1500, 'Resumo profissional deve ter no máximo 1500 caracteres').optional().or(z.literal('')),
   certifications: z.array(z.string().trim()).optional().default([]),

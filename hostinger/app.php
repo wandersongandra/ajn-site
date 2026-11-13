@@ -68,6 +68,8 @@ function ajn_job_page(?array $job, array $config): never
     $found = $job !== null;
     http_response_code($found ? 200 : 404);
     header('Content-Type: text/html; charset=utf-8');
+    header("Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; style-src 'self'; font-src 'self'; img-src 'self'");
+    header("Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()");
     if (!$found) {
         header('X-Robots-Tag: noindex, follow');
         header('Cache-Control: no-store');
@@ -114,12 +116,12 @@ function ajn_public_jobs(PDO $db, string $method, string $path, array $config): 
             }
         }
         if (!empty($_GET['location']) && is_string($_GET['location'])) {
-            $where[] = 'location LIKE ?';
-            $values[] = '%' . mb_substr($_GET['location'], 0, 100) . '%';
+            $where[] = "location LIKE ? ESCAPE '!'";
+            $values[] = '%' . ajn_escape_like(mb_substr(trim($_GET['location']), 0, 100)) . '%';
         }
         if (!empty($_GET['q']) && is_string($_GET['q'])) {
-            $where[] = '(title LIKE ? OR description LIKE ?)';
-            $term = '%' . mb_substr(trim($_GET['q']), 0, 100) . '%';
+            $where[] = "(title LIKE ? ESCAPE '!' OR description LIKE ? ESCAPE '!')";
+            $term = '%' . ajn_escape_like(mb_substr(trim($_GET['q']), 0, 100)) . '%';
             array_push($values, $term, $term);
         }
         $rows = ajn_list($db, 'SELECT * FROM job_postings WHERE ' . implode(' AND ', $where) . ' ORDER BY published_at DESC, created_at DESC LIMIT 200', $values);
@@ -144,53 +146,60 @@ require_once __DIR__ . '/admin.php';
 require_once __DIR__ . '/applications.php';
 require_once __DIR__ . '/lgpd.php';
 
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-$method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
-if (!is_string($path) || strlen($path) > 1024) ajn_json(['error' => 'Caminho inválido.'], 400);
+function ajn_dispatch(PDO $db, array $config): never
+{
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+    if (!is_string($path) || strlen($path) > 1024) ajn_json(['error' => 'Caminho inválido.'], 400);
 
-if ($path === '/api/health' && $method === 'GET') {
-    // Endpoint anonimo: limitar antes de tocar o banco.
-    ajn_rate_limit($db, 'health', 30, 60);
-    $db->query('SELECT 1')->fetch();
-    $payload = ['status' => 'ok', 'service' => 'ajn-carreiras-api', 'timestamp' => gmdate('c')];
-    // O marcador de ambiente so aparece fora de producao. Em staging ele permite
-    // que a homologacao remota confirme que nao esta apontando para producao;
-    // em producao sua ausencia evita entregar essa distincao a quem sonda a API.
-    $environment = (string) ($config['environment'] ?? '');
-    if ($environment !== '' && $environment !== 'production') $payload['environment'] = $environment;
-    ajn_json($payload);
+    if ($path === '/api/health' && $method === 'GET') {
+        // Endpoint anonimo: limitar antes de tocar o banco.
+        ajn_rate_limit($db, 'health', 30, 60);
+        $db->query('SELECT 1')->fetch();
+        $payload = ['status' => 'ok', 'service' => 'ajn-carreiras-api', 'timestamp' => gmdate('c')];
+        // O marcador de ambiente so aparece fora de producao. Em staging ele permite
+        // que a homologacao remota confirme que nao esta apontando para producao;
+        // em producao sua ausencia evita entregar essa distincao a quem sonda a API.
+        $environment = (string) ($config['environment'] ?? '');
+        if ($environment !== '' && $environment !== 'production') $payload['environment'] = $environment;
+        ajn_json($payload);
+    }
+    if (str_starts_with($path, '/api/jobs') || preg_match('~^/carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)[a-z0-9-]+/?$~D', $path)) {
+        ajn_public_jobs($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/admin/auth/')) {
+        ajn_admin_auth($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/admin/jobs')) {
+        ajn_admin_jobs($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/admin/users')) {
+        ajn_admin_users($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/admin/candidates')) {
+        ajn_admin_candidates($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/admin/pipeline/')) {
+        ajn_admin_pipeline($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/admin/audit')) {
+        ajn_admin_audit($db, $method, $path);
+    }
+    if (str_starts_with($path, '/api/admin/lgpd/')) {
+        ajn_admin_lgpd($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/applications/')) {
+        ajn_public_applications($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/lgpd/')) {
+        ajn_public_lgpd($db, $method, $path, $config);
+    }
+    if (str_starts_with($path, '/api/admin/') || str_starts_with($path, '/api/lgpd/')) {
+        ajn_json(['error' => 'Operação ainda não homologada neste ambiente.'], 503);
+    }
+    ajn_json(['error' => 'Endpoint não encontrado.'], 404);
 }
-if (str_starts_with($path, '/api/jobs') || preg_match('~^/carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)[a-z0-9-]+/?$~D', $path)) {
-    ajn_public_jobs($db, $method, $path, $config);
+
+if (!defined('AJN_DISABLE_AUTO_DISPATCH')) {
+    ajn_dispatch($db, $config);
 }
-if (str_starts_with($path, '/api/admin/auth/')) {
-    ajn_admin_auth($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/admin/jobs')) {
-    ajn_admin_jobs($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/admin/users')) {
-    ajn_admin_users($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/admin/candidates')) {
-    ajn_admin_candidates($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/admin/pipeline/')) {
-    ajn_admin_pipeline($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/admin/audit')) {
-    ajn_admin_audit($db, $method, $path);
-}
-if (str_starts_with($path, '/api/admin/lgpd/')) {
-    ajn_admin_lgpd($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/applications/')) {
-    ajn_public_applications($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/lgpd/')) {
-    ajn_public_lgpd($db, $method, $path, $config);
-}
-if (str_starts_with($path, '/api/admin/') || str_starts_with($path, '/api/lgpd/')) {
-    ajn_json(['error' => 'Operação ainda não homologada neste ambiente.'], 503);
-}
-ajn_json(['error' => 'Endpoint não encontrado.'], 404);

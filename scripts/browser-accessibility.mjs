@@ -34,7 +34,7 @@ async function load(context, route, label) {
 	const errors = [];
 	page.on('pageerror', (error) => errors.push(error.message));
 	const response = await page.goto(new URL(route, base).href, {
-		waitUntil: 'domcontentloaded', timeout: 45000,
+		waitUntil: 'load', timeout: 45000,
 	});
 	check(response?.ok(), `${label} ${route}: HTTP OK`);
 	await page.locator('main').waitFor({ timeout: 10000 });

@@ -16,6 +16,8 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
         }
         $user = ajn_fetch($db, 'SELECT * FROM admin_users WHERE email=? LIMIT 1', [$email]);
         if (!$user || !(int) $user['is_active']) {
+            // Equaliza o tempo de resposta para evitar enumeracao de contas ativas.
+            password_verify($password, '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
             ajn_json(['error' => 'Credenciais inválidas.'], 401);
         }
         if ($user['locked_until'] && (int) $user['locked_until'] > time()) {

@@ -13,7 +13,7 @@
     "preview": "astro preview",
     "test:backend": "vitest run",
     "test:carreiras-interactions": "node --test scripts/test-carreiras-interactions.mjs",
-    "test:php": "php hostinger/tests/smoke.php && php hostinger/tests/contract.php",
+    "test:php": "php hostinger/tests/smoke.php && php hostinger/tests/contract.php && php hostinger/tests/functional.php",
     "test:browser-carreiras": "node scripts/browser-carreiras.mjs",
     "test:homologation-remote": "node scripts/test-remote-carreiras.mjs",
     "test:staging-origin": "node scripts/validate-staging-origin.mjs",

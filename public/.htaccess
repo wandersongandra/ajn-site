@@ -1,10 +1,25 @@
 # Runtime hardening for Apache-compatible hosting (Hostinger/LiteSpeed).
 # O site institucional Astro permanece estático. Somente a API e as páginas
 # dinâmicas de vagas são executadas pelo PHP da mesma hospedagem.
+Options -Indexes
+
+<FilesMatch "^\.(?!well-known)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::[0-9]+)?$ [NC]
     RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
+
+    # Bloqueia arquivos e diretórios ocultos (exceto validação ACME /.well-known).
+    RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L]
 
     # API same-origin: o bootstrap privado falha fechado até configuração do
     # banco/segredos. Evita loop ao reescrever a própria entrada PHP.

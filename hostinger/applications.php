@@ -46,10 +46,8 @@ function ajn_resume_upload(array $config): array
     };
     if (!in_array($mime, $acceptedMimes, true)) ajn_json(['error' => 'Conteúdo do arquivo não permitido.'], 400);
 
-    $privateDirectory = realpath($config['resume_directory'] ?? '');
-    $publicRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
-    if (!$privateDirectory || !is_dir($privateDirectory) || !is_writable($privateDirectory) || !$publicRoot ||
-        $privateDirectory === $publicRoot || str_starts_with($privateDirectory . '/', $publicRoot . '/')) {
+    $privateDirectory = ajn_private_resume_dir($config, true);
+    if (!$privateDirectory) {
         ajn_json(['error' => 'Armazenamento privado não configurado.'], 503);
     }
     return ['temporary' => $temporary, 'extension' => $extension, 'mime' => $allowed[$extension][0], 'name' => mb_substr($name, 0, 255), 'size' => (int) $file['size'], 'directory' => $privateDirectory];
@@ -160,6 +158,8 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
         if (!$job && !$consentRetention) {
             ajn_json(['error' => 'Para participar do Banco de Talentos, autorize a retenção dos dados do currículo.'], 400);
         }
+        $linkedinUrl = ajn_optional_http_url($_POST['linkedinUrl'] ?? null, 500);
+        $portfolioUrl = ajn_optional_http_url($_POST['portfolioUrl'] ?? null, 500);
         ajn_verify_turnstile($config, $_POST['turnstileToken'] ?? $_POST['cf-turnstile-response'] ?? null);
         $file = ajn_resume_upload($config);
         $secret = hex2bin($config['encryption_key'] ?? '');
@@ -197,14 +197,14 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
         $now = time();
         try {
             $db->beginTransaction();
-            $candidateValues = [$name, $phone, $city, $state, ajn_text($_POST['linkedinUrl'] ?? null, 500) ?: null, ajn_text($_POST['portfolioUrl'] ?? null, 500) ?: null, ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null, (int) $consentRetention, $now, $candidateId];
+            $candidateValues = [$name, $phone, $city, $state, $linkedinUrl, $portfolioUrl, ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null, (int) $consentRetention, $now, $candidateId];
             if ($candidate) {
                 ajn_exec($db, 'UPDATE candidates SET full_name=?,phone=?,city=?,state=?,linkedin_url=?,portfolio_url=?,current_title=?,summary=?,is_talent_pool=?,updated_at=? WHERE id=?', $candidateValues);
             } else {
                 ajn_exec($db,
                     'INSERT INTO candidates (id,full_name,email,phone,cpf_hash,cpf_masked,city,state,linkedin_url,portfolio_url,current_title,summary,is_talent_pool,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                     [$candidateId, $name, $email, $phone, $cpfHash, '***.***.' . substr((string) $cpf, 6, 3) . '-' . substr((string) $cpf, 9), $city, $state,
-                        ajn_text($_POST['linkedinUrl'] ?? null, 500) ?: null, ajn_text($_POST['portfolioUrl'] ?? null, 500) ?: null,
+                        $linkedinUrl, $portfolioUrl,
                         ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null,
                         (int) $consentRetention, $now, $now]
                 );
@@ -263,9 +263,8 @@ function ajn_admin_candidates(PDO $db, string $method, string $path, array $conf
         ajn_rate_limit($db, 'admin-resume-download', 40, 3600, (string) $admin['id']);
         $row = ajn_fetch($db, 'SELECT file_key,original_filename,mime_type FROM resumes WHERE candidate_id=? AND is_current=1 LIMIT 1', [$match[1]]);
         if (!$row) ajn_json(['error' => 'Currículo não encontrado.'], 404);
-        $directory = realpath($config['resume_directory'] ?? '');
-        $publicRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
-        if (!$directory || !$publicRoot || str_starts_with($directory . '/', $publicRoot . '/') || !preg_match('/^[a-f0-9-]{36}\.(pdf|doc|docx)$/D', $row['file_key'])) {
+        $directory = ajn_private_resume_dir($config, false);
+        if (!$directory || !preg_match('/^[a-f0-9-]{36}\.(pdf|doc|docx)$/D', $row['file_key'])) {
             ajn_json(['error' => 'Arquivo privado indisponível.'], 503);
         }
         $filename = $directory . DIRECTORY_SEPARATOR . $row['file_key'];

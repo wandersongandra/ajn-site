@@ -8,6 +8,7 @@ import * as schema from '../../worker/db/schema';
 import { createCarreirasApp } from '../../worker/index';
 import { hashPassword, sha256, generateRandomToken, generateCurrentTotp, generateTotpSecret } from '../../worker/lib/crypto';
 import { seedDatabase, INITIAL_JOB_POSTINGS } from '../../worker/db/seed';
+import { candidateSchema } from '../../worker/lib/validation';
 import { rateLimiter, resetRateLimiterStore, RateLimiterDO } from '../../worker/middleware/rate-limit';
 import { clearSentTestEmails, sentTestEmails, escapeHtml } from '../../worker/lib/email';
 import { Hono } from 'hono';
@@ -1400,6 +1401,41 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       expect(escaped).not.toContain('<img');
       expect(escaped).toContain('&lt;script&gt;');
       expect(escaped).toContain('&lt;img');
+    });
+
+    it('P1-7: candidateSchema aceita apenas URLs http/https sem credenciais em linkedinUrl e portfolioUrl', () => {
+      const baseCandidate = {
+        fullName: 'Maria Clara Souza',
+        email: 'maria@example.com',
+        phone: '(31) 99988-7766',
+        cpf: '52998224725',
+        city: 'Belo Horizonte',
+        state: 'MG',
+        consentTerms: true as const,
+        consentRetention: false,
+      };
+
+      expect(
+        candidateSchema.safeParse({
+          ...baseCandidate,
+          linkedinUrl: 'https://www.linkedin.com/in/mariaclara',
+          portfolioUrl: 'http://mariaclara.eng.br',
+        }).success
+      ).toBe(true);
+
+      for (const dangerousUrl of [
+        'javascript:alert(1)',
+        'data:text/html,<script>alert(1)</script>',
+        'file:///etc/passwd',
+        'https://user:secret@linkedin.com/in/x',
+      ]) {
+        expect(
+          candidateSchema.safeParse({ ...baseCandidate, linkedinUrl: dangerousUrl }).success
+        ).toBe(false);
+        expect(
+          candidateSchema.safeParse({ ...baseCandidate, portfolioUrl: dangerousUrl }).success
+        ).toBe(false);
+      }
     });
   });
 });

@@ -56,6 +56,47 @@ function ajn_text(mixed $value, int $max = 200): string
     return is_string($value) ? mb_substr(trim($value), 0, $max, 'UTF-8') : '';
 }
 
+function ajn_escape_like(string $value): string
+{
+    return strtr($value, ['!' => '!!', '%' => '!%', '_' => '!_']);
+}
+
+function ajn_optional_http_url(mixed $value, int $max = 500): ?string
+{
+    $url = ajn_text($value, $max);
+    if ($url === '') return null;
+    if (preg_match('/[\x00-\x20\x7f]/', $url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+        ajn_json(['error' => 'URL inválida. Utilize um endereço http:// ou https:// válido.'], 400);
+    }
+    $parts = parse_url($url);
+    $scheme = strtolower((string) ($parts['scheme'] ?? ''));
+    if (!in_array($scheme, ['http', 'https'], true) || empty($parts['host']) || isset($parts['user']) || isset($parts['pass'])) {
+        ajn_json(['error' => 'URL inválida. Utilize um endereço http:// ou https:// válido.'], 400);
+    }
+    return $url;
+}
+
+function ajn_private_resume_dir(array $config, bool $requireWritable = false): ?string
+{
+    $privateRaw = trim((string) ($config['resume_directory'] ?? ''));
+    $publicRaw = trim((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''));
+    $privateDirectory = $privateRaw !== '' ? realpath($privateRaw) : false;
+    $publicRoot = $publicRaw !== '' ? realpath($publicRaw) : false;
+    if (!$privateDirectory || !is_dir($privateDirectory) || ($requireWritable && !is_writable($privateDirectory)) || !$publicRoot || !is_dir($publicRoot)) {
+        return null;
+    }
+    $normPrivate = rtrim(str_replace('\\', '/', $privateDirectory), '/');
+    $normPublic = rtrim(str_replace('\\', '/', $publicRoot), '/');
+    if (DIRECTORY_SEPARATOR === '\\') {
+        $normPrivate = strtolower($normPrivate);
+        $normPublic = strtolower($normPublic);
+    }
+    if ($normPrivate === $normPublic || str_starts_with($normPrivate . '/', $normPublic . '/')) {
+        return null;
+    }
+    return $privateDirectory;
+}
+
 function ajn_fetch(PDO $db, string $sql, array $values = []): ?array
 {
     $query = $db->prepare($sql);
@@ -95,15 +136,20 @@ function ajn_rate_limit(PDO $db, string $scope, int $max, int $window, ?string $
 {
     $key = hash('sha256', $scope . ':' . ($identity ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown'));
     $now = time();
+    $isSqlite = $db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
     // A tabela so cresce se ninguem remover janelas vencidas. Nao ha cron na
     // hospedagem compartilhada, entao a limpeza ocorre de forma amostral.
     if (random_int(1, 100) === 1) {
-        ajn_exec($db, 'DELETE FROM request_rate_limits WHERE expires_at <= ? LIMIT 1000', [$now - 86400]);
+        if ($isSqlite) {
+            ajn_exec($db, 'DELETE FROM request_rate_limits WHERE bucket_key IN (SELECT bucket_key FROM request_rate_limits WHERE expires_at <= ? LIMIT 1000)', [$now - 86400]);
+        } else {
+            ajn_exec($db, 'DELETE FROM request_rate_limits WHERE expires_at <= ? LIMIT 1000', [$now - 86400]);
+        }
     }
-    ajn_exec($db,
-        'INSERT INTO request_rate_limits (bucket_key,window_started_at,hits,expires_at) VALUES (?,?,1,?) ON DUPLICATE KEY UPDATE hits=IF(expires_at<=?,1,hits+1),window_started_at=IF(expires_at<=?, ?, window_started_at),expires_at=IF(expires_at<=?, ?, expires_at)',
-        [$key, $now, $now + $window, $now, $now, $now, $now, $now + $window]
-    );
+    $upsertSql = $isSqlite
+        ? 'INSERT INTO request_rate_limits (bucket_key,window_started_at,hits,expires_at) VALUES (?,?,1,?) ON CONFLICT(bucket_key) DO UPDATE SET hits=CASE WHEN expires_at<=? THEN 1 ELSE hits+1 END,window_started_at=CASE WHEN expires_at<=? THEN ? ELSE window_started_at END,expires_at=CASE WHEN expires_at<=? THEN ? ELSE expires_at END'
+        : 'INSERT INTO request_rate_limits (bucket_key,window_started_at,hits,expires_at) VALUES (?,?,1,?) ON DUPLICATE KEY UPDATE hits=IF(expires_at<=?,1,hits+1),window_started_at=IF(expires_at<=?, ?, window_started_at),expires_at=IF(expires_at<=?, ?, expires_at)';
+    ajn_exec($db, $upsertSql, [$key, $now, $now + $window, $now, $now, $now, $now, $now + $window]);
     $row = ajn_fetch($db, 'SELECT hits, expires_at FROM request_rate_limits WHERE bucket_key=?', [$key]);
     if (($row['hits'] ?? 0) > $max) {
         header('Retry-After: ' . max(1, ((int) $row['expires_at']) - $now));
@@ -120,6 +166,7 @@ function ajn_require_origin(array $config): void
     }
 }
 
+if (!function_exists('ajn_verify_turnstile')) {
 function ajn_verify_turnstile(array $config, mixed $token): void
 {
     $secret = $config['turnstile_secret_key'] ?? '';
@@ -152,6 +199,7 @@ function ajn_verify_turnstile(array $config, mixed $token): void
         !is_string($host) || !hash_equals($host, (string) ($verification['hostname'] ?? ''))) {
         ajn_json(['error' => 'Verificação antispam inválida ou expirada.'], 400);
     }
+}
 }
 
 function ajn_session(PDO $db): ?array
@@ -333,25 +381,41 @@ function ajn_mime_header(string $value): string
     return implode("\r\n ", $words);
 }
 
+if (!function_exists('ajn_send_email')) {
 function ajn_send_email(array $config, string $recipient, string $subject, string $body): bool
 {
-    if (!ajn_email_configured($config) || !filter_var($recipient, FILTER_VALIDATE_EMAIL) ||
-        preg_match('/[\r\n]/', $recipient . $subject) || !is_string($body)) return false;
+    if (!ajn_email_configured($config) || !filter_var($recipient, FILTER_VALIDATE_EMAIL) || !is_string($body)) {
+        return false;
+    }
     $smtp = $config['smtp'];
     $host = trim($smtp['host']);
+    if ($host === '' || preg_match('/[\r\n\0\s]/', $host) || preg_match('/[\r\n\0]/', $recipient . $subject . $smtp['from'])) {
+        return false;
+    }
     $port = (int) ($smtp['port'] ?? 465);
     if (!in_array($port, [465, 587], true)) return false;
+    $cryptoMethod = STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | (defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT') ? STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT : 0);
+    $context = stream_context_create([
+        'ssl' => [
+            'verify_peer' => true,
+            'verify_peer_name' => true,
+            'allow_self_signed' => false,
+            'SNI_enabled' => true,
+            'peer_name' => $host,
+            'crypto_method' => $cryptoMethod,
+        ],
+    ]);
     $transport = $port === 465 ? 'ssl://' . $host : $host;
     $errno = 0;
     $error = '';
-    $socket = @stream_socket_client($transport . ':' . $port, $errno, $error, 8, STREAM_CLIENT_CONNECT);
+    $socket = @stream_socket_client($transport . ':' . $port, $errno, $error, 8, STREAM_CLIENT_CONNECT, $context);
     if (!is_resource($socket)) return false;
     try {
         if (!ajn_smtp_read($socket, [220])) return false;
         stream_set_timeout($socket, 8);
         if (!ajn_smtp_command($socket, 'EHLO ajnengenharia.com.br', [250])) return false;
         if ($port === 587) {
-            if (!ajn_smtp_command($socket, 'STARTTLS', [220]) || !stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) return false;
+            if (!ajn_smtp_command($socket, 'STARTTLS', [220]) || !stream_socket_enable_crypto($socket, true, $cryptoMethod)) return false;
             if (!ajn_smtp_command($socket, 'EHLO ajnengenharia.com.br', [250])) return false;
         }
         if (!ajn_smtp_command($socket, 'AUTH LOGIN', [334]) ||
@@ -373,23 +437,26 @@ function ajn_send_email(array $config, string $recipient, string $subject, strin
         fclose($socket);
     }
 }
-
-$configFile = __DIR__ . '/config.php';
-if (!is_file($configFile)) ajn_json(['error' => 'Configuração privada ausente.'], 503);
-$config = require $configFile;
-if (!is_array($config) || !filter_var($config['app_url'] ?? null, FILTER_VALIDATE_URL) || !str_starts_with($config['app_url'], 'https://')) {
-    ajn_json(['error' => 'Configuração do ambiente inválida.'], 503);
 }
 
-try {
-    $dbc = $config['database'] ?? [];
-    $db = new PDO(
-        'mysql:host=' . ($dbc['host'] ?? '') . ';port=' . (int) ($dbc['port'] ?? 3306) . ';dbname=' . ($dbc['name'] ?? '') . ';charset=utf8mb4',
-        $dbc['username'] ?? '', $dbc['password'] ?? '',
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-    );
-    require __DIR__ . '/app.php';
-} catch (Throwable $error) {
-    error_log('[AJN_CAREIRAS] ' . get_class($error));
-    ajn_json(['error' => 'Serviço temporariamente indisponível.'], 503);
+if (!defined('AJN_DISABLE_AUTO_DISPATCH')) {
+    $configFile = __DIR__ . '/config.php';
+    if (!is_file($configFile)) ajn_json(['error' => 'Configuração privada ausente.'], 503);
+    $config = require $configFile;
+    if (!is_array($config) || !filter_var($config['app_url'] ?? null, FILTER_VALIDATE_URL) || !str_starts_with($config['app_url'], 'https://')) {
+        ajn_json(['error' => 'Configuração do ambiente inválida.'], 503);
+    }
+
+    try {
+        $dbc = $config['database'] ?? [];
+        $db = new PDO(
+            'mysql:host=' . ($dbc['host'] ?? '') . ';port=' . (int) ($dbc['port'] ?? 3306) . ';dbname=' . ($dbc['name'] ?? '') . ';charset=utf8mb4',
+            $dbc['username'] ?? '', $dbc['password'] ?? '',
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+        );
+        require __DIR__ . '/app.php';
+    } catch (Throwable $error) {
+        error_log('[AJN_CAREIRAS] ' . get_class($error));
+        ajn_json(['error' => 'Serviço temporariamente indisponível.'], 503);
+    }
 }
