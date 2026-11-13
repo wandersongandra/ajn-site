@@ -34,8 +34,12 @@ const paths = [...content.matchAll(/<li>\s*<a\s+href="(\/[^"]*)"/g)].map(m => m[
 check(paths.length === entries.length,
 	`Mapa HTML tem ${paths.length} links, mas catálogo tem ${entries.length}.`);
 check(new Set(paths).size === paths.length, 'Um ou mais links se repetem entre os grupos.');
-const missing = entries.filter(x => !paths.includes(x));
-const extra = paths.filter(x => !entries.includes(x));
+// SiteMapIndex.astro renderiza com barra final (canonical atual do site); o catálogo não a armazena.
+const withTrailingSlash = (path) => path === '/' ? '/' : `${path.replace(/\/+$/, '')}/`;
+const normalizedEntries = entries.map(withTrailingSlash);
+const normalizedPaths = paths.map(withTrailingSlash);
+const missing = normalizedEntries.filter(x => !normalizedPaths.includes(x));
+const extra = normalizedPaths.filter(x => !normalizedEntries.includes(x));
 check(missing.length === 0, `Rotas fora do mapa: ${missing.join(', ')}`);
 check(extra.length === 0, `URLs estranhas no mapa: ${extra.join(', ')}`);
 check(!paths.includes('/informacoes'), 'Mapa do site ainda anuncia rota redundante.');
