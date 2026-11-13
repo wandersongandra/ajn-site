@@ -8,12 +8,12 @@ import { absoluteSiteUrl, serializeJsonLd, siteOrigin } from '../utils/site';
 import { getSeoMetadata } from '../utils/seo';
 
 interface Props {
-	title?: string;
-	description?: string;
-	canonicalPath?: string;
-	ogType?: 'website' | 'article';
-	ogImage?: string;
-	noindex?: boolean;
+	title?: string | undefined;
+	description?: string | undefined;
+	canonicalPath?: string | undefined;
+	ogType?: 'website' | 'article' | undefined;
+	ogImage?: string | undefined;
+	noindex?: boolean | undefined;
 }
 
 const {

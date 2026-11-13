@@ -19,21 +19,21 @@ export interface ContentParagraph {
 export type ContentParagraphValue = string | ContentParagraph;
 
 export interface ContentList {
-	ordered?: boolean;
+	ordered?: boolean | undefined;
 	items: readonly ContentParagraphValue[];
 }
 
 export interface ContentSubsection {
 	heading: string;
 	paragraphs: readonly ContentParagraphValue[];
-	lists?: readonly ContentList[];
+	lists?: readonly ContentList[] | undefined;
 }
 
 export interface ContentSection {
 	heading: string;
 	paragraphs: readonly ContentParagraphValue[];
-	lists?: readonly ContentList[];
-	subsections?: readonly ContentSubsection[];
+	lists?: readonly ContentList[] | undefined;
+	subsections?: readonly ContentSubsection[] | undefined;
 }
 
 export interface MarketingImage {

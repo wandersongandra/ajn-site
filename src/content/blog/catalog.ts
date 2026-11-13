@@ -26,6 +26,14 @@ const legacyTopicsBySlug: Record<string, BlogTopic> = {
 
 const canonicalBlogPath = (path: string) => path === '/' ? '/' : path.replace(/\/+$/, '') + '/';
 
+function resolveTopic(slug: string, explicitTopic?: BlogTopic): BlogTopic {
+	const topic = explicitTopic ?? legacyTopicsBySlug[slug];
+	if (!topic || !BLOG_TOPICS.includes(topic)) {
+		throw new Error('Todo artigo precisa declarar uma categoria editorial válida.');
+	}
+	return topic;
+}
+
 const archivedPosts = blogPages.map((post) => ({
 	title: post.heading,
 	href: canonicalBlogPath(post.path),
@@ -35,12 +43,8 @@ const archivedPosts = blogPages.map((post) => ({
 	author: post.author,
 	pubDate: post.pubDate,
 	tags: post.tags,
-	topic: post.topic ?? legacyTopicsBySlug[post.slug],
+	topic: resolveTopic(post.slug, post.topic),
 }));
-
-if (archivedPosts.some((post) => !post.topic || !BLOG_TOPICS.includes(post.topic as BlogTopic))) {
-	throw new Error('Todo artigo precisa declarar uma categoria editorial válida.');
-}
 
 export const blogPosts = archivedPosts
 	.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
