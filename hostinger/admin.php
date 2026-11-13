@@ -4,8 +4,10 @@ declare(strict_types=1);
 function ajn_admin_auth(PDO $db, string $method, string $path, array $config): never
 {
     if ($path === '/api/admin/auth/login' && $method === 'POST') {
-        ajn_rate_limit($db, 'admin-login', 10, 900);
+        // A origem e verificada antes do contador: trafego cross-origin nao deve
+        // consumir a cota de tentativas nem gerar escrita no banco.
         ajn_require_origin($config);
+        ajn_rate_limit($db, 'admin-login', 10, 900);
         $body = ajn_body();
         $email = mb_strtolower(ajn_text($body['email'] ?? null, 254));
         $password = $body['password'] ?? null;
@@ -35,14 +37,22 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
                 ajn_json(['mfaRequired' => true, 'message' => 'Código MFA necessário.'], 401);
             }
             $secret = ajn_decrypt((string) $user['mfa_secret'], $config);
-            if ($secret === '' || !ajn_totp($secret, 1, $mfa)) {
+            $counter = $secret === '' ? null : ajn_totp($secret, 1, $mfa);
+            // O UPDATE condicional e o ponto de consumo do codigo: so avança se o
+            // contador for maior que o ultimo usado, entao reapresentar o mesmo
+            // codigo (ou um anterior da janela) nao autentica, mesmo em paralelo.
+            $consumed = $counter === null ? 0 : ajn_exec($db,
+                'UPDATE admin_users SET mfa_last_counter=?,updated_at=? WHERE id=? AND (mfa_last_counter IS NULL OR mfa_last_counter < ?)',
+                [$counter, time(), $user['id'], $counter]
+            );
+            if ($counter === null || $consumed !== 1) {
                 $attempts = ((int) $user['failed_attempts']) + 1;
                 ajn_exec($db, 'UPDATE admin_users SET failed_attempts=?,locked_until=?,updated_at=? WHERE id=?', [
                     $attempts >= 5 ? 0 : $attempts,
                     $attempts >= 5 ? time() + 900 : null,
                     time(), $user['id'],
                 ]);
-                ajn_audit($db, 'admin', $user['id'], 'AUTH_MFA_FAILED', 'auth');
+                ajn_audit($db, 'admin', $user['id'], $counter === null ? 'AUTH_MFA_FAILED' : 'AUTH_MFA_REPLAY_BLOCKED', 'auth');
                 ajn_json(['error' => 'Código MFA inválido.'], 401);
             }
         }
@@ -57,11 +67,11 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
     }
     if ($path === '/api/admin/auth/logout' && $method === 'POST') {
         ajn_require_origin($config);
-        $token = $_COOKIE['ajn_admin_session'] ?? '';
+        $token = $_COOKIE[AJN_SESSION_COOKIE] ?? '';
         if (is_string($token) && preg_match('/^[a-f0-9]{64}$/D', $token)) {
             ajn_exec($db, 'DELETE FROM admin_sessions WHERE session_token_hash=?', [hash('sha256', $token)]);
         }
-        setcookie('ajn_admin_session', '', ['expires' => 1, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
+        setcookie(AJN_SESSION_COOKIE, '', ['expires' => 1, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
         ajn_json(['success' => true, 'message' => 'Sessão encerrada com sucesso.']);
     }
     if ($path === '/api/admin/auth/forgot-password' && $method === 'POST') {
@@ -235,8 +245,10 @@ function ajn_admin_users(PDO $db, string $method, string $path, array $config): 
         $email = mb_strtolower(ajn_text($data['email'] ?? null, 254));
         $password = $data['password'] ?? null;
         $role = $data['role'] ?? 'recruiter';
-        if (mb_strlen($name) < 3 || !filter_var($email, FILTER_VALIDATE_EMAIL) || !is_string($password) || strlen($password) < 12 || strlen($password) > 1024 || !in_array($role, ['recruiter', 'viewer', 'dpo'], true)) {
-            ajn_json(['error' => 'Dados inválidos. Exija senha com pelo menos 12 caracteres.'], 400);
+        // Mesmo minimo exigido na redefinicao de senha, para nao abrir uma porta
+        // mais fraca na criacao do operador.
+        if (mb_strlen($name) < 3 || !filter_var($email, FILTER_VALIDATE_EMAIL) || !is_string($password) || strlen($password) < 16 || strlen($password) > 1024 || !in_array($role, ['recruiter', 'viewer', 'dpo'], true)) {
+            ajn_json(['error' => 'Dados inválidos. Exija senha com pelo menos 16 caracteres.'], 400);
         }
         if (ajn_fetch($db, 'SELECT id FROM admin_users WHERE email=?', [$email])) ajn_json(['error' => 'E-mail já cadastrado.'], 409);
         $id = ajn_uuid();

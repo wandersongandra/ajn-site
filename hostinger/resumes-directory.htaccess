@@ -1,0 +1,19 @@
+# Copiar como .htaccess para dentro do diretorio apontado por resume_directory.
+#
+# O backend ja recusa funcionar se esse diretorio estiver dentro de public_html
+# (ajn_resume_upload e o download administrativo comparam o realpath com o
+# DOCUMENT_ROOT). Este arquivo e a segunda barreira: se um deploy futuro mover o
+# diretorio por engano para dentro da raiz publica, o Apache continua negando o
+# acesso direto aos curriculos em vez de servi-los como arquivo estatico.
+
+Require all denied
+
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
+
+# Nenhum conteudo deste diretorio pode ser interpretado como script.
+php_flag engine off
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8

@@ -91,6 +91,21 @@ Depois da publicação controlada, definir `AJN_CARREIRAS_REMOTE_ORIGIN` e execu
 4. Se houver mudança DNS autorizada, restaurar os registros exportados exatamente; não improvisar nameservers.
 5. Revalidar apex, `www`, MX, SPF, DKIM, DMARC, CAA e o site institucional antes de qualquer nova tentativa.
 
+## 6.1 Endurecimento de sessão e MFA (migration 002)
+
+Ordem obrigatória na promoção. O backend novo lê duas colunas que não existem em `001_initial.sql`, então aplicar o código antes da migration deixa o login indisponível.
+
+1. Aplicar `hostinger/migrations/002_hardening.sql` no banco do ambiente alvo. A migration apaga `admin_sessions`, porque sessões emitidas antes dela não têm teto absoluto confiável.
+2. Publicar a versão correspondente de `bootstrap.php`, `app.php` e `admin.php`.
+3. Copiar `hostinger/resumes-directory.htaccess` como `.htaccess` dentro do diretório apontado por `resume_directory`. É a segunda barreira caso um deploy futuro mova esse diretório para dentro de `public_html`.
+4. Avisar os operadores: o cookie passou a se chamar `__Host-ajn_admin_session` e todas as sessões ativas são encerradas. Cada operador precisa entrar de novo com senha e MFA.
+
+O que muda no comportamento:
+
+- A sessão expira por inatividade em 30 minutos e tem teto absoluto de 8 horas. Antes existia apenas o teto fixo de 8 horas, sem expirar por inatividade.
+- Um código TOTP só vale uma vez. A reapresentação do mesmo código dentro da janela de tolerância é registrada como `AUTH_MFA_REPLAY_BLOCKED` e conta como tentativa falha.
+- Operadores novos passam a exigir senha de 16 caracteres, igual à regra já usada na redefinição.
+
 ## 7. Estado desta branch
 
 `CONFIRMED`: código local com topologia same-origin planejada, CSP/CORS explícitos, cookie forte, SSR 200/404 e binding de assets configurada.

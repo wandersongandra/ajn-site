@@ -17,14 +17,16 @@ function assert(ok, description) {
 }
 
 async function installAdminSessionFixture(context, role = 'super_admin') {
-  const hostname = new URL(base).hostname;
+  // O prefixo __Host- exige cookie sem atributo Domain, entao a fixture usa a
+  // forma por url (host-only) em vez de domain/path. Em producao o cookie e
+  // emitido pelo PHP; aqui ele apenas espelha o formato real, porque todas as
+  // chamadas de /api/** sao interceptadas logo abaixo.
   await context.addCookies([{
-    name: 'ajn_admin_session',
+    name: '__Host-ajn_admin_session',
     value: 'browser-fixture-session',
-    domain: hostname,
-    path: '/',
+    url: base,
     httpOnly: true,
-    secure: new URL(base).protocol === 'https:',
+    secure: true,
     sameSite: 'Strict',
   }]);
 

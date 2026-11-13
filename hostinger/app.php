@@ -149,8 +149,16 @@ $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 if (!is_string($path) || strlen($path) > 1024) ajn_json(['error' => 'Caminho inválido.'], 400);
 
 if ($path === '/api/health' && $method === 'GET') {
+    // Endpoint anonimo: limitar antes de tocar o banco.
+    ajn_rate_limit($db, 'health', 30, 60);
     $db->query('SELECT 1')->fetch();
-    ajn_json(['status' => 'ok', 'service' => 'ajn-carreiras-api', 'environment' => $config['environment'] ?? 'unknown', 'timestamp' => gmdate('c')]);
+    $payload = ['status' => 'ok', 'service' => 'ajn-carreiras-api', 'timestamp' => gmdate('c')];
+    // O marcador de ambiente so aparece fora de producao. Em staging ele permite
+    // que a homologacao remota confirme que nao esta apontando para producao;
+    // em producao sua ausencia evita entregar essa distincao a quem sonda a API.
+    $environment = (string) ($config['environment'] ?? '');
+    if ($environment !== '' && $environment !== 'production') $payload['environment'] = $environment;
+    ajn_json($payload);
 }
 if (str_starts_with($path, '/api/jobs') || preg_match('~^/carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)[a-z0-9-]+/?$~D', $path)) {
     ajn_public_jobs($db, $method, $path, $config);

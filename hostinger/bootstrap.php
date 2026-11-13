@@ -8,6 +8,16 @@ header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: strict-origin-when-cross-origin');
+// A resposta nunca deve ser lida por outra origem nem reaproveitada por cache compartilhado.
+header('Cross-Origin-Resource-Policy: same-origin');
+header('Vary: Origin');
+
+// Nome do cookie de sessao do painel. O prefixo __Host- faz o navegador recusar
+// o cookie se nao vier com Secure, path=/ e sem Domain, o que impede que um
+// subdominio comprometido injete sessao no dominio principal.
+const AJN_SESSION_COOKIE = '__Host-ajn_admin_session';
+const AJN_SESSION_IDLE_SECONDS = 1800;
+const AJN_SESSION_ABSOLUTE_SECONDS = 28800;
 
 function ajn_json(array $payload, int $status = 200): never
 {
@@ -80,6 +90,11 @@ function ajn_rate_limit(PDO $db, string $scope, int $max, int $window): void
 {
     $key = hash('sha256', $scope . ':' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
     $now = time();
+    // A tabela so cresce se ninguem remover janelas vencidas. Nao ha cron na
+    // hospedagem compartilhada, entao a limpeza ocorre de forma amostral.
+    if (random_int(1, 100) === 1) {
+        ajn_exec($db, 'DELETE FROM request_rate_limits WHERE expires_at <= ? LIMIT 1000', [$now - 86400]);
+    }
     ajn_exec($db,
         'INSERT INTO request_rate_limits (bucket_key,window_started_at,hits,expires_at) VALUES (?,?,1,?) ON DUPLICATE KEY UPDATE hits=IF(expires_at<=?,1,hits+1),window_started_at=IF(expires_at<=?, ?, window_started_at),expires_at=IF(expires_at<=?, ?, expires_at)',
         [$key, $now, $now + $window, $now, $now, $now, $now, $now + $window]
@@ -136,13 +151,21 @@ function ajn_verify_turnstile(array $config, mixed $token): void
 
 function ajn_session(PDO $db): ?array
 {
-    $token = $_COOKIE['ajn_admin_session'] ?? '';
+    $token = $_COOKIE[AJN_SESSION_COOKIE] ?? '';
     if (!is_string($token) || !preg_match('/^[a-f0-9]{64}$/D', $token)) return null;
+    $now = time();
+    $hash = hash('sha256', $token);
     $row = ajn_fetch($db,
-        'SELECT u.id,u.name,u.email,u.role,u.is_active,u.mfa_enabled,u.mfa_required,s.expires_at FROM admin_sessions s JOIN admin_users u ON u.id=s.user_id WHERE s.session_token_hash=? AND s.expires_at>? LIMIT 1',
-        [hash('sha256', $token), time()]
+        'SELECT u.id,u.name,u.email,u.role,u.is_active,u.mfa_enabled,u.mfa_required,s.expires_at,s.absolute_expires_at FROM admin_sessions s JOIN admin_users u ON u.id=s.user_id WHERE s.session_token_hash=? AND s.expires_at>? AND s.absolute_expires_at>? LIMIT 1',
+        [$hash, $now, $now]
     );
     if (!$row || !(int) $row['is_active']) return null;
+    // expires_at e a janela de inatividade e desliza a cada uso, sempre limitada
+    // pelo teto absoluto gravado na emissao da sessao.
+    $next = min($now + AJN_SESSION_IDLE_SECONDS, (int) $row['absolute_expires_at']);
+    if ($next > (int) $row['expires_at']) {
+        ajn_exec($db, 'UPDATE admin_sessions SET expires_at=? WHERE session_token_hash=?', [$next, $hash]);
+    }
     return $row;
 }
 
@@ -169,40 +192,46 @@ function ajn_user_public(array $user): array
 function ajn_issue_session(PDO $db, array $user): void
 {
     $token = bin2hex(random_bytes(32));
-    $expiry = time() + 28800;
+    $now = time();
+    $absolute = $now + AJN_SESSION_ABSOLUTE_SECONDS;
     ajn_exec($db,
-        'INSERT INTO admin_sessions (id,user_id,session_token_hash,role,ip_address,user_agent,expires_at,created_at) VALUES (?,?,?,?,?,?,?,?)',
-        [ajn_uuid(), $user['id'], hash('sha256', $token), $user['role'], $_SERVER['REMOTE_ADDR'] ?? null, mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500), $expiry, time()]
+        'INSERT INTO admin_sessions (id,user_id,session_token_hash,role,ip_address,user_agent,expires_at,absolute_expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+        [ajn_uuid(), $user['id'], hash('sha256', $token), $user['role'], $_SERVER['REMOTE_ADDR'] ?? null, mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500), $now + AJN_SESSION_IDLE_SECONDS, $absolute, $now]
     );
-    setcookie('ajn_admin_session', $token, [
-        'expires' => $expiry, 'path' => '/', 'secure' => true,
+    setcookie(AJN_SESSION_COOKIE, $token, [
+        'expires' => $absolute, 'path' => '/', 'secure' => true,
         'httponly' => true, 'samesite' => 'Strict',
     ]);
 }
 
-function ajn_totp(string $secret, int $window = 1, ?string $code = null): bool
+/**
+ * Devolve o contador TOTP que validou o codigo, ou null quando nenhum serve.
+ * O contador e necessario para que o chamador recuse reapresentacao do mesmo
+ * codigo dentro da janela de tolerancia.
+ */
+function ajn_totp(string $secret, int $window = 1, ?string $code = null): ?int
 {
-    if ($code === null || !preg_match('/^\d{6}$/D', $code)) return false;
+    if ($code === null || !preg_match('/^\d{6}$/D', $code)) return null;
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     $bits = '';
     foreach (str_split(strtoupper(rtrim($secret, '='))) as $char) {
         $pos = strpos($alphabet, $char);
-        if ($pos === false) return false;
+        if ($pos === false) return null;
         $bits .= str_pad(decbin($pos), 5, '0', STR_PAD_LEFT);
     }
     $binary = '';
     foreach (str_split($bits, 8) as $byte) {
         if (strlen($byte) === 8) $binary .= chr(bindec($byte));
     }
-    if (strlen($binary) < 10) return false;
+    if (strlen($binary) < 10) return null;
     for ($step = -$window; $step <= $window; $step++) {
         $counter = intdiv(time(), 30) + $step;
         $hmac = hash_hmac('sha1', pack('N2', 0, $counter), $binary, true);
         $offset = ord($hmac[19]) & 0x0f;
         $number = ((ord($hmac[$offset]) & 0x7f) << 24) | (ord($hmac[$offset + 1]) << 16) | (ord($hmac[$offset + 2]) << 8) | ord($hmac[$offset + 3]);
-        if (hash_equals(str_pad((string) ($number % 1000000), 6, '0', STR_PAD_LEFT), $code)) return true;
+        if (hash_equals(str_pad((string) ($number % 1000000), 6, '0', STR_PAD_LEFT), $code)) return $counter;
     }
-    return false;
+    return null;
 }
 
 function ajn_decrypt(string $value, array $config): string

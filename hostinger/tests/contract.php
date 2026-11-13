@@ -21,6 +21,7 @@ function source_contract(string $path): string
 }
 
 $bootstrap = source_contract($root . '/bootstrap.php');
+$app = source_contract($root . '/app.php');
 $applications = source_contract($root . '/applications.php');
 $admin = source_contract($root . '/admin.php');
 $lgpd = source_contract($root . '/lgpd.php');
@@ -49,6 +50,25 @@ check_contract('frontend sem sinks proibidos', !preg_match('/\b(?:innerHTML|oute
 check_contract('SMTP fecha sockets em falha', str_contains($bootstrap, 'finally {') && str_contains($bootstrap, 'fclose($socket);'));
 check_contract('retenção do banco de talentos exige aceite explícito', str_contains($applications, 'if (!$job && !$consentRetention)') && !str_contains($applications, '(!$job || $consentRetention) ? 1 : 0') && str_contains($talentPage, 'name="consentRetention" type="checkbox" value="true" required'));
 check_contract('retenção opcional em candidatura inicia desmarcada', str_contains($jobApplicationPage, 'id="apply-consent-retention" name="consentRetention" type="checkbox" value="true" />'));
+$schemaHardening = source_contract($root . '/migrations/002_hardening.sql');
+check_contract('cookie de sessão com prefixo __Host-', str_contains($bootstrap, "const AJN_SESSION_COOKIE = '__Host-ajn_admin_session'") &&
+    !preg_match("/'ajn_admin_session'/", $bootstrap . $admin));
+check_contract('sessão com inatividade e teto absoluto', str_contains($bootstrap, 'AJN_SESSION_IDLE_SECONDS') &&
+    str_contains($bootstrap, 'AJN_SESSION_ABSOLUTE_SECONDS') &&
+    str_contains($bootstrap, 's.expires_at>? AND s.absolute_expires_at>?') &&
+    str_contains($schemaHardening, 'absolute_expires_at'));
+check_contract('código MFA não pode ser reapresentado', str_contains($bootstrap, 'function ajn_totp(string $secret, int $window = 1, ?string $code = null): ?int') &&
+    str_contains($admin, 'mfa_last_counter < ?') && str_contains($admin, 'AUTH_MFA_REPLAY_BLOCKED') &&
+    str_contains($schemaHardening, 'mfa_last_counter'));
+check_contract('resposta da API isolada de outras origens', str_contains($bootstrap, "header('Cross-Origin-Resource-Policy: same-origin')") &&
+    str_contains($bootstrap, "header('Vary: Origin')"));
+check_contract('origem verificada antes de consumir cota de login', strpos($admin, 'ajn_require_origin($config);') < strpos($admin, "ajn_rate_limit(\$db, 'admin-login'"));
+check_contract('janelas de rate limit expiradas são removidas', str_contains($bootstrap, 'DELETE FROM request_rate_limits WHERE expires_at <= ?'));
+check_contract('health não revela ambiente de produção', str_contains($app, "\$environment !== 'production'") && str_contains($app, "ajn_rate_limit(\$db, 'health'"));
+check_contract('senha mínima igual na criação e na redefinição', str_contains($admin, 'strlen($password) < 16') &&
+    str_contains($admin, 'strlen($newPassword) < 16') && !str_contains($admin, '< 12'));
+check_contract('diretório de currículos com negação explícita', str_contains(source_contract($root . '/resumes-directory.htaccess'), 'Require all denied'));
+
 $beginIndex = strpos($applications, '$db->beginTransaction();');
 $demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1');
 $insertIndex = strpos($applications, 'INSERT INTO resumes (id,candidate_id,file_key');
