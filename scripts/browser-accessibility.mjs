@@ -42,6 +42,13 @@ async function load(context, route, label) {
 	return page;
 }
 
+async function countAriaHiddenTabStops(page) {
+	return page.evaluate(() => [...document.querySelectorAll('[aria-hidden="true"]')]
+		.flatMap((node) => [...node.querySelectorAll('a[href],button,input,select,textarea,[tabindex]')])
+		.filter((el) => el.tabIndex >= 0 && !el.hasAttribute('disabled') && !el.closest('[inert]'))
+		.length);
+}
+
 try {
 	for (const width of [320, 375, 390, 430, 768]) {
 		const noJsContext = await createContext({ width, noJs: true });
@@ -67,11 +74,13 @@ try {
 					toggleVisible: toggle.getClientRects().length > 0,
 					serviceCards: document.querySelectorAll('[data-service-card]').length,
 					blogCards: document.querySelectorAll('[data-blog-card]').length,
-					contactAlternatives: document.querySelectorAll('.contact-page__alternate-actions a[href]').length,
+					contactAlternatives: (() => {
+						const visible = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+						const alternateLinks = [...document.querySelectorAll('.contact-page__alternate-actions a[href]')].filter(visible);
+						if (alternateLinks.length > 0) return alternateLinks.length;
+						return [...document.querySelectorAll('.contact-details a.contact-page__phone[href], .contact-details a.contact-page__email[href]')].filter(visible).length;
+					})(),
 					overflow: document.documentElement.scrollWidth > innerWidth + 3,
-					ariaHiddenTabStops: [...document.querySelectorAll('[aria-hidden="true"]')]
-						.flatMap((node) => [...node.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])')])
-						.length,
 				};
 			});
 			check(data.navigationVisible, `no-js-${width} ${route}: menu principal continua navegável`);
@@ -86,7 +95,7 @@ try {
 			if (route === '/blog/') check(data.blogCards >= 30, `no-js-${width} /blog/: artigos não dependem do JS`);
 			if (route === '/contato/') check(data.contactAlternatives === 2, `no-js-${width} /contato/: canais alternativos visíveis`);
 			check(!data.overflow, `no-js-${width} ${route}: sem overflow horizontal`);
-			check(data.ariaHiddenTabStops === 0, `no-js-${width} ${route}: foco dentro de aria-hidden`);
+			check((await countAriaHiddenTabStops(page)) === 0, `no-js-${width} ${route}: foco dentro de aria-hidden`);
 			await page.close();
 		}
 		await noJsContext.close();
@@ -144,13 +153,10 @@ try {
 	const desktopData = await keyboardPage.evaluate(() => ({
 		overflow: document.documentElement.scrollWidth > innerWidth + 3,
 		missingImageAlt: [...document.images].filter((image) => !image.hasAttribute('alt')).length,
-		ariaHiddenTabStops: [...document.querySelectorAll('[aria-hidden="true"]')]
-			.flatMap((node) => [...node.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])')])
-			.length,
 	}));
 	check(!desktopData.overflow, 'keyboard-desktop: sem overflow horizontal');
 	check(desktopData.missingImageAlt === 0, 'keyboard-desktop: todas as imagens declaram alt');
-	check(desktopData.ariaHiddenTabStops === 0, 'keyboard-desktop: foco não entra em aria-hidden');
+	check((await countAriaHiddenTabStops(keyboardPage)) === 0, 'keyboard-desktop: foco não entra em aria-hidden');
 	await keyboardPage.close();
 	await keyboardContext.close();
 } finally {
