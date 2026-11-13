@@ -28,5 +28,6 @@ export function isAllowedResourceUrl(rawUrl, kind, productionOrigin, isStyleshee
 	if (url.username || url.password) return false;
 	if (url.protocol !== 'https:') return false;
 	if (url.origin === productionOrigin) return true;
+	if (kind === 'script' && url.origin === 'https://challenges.cloudflare.com') return true;
 	return kind === 'link' && isStylesheet && url.origin === productionOrigin;
 }

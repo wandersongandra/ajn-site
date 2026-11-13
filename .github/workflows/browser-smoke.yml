@@ -14,6 +14,7 @@ on:
       - 'scripts/browser-performance-budget.mjs'
       - 'scripts/browser-accessibility.mjs'
       - 'scripts/browser-route-matrix.mjs'
+      - 'scripts/browser-carreiras.mjs'
       - 'astro.config.mjs'
       - 'package.json'
       - 'package-lock.json'
@@ -89,6 +90,9 @@ jobs:
 
       - name: Browser acceptance matrix — every generated route at mobile and desktop
         run: node scripts/browser-route-matrix.mjs
+
+      - name: Careers regression — permissions, workflow and private résumé download
+        run: npm run test:browser-carreiras
 
       - name: Upload screenshot evidence
         if: always()
