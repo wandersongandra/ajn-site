@@ -101,7 +101,7 @@ function initJobFilters() {
         const emptyState = document.querySelector('[data-job-empty-state]');
         const countEl = document.querySelector('[data-jobs-count]');
         if (emptyState) emptyState.hidden = true;
-        if (countEl) countEl.textContent = '—';
+        if (countEl) countEl.textContent = '0';
       }
     }
   })();
@@ -524,7 +524,7 @@ function initApplicationForm() {
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.setAttribute('data-orig-text', submitBtn.textContent || '');
-      submitBtn.textContent = 'Enviando candidatura…';
+      submitBtn.textContent = 'Enviando candidatura...';
     }
 
     try {

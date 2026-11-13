@@ -34,7 +34,7 @@ $assertions['Vaga criada em rascunho'] = ($job['status'] ?? '') === 'draft';
 $assertions['Visibilidade salarial false'] = ($job['salary_is_disclosed'] ?? null) === 0;
 
 foreach ($assertions as $name => $pass) {
-    fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' — ' . $name . "\n");
+    fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $name . "\n");
 }
 if (in_array(false, $assertions, true)) exit(1);
 fwrite(STDOUT, count($assertions) . " asserts locais PASS. Banco, HTTP e hospedagem ainda não homologados.\n");

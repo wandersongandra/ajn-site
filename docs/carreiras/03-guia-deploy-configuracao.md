@@ -100,11 +100,24 @@ Ordem obrigatória na promoção. O backend novo lê duas colunas que não exist
 3. Copiar `hostinger/resumes-directory.htaccess` como `.htaccess` dentro do diretório apontado por `resume_directory`. É a segunda barreira caso um deploy futuro mova esse diretório para dentro de `public_html`.
 4. Avisar os operadores: o cookie passou a se chamar `__Host-ajn_admin_session` e todas as sessões ativas são encerradas. Cada operador precisa entrar de novo com senha e MFA.
 
+5. Aplicar `hostinger/migrations/003_least_privilege.sql`, que remove `audit:read` do papel `recruiter`. O seed de `001_initial.sql` também já foi corrigido, então instalações novas nascem sem essa permissão.
+6. Restringir o usuário de banco da aplicação na tabela de auditoria. O backend só precisa inserir e ler; retirar `UPDATE` e `DELETE` impede que uma falha na aplicação apague ou reescreva o próprio rastro:
+
+```sql
+REVOKE UPDATE, DELETE ON <banco>.audit_logs FROM '<usuario_app>'@'<host>';
+GRANT SELECT, INSERT ON <banco>.audit_logs TO '<usuario_app>'@'<host>';
+FLUSH PRIVILEGES;
+```
+
+Expurgo de auditoria, quando houver política de retenção definida, passa a exigir um usuário administrativo separado. Isso é intencional.
+
 O que muda no comportamento:
 
 - A sessão expira por inatividade em 30 minutos e tem teto absoluto de 8 horas. Antes existia apenas o teto fixo de 8 horas, sem expirar por inatividade.
 - Um código TOTP só vale uma vez. A reapresentação do mesmo código dentro da janela de tolerância é registrada como `AUTH_MFA_REPLAY_BLOCKED` e conta como tentativa falha.
-- Operadores novos passam a exigir senha de 16 caracteres, igual à regra já usada na redefinição.
+- Operadores novos passam a exigir senha de 16 caracteres, igual à regra já usada na redefinição, e senhas degeneradas (repetição ou sequência de teclado) são recusadas nos dois fluxos.
+- Download de currículo passa a ter teto de 40 por hora por operador, não por IP. Triagem normal não encosta nesse limite; coleta em massa a partir de uma conta comprometida para no limite e fica registrada na auditoria.
+- O logout envia `Clear-Site-Data`, e `/admin/` responde com `no-store`.
 
 ## 7. Estado desta branch
 

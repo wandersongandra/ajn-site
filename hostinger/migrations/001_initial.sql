@@ -254,7 +254,6 @@ INSERT INTO admin_permissions (id, role, permission, created_at) VALUES
 ('rec-4','recruiter','resumes:read',UNIX_TIMESTAMP()),
 ('rec-5','recruiter','applications:read',UNIX_TIMESTAMP()),
 ('rec-6','recruiter','applications:stage_move',UNIX_TIMESTAMP()),
-('rec-7','recruiter','audit:read',UNIX_TIMESTAMP()),
 ('viewer-1','viewer','jobs:read',UNIX_TIMESTAMP()),
 ('viewer-2','viewer','candidates:read',UNIX_TIMESTAMP()),
 ('viewer-3','viewer','applications:read',UNIX_TIMESTAMP()),

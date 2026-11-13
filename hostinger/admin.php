@@ -72,6 +72,9 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
             ajn_exec($db, 'DELETE FROM admin_sessions WHERE session_token_hash=?', [hash('sha256', $token)]);
         }
         setcookie(AJN_SESSION_COOKIE, '', ['expires' => 1, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
+        // Pede ao navegador para descartar cache e storage da origem, para que o
+        // painel nao fique recuperavel no historico de uma estacao compartilhada.
+        header('Clear-Site-Data: "cache", "storage"');
         ajn_json(['success' => true, 'message' => 'Sessão encerrada com sucesso.']);
     }
     if ($path === '/api/admin/auth/forgot-password' && $method === 'POST') {
@@ -88,7 +91,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
         $expires = time() + 1800;
         ajn_exec($db, 'UPDATE admin_users SET reset_token_hash=?,reset_expires_at=?,reset_attempts=0,updated_at=? WHERE id=? AND is_active=1', [hash('sha256', $token), $expires, time(), $user['id']]);
         $link = rtrim($config['app_url'], '/') . '/admin/carreiras/?resetToken=' . rawurlencode($token);
-        $sent = ajn_send_email($config, $user['email'], 'Recuperação de acesso — AJN Carreiras', "Recebemos uma solicitação de recuperação de acesso.\n\nUse este link em até 30 minutos:\n$link\n\nSe você não solicitou a recuperação, ignore esta mensagem.");
+        $sent = ajn_send_email($config, $user['email'], 'Recuperação de acesso na AJN Carreiras', "Recebemos uma solicitação de recuperação de acesso.\n\nUse este link em até 30 minutos:\n$link\n\nSe você não solicitou a recuperação, ignore esta mensagem.");
         if (!$sent) {
             ajn_exec($db, 'UPDATE admin_users SET reset_token_hash=NULL,reset_expires_at=NULL,reset_attempts=0,updated_at=? WHERE id=?', [time(), $user['id']]);
             error_log('[AJN_CAREERS] password recovery email delivery failed');
@@ -105,6 +108,9 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
         $newPassword = $body['newPassword'] ?? null;
         if (!is_string($token) || !preg_match('/^[a-f0-9]{64}$/D', $token) || !is_string($newPassword) || strlen($newPassword) < 16 || strlen($newPassword) > 1024) {
             ajn_json(['error' => 'Token ou senha inválidos.'], 400);
+        }
+        if (ajn_password_is_weak($newPassword)) {
+            ajn_json(['error' => 'Escolha uma senha sem repetições ou sequências previsíveis.'], 400);
         }
         $user = ajn_fetch($db, 'SELECT id FROM admin_users WHERE reset_token_hash=? AND reset_expires_at>? AND reset_attempts<5 AND is_active=1 LIMIT 1', [hash('sha256', $token), time()]);
         if (!$user) ajn_json(['error' => 'Token inválido, expirado ou já utilizado.'], 400);
@@ -249,6 +255,9 @@ function ajn_admin_users(PDO $db, string $method, string $path, array $config): 
         // mais fraca na criacao do operador.
         if (mb_strlen($name) < 3 || !filter_var($email, FILTER_VALIDATE_EMAIL) || !is_string($password) || strlen($password) < 16 || strlen($password) > 1024 || !in_array($role, ['recruiter', 'viewer', 'dpo'], true)) {
             ajn_json(['error' => 'Dados inválidos. Exija senha com pelo menos 16 caracteres.'], 400);
+        }
+        if (ajn_password_is_weak($password)) {
+            ajn_json(['error' => 'Escolha uma senha sem repetições ou sequências previsíveis.'], 400);
         }
         if (ajn_fetch($db, 'SELECT id FROM admin_users WHERE email=?', [$email])) ajn_json(['error' => 'E-mail já cadastrado.'], 409);
         $id = ajn_uuid();

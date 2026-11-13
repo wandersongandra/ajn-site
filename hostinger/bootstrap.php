@@ -86,9 +86,14 @@ function ajn_audit(PDO $db, string $actorType, ?string $actorId, string $action,
     );
 }
 
-function ajn_rate_limit(PDO $db, string $scope, int $max, int $window): void
+/**
+ * Contador por janela. Por padrao a chave e o IP de origem; passar $identity
+ * permite limitar por sujeito autenticado, o que e o que importa em acoes que
+ * so existem apos login e podem vazar dado pessoal em volume.
+ */
+function ajn_rate_limit(PDO $db, string $scope, int $max, int $window, ?string $identity = null): void
 {
-    $key = hash('sha256', $scope . ':' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+    $key = hash('sha256', $scope . ':' . ($identity ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown'));
     $now = time();
     // A tabela so cresce se ninguem remover janelas vencidas. Nao ha cron na
     // hospedagem compartilhada, entao a limpeza ocorre de forma amostral.
@@ -178,6 +183,26 @@ function ajn_auth(PDO $db, ?string $permission = null): array
         if (!$allowed) ajn_json(['error' => 'Permissão insuficiente.'], 403);
     }
     return $user;
+}
+
+/**
+ * Tamanho sozinho nao basta: "aaaaaaaaaaaaaaaa" tem 16 caracteres. Em vez de
+ * exigir composicao rigida, que a NIST SP 800-63B desaconselha, recusa apenas
+ * os casos degenerados de repeticao e sequencia, que e o que aparece quando
+ * alguem preenche o campo so para passar da validacao.
+ */
+function ajn_password_is_weak(string $password): bool
+{
+    $lower = mb_strtolower($password, 'UTF-8');
+    if (count(array_unique(mb_str_split($lower, 1, 'UTF-8'))) < 8) return true;
+    if (preg_match('/(.)\1{3,}/u', $lower)) return true;
+    foreach (['0123456789', 'abcdefghijklmnopqrstuvwxyz', 'qwertyuiop', 'asdfghjkl'] as $sequence) {
+        for ($offset = 0; $offset + 6 <= strlen($sequence); $offset++) {
+            $window = substr($sequence, $offset, 6);
+            if (str_contains($lower, $window) || str_contains($lower, strrev($window))) return true;
+        }
+    }
+    return false;
 }
 
 function ajn_user_public(array $user): array
@@ -286,6 +311,28 @@ function ajn_smtp_command($socket, string $command, array $expectedCodes): bool
     return ajn_smtp_read($socket, $expectedCodes);
 }
 
+/**
+ * Cabecalho de e-mail aceita apenas ASCII imprimivel (RFC 5322). Assunto com
+ * acento precisa viajar como encoded-word (RFC 2047) ou chega corrompido em
+ * parte dos clientes. As quebras seguem limite de linha e fronteira de
+ * caractere, para nao partir um UTF-8 multibyte no meio.
+ */
+function ajn_mime_header(string $value): string
+{
+    if (preg_match('/^[\x20-\x7E]*$/D', $value)) return $value;
+    $words = [];
+    $current = '';
+    foreach (mb_str_split($value, 1, 'UTF-8') as $char) {
+        if (strlen($current . $char) > 42) {
+            $words[] = '=?UTF-8?B?' . base64_encode($current) . '?=';
+            $current = '';
+        }
+        $current .= $char;
+    }
+    if ($current !== '') $words[] = '=?UTF-8?B?' . base64_encode($current) . '?=';
+    return implode("\r\n ", $words);
+}
+
 function ajn_send_email(array $config, string $recipient, string $subject, string $body): bool
 {
     if (!ajn_email_configured($config) || !filter_var($recipient, FILTER_VALIDATE_EMAIL) ||
@@ -317,7 +364,7 @@ function ajn_send_email(array $config, string $recipient, string $subject, strin
         $safeBody = preg_replace('/^\./m', '..', $safeBody) ?? $safeBody;
         $message = 'From: AJN Carreiras <' . $smtp['from'] . ">\r\n" .
             'To: <' . $recipient . ">\r\n" .
-            'Subject: ' . $subject . "\r\n" .
+            'Subject: ' . ajn_mime_header($subject) . "\r\n" .
             "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n" . $safeBody . "\r\n.";
         if (fwrite($socket, $message . "\r\n") === false || !ajn_smtp_read($socket, [250])) return false;
         ajn_smtp_command($socket, 'QUIT', [221]);

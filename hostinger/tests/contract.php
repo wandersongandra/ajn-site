@@ -68,12 +68,28 @@ check_contract('health não revela ambiente de produção', str_contains($app, "
 check_contract('senha mínima igual na criação e na redefinição', str_contains($admin, 'strlen($password) < 16') &&
     str_contains($admin, 'strlen($newPassword) < 16') && !str_contains($admin, '< 12'));
 check_contract('diretório de currículos com negação explícita', str_contains(source_contract($root . '/resumes-directory.htaccess'), 'Require all denied'));
+check_contract('download de currículo limitado por operador', str_contains($applications, "ajn_rate_limit(\$db, 'admin-resume-download', 40, 3600, (string) \$admin['id'])") &&
+    str_contains($bootstrap, 'int $window, ?string $identity = null'));
+check_contract('senha degenerada recusada nos dois fluxos', substr_count($admin, 'ajn_password_is_weak(') === 2 &&
+    str_contains($bootstrap, 'function ajn_password_is_weak(string $password): bool'));
+check_contract('recruiter sem leitura de auditoria', !str_contains($schema, "'recruiter','audit:read'") &&
+    str_contains(source_contract($root . '/migrations/003_least_privilege.sql'), "role='recruiter' AND permission='audit:read'"));
+check_contract('assunto de e-mail em encoded-word', str_contains($bootstrap, 'ajn_mime_header($subject)') &&
+    str_contains($bootstrap, '=?UTF-8?B?'));
+check_contract('logout limpa dados do navegador', str_contains($admin, 'Clear-Site-Data'));
+// <If> dependeria de Apache 2.4 e o host roda LiteSpeed: exigir SetEnvIf evita
+// reintroduzir uma diretiva que derrubaria o site caso nao fosse reconhecida.
+check_contract('painel administrativo sem cache', str_contains($htaccess, 'no-store, max-age=0') &&
+    str_contains($htaccess, 'SetEnvIf Request_URI "^/admin(/|$)" AJN_ADMIN_AREA=1') &&
+    str_contains($htaccess, 'env=AJN_ADMIN_AREA') && !str_contains($htaccess, '<If '));
+check_contract('módulo sem travessão ou reticência tipográfica', !preg_match('/[\x{2013}\x{2014}\x{2026}]/u',
+    $bootstrap . $app . $admin . $applications . $lgpd . $careerScript . $adminScript));
 
 $beginIndex = strpos($applications, '$db->beginTransaction();');
 $demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1');
 $insertIndex = strpos($applications, 'INSERT INTO resumes (id,candidate_id,file_key');
 check_contract('recandidatura desativa currículo antigo dentro da transação', $beginIndex !== false && $demoteIndex !== false && $insertIndex !== false && $beginIndex < $demoteIndex && $demoteIndex < $insertIndex);
 
-foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' — ' . $label . "\n");
+foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);
 fwrite(STDOUT, count($checks) . " contratos PHP/Hostinger PASS. Não substitui banco, SMTP, navegador ou staging real.\n");

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * AJN Carreiras — entrada de API para PHP/PDO na Hostinger Premium.
+ * AJN Carreiras: entrada de API para PHP/PDO na Hostinger Premium.
  * Este código depende de um banco dedicado e de configuração privada.
  */
 

@@ -61,7 +61,7 @@ function ajn_send_candidate_verification(PDO $db, array $candidate, array $confi
     $code = (string) random_int(100000, 999999);
     $expires = time() + 900;
     ajn_exec($db, 'UPDATE candidates SET email_verification_code_hash=?,email_verification_expires_at=?,email_verification_attempts=0,updated_at=? WHERE id=?', [hash('sha256', $code), $expires, time(), $candidate['id']]);
-    $subject = $action === 'tracking' ? 'Recuperação de acompanhamento — AJN Carreiras' : 'Verificação de titularidade — AJN Carreiras';
+    $subject = $action === 'tracking' ? 'Recuperação de acompanhamento na AJN Carreiras' : 'Verificação de titularidade na AJN Carreiras';
     $body = $action === 'tracking'
         ? "Recebemos um pedido para recuperar seus códigos de acompanhamento.\n\nSeu código de verificação é: $code\n\nEle expira em 15 minutos. Se você não solicitou, ignore esta mensagem."
         : "Recebemos um pedido para confirmar a titularidade do seu cadastro.\n\nSeu código de verificação é: $code\n\nEle expira em 15 minutos. Se você não solicitou, ignore esta mensagem.";
@@ -256,6 +256,11 @@ function ajn_admin_candidates(PDO $db, string $method, string $path, array $conf
     }
     if (preg_match('~^/api/admin/candidates/([a-f0-9-]{36})/resume$~D', $path, $match)) {
         $admin = ajn_auth($db, 'resumes:read');
+        // Teto por operador, nao por IP. Um curriculo e dado pessoal e a listagem
+        // de candidatos entrega os ids em lote, entao uma conta comprometida
+        // conseguiria baixar o acervo inteiro em sequencia. O limite nao atrapalha
+        // triagem normal e deixa a tentativa de coleta em massa visivel no audit.
+        ajn_rate_limit($db, 'admin-resume-download', 40, 3600, (string) $admin['id']);
         $row = ajn_fetch($db, 'SELECT file_key,original_filename,mime_type FROM resumes WHERE candidate_id=? AND is_current=1 LIMIT 1', [$match[1]]);
         if (!$row) ajn_json(['error' => 'Currículo não encontrado.'], 404);
         $directory = realpath($config['resume_directory'] ?? '');
