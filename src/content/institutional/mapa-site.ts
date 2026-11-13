@@ -2,7 +2,7 @@ import { routeCatalog, type RouteCatalogEntry } from '../route-catalog';
 
 export const siteMapPage = {
 	slug: 'mapa-site',
-	title: 'Mapa do site | AJN Consultoria e Engenharia',
+	title: 'Mapa do site e serviços | AJN Consultoria e Engenharia',
 	description: 'Encontre páginas institucionais, serviços, conteúdos técnicos e artigos da AJN Consultoria e Engenharia.',
 	heading: 'Mapa do site',
 	intro: 'Encontre as páginas da AJN por assunto. Para conhecer um serviço, consulte a seção correspondente ou navegue pelos conteúdos técnicos.',

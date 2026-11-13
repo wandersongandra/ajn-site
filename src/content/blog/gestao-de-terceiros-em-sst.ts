@@ -4,7 +4,7 @@ import type { BlogContentData } from '../types';
 export const blogGestaoDeTerceirosEmSst = {
   slug: 'gestao-de-terceiros-em-sst-documentos-mobilizacao-e-controles',
   path: '/blog/gestao-de-terceiros-em-sst-documentos-mobilizacao-e-controles',
-  title: 'Gestão de terceiros em SST: documentos, mobilização e controles | AJN',
+  title: 'Gestão de terceiros em SST: documentos e controles | AJN',
   description: 'Como organizar informações de riscos, documentos e controles de SST na contratação e mobilização de empresas terceirizadas.',
   heading: 'Gestão de terceiros em SST: documentos, mobilização e controles',
   pubDate: '2026-10-09',

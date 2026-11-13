@@ -8,7 +8,7 @@ import type { BlogContentData } from '../types';
 export const blogNr35TrabalhoEmAlturaESeguranca = {
 	slug: "nr-35-trabalho-em-altura-e-seguranca",
 	path: "/blog/nr-35-trabalho-em-altura-e-seguranca",
-	title: "NR-35: Trabalho em Altura e Segurança",
+	title: "NR-35: Trabalho em Altura e Segurança na Prática | AJN",
 	description: "Veja cuidados abordados na NR-35, como capacitação, uso de equipamentos, acesso por escadas e preparação para emergências em altura.",
 	heading: "NR-35: Trabalho em Altura e Segurança",
 	pubDate: "2025-01-24",

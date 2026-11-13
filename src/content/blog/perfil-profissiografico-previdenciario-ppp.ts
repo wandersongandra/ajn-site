@@ -7,7 +7,7 @@ import image4 from '../../assets/blog/blog-perfil-profissiografico-previdenciari
 
 export const blogPerfilProfissiograficoPrevidenciarioPpp = {
 	 slug: "perfil-profissiografico-previdenciario-ppp", path: "/blog/perfil-profissiografico-previdenciario-ppp",
-	 title: "Perfil Profissiográfico Previdenciário (PPP)",
+	 title: "Perfil Profissiográfico Previdenciário (PPP) | AJN",
 	 description: "Entenda o que é o Perfil Profissiográfico Previdenciário e como ele registra atividades e condições de exposição do trabalhador.",
 	 heading: "Perfil Profissiográfico Previdenciário (PPP)",
 	 pubDate: "2025-04-09",
