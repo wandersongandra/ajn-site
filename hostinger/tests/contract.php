@@ -130,6 +130,16 @@ $demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE cand
 $insertIndex = strpos($applications, 'INSERT INTO resumes (id,candidate_id,file_key');
 check_contract('recandidatura desativa currículo antigo dentro da transação', $beginIndex !== false && $demoteIndex !== false && $insertIndex !== false && $beginIndex < $demoteIndex && $demoteIndex < $insertIndex);
 
+preg_match('/recruiter:\s*\[[^\]]+\]/', $adminScript, $recruiterPermMatch);
+$adminPageSource = source_contract(dirname($root) . '/src/pages/admin/carreiras/index.astro');
+check_contract('painel oculta audit para recruiter conforme banco e exige 16 caracteres na UI',
+    !str_contains($recruiterPermMatch[0] ?? 'audit:read', 'audit:read')
+    && str_contains($adminPageSource, 'minlength="16"')
+    && !str_contains($adminPageSource, 'value="super_admin"'));
+check_contract('formulários públicos de carreiras reiniciam widget Turnstile após envio',
+    str_contains($careerScript, 'function resetTurnstileWidget(')
+    && substr_count($careerScript, 'resetTurnstileWidget(') >= 4);
+
 foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);
 fwrite(STDOUT, count($checks) . " contratos PHP/Hostinger PASS. Não substitui banco, SMTP, navegador ou staging real.\n");

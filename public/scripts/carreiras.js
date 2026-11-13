@@ -509,10 +509,7 @@ function initApplicationForm() {
     }
 
     // Obtenção do token Turnstile do widget ou input hidden
-    const turnstileToken =
-      formData.get('cf-turnstile-response') ||
-      (window.turnstile ? window.turnstile.getResponse() : '') ||
-      '';
+    const turnstileToken = getFormTurnstileToken(form, formData);
     if (!turnstileToken) {
       showNotice(noticeBox, 'A verificação antispam ainda não foi concluída. Tente novamente em instantes.', 'error');
       return;
@@ -591,6 +588,7 @@ function initApplicationForm() {
     } catch (err) {
       showNotice(noticeBox, 'Erro de comunicação com o servidor. Verifique sua conexão e tente novamente.', 'error');
     } finally {
+      resetTurnstileWidget(form);
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = submitBtn.getAttribute('data-orig-text') || 'Enviar candidatura';
@@ -660,9 +658,7 @@ function initTrackingForm() {
       const cpf = recoveryForm.querySelector('[name="cpf"]')?.value.trim();
       const codeInput = recoveryForm.querySelector('[name="recoveryCode"]');
       const code = codeInput?.value.trim();
-      const turnstileToken =
-        recoveryForm.querySelector('[name="cf-turnstile-response"]')?.value ||
-        (window.turnstile ? window.turnstile.getResponse() : '');
+      const turnstileToken = getFormTurnstileToken(recoveryForm);
 
       if (!email || !cpf) {
         showNotice(recNotice, 'Preencha seu e-mail e CPF.', 'error');
@@ -695,6 +691,7 @@ function initTrackingForm() {
         } catch {
           showNotice(recNotice, 'Erro de conexão.', 'error');
         } finally {
+          resetTurnstileWidget(recoveryForm);
           if (recBtn) recBtn.disabled = false;
         }
       } else {
@@ -772,9 +769,7 @@ function initLgpdForm() {
     const email = form.querySelector('[name="email"]')?.value.trim();
     const cpf = form.querySelector('[name="cpf"]')?.value.trim();
     const reason = form.querySelector('[name="reason"]')?.value.trim();
-    const turnstileToken =
-      form.querySelector('[name="cf-turnstile-response"]')?.value ||
-      (window.turnstile ? window.turnstile.getResponse() : '');
+    const turnstileToken = getFormTurnstileToken(form);
 
     if (!email || !cpf) {
       showNotice(noticeBox, 'Preencha seu e-mail e CPF para validar a solicitação.', 'error');
@@ -809,6 +804,7 @@ function initLgpdForm() {
     } catch (err) {
       showNotice(noticeBox, 'Erro de conexão ao processar solicitação. Tente novamente mais tarde.', 'error');
     } finally {
+      resetTurnstileWidget(form);
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Solicitar Exclusão Definitiva';
@@ -837,6 +833,35 @@ function showNotice(box, message, type) {
   box.textContent = message;
   box.className = `carreiras-notice carreiras-notice--${type}`;
   box.style.display = 'block';
+}
+
+function getFormTurnstileToken(form, formData) {
+  const fromFormData = formData ? formData.get('cf-turnstile-response') : '';
+  const fromInput = form?.querySelector('[name="cf-turnstile-response"]')?.value || '';
+  let fromWidget = '';
+  if (typeof window !== 'undefined' && window.turnstile && typeof window.turnstile.getResponse === 'function') {
+    const widget = form?.querySelector('.cf-turnstile');
+    try {
+      fromWidget = (widget ? window.turnstile.getResponse(widget) : window.turnstile.getResponse()) || '';
+    } catch {
+      fromWidget = '';
+    }
+  }
+  return String(fromFormData || fromInput || fromWidget || '');
+}
+
+function resetTurnstileWidget(form) {
+  if (typeof window === 'undefined' || !window.turnstile || typeof window.turnstile.reset !== 'function') return;
+  const widget = form?.querySelector('.cf-turnstile');
+  try {
+    if (widget) {
+      window.turnstile.reset(widget);
+    } else {
+      window.turnstile.reset();
+    }
+  } catch {
+    // Ignora widget ainda nao inicializado.
+  }
 }
 
 function hideNotice(box) {

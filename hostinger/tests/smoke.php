@@ -33,6 +33,9 @@ $assertions['Requisitos serializados'] = json_decode($job['requirements'] ?? '',
 $assertions['Vaga criada em rascunho'] = ($job['status'] ?? '') === 'draft';
 $assertions['Visibilidade salarial false'] = ($job['salary_is_disclosed'] ?? null) === 0;
 
+$partialSalaryUpdate = ajn_validate_job(['salaryMax' => 10000], true, ['salary_min' => '5000']);
+$assertions['Faixa salarial parcial compara numericamente com string do banco'] = ($partialSalaryUpdate['salary_max'] ?? null) === 10000;
+
 foreach ($assertions as $name => $pass) {
     fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $name . "\n");
 }

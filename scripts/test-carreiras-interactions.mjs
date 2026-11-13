@@ -129,3 +129,28 @@ test('não habilita candidatura se a resposta indicar vaga encerrada', async () 
   assert.equal(page.fields.disabled, true);
   assert.equal(page.closed.style.display, 'block');
 });
+
+test('Turnstile lê e reinicia apenas o widget do formulário submetido', () => {
+  const widget = { id: 'lgpd-widget' };
+  const resetCalls = [];
+  const document = { addEventListener() {} };
+  const context = createContext(document);
+  context.window.turnstile = {
+    getResponse(target) { return target === widget ? 'tok-especifico' : 'tok-errado'; },
+    reset(target) { resetCalls.push(target); },
+  };
+  const fakeForm = {
+    querySelector(selector) { return selector === '.cf-turnstile' ? widget : null; },
+  };
+
+  assert.equal(context.getFormTurnstileToken(fakeForm), 'tok-especifico');
+  context.resetTurnstileWidget(fakeForm);
+  assert.deepEqual(resetCalls, [widget]);
+
+  context.window.turnstile = {
+    getResponse() { throw new Error('uninitialized'); },
+    reset() { throw new Error('uninitialized'); },
+  };
+  assert.equal(context.getFormTurnstileToken(fakeForm), '');
+  assert.doesNotThrow(() => context.resetTurnstileWidget(fakeForm));
+});

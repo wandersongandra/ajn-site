@@ -622,6 +622,70 @@ PHP,
     fn_check('HTTP criacao de vagas publicadas retorna 201',
         $createSpecialJob['status'] === 201 && $createNormalJob['status'] === 201);
 
+    $validJobBase = [
+        'title' => 'Vaga Validacao',
+        'slug' => 'vaga-validacao-400',
+        'department' => 'SST',
+        'location' => 'BH',
+        'employmentType' => 'CLT',
+        'experienceLevel' => 'Pleno',
+        'description' => 'Descricao valida',
+        'requirements' => ['NR-10'],
+        'status' => 'draft',
+    ];
+    $badNullOpenings = fn_http($baseUrl, 'POST', '/api/admin/jobs', [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => array_merge($validJobBase, ['openingsCount' => null]),
+    ]);
+    $badZeroOpenings = fn_http($baseUrl, 'POST', '/api/admin/jobs', [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => array_merge($validJobBase, ['openingsCount' => 0]),
+    ]);
+    $badEmptyReqs = fn_http($baseUrl, 'POST', '/api/admin/jobs', [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => array_merge($validJobBase, ['requirements' => []]),
+    ]);
+    $badTypeReqs = fn_http($baseUrl, 'POST', '/api/admin/jobs', [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => array_merge($validJobBase, ['requirements' => [123]]),
+    ]);
+    $badBlankReqs = fn_http($baseUrl, 'POST', '/api/admin/jobs', [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => array_merge($validJobBase, ['requirements' => ['   ']]),
+    ]);
+    $badSalaryRange = fn_http($baseUrl, 'POST', '/api/admin/jobs', [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => array_merge($validJobBase, ['salaryMin' => 6000, 'salaryMax' => 4000]),
+    ]);
+    $normalJobId = $createNormalJob['json']['jobId'] ?? '';
+    $setSalaryRange = fn_http($baseUrl, 'PUT', "/api/admin/jobs/$normalJobId", [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => ['salaryMin' => 5000, 'salaryMax' => 8000],
+    ]);
+    $badPartialSalary = fn_http($baseUrl, 'PUT', "/api/admin/jobs/$normalJobId", [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => ['salaryMax' => 4000],
+    ]);
+    $badNullStatusPut = fn_http($baseUrl, 'PUT', "/api/admin/jobs/$normalJobId", [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => ['status' => null],
+    ]);
+    $badBlankTitlePut = fn_http($baseUrl, 'PUT', "/api/admin/jobs/$normalJobId", [
+        'headers' => ['Origin: ' . $appUrl], 'cookie' => $recruiterCookie,
+        'json' => ['title' => '   '],
+    ]);
+    fn_check('HTTP validacao de vagas rejeita openingsCount nulo/zero, requirements invalidos, faixa salarial invertida e nulos no PUT com 400',
+        $badNullOpenings['status'] === 400
+        && $badZeroOpenings['status'] === 400
+        && $badEmptyReqs['status'] === 400
+        && $badTypeReqs['status'] === 400
+        && $badBlankReqs['status'] === 400
+        && $badSalaryRange['status'] === 400
+        && $setSalaryRange['status'] === 200
+        && $badPartialSalary['status'] === 400
+        && $badNullStatusPut['status'] === 400
+        && $badBlankTitlePut['status'] === 400);
+
     // 4.9 LIKE wildcard escaping & SSR XSS escaping
     $likeSearch = fn_http($baseUrl, 'GET', '/api/jobs?q=' . rawurlencode('100%_'));
     $percentSearch = fn_http($baseUrl, 'GET', '/api/jobs?q=' . rawurlencode('%'));

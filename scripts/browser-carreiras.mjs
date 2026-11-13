@@ -324,7 +324,7 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
   await page.locator('[data-admin-dashboard]').waitFor({ state: 'visible' });
   await dismissPrivacyNotice(page);
   const allowed = {
-    recruiter: ['pipeline', 'candidates', 'jobs', 'audit'],
+    recruiter: ['pipeline', 'candidates', 'jobs'],
     viewer: ['pipeline', 'candidates', 'jobs'],
     dpo: ['candidates', 'lgpd', 'audit'],
   }[role];

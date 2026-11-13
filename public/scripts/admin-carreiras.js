@@ -11,7 +11,7 @@
 
   // Apenas apresentação: o backend continua sendo a autoridade das permissões.
   const rolePermissions = {
-    recruiter: ['jobs:read', 'jobs:write', 'candidates:read', 'resumes:read', 'applications:read', 'applications:stage_move', 'audit:read'],
+    recruiter: ['jobs:read', 'jobs:write', 'candidates:read', 'resumes:read', 'applications:read', 'applications:stage_move'],
     viewer: ['jobs:read', 'candidates:read', 'applications:read'],
     dpo: ['candidates:read', 'lgpd:read', 'lgpd:execute', 'audit:read'],
   };
@@ -370,7 +370,7 @@
 
           const data = await res.json();
           if (res.ok && data.success) {
-            showNotice(noticeEl, 'Conta de recrutador criada com sucesso.', 'success');
+            showNotice(noticeEl, data.message || 'Operador cadastrado como pendente.', 'success');
             createUserForm.reset();
             if (createUserCard) createUserCard.style.display = 'none';
             loadAdminUsers();

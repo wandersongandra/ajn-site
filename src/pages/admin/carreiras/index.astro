@@ -427,12 +427,11 @@ const jsonLd = [
                     <option value="recruiter">Recrutador</option>
                     <option value="viewer">Somente leitura</option>
                     <option value="dpo">Responsável pela privacidade</option>
-                    <option value="super_admin">Administrador geral</option>
                   </select>
                 </div>
                 <div class="carreiras-field">
                   <label class="carreiras-label" for="new-user-password">Senha provisória *</label>
-                  <input class="carreiras-input" id="new-user-password" name="password" type="password" required minlength="12" placeholder="••••••••••••" />
+                  <input class="carreiras-input" id="new-user-password" name="password" type="password" required minlength="16" placeholder="Mínimo de 16 caracteres" />
                 </div>
                 <div class="carreiras-form-full" style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
                   <button class="carreiras-button carreiras-button--primary" type="submit">Salvar usuário</button>

@@ -136,7 +136,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
     ajn_json(['error' => 'Endpoint não encontrado.'], 404);
 }
 
-function ajn_validate_job(array $payload, bool $partial = false): array
+function ajn_validate_job(array $payload, bool $partial = false, array $existing = []): array
 {
     $mapping = [
         'title' => 'title', 'slug' => 'slug', 'department' => 'department',
@@ -153,18 +153,45 @@ function ajn_validate_job(array $payload, bool $partial = false): array
             ajn_json(['error' => 'Dados da vaga inválidos.', 'field' => $key], 400);
         }
     }
-    if (isset($payload['status']) && !in_array($payload['status'], ['draft', 'published', 'paused', 'closed', 'archived'], true)) {
+    if (array_key_exists('status', $payload) && !in_array($payload['status'], ['draft', 'published', 'paused', 'closed', 'archived'], true)) {
         ajn_json(['error' => 'Status da vaga inválido.'], 400);
     }
-    if (isset($payload['slug']) && (!is_string($payload['slug']) || !preg_match('/^[a-z0-9][a-z0-9-]{0,198}$/D', $payload['slug']))) {
+    if (array_key_exists('slug', $payload) && (!is_string($payload['slug']) || !preg_match('/^[a-z0-9][a-z0-9-]{0,198}$/D', $payload['slug']))) {
         ajn_json(['error' => 'Slug inválido.'], 400);
     }
     $values = [];
     foreach ($mapping as $key => $column) {
         if (!array_key_exists($key, $payload)) continue;
         $value = $payload[$key];
-        if ($key === 'requirements') $value = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
-        if (in_array($key, ['salaryMin', 'salaryMax', 'openingsCount'], true)) {
+        if ($key === 'requirements') {
+            if (is_array($value)) {
+                $cleanReqs = [];
+                foreach ($value as $item) {
+                    if (!is_string($item)) {
+                        ajn_json(['error' => 'Requisitos inválidos.', 'field' => 'requirements'], 400);
+                    }
+                    $trimmedItem = trim($item);
+                    if ($trimmedItem === '') {
+                        ajn_json(['error' => 'Requisitos inválidos.', 'field' => 'requirements'], 400);
+                    }
+                    $cleanReqs[] = $trimmedItem;
+                }
+                if ($cleanReqs === []) {
+                    ajn_json(['error' => 'Informe ao menos um requisito.', 'field' => 'requirements'], 400);
+                }
+                $value = json_encode($cleanReqs, JSON_UNESCAPED_UNICODE);
+                if (!is_string($value)) {
+                    ajn_json(['error' => 'Requisitos inválidos.', 'field' => 'requirements'], 400);
+                }
+            } elseif (!is_string($value) || trim($value) === '') {
+                ajn_json(['error' => 'Requisitos inválidos.', 'field' => 'requirements'], 400);
+            }
+        }
+        if ($key === 'openingsCount') {
+            if (!is_int($value) || $value < 1 || $value > 1000) {
+                ajn_json(['error' => 'Valor numérico inválido.', 'field' => 'openingsCount'], 400);
+            }
+        } elseif (in_array($key, ['salaryMin', 'salaryMax'], true)) {
             if ($value !== null && (!is_int($value) || $value < 0 || $value > 100000000)) {
                 ajn_json(['error' => 'Valor numérico inválido.', 'field' => $key], 400);
             }
@@ -176,8 +203,18 @@ function ajn_validate_job(array $payload, bool $partial = false): array
                 ajn_json(['error' => 'Texto inválido.', 'field' => $key], 400);
             }
             $value = trim($value);
+            if ($value === '' && in_array($key, $mandatory, true)) {
+                ajn_json(['error' => 'Dados da vaga inválidos.', 'field' => $key], 400);
+            }
+        } elseif (in_array($key, $mandatory, true)) {
+            ajn_json(['error' => 'Dados da vaga inválidos.', 'field' => $key], 400);
         }
         $values[$column] = $value;
+    }
+    $effectiveSalaryMin = array_key_exists('salary_min', $values) ? $values['salary_min'] : ($existing['salary_min'] ?? null);
+    $effectiveSalaryMax = array_key_exists('salary_max', $values) ? $values['salary_max'] : ($existing['salary_max'] ?? null);
+    if ($effectiveSalaryMin !== null && $effectiveSalaryMax !== null && (int) $effectiveSalaryMin > (int) $effectiveSalaryMax) {
+        ajn_json(['error' => 'Faixa salarial inválida.', 'field' => 'salaryMin'], 400);
     }
     return $values;
 }
@@ -219,7 +256,7 @@ function ajn_admin_jobs(PDO $db, string $method, string $path, array $config): n
         ajn_require_origin($config);
         $job = ajn_fetch($db, 'SELECT * FROM job_postings WHERE id=?', [$match[1]]);
         if (!$job) ajn_json(['error' => 'Vaga não encontrada.'], 404);
-        $values = ajn_validate_job(ajn_body(), true);
+        $values = ajn_validate_job(ajn_body(), true, $job);
         unset($values['slug']); // Slug é identidade pública imutável após criação.
         if (($values['status'] ?? null) === 'published' && !$job['published_at']) $values['published_at'] = time();
         if (($values['status'] ?? null) === 'closed') $values['closed_at'] = time();
