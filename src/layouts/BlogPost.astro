@@ -217,7 +217,7 @@ const galleryRemaining = galleryImages.slice(3);
 
 				<footer class="blog-article__footer">
 					{self && (
-						<a class="blog-article__topic" href={'/blog?tema=' + encodeURIComponent(self.topic)}>
+						<a class="blog-article__topic" href={'/blog/?tema=' + encodeURIComponent(self.topic)}>
 							Mais artigos sobre {self.topic} <span aria-hidden="true">→</span>
 						</a>
 					)}

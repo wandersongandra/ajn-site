@@ -6,6 +6,8 @@ const displayTitle = (title: string, path: string) => {
 	const clean = title.replace(/\s-\sAJN Consultoria e Engenharia.*$/i, '').trim();
 	return clean || path;
 };
+
+const canonicalHref = (path: string) => path === '/' || path.endsWith('/') ? path : `${path}/`;
 ---
 <PageShell heading={siteMapPage.heading}>
 	<div class="site-index">
@@ -33,7 +35,7 @@ const displayTitle = (title: string, path: string) => {
 					</div>
 					<ul class="site-index__links">
 						{group.links.map((item) => (
-							<li><a href={item.path}>{displayTitle(item.title, item.path)} <span aria-hidden="true">↗</span></a></li>
+							<li><a href={canonicalHref(item.path)}>{displayTitle(item.title, item.path)} <span aria-hidden="true">↗</span></a></li>
 						))}
 					</ul>
 				</section>

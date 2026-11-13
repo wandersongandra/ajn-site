@@ -40,20 +40,20 @@ export const servicePage = {
 				{
 					"segments": [
 						"Consulte também nossas páginas sobre ",
-						{ "text": "elaboração de PGR", "href": "/elaboracao-pgr" },
+						{ "text": "elaboração de PGR", "href": "/elaboracao-pgr/" },
 						", ",
-						{ "text": "gestão de PCMSO e ASOs", "href": "/servicos/pcmso-e-asos" },
+						{ "text": "gestão de PCMSO e ASOs", "href": "/servicos/pcmso-e-asos/" },
 						", ",
-						{ "text": "avaliações e medições ambientais ocupacionais", "href": "/medicoes-ambientais-ocupacionais" },
+						{ "text": "avaliações e medições ambientais ocupacionais", "href": "/medicoes-ambientais-ocupacionais/" },
 						" e ",
-						{ "text": "emissão de LTCAT", "href": "/emissao-ltcat" },
+						{ "text": "emissão de LTCAT", "href": "/emissao-ltcat/" },
 						"."
 					]
 				},
 				{
 					"segments": [
 						"Para solicitar orçamento em Belo Horizonte ou região, informe o ramo de atividade, o número aproximado de funcionários e as unidades de atendimento pela nossa ",
-						{ "text": "página de contato", "href": "/contato" },
+						{ "text": "página de contato", "href": "/contato/" },
 						"."
 					]
 				}

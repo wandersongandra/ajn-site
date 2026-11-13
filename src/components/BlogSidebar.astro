@@ -11,7 +11,7 @@ const usedTopics = blogTopics.filter((topic) => blogPosts.some((post) => post.to
 ---
 
 <aside class="blog-sidebar" aria-label="Explorar conteúdo do blog">
-	<form class="blog-sidebar__search" action="/blog" method="get" role="search" data-blog-form>
+	<form class="blog-sidebar__search" action="/blog/" method="get" role="search" data-blog-form>
 		<label for="blog-search">Pesquisar artigos</label>
 		<div class="blog-sidebar__search-row">
 			<input id="blog-search" name="q" type="search" placeholder="Ex.: LTCAT, PGR, NR-35" autocomplete="off" data-blog-search aria-controls={context === "archive" ? "blog-archive-grid" : undefined} />
@@ -25,7 +25,7 @@ const usedTopics = blogTopics.filter((topic) => blogPosts.some((post) => post.to
 				<li><a href="/blog/" data-blog-topic="">Todos os artigos <span>{blogPosts.length}</span></a></li>
 				{usedTopics.map((topic) => (
 					<li>
-						<a href={'/blog?tema=' + encodeURIComponent(topic)} data-blog-topic={topic}>
+						<a href={'/blog/?tema=' + encodeURIComponent(topic)} data-blog-topic={topic}>
 							{topic} <span>{blogPosts.filter((post) => post.topic === topic).length}</span>
 						</a>
 					</li>

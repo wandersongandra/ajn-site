@@ -51,12 +51,12 @@ export const sistemasIncendioBh = {
             "Conheça nosso serviço de ",
             {
               "text": "projetos de combate a incêndio e pânico (PPCIP)",
-              "href": "/servicos/projetos-de-combate-a-incendio-e-panico-ppcip"
+              "href": "/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/"
             },
             " e o suporte para ",
             {
               "text": "regularização de imóveis junto ao Corpo de Bombeiros",
-              "href": "/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros"
+              "href": "/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/"
             },
             "."
           ]
@@ -90,7 +90,7 @@ export const sistemasIncendioBh = {
             "Por isso, além dos projetos contra incêndio, a AJN realiza ",
             {
               "text": "treinamentos de Normas Regulamentadoras",
-              "href": "/servicos/treinamento-de-nrs"
+              "href": "/servicos/treinamento-de-nrs/"
             },
             ", elaboração de PGR, gestão de PCMSO e avaliações ocupacionais."
           ]
@@ -124,7 +124,7 @@ export const sistemasIncendioBh = {
             "Ligue para ",
             { "bold": true, "text": "31 98473-4644" },
             " ou ",
-            { "text": "entre em contato com a AJN", "href": "/contato" },
+            { "text": "entre em contato com a AJN", "href": "/contato/" },
             " para solicitar uma proposta técnica."
           ]
         }
