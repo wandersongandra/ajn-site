@@ -17,6 +17,7 @@ const MIGRATION_FILES = [
   '001_initial.sql',
   '002_hardening.sql',
   '003_least_privilege.sql',
+  '004_indexes.sql',
 ];
 
 const REQUIRED_DIST_FILES = [
@@ -92,7 +93,7 @@ ${blockers.length ? `## Alertas deste pacote\n\n${blockers.join('\n')}\n` : '## 
 
 - \`public_html/\` (${summary.publicFileCount} arquivos): enviar para a raiz web \`public_html/\` do domínio na Hostinger (inclui \`.htaccess\` e \`api/index.php\`).
 - \`ajn-carreiras-private/\` (${summary.privateFileCount} arquivos): enviar para **fora** de \`public_html/\`, como pasta irmã (\`../ajn-carreiras-private/\`). **Nunca colocar dentro de \`public_html/\`.**
-- \`database/\` (${summary.migrationCount} migrations SQL): importar no banco MySQL/MariaDB dedicado ao módulo de carreiras, na ordem numérica \`001\` -> \`002\` -> \`003\`. **Não enviar para \`public_html/\`.**
+- \`database/\` (${summary.migrationCount} migrations SQL): importar no banco MySQL/MariaDB dedicado ao módulo de carreiras, na ordem numérica \`001\` -> \`002\` -> \`003\` -> \`004\`. **Não enviar para \`public_html/\`.**
 
 ## 2. Banco de dados (banco exclusivo de carreiras)
 
@@ -101,6 +102,7 @@ ${blockers.length ? `## Alertas deste pacote\n\n${blockers.join('\n')}\n` : '## 
    - \`database/001_initial.sql\`
    - \`database/002_hardening.sql\`
    - \`database/003_least_privilege.sql\`
+   - \`database/004_indexes.sql\`
 
 ## 3. Configuração privada no servidor (\`ajn-carreiras-private/\`)
 

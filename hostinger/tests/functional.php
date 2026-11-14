@@ -839,7 +839,25 @@ PHP,
         $lgpdReq['status'] === 202 && $reqId !== '' && $recruiterExecute['status'] === 403
         && $dpoExecute['status'] === 200 && count($remainingFiles) === 0 && $candidateAfter === null && $erasureAudit !== null);
 
-    // 4.14 Logout limpa dados e invalida cookie de sessao
+    // 4.14 Auditoria com IP, paginacao e rotas inexistentes com 404
+    $auditPage = fn_http($baseUrl, 'GET', '/api/admin/audit?limit=1&offset=0', ['cookie' => $superCookie]);
+    $candidatesPage = fn_http($baseUrl, 'GET', '/api/admin/candidates?limit=1&offset=0', ['cookie' => $superCookie]);
+    $jobsPage = fn_http($baseUrl, 'GET', '/api/admin/jobs?limit=1&offset=0', ['cookie' => $superCookie]);
+    $unknownAdminRoute = fn_http($baseUrl, 'GET', '/api/admin/rota-inexistente', ['cookie' => $superCookie]);
+    $unknownLgpdRoute = fn_http($baseUrl, 'POST', '/api/lgpd/rota-inexistente', ['headers' => ['Origin: ' . $appUrl]]);
+    fn_check('HTTP auditoria expoe ipAddress, listagens suportam paginacao e rotas invalidas retornam 404',
+        $auditPage['status'] === 200
+        && ($auditPage['json']['limit'] ?? 0) === 1
+        && ($auditPage['json']['offset'] ?? -1) === 0
+        && array_key_exists('ipAddress', $auditPage['json']['logs'][0] ?? [])
+        && $candidatesPage['status'] === 200
+        && ($candidatesPage['json']['limit'] ?? 0) === 1
+        && $jobsPage['status'] === 200
+        && ($jobsPage['json']['limit'] ?? 0) === 1
+        && $unknownAdminRoute['status'] === 404
+        && $unknownLgpdRoute['status'] === 404);
+
+    // 4.15 Logout limpa dados e invalida cookie de sessao
     $logout = fn_http($baseUrl, 'POST', '/api/admin/auth/logout', [
         'headers' => ['Origin: ' . $appUrl],
         'cookie' => $superCookie,

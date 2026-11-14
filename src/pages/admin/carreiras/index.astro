@@ -228,6 +228,7 @@ const jsonLd = [
           <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
             Candidatos e banco de talentos
           </h3>
+          <div class="carreiras-notice" data-candidates-notice role="alert" aria-live="polite"></div>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
@@ -377,6 +378,7 @@ const jsonLd = [
           <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
             Histórico de ações administrativas
           </h3>
+          <div class="carreiras-notice" data-audit-notice role="alert" aria-live="polite"></div>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
@@ -459,9 +461,23 @@ const jsonLd = [
             </table>
           </div>
         </div>
+
+        <dialog class="carreiras-stage-dialog" data-confirm-dialog aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-description">
+          <form method="dialog" data-confirm-form>
+            <div class="carreiras-stage-dialog__heading">
+              <span class="carreiras-eyebrow" data-confirm-eyebrow>Confirmação</span>
+              <h3 id="confirm-dialog-title" data-confirm-title>Confirmar ação</h3>
+              <p id="confirm-dialog-description" data-confirm-message></p>
+            </div>
+            <div class="carreiras-stage-dialog__actions">
+              <button class="carreiras-button carreiras-button--secondary" data-confirm-cancel type="button">Cancelar</button>
+              <button class="carreiras-button carreiras-button--primary" data-confirm-accept type="submit">Confirmar</button>
+            </div>
+          </form>
+        </dialog>
       </div>
     </div>
   </div>
 
-  <script src="/scripts/admin-carreiras.js?v=20261110-consent-gate" defer></script>
+  <script src="/scripts/admin-carreiras.js?v=20261113-hardened" defer></script>
 </BaseLayout>

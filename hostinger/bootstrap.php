@@ -3,14 +3,16 @@ declare(strict_types=1);
 
 // Esta pasta deve ser instalada fora da raiz pública do site.
 // Não pode ser incluída no build Astro nem publicada via FTP em public_html.
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('Referrer-Policy: strict-origin-when-cross-origin');
-// A resposta nunca deve ser lida por outra origem nem reaproveitada por cache compartilhado.
-header('Cross-Origin-Resource-Policy: same-origin');
-header('Vary: Origin');
+if (PHP_SAPI !== 'cli') {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    // A resposta nunca deve ser lida por outra origem nem reaproveitada por cache compartilhado.
+    header('Cross-Origin-Resource-Policy: same-origin');
+    header('Vary: Origin');
+}
 
 // Nome do cookie de sessao do painel. O prefixo __Host- faz o navegador recusar
 // o cookie se nao vier com Secure, path=/ e sem Domain, o que impede que um
@@ -49,6 +51,35 @@ function ajn_body(): array
         ajn_json(['error' => 'JSON inválido.'], 400);
     }
     return $data;
+}
+
+function ajn_pagination(int $defaultLimit = 200, int $maxLimit = 200): array
+{
+    $limit = max(1, min($maxLimit, (int) ($_GET['limit'] ?? $defaultLimit)));
+    $offset = max(0, min(10000, (int) ($_GET['offset'] ?? 0)));
+    return [$limit, $offset];
+}
+
+function ajn_pdo(array $config): PDO
+{
+    $dbc = $config['database'] ?? [];
+    return new PDO(
+        'mysql:host=' . ($dbc['host'] ?? '') . ';port=' . (int) ($dbc['port'] ?? 3306) . ';dbname=' . ($dbc['name'] ?? '') . ';charset=utf8mb4',
+        $dbc['username'] ?? '', $dbc['password'] ?? '',
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+    );
+}
+
+function ajn_base32_encode(string $binary): string
+{
+    $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    $bits = '';
+    foreach (str_split($binary) as $byte) $bits .= str_pad(decbin(ord($byte)), 8, '0', STR_PAD_LEFT);
+    $encoded = '';
+    foreach (str_split($bits, 5) as $chunk) {
+        $encoded .= $alphabet[bindec(str_pad($chunk, 5, '0', STR_PAD_RIGHT))];
+    }
+    return $encoded;
 }
 
 function ajn_text(mixed $value, int $max = 200): string
@@ -448,12 +479,7 @@ if (!defined('AJN_DISABLE_AUTO_DISPATCH')) {
     }
 
     try {
-        $dbc = $config['database'] ?? [];
-        $db = new PDO(
-            'mysql:host=' . ($dbc['host'] ?? '') . ';port=' . (int) ($dbc['port'] ?? 3306) . ';dbname=' . ($dbc['name'] ?? '') . ';charset=utf8mb4',
-            $dbc['username'] ?? '', $dbc['password'] ?? '',
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-        );
+        $db = ajn_pdo($config);
         require __DIR__ . '/app.php';
     } catch (Throwable $error) {
         error_log('[AJN_CAREIRAS] ' . get_class($error));

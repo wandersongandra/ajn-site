@@ -48,8 +48,9 @@ function ajn_admin_lgpd(PDO $db, string $method, string $path, array $config): n
 {
     if ($method === 'GET' && in_array($path, ['/api/admin/lgpd/requests', '/api/admin/lgpd/requests/'], true)) {
         ajn_auth($db, 'lgpd:read');
-        $rows = ajn_list($db, 'SELECT r.id,r.request_type,r.status,r.reason,r.requested_at,r.completed_at,c.full_name,c.email FROM data_subject_requests r JOIN candidates c ON c.id=r.candidate_id ORDER BY r.requested_at DESC LIMIT 200');
-        ajn_json(['requests' => array_map('ajn_lgpd_request_payload', $rows), 'count' => count($rows)]);
+        [$limit, $offset] = ajn_pagination(200, 200);
+        $rows = ajn_list($db, 'SELECT r.id,r.request_type,r.status,r.reason,r.requested_at,r.completed_at,c.full_name,c.email FROM data_subject_requests r JOIN candidates c ON c.id=r.candidate_id ORDER BY r.requested_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset);
+        ajn_json(['requests' => array_map('ajn_lgpd_request_payload', $rows), 'count' => count($rows), 'limit' => $limit, 'offset' => $offset]);
     }
     if ($method === 'POST' && preg_match('~^/api/admin/lgpd/requests/([a-f0-9-]{36})/execute$~D', $path, $match)) {
         $admin = ajn_auth($db, 'lgpd:execute');

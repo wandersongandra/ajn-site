@@ -381,6 +381,28 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
     headers: { 'content-disposition': 'attachment; filename="curriculo.pdf"' },
     body: '%PDF-1.4\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF',
   }));
+  let lgpdStatus = 'pending';
+  await page.route('**/api/admin/lgpd/requests**', route => {
+    if (route.request().method() === 'POST' && route.request().url().endsWith('/execute')) {
+      lgpdStatus = 'completed';
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, message: 'Solicitação de exclusão concluída.' }) });
+    }
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        requests: [{
+          id: 'lgpd-req-1',
+          requestType: 'erasure',
+          status: lgpdStatus,
+          candidateName: 'Candidato Teste',
+          candidateEmail: 'cand@example.invalid',
+          requestedAt: '2026-11-13T10:00:00Z',
+          completedAt: lgpdStatus === 'completed' ? '2026-11-13T10:05:00Z' : null,
+        }],
+      }),
+    });
+  });
   await page.goto(new URL('/admin/carreiras/', base).href);
   await page.locator('[data-admin-dashboard]').waitFor({ state: 'visible' });
   await dismissPrivacyNotice(page);
@@ -404,6 +426,18 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
     page.locator('[data-candidates-tbody] button').click(),
   ]);
   assert(download.suggestedFilename() === 'curriculo.pdf', 'Download privado gera arquivo com nome correto');
+
+  await page.locator('[data-admin-tab="lgpd"]').click();
+  await page.locator('[data-lgpd-tbody] .carreiras-badge').waitFor({ state: 'visible' });
+  const badgeText = await page.locator('[data-lgpd-tbody] .carreiras-badge').first().textContent();
+  assert(badgeText === 'Exclusão Definitiva', `Tipo erasure mapeado na tabela LGPD: ${badgeText}`);
+  await page.locator('[data-lgpd-tbody] button').first().click();
+  const confirmModal = page.locator('[data-confirm-dialog]');
+  assert(await confirmModal.isVisible(), 'Confirmação LGPD abre diálogo acessível');
+  await confirmModal.locator('[data-confirm-accept]').click();
+  await confirmModal.waitFor({ state: 'hidden' });
+  await page.waitForFunction(() => document.querySelector('[data-lgpd-notice]')?.textContent.includes('Solicitação de exclusão concluída'));
+  assert(nativeDialogCount === 0, 'Fluxo administrativo não usa prompts ou alertas nativos');
   await context.close();
 }
 

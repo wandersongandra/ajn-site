@@ -246,13 +246,14 @@ function ajn_admin_candidates(PDO $db, string $method, string $path, array $conf
     if ($method !== 'GET') ajn_json(['error' => 'Método não permitido.'], 405);
     if ($path === '/api/admin/candidates' || $path === '/api/admin/candidates/') {
         ajn_auth($db, 'candidates:read');
-        $rows = ajn_list($db, 'SELECT c.id,c.full_name,c.email,c.phone,c.city,c.state,c.current_title,c.created_at FROM candidates c ORDER BY c.created_at DESC LIMIT 200');
+        [$limit, $offset] = ajn_pagination(200, 200);
+        $rows = ajn_list($db, 'SELECT c.id,c.full_name,c.email,c.phone,c.city,c.state,c.current_title,c.created_at FROM candidates c ORDER BY c.created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset);
         $candidates = array_map(static fn(array $c): array => [
             'id' => $c['id'], 'fullName' => $c['full_name'], 'email' => $c['email'],
             'phone' => $c['phone'], 'city' => $c['city'], 'state' => $c['state'],
             'currentTitle' => $c['current_title'], 'createdAt' => gmdate('c', (int) $c['created_at']),
         ], $rows);
-        ajn_json(['candidates' => $candidates, 'count' => count($candidates)]);
+        ajn_json(['candidates' => $candidates, 'count' => count($candidates), 'limit' => $limit, 'offset' => $offset]);
     }
     if (preg_match('~^/api/admin/candidates/([a-f0-9-]{36})/resume$~D', $path, $match)) {
         $admin = ajn_auth($db, 'resumes:read');

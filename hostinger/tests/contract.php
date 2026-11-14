@@ -84,8 +84,11 @@ check_contract('painel administrativo sem cache', str_contains($htaccess, 'no-st
     str_contains($htaccess, 'env=AJN_ADMIN_AREA') && !str_contains($htaccess, '<If '));
 $functional = source_contract($root . '/tests/functional.php');
 $smoke = source_contract($root . '/tests/smoke.php');
+$seedAdmin = source_contract($root . '/seed-admin.php');
+$provisionMfa = source_contract($root . '/provision-user-mfa.php');
+$schemaIndexes = source_contract($root . '/migrations/004_indexes.sql');
 
-$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional];
+$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional, $seedAdmin, $provisionMfa];
 $allPhpValid = true;
 foreach ($phpFilesToParse as $phpSource) {
     try {
@@ -123,7 +126,7 @@ check_contract('Apache/LiteSpeed desativa listagem e bloqueia dotfiles fora .wel
 check_contract('token de reset é removido da barra de endereço imediatamente após leitura',
     str_contains($adminScript, 'window.history.replaceState({}, document.title, window.location.pathname)'));
 check_contract('módulo sem travessão ou reticência tipográfica', !preg_match('/[\x{2013}\x{2014}\x{2026}]/u',
-    $bootstrap . $app . $admin . $applications . $lgpd . $functional . $careerScript . $adminScript));
+    $bootstrap . $app . $admin . $applications . $lgpd . $functional . $seedAdmin . $provisionMfa . $careerScript . $adminScript));
 
 $beginIndex = strpos($applications, '$db->beginTransaction();');
 $demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1');
@@ -139,6 +142,24 @@ check_contract('painel oculta audit para recruiter conforme banco e exige 16 car
 check_contract('formulários públicos de carreiras reiniciam widget Turnstile após envio',
     str_contains($careerScript, 'function resetTurnstileWidget(')
     && substr_count($careerScript, 'resetTurnstileWidget(') >= 4);
+check_contract('painel admin usa diálogo acessível em vez de alert/confirm e mapeia erasure LGPD',
+    str_contains($adminScript, "erasure: 'Exclusão Definitiva'")
+    && str_contains($adminPageSource, 'data-confirm-dialog')
+    && !preg_match('/\b(?:alert|confirm)\s*\(/', $frontendExecutable)
+    && !str_contains($adminScript, 'authToken')
+    && !str_contains($adminScript, 'getAuthHeaders'));
+check_contract('migration 004 cria índices compatíveis com MySQL 8+/MariaDB sem IF NOT EXISTS',
+    !str_contains($schemaIndexes, 'IF NOT EXISTS')
+    && str_contains($schemaIndexes, 'idx_jobs_status_published')
+    && str_contains($schemaIndexes, 'idx_candidates_created_at')
+    && str_contains($schemaIndexes, 'idx_data_subject_requests_requested_at')
+    && str_contains($schemaIndexes, 'idx_applications_applied_at'));
+check_contract('CLI seed e provisionamento MFA reutilizam bootstrap e validam força/rotação',
+    str_contains($seedAdmin, "define('AJN_DISABLE_AUTO_DISPATCH', true)")
+    && str_contains($seedAdmin, 'ajn_password_is_weak')
+    && str_contains($provisionMfa, "define('AJN_DISABLE_AUTO_DISPATCH', true)")
+    && str_contains($provisionMfa, 'AJN_MFA_ROTATE')
+    && str_contains($provisionMfa, 'mfa_last_counter=NULL'));
 
 foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);

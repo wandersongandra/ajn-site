@@ -224,7 +224,8 @@ function ajn_admin_jobs(PDO $db, string $method, string $path, array $config): n
     if ($path === '/api/admin/jobs' || $path === '/api/admin/jobs/') {
         if ($method === 'GET') {
             ajn_auth($db, 'jobs:read');
-            $rows = ajn_list($db, 'SELECT j.*, (SELECT COUNT(*) FROM job_applications a WHERE a.job_id=j.id) AS applications_count FROM job_postings j ORDER BY j.created_at DESC LIMIT 500');
+            [$limit, $offset] = ajn_pagination(200, 500);
+            $rows = ajn_list($db, 'SELECT j.*, (SELECT COUNT(*) FROM job_applications a WHERE a.job_id=j.id) AS applications_count FROM job_postings j ORDER BY j.created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset);
             $jobs = array_map(static function (array $row): array {
                 $job = ajn_job($row, true);
                 $job['requirements'] = $row['requirements'];
@@ -232,7 +233,7 @@ function ajn_admin_jobs(PDO $db, string $method, string $path, array $config): n
                 $job['createdAt'] = gmdate('c', (int) $row['created_at']);
                 return $job;
             }, $rows);
-            ajn_json(['jobs' => $jobs]);
+            ajn_json(['jobs' => $jobs, 'count' => count($jobs), 'limit' => $limit, 'offset' => $offset]);
         }
         if ($method === 'POST') {
             $user = ajn_auth($db, 'jobs:write');
@@ -275,13 +276,14 @@ function ajn_admin_users(PDO $db, string $method, string $path, array $config): 
     $admin = ajn_auth($db);
     if ($admin['role'] !== 'super_admin') ajn_json(['error' => 'Apenas administradores podem gerenciar operadores.'], 403);
     if ($method === 'GET' && ($path === '/api/admin/users' || $path === '/api/admin/users/')) {
-        $rows = ajn_list($db, 'SELECT id,name,email,role,is_active,mfa_enabled,created_at FROM admin_users ORDER BY created_at DESC LIMIT 200');
+        [$limit, $offset] = ajn_pagination(200, 200);
+        $rows = ajn_list($db, 'SELECT id,name,email,role,is_active,mfa_enabled,created_at FROM admin_users ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset);
         $users = array_map(static fn(array $r): array => [
             'id' => $r['id'], 'name' => $r['name'], 'email' => $r['email'],
             'role' => $r['role'], 'isActive' => (bool) $r['is_active'],
             'mfaEnabled' => (bool) $r['mfa_enabled'], 'createdAt' => gmdate('c', (int) $r['created_at']),
         ], $rows);
-        ajn_json(['users' => $users, 'count' => count($users)]);
+        ajn_json(['users' => $users, 'count' => count($users), 'limit' => $limit, 'offset' => $offset]);
     }
     ajn_require_origin($config);
     if ($method === 'POST' && ($path === '/api/admin/users' || $path === '/api/admin/users/')) {
@@ -337,7 +339,7 @@ function ajn_admin_pipeline(PDO $db, string $method, string $path, array $config
         ajn_auth($db, 'applications:read');
         $stages = ajn_list($db, 'SELECT * FROM recruitment_stages WHERE job_id IS NULL OR job_id=? ORDER BY stage_order', [$match[1]]);
         $apps = ajn_list($db,
-            'SELECT a.id,a.candidate_id,a.tracking_code,a.current_stage_id,a.status,a.recruiter_rating,a.recruiter_notes,a.applied_at,c.full_name,c.email,c.phone,c.city,c.state,c.current_title FROM job_applications a JOIN candidates c ON c.id=a.candidate_id WHERE a.job_id=?', [$match[1]]);
+            'SELECT a.id,a.candidate_id,a.tracking_code,a.current_stage_id,a.status,a.recruiter_rating,a.recruiter_notes,a.applied_at,c.full_name,c.email,c.phone,c.city,c.state,c.current_title FROM job_applications a JOIN candidates c ON c.id=a.candidate_id WHERE a.job_id=? ORDER BY a.applied_at DESC LIMIT 500', [$match[1]]);
         $result = [];
         foreach ($stages as $stage) {
             $stageApps = [];
@@ -393,8 +395,7 @@ function ajn_admin_audit(PDO $db, string $method, string $path): never
 {
     if ($method !== 'GET' || !in_array($path, ['/api/admin/audit', '/api/admin/audit/'], true)) ajn_json(['error' => 'Endpoint não encontrado.'], 404);
     ajn_auth($db, 'audit:read');
-    $limit = max(1, min(100, (int) ($_GET['limit'] ?? 50)));
-    $offset = max(0, min(10000, (int) ($_GET['offset'] ?? 0)));
+    [$limit, $offset] = ajn_pagination(50, 100);
     $filters = [];
     $args = [];
     foreach (['action' => 'action', 'resource' => 'resource', 'actorType' => 'actor_type'] as $param => $col) {
@@ -403,14 +404,15 @@ function ajn_admin_audit(PDO $db, string $method, string $path): never
             $args[] = mb_substr($_GET[$param], 0, 100);
         }
     }
-    $sql = 'SELECT id,actor_id,actor_type,action,resource,resource_id,details_json,timestamp FROM audit_logs';
+    $sql = 'SELECT id,actor_id,actor_type,action,resource,resource_id,details_json,ip_address,timestamp FROM audit_logs';
     if ($filters) $sql .= ' WHERE ' . implode(' AND ', $filters);
     $sql .= ' ORDER BY timestamp DESC LIMIT ' . $limit . ' OFFSET ' . $offset;
     $rows = ajn_list($db, $sql, $args);
     $logs = array_map(static fn(array $r): array => [
         'id' => $r['id'], 'actorId' => $r['actor_id'], 'actorType' => $r['actor_type'],
         'action' => $r['action'], 'resource' => $r['resource'], 'resourceId' => $r['resource_id'],
-        'detailsJson' => $r['details_json'], 'timestamp' => gmdate('c', (int) $r['timestamp']),
+        'detailsJson' => $r['details_json'], 'ipAddress' => $r['ip_address'],
+        'timestamp' => gmdate('c', (int) $r['timestamp']),
     ], $rows);
     ajn_json(['logs' => $logs, 'count' => count($logs), 'limit' => $limit, 'offset' => $offset]);
 }

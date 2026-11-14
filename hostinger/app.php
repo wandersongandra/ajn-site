@@ -194,9 +194,6 @@ function ajn_dispatch(PDO $db, array $config): never
     if (str_starts_with($path, '/api/lgpd/')) {
         ajn_public_lgpd($db, $method, $path, $config);
     }
-    if (str_starts_with($path, '/api/admin/') || str_starts_with($path, '/api/lgpd/')) {
-        ajn_json(['error' => 'Operação ainda não homologada neste ambiente.'], 503);
-    }
     ajn_json(['error' => 'Endpoint não encontrado.'], 404);
 }
 

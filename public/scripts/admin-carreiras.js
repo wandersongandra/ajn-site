@@ -2,12 +2,22 @@
 // Sem eval, innerHTML ou armazenamento no navegador.
 
 (() => {
-  let authToken = '';
   let currentUser = null;
   let currentJobId = '';
   let listenersRegistered = false;
   let pendingMove = null;
   let lastMoveTrigger = null;
+  let confirmResolver = null;
+  let confirmTrigger = null;
+
+  const lgpdRequestLabels = {
+    erasure: 'Exclusão Definitiva',
+    deletion: 'Exclusão Definitiva',
+    access: 'Acesso aos Dados',
+    rectification: 'Retificação',
+    portability: 'Portabilidade',
+    revocation: 'Revogação de Consentimento',
+  };
 
   // Apenas apresentação: o backend continua sendo a autoridade das permissões.
   const rolePermissions = {
@@ -55,14 +65,6 @@
     } catch {
       return '';
     }
-  }
-
-  function getAuthHeaders(extraHeaders = {}) {
-    const headers = { ...extraHeaders };
-    if (authToken && authToken !== 'undefined' && authToken !== 'null' && authToken.trim() !== '') {
-      headers['Authorization'] = `Bearer ${authToken}`;
-    }
-    return headers;
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -213,7 +215,6 @@
 
           const data = await res.json();
           if (res.ok && data.success) {
-            authToken = data.token || '';
             currentUser = data.user;
             setAuthView(elements, true);
             updateUserBadge();
@@ -237,10 +238,8 @@
           await fetch(getApiEndpoint('/api/admin/auth/logout'), {
             method: 'POST',
             credentials: 'include',
-            headers: getAuthHeaders(),
           });
         } catch {}
-        authToken = '';
         currentUser = null;
         setAuthView(elements, false);
       });
@@ -266,6 +265,28 @@
         pendingMove = null;
         lastMoveTrigger?.focus();
         lastMoveTrigger = null;
+      });
+    }
+
+    const confirmDialog = document.querySelector('[data-confirm-dialog]');
+    const confirmForm = document.querySelector('[data-confirm-form]');
+    if (confirmDialog && confirmForm) {
+      confirmForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        confirmDialog.close('confirm');
+      });
+      confirmDialog.querySelector('[data-confirm-cancel]')?.addEventListener('click', () => {
+        confirmDialog.close('cancel');
+      });
+      confirmDialog.addEventListener('close', () => {
+        const confirmed = confirmDialog.returnValue === 'confirm';
+        const resolve = confirmResolver;
+        const trigger = confirmTrigger;
+        confirmResolver = null;
+        confirmTrigger = null;
+        confirmDialog.returnValue = '';
+        if (trigger && document.contains(trigger)) trigger.focus();
+        if (resolve) resolve(confirmed);
       });
     }
 
@@ -316,7 +337,7 @@
           const res = await fetch(getApiEndpoint(jobId ? `/api/admin/jobs/${encodeURIComponent(jobId)}` : '/api/admin/jobs'), {
             method: jobId ? 'PUT' : 'POST',
             credentials: 'include',
-            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
           });
           const data = await res.json();
@@ -364,7 +385,7 @@
           const res = await fetch(getApiEndpoint('/api/admin/users'), {
             method: 'POST',
             credentials: 'include',
-            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, role, password }),
           });
 
@@ -395,7 +416,6 @@
       const meRes = await fetch(getApiEndpoint('/api/admin/auth/me'), {
         method: 'GET',
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
 
       if (!meRes.ok) return false;
@@ -529,14 +549,18 @@
   async function loadJobs() {
     const tableBody = document.querySelector('[data-jobs-tbody]');
     if (!tableBody) return;
+    const notice = document.querySelector('[data-jobs-notice]');
+    clearErrorNotice(notice);
 
     try {
       const res = await fetch(getApiEndpoint('/api/admin/jobs'), {
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
-      const data = await res.json();
-      if (!res.ok) return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showNotice(notice, data.error || 'Não foi possível carregar as vagas.', 'error');
+        return;
+      }
       if (!Array.isArray(data.jobs)) return;
       if (!data.jobs.some((job) => job.id === currentJobId)) {
         currentJobId = data.jobs[0]?.id || '';
@@ -612,13 +636,17 @@
           jobSelect.appendChild(opt);
         }
       });
-    } catch {}
+    } catch {
+      showNotice(notice, 'Erro de conexão ao carregar vagas.', 'error');
+    }
   }
 
   // 2. Carrega Pipeline (Kanban)
   async function loadPipeline(jobId) {
     const boardEl = document.querySelector('[data-pipeline-board]');
     if (!boardEl) return;
+    const notice = document.querySelector('[data-pipeline-notice]');
+    clearErrorNotice(notice);
 
     while (boardEl.firstChild) boardEl.removeChild(boardEl.firstChild);
     if (!jobId) {
@@ -631,10 +659,12 @@
     try {
       const res = await fetch(getApiEndpoint(`/api/admin/pipeline/${encodeURIComponent(jobId)}`), {
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
-      const data = await res.json();
-      if (!res.ok) return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showNotice(notice, data.error || 'Não foi possível carregar o pipeline.', 'error');
+        return;
+      }
 
       data.stages.forEach((stage) => {
         const col = document.createElement('div');
@@ -703,7 +733,9 @@
         col.appendChild(cardsList);
         boardEl.appendChild(col);
       });
-    } catch {}
+    } catch {
+      showNotice(notice, 'Erro de conexão ao carregar o pipeline.', 'error');
+    }
   }
 
   function openMoveStageDialog(applicationId, candidateName, currentStageId, stages, trigger) {
@@ -759,7 +791,7 @@
       const res = await fetch(getApiEndpoint('/api/admin/pipeline/move-stage'), {
         method: 'POST',
         credentials: 'include',
-        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           applicationId,
           targetStageId,
@@ -789,14 +821,19 @@
   async function loadCandidates() {
     const tableBody = document.querySelector('[data-candidates-tbody]');
     if (!tableBody) return;
+    const notice = document.querySelector('[data-candidates-notice]');
+    clearErrorNotice(notice);
 
     try {
       const res = await fetch(getApiEndpoint('/api/admin/candidates'), {
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
-      const data = await res.json();
-      if (!res.ok) return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showNotice(notice, res.status === 403 ? 'Seu perfil não tem permissão para consultar candidatos.' : (data.error || 'Não foi possível carregar os candidatos.'), 'error');
+        return;
+      }
+      if (!Array.isArray(data.candidates)) return;
 
       while (tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
 
@@ -838,19 +875,22 @@
 
         tableBody.appendChild(tr);
       });
-    } catch {}
+    } catch {
+      showNotice(notice, 'Erro de conexão ao carregar candidatos.', 'error');
+    }
   }
 
   async function downloadResume(candidateId) {
+    const notice = document.querySelector('[data-candidates-notice]');
+    clearErrorNotice(notice);
     try {
       const res = await fetch(getApiEndpoint(`/api/admin/candidates/${encodeURIComponent(candidateId)}/resume`), {
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || 'Não foi possível baixar o currículo.');
+        const err = await res.json().catch(() => ({}));
+        showNotice(notice, err.error || 'Não foi possível baixar o currículo.', 'error');
         return;
       }
 
@@ -873,7 +913,7 @@
       // A liberação imediata pode invalidar a URL antes de o download começar.
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch {
-      alert('Erro de conexão ao baixar currículo.');
+      showNotice(notice, 'Erro de conexão ao baixar currículo.', 'error');
     }
   }
 
@@ -882,14 +922,13 @@
     const tableBody = document.querySelector('[data-lgpd-tbody]');
     if (!tableBody || !can('lgpd:read')) return;
     const notice = document.querySelector('[data-lgpd-notice]');
-    if (notice) notice.style.display = 'none';
+    clearErrorNotice(notice);
 
     try {
       const res = await fetch(getApiEndpoint('/api/admin/lgpd/requests'), {
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         showNotice(notice, res.status === 403 ? 'Seu perfil não tem permissão para consultar solicitações LGPD.' : 'Não foi possível carregar as solicitações.', 'error');
         return;
@@ -908,11 +947,12 @@
 
       data.requests.forEach((req) => {
         const tr = document.createElement('tr');
+        const isErasure = req.requestType === 'erasure' || req.requestType === 'deletion';
 
         const tdType = document.createElement('td');
         const badge = document.createElement('span');
         badge.className = 'carreiras-badge';
-        badge.textContent = req.requestType === 'deletion' ? 'Exclusão Definitiva' : 'Exportação';
+        badge.textContent = lgpdRequestLabels[req.requestType] || 'Solicitação LGPD';
         tdType.appendChild(badge);
         tr.appendChild(tdType);
 
@@ -935,10 +975,12 @@
           execBtn.className = 'carreiras-button carreiras-button--secondary';
           execBtn.style.padding = '0.35rem 0.65rem';
           execBtn.style.fontSize = '0.75rem';
-          execBtn.style.borderColor = '#c62828';
-          execBtn.style.color = '#c62828';
-          execBtn.textContent = 'Executar Exclusão';
-          execBtn.addEventListener('click', () => executeLgpdRequest(req.id));
+          if (isErasure) {
+            execBtn.style.borderColor = '#c62828';
+            execBtn.style.color = '#c62828';
+          }
+          execBtn.textContent = isErasure ? 'Executar Exclusão' : 'Concluir Atendimento';
+          execBtn.addEventListener('click', () => executeLgpdRequest(req, execBtn));
           tdAction.appendChild(execBtn);
         } else {
           tdAction.textContent = req.completedAt ? `Concluído em ${new Date(req.completedAt).toLocaleDateString('pt-BR')}` : '-';
@@ -952,26 +994,35 @@
     }
   }
 
-  async function executeLgpdRequest(requestId) {
-    if (!confirm('Confirma a execução desta solicitação LGPD? Se for exclusão, todos os dados e arquivos privados serão eliminados de forma irreversível.')) {
-      return;
-    }
+  async function executeLgpdRequest(req, trigger) {
+    const isErasure = req.requestType === 'erasure' || req.requestType === 'deletion';
+    const typeLabel = lgpdRequestLabels[req.requestType] || 'LGPD';
+    const confirmed = await confirmAction({
+      eyebrow: 'Privacidade e LGPD',
+      title: isErasure ? 'Confirmar exclusão irreversível' : 'Concluir solicitação de titular',
+      message: isErasure
+        ? `Confirma a execução desta solicitação de ${typeLabel}? Todos os dados e arquivos privados serão eliminados de forma irreversível.`
+        : `Confirma que o atendimento desta solicitação (${typeLabel}) foi realizado e deseja registrá-lo no histórico?`,
+      acceptLabel: isErasure ? 'Executar exclusão' : 'Concluir atendimento',
+      trigger,
+    });
+    if (!confirmed) return;
 
+    const notice = document.querySelector('[data-lgpd-notice]');
     try {
-      const res = await fetch(getApiEndpoint(`/api/admin/lgpd/requests/${encodeURIComponent(requestId)}/execute`), {
+      const res = await fetch(getApiEndpoint(`/api/admin/lgpd/requests/${encodeURIComponent(req.id)}/execute`), {
         method: 'POST',
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        alert(data.message || 'Solicitação executada com sucesso.');
-        loadLgpdRequests();
+        showNotice(notice, data.message || 'Solicitação executada com sucesso.', 'success');
+        void loadLgpdRequests();
       } else {
-        alert(data.error || 'Erro ao executar solicitação.');
+        showNotice(notice, data.error || 'Erro ao executar solicitação.', 'error');
       }
     } catch {
-      alert('Erro de conexão ao processar solicitação.');
+      showNotice(notice, 'Erro de conexão ao processar solicitação.', 'error');
     }
   }
 
@@ -979,14 +1030,19 @@
   async function loadAuditLogs() {
     const tableBody = document.querySelector('[data-audit-tbody]');
     if (!tableBody) return;
+    const notice = document.querySelector('[data-audit-notice]');
+    clearErrorNotice(notice);
 
     try {
       const res = await fetch(getApiEndpoint('/api/admin/audit'), {
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
-      const data = await res.json();
-      if (!res.ok) return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showNotice(notice, res.status === 403 ? 'Seu perfil não tem permissão para consultar o histórico de auditoria.' : (data.error || 'Não foi possível carregar o histórico.'), 'error');
+        return;
+      }
+      if (!Array.isArray(data.logs)) return;
 
       while (tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
 
@@ -1017,21 +1073,28 @@
 
         tableBody.appendChild(tr);
       });
-    } catch {}
+    } catch {
+      showNotice(notice, 'Erro de conexão ao consultar o histórico de auditoria.', 'error');
+    }
   }
 
   // 6. Gestão de Contas de Recrutadores
   async function loadAdminUsers() {
     const tableBody = document.querySelector('[data-users-tbody]');
     if (!tableBody) return;
+    const notice = document.querySelector('[data-users-notice]');
+    clearErrorNotice(notice);
 
     try {
       const res = await fetch(getApiEndpoint('/api/admin/users'), {
         credentials: 'include',
-        headers: getAuthHeaders(),
       });
-      const data = await res.json();
-      if (!res.ok) return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showNotice(notice, res.status === 403 ? 'Seu perfil não tem permissão para gerenciar usuários.' : (data.error || 'Não foi possível carregar a equipe.'), 'error');
+        return;
+      }
+      if (!Array.isArray(data.users)) return;
 
       while (tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
 
@@ -1079,7 +1142,7 @@
             toggleBtn.style.borderColor = '#c62828';
             toggleBtn.style.color = '#c62828';
           }
-          toggleBtn.addEventListener('click', () => toggleUserStatus(usr.id, !usr.isActive));
+          toggleBtn.addEventListener('click', () => toggleUserStatus(usr.id, !usr.isActive, toggleBtn));
           tdAction.appendChild(toggleBtn);
         } else {
           tdAction.textContent = '(Conta atual)';
@@ -1088,29 +1151,70 @@
 
         tableBody.appendChild(tr);
       });
-    } catch {}
+    } catch {
+      showNotice(notice, 'Erro de conexão ao carregar a equipe.', 'error');
+    }
   }
 
-  async function toggleUserStatus(userId, newStatus) {
+  async function toggleUserStatus(userId, newStatus, trigger) {
     const actionLabel = newStatus ? 'reativar' : 'desativar';
-    if (!confirm(`Deseja realmente ${actionLabel} este usuário?`)) return;
+    const confirmed = await confirmAction({
+      eyebrow: 'Controle de acesso',
+      title: newStatus ? 'Reativar operador' : 'Desativar operador',
+      message: `Deseja realmente ${actionLabel} este operador?`,
+      acceptLabel: newStatus ? 'Reativar conta' : 'Desativar conta',
+      trigger,
+    });
+    if (!confirmed) return;
 
+    const notice = document.querySelector('[data-users-notice]');
     try {
       const res = await fetch(getApiEndpoint(`/api/admin/users/${encodeURIComponent(userId)}/status`), {
         method: 'PUT',
         credentials: 'include',
-        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: newStatus }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        loadAdminUsers();
+        showNotice(notice, 'Status do operador atualizado com sucesso.', 'success');
+        void loadAdminUsers();
       } else {
-        alert(data.error || 'Erro ao alterar status do usuário.');
+        showNotice(notice, data.error || 'Erro ao alterar status do usuário.', 'error');
       }
     } catch {
-      alert('Erro de conexão ao alterar status do usuário.');
+      showNotice(notice, 'Erro de conexão ao alterar status do usuário.', 'error');
+    }
+  }
+
+  function confirmAction({ eyebrow = 'Confirmação', title, message, acceptLabel = 'Confirmar', trigger = null }) {
+    const dialog = document.querySelector('[data-confirm-dialog]');
+    if (!dialog || typeof dialog.showModal !== 'function' || dialog.open || confirmResolver) {
+      return Promise.resolve(false);
+    }
+
+    const eyebrowEl = dialog.querySelector('[data-confirm-eyebrow]');
+    const titleEl = dialog.querySelector('[data-confirm-title]');
+    const messageEl = dialog.querySelector('[data-confirm-message]');
+    const acceptBtn = dialog.querySelector('[data-confirm-accept]');
+
+    if (eyebrowEl) eyebrowEl.textContent = eyebrow;
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+    if (acceptBtn) acceptBtn.textContent = acceptLabel;
+
+    confirmTrigger = trigger;
+    return new Promise((resolve) => {
+      confirmResolver = resolve;
+      dialog.showModal();
+      dialog.querySelector('[data-confirm-cancel]')?.focus();
+    });
+  }
+
+  function clearErrorNotice(el) {
+    if (el && el.classList.contains('carreiras-notice--error')) {
+      el.style.display = 'none';
     }
   }
 

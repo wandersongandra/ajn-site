@@ -47,6 +47,7 @@ function createFixtureTree(root, { withTurnstile = false, forbiddenInDist = null
     'migrations/001_initial.sql',
     'migrations/002_hardening.sql',
     'migrations/003_least_privilege.sql',
+    'migrations/004_indexes.sql',
   ];
   for (const rel of hostingerFiles) {
     const target = join(root, 'hostinger', rel);
@@ -75,10 +76,12 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/tests')), false);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/migrations')), false);
     assert.equal(existsSync(join(summary.outputDir, 'database/002_hardening.sql')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'database/004_indexes.sql')), true);
 
     const checklist = readFileSync(join(summary.outputDir, 'DEPLOY-CHECKLIST.md'), 'utf8');
     assert.match(checklist, /BLOQUEIO CRITICO/);
     assert.match(checklist, /PUBLIC_TURNSTILE_SITE_KEY/);
+    assert.match(checklist, /004_indexes\.sql/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
