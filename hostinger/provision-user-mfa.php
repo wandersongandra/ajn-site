@@ -55,12 +55,15 @@ try {
 
     // Invalida sessões ativas para exigir reautenticação com o novo segredo MFA.
     ajn_exec($db, 'DELETE FROM admin_sessions WHERE user_id=?', [$user['id']]);
+    $recoveryCodes = ajn_generate_recovery_codes($db, (string) $user['id'], 8);
     ajn_audit($db, 'system', $user['id'], $rotate ? 'admin.mfa_rotated' : 'admin.mfa_provisioned', 'admin_users', $user['id']);
     $db->commit();
+    ajn_security_alert($db, $config, 'ADMIN_MFA_PROVISIONED', $rotate ? 'MFA de administrador rotacionado via CLI.' : 'MFA de administrador provisionado via CLI.', ['user_id' => $user['id'], 'email' => $email, 'rotate' => $rotate]);
 
     $actionMsg = $rotate ? 'MFA rotacionado e sessões anteriores encerradas.' : 'MFA provisionado.';
     fwrite(STDOUT, $actionMsg . " Entregue o QR/URI somente ao operador, por canal seguro. A URI não será exibida novamente:\n");
     fwrite(STDOUT, 'otpauth://totp/AJN%20Carreiras:' . rawurlencode($email) . '?secret=' . $secret . "&issuer=AJN%20Engenharia\n");
+    fwrite(STDOUT, "Códigos de recuperação de uso único (guarde em cofre seguro):\n" . implode("\n", $recoveryCodes) . "\n");
 } catch (Throwable $error) {
     if ($db instanceof PDO && $db->inTransaction()) {
         $db->rollBack();
