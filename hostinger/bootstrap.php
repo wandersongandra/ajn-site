@@ -46,6 +46,16 @@ function ajn_json(array $payload, int $status = 200): never
     exit;
 }
 
+function ajn_enforce_min_duration_ms(int $startedNs, int $minMs = 400): void
+{
+    $targetNs = $startedNs + ($minMs * 1_000_000);
+    while (($remainingNs = $targetNs - hrtime(true)) > 0) {
+        if ($remainingNs > 2_000_000) {
+            usleep((int) intdiv($remainingNs - 1_000_000, 1000));
+        }
+    }
+}
+
 function ajn_uuid(): string
 {
     $bytes = random_bytes(16);
@@ -379,7 +389,7 @@ function ajn_check_anti_abuse(array $input, int $minSeconds = 2): void
 if (!function_exists('ajn_verify_turnstile')) {
 function ajn_verify_turnstile(array $config, mixed $token, ?string $expectedAction = null): void
 {
-    $secret = trim((string) ($config['turnstile_secret_key'] ?? ($config['turnstile_secret'] ?? '')));
+    $secret = trim((string) ($config['turnstile_secret_key'] ?? ''));
     $env = strtolower(trim((string) ($config['environment'] ?? 'production')));
     if ($secret === '' || strlen($secret) < 10 || ($env === 'production' && preg_match('/^[123]x/i', $secret) === 1)) {
         ajn_json(['error' => 'Verificação antispam ainda não configurada.'], 503);
@@ -966,11 +976,68 @@ function ajn_send_email(array $config, string $recipient, string $subject, strin
 }
 }
 
+if (!function_exists('ajn_maintenance_flag_path')) {
+    function ajn_maintenance_flag_path(array $config): string
+    {
+        $configured = $config['maintenance_flag_path'] ?? null;
+        if (is_string($configured) && trim($configured) !== '') {
+            return trim($configured);
+        }
+        return __DIR__ . '/maintenance.flag';
+    }
+}
+
+if (!function_exists('ajn_is_maintenance_active')) {
+    function ajn_is_maintenance_active(array $config): bool
+    {
+        $flagPath = ajn_maintenance_flag_path($config);
+        clearstatcache(true, $flagPath);
+        return is_file($flagPath);
+    }
+}
+
+if (!function_exists('ajn_enforce_maintenance_mode')) {
+    function ajn_enforce_maintenance_mode(array $config, string $path): void
+    {
+        if (!ajn_is_maintenance_active($config)) {
+            return;
+        }
+        $isApi = $path === '/api' || str_starts_with($path, '/api/');
+        $isAdmin = $path === '/admin' || str_starts_with($path, '/admin/');
+        if (!$isApi && !$isAdmin) {
+            return;
+        }
+        $retryAfter = max(60, (int) ($config['maintenance_retry_after'] ?? 300));
+        header('Retry-After: ' . $retryAfter);
+        header('Cache-Control: no-store, max-age=0');
+        header('X-Robots-Tag: noindex, nofollow');
+        if ($isAdmin) {
+            http_response_code(503);
+            header('Content-Type: text/html; charset=utf-8');
+            echo '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>Manutenção programada | AJN Carreiras</title></head><body><main><h1>Sistema em manutenção programada</h1><p>O painel administrativo de carreiras está temporariamente em manutenção. Tente novamente em alguns minutos.</p></main></body></html>';
+            exit;
+        }
+        ajn_json(['error' => 'Sistema em manutenção programada. Tente novamente em instantes.'], 503);
+    }
+}
+
+if (!function_exists('ajn_cli_config_path')) {
+    function ajn_cli_config_path(): string
+    {
+        if (PHP_SAPI === 'cli') {
+            $envPath = getenv('AJN_CONFIG_PATH');
+            if (is_string($envPath) && $envPath !== '') {
+                return $envPath;
+            }
+        }
+        return __DIR__ . '/config.php';
+    }
+}
+
 if (!function_exists('ajn_config')) {
     function ajn_config(): array
     {
-        $envPath = getenv('AJN_CONFIG_PATH');
-        $configFile = (is_string($envPath) && $envPath !== '') ? $envPath : (__DIR__ . '/config.php');
+        $configFile = ajn_cli_config_path();
         if (!is_file($configFile)) {
             if (PHP_SAPI === 'cli') {
                 fwrite(STDERR, "Instale config.php privado ou defina AJN_CONFIG_PATH.\n");
@@ -998,6 +1065,11 @@ if (!defined('AJN_DISABLE_AUTO_DISPATCH')) {
         ajn_json(['error' => 'Configuração do ambiente inválida.'], 503);
     }
     $GLOBALS['__ajn_active_config'] = $config;
+
+    $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    if (is_string($requestPath)) {
+        ajn_enforce_maintenance_mode($config, $requestPath);
+    }
 
     try {
         $db = ajn_pdo($config);

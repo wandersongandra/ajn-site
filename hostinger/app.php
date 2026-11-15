@@ -251,6 +251,7 @@ function ajn_dispatch(PDO $db, array $config): never
     $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
     if (!is_string($path) || strlen($path) > 1024) ajn_json(['error' => 'Caminho inválido.'], 400);
 
+    ajn_enforce_maintenance_mode($config, $path);
     ajn_enforce_central_gate($db, $method, $path, $config);
 
     if ($path === '/api/health' && $method === 'GET') {

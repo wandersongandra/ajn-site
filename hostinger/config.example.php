@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 /**
  * Copie este arquivo para FORA de public_html:
- *   /home/SEU_USUARIO/ajn-carreiras-config.php
+ *   ~/ajn-carreiras-private/config.php (ou ~/domains/<subdominio>/ajn-carreiras-private/config.php)
  * e defina permissao 0600 (chmod 600).
- * NUNCA versione ajn-carreiras-config.php com segredos reais.
+ * NUNCA versione config.php com segredos reais.
  */
 return [
     'environment' => 'production',
@@ -21,9 +21,13 @@ return [
     'encryption_key' => 'SUBSTITUA_POR_64_CARACTERES_HEXADECIMAIS_CSPRNG',
     // Chaves anteriores para rotacao sem perda de leitura (opcional):
     'previous_encryption_keys' => [],
-    'resume_directory' => dirname(__DIR__) . '/ajn-carreiras-private/resumes',
-    'error_log_path' => dirname(__DIR__) . '/ajn-carreiras-private/php-errors.log',
-    'security_alert_email' => 'seguranca@ajnengenharia.com.br',
+    'resume_directory' => __DIR__ . '/resumes',
+    'error_log_path' => __DIR__ . '/php-errors.log',
+    // Arquivo-flag fora do webroot para modo manutencao (503 + Retry-After em /api/* e /admin/*)
+    'maintenance_flag_path' => __DIR__ . '/maintenance.flag',
+    'maintenance_retry_after' => 300,
+    // Mesmo contato divulgado em public/.well-known/security.txt
+    'security_alert_email' => 'faleconosco@ajnengenharia.com.br',
     'retention' => [
         'candidate_days' => 365,
         'talent_pool_days' => 730,

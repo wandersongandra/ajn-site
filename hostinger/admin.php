@@ -12,6 +12,11 @@ const AJN_JOB_POSTING_COLUMNS = [
 function ajn_admin_auth(PDO $db, string $method, string $path, array $config): never
 {
     if ($path === '/api/admin/auth/login' && $method === 'POST') {
+        $loginStartedNs = hrtime(true);
+        $respondLogin401 = static function (array $payload) use ($loginStartedNs): never {
+            ajn_enforce_min_duration_ms($loginStartedNs, 400);
+            ajn_json($payload, 401);
+        };
         // A origem e verificada antes do contador: trafego cross-origin nao deve
         // consumir a cota de tentativas nem gerar escrita no banco.
         ajn_require_origin($config);
@@ -71,7 +76,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
         if (!$user || !(int) $user['is_active']) {
             // Mesma resposta, status e tempo para conta inexistente ou inativa (sem enumeracao).
             ajn_totp('JBSWY3DPEHPK3PXP', 1, '000000');
-            ajn_json(['error' => 'Credenciais inválidas.'], 401);
+            $respondLogin401(['error' => 'Credenciais inválidas.']);
         }
         $isAccountLocked = ($user['locked_until'] && (int) $user['locked_until'] > time())
             || ($ipLock && !empty($ipLock['locked_until']) && (int) $ipLock['locked_until'] > time());
@@ -79,7 +84,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
             // Bloqueio segue ativo no servidor e auditado, sem revelar estado de bloqueio ao cliente.
             ajn_totp('JBSWY3DPEHPK3PXP', 1, '000000');
             ajn_audit($db, 'admin', $user['id'], 'AUTH_LOGIN_LOCKED_ATTEMPT', 'auth', $user['id'], ['ip' => $currentIp]);
-            ajn_json(['error' => 'Credenciais inválidas.'], 401);
+            $respondLogin401(['error' => 'Credenciais inválidas.']);
         }
         if (!$passwordValid) {
             [$attempts, $lockSeconds, $lockedUntil] = $recordIpFailure();
@@ -88,7 +93,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
             if ($lockedUntil !== null) {
                 ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada temporariamente por {$lockSeconds}s apos {$attempts} falhas.", (string) $user['id'], ['ip' => $currentIp]);
             }
-            ajn_json(['error' => 'Credenciais inválidas.'], 401);
+            $respondLogin401(['error' => 'Credenciais inválidas.']);
         }
         // MFA obrigatorio para todo usuario admin, sem bypass.
         if (!(int) $user['mfa_enabled'] || !(int) $user['mfa_required'] || empty($user['mfa_secret'])) {
@@ -97,7 +102,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
         }
         $mfa = $body['mfaCode'] ?? ($body['recoveryCode'] ?? null);
         if (!is_string($mfa) || trim($mfa) === '') {
-            ajn_json(['mfaRequired' => true, 'message' => 'Código MFA necessário.'], 401);
+            $respondLogin401(['mfaRequired' => true, 'message' => 'Código MFA necessário.']);
         }
         $mfaTrimmed = trim($mfa);
         if (preg_match('/^\d{6}$/D', $mfaTrimmed)) {
@@ -116,7 +121,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
                 if ($lockedUntil !== null) {
                     ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada temporariamente por falha MFA.", (string) $user['id'], ['ip' => $currentIp]);
                 }
-                ajn_json(['error' => 'Código MFA inválido.'], 401);
+                $respondLogin401(['error' => 'Código MFA inválido.']);
             }
         } elseif (!ajn_consume_recovery_code($db, (string) $user['id'], $mfaTrimmed)) {
             [$attempts, $lockSeconds, $lockedUntil] = $recordIpFailure();
@@ -124,7 +129,7 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
             if ($lockedUntil !== null) {
                 ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada temporariamente por falha MFA.", (string) $user['id'], ['ip' => $currentIp]);
             }
-            ajn_json(['error' => 'Código MFA inválido.'], 401);
+            $respondLogin401(['error' => 'Código MFA inválido.']);
         } else {
             ajn_audit($db, 'admin', $user['id'], 'AUTH_RECOVERY_CODE_USED', 'auth', $user['id']);
         }

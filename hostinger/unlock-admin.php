@@ -10,8 +10,7 @@ if (PHP_SAPI !== 'cli') {
 define('AJN_DISABLE_AUTO_DISPATCH', true);
 require_once __DIR__ . '/bootstrap.php';
 
-$configFile = getenv('AJN_CONFIG_PATH') ?: (__DIR__ . '/config.php');
-$config = is_file($configFile) ? require $configFile : null;
+$config = ajn_config();
 
 $options = getopt('', ['email::', 'reason::']);
 $rawEmail = $options['email'] ?? getenv('AJN_ADMIN_EMAIL');

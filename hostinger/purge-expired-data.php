@@ -9,8 +9,7 @@ if (PHP_SAPI !== 'cli') {
 define('AJN_DISABLE_AUTO_DISPATCH', true);
 require_once __DIR__ . '/bootstrap.php';
 
-$configPath = getenv('AJN_CONFIG_PATH');
-$config = (is_string($configPath) && $configPath !== '' && is_file($configPath)) ? require $configPath : ajn_config();
+$config = ajn_config();
 $db = ajn_pdo($config);
 $now = time();
 $dryRun = in_array('--dry-run', $argv ?? [], true);
