@@ -99,21 +99,37 @@ function ajn_application_public_payload(array $item): array
 
 function ajn_public_applications(PDO $db, string $method, string $path, array $config): never
 {
-    if ($method === 'GET' && preg_match('~^/api/applications/track/(AJN-[0-9]{4}-[A-Z0-9]{6,16})$~D', $path, $match)) {
+    if ($method === 'GET' && preg_match('~^/api/applications/track/(AJN-[0-9]{4}-[A-Z0-9]{6,64})$~D', $path, $match)) {
         ajn_rate_limit($db, 'application-tracking', 10, 600);
+        $turnstileToken = $_SERVER['HTTP_X_TURNSTILE_TOKEN'] ?? ($_GET['turnstileToken'] ?? ($_GET['cf-turnstile-response'] ?? null));
+        ajn_verify_turnstile($config, is_string($turnstileToken) ? $turnstileToken : null, 'track');
+        $code = $match[1];
+        $codeHash = hash('sha256', $code);
         $item = ajn_fetch($db,
-            'SELECT a.tracking_code,a.status,a.applied_at,a.updated_at,s.name AS stage_name,j.title AS job_title,j.department AS job_department FROM job_applications a LEFT JOIN recruitment_stages s ON s.id=a.current_stage_id LEFT JOIN job_postings j ON j.id=a.job_id WHERE a.tracking_code=?', [$match[1]]);
-        if (!$item) ajn_json(['error' => 'Nenhuma candidatura localizada com o código informado.'], 404);
+            'SELECT a.tracking_code,a.tracking_token_hash,a.tracking_expires_at,a.status,a.applied_at,a.updated_at,s.name AS stage_name,j.title AS job_title,j.department AS job_department FROM job_applications a LEFT JOIN recruitment_stages s ON s.id=a.current_stage_id LEFT JOIN job_postings j ON j.id=a.job_id WHERE a.tracking_token_hash=? OR a.tracking_code=? LIMIT 1', [$codeHash, $code]);
+        $notFoundMessage = 'Nenhuma candidatura localizada com o código informado.';
+        if (!$item) {
+            hash_equals($codeHash, hash('sha256', 'AJN-0000-INVALID'));
+            ajn_json(['error' => $notFoundMessage], 404);
+        }
+        $storedHash = !empty($item['tracking_token_hash']) ? (string) $item['tracking_token_hash'] : hash('sha256', (string) $item['tracking_code']);
+        $expiresAt = isset($item['tracking_expires_at']) && $item['tracking_expires_at'] !== null
+            ? (int) $item['tracking_expires_at']
+            : ((int) $item['applied_at'] + AJN_TRACKING_TTL_SECONDS);
+        if (!hash_equals($storedHash, $codeHash) || $expiresAt < time()) {
+            ajn_json(['error' => $notFoundMessage], 404);
+        }
         ajn_json(['application' => ajn_application_public_payload($item)]);
     }
     if ($method === 'POST' && $path === '/api/applications/recover-tracking') {
         ajn_require_origin($config);
         ajn_rate_limit($db, 'application-tracking-recovery', 5, 900);
         $body = ajn_body();
+        ajn_check_anti_abuse($body, 2);
         $email = mb_strtolower(ajn_text($body['email'] ?? null, 254));
         $cpf = preg_replace('/\D+/', '', ajn_text($body['cpf'] ?? null, 20));
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !ajn_valid_cpf((string) $cpf)) ajn_json(['error' => 'Dados de recuperação inválidos.'], 400);
-        ajn_verify_turnstile($config, $body['turnstileToken'] ?? $body['cf-turnstile-response'] ?? null);
+        ajn_verify_turnstile($config, $body['turnstileToken'] ?? $body['cf-turnstile-response'] ?? null, 'recover');
         $secret = hex2bin($config['encryption_key'] ?? '');
         if (!is_string($secret) || strlen($secret) !== 32) ajn_json(['error' => 'Configuração de privacidade indisponível.'], 503);
         $candidate = ajn_fetch($db, 'SELECT * FROM candidates WHERE email=? AND cpf_hash=? LIMIT 1', [$email, hash_hmac('sha256', (string) $cpf, $secret)]);
@@ -144,6 +160,7 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
         $job = $slug ? ajn_fetch($db, 'SELECT id FROM job_postings WHERE slug=? AND status=?', [$slug, 'published']) : null;
         if ($slug && !$job) ajn_json(['error' => 'A vaga não existe ou não está aberta.'], 404);
         if (!empty($_POST['website'])) ajn_json(['error' => 'Não foi possível processar sua solicitação.'], 400);
+        ajn_check_anti_abuse($_POST, 2);
         $name = ajn_text($_POST['fullName'] ?? null, 200);
         $email = mb_strtolower(ajn_text($_POST['email'] ?? null, 254));
         $phone = ajn_text($_POST['phone'] ?? null, 30);
@@ -160,7 +177,7 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
         }
         $linkedinUrl = ajn_optional_http_url($_POST['linkedinUrl'] ?? null, 500);
         $portfolioUrl = ajn_optional_http_url($_POST['portfolioUrl'] ?? null, 500);
-        ajn_verify_turnstile($config, $_POST['turnstileToken'] ?? $_POST['cf-turnstile-response'] ?? null);
+        ajn_verify_turnstile($config, $_POST['turnstileToken'] ?? $_POST['cf-turnstile-response'] ?? null, $job ? 'apply' : 'talent_pool');
         $file = ajn_resume_upload($config);
         $secret = hex2bin($config['encryption_key'] ?? '');
         if (!is_string($secret) || strlen($secret) !== 32) ajn_json(['error' => 'Configuração de privacidade indisponível.'], 503);
@@ -193,17 +210,22 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
             unlink($destination);
             ajn_json(['error' => 'Falha na verificação do currículo.'], 502);
         }
-        $tracking = 'AJN-' . gmdate('Y') . '-' . strtoupper(substr(bin2hex(random_bytes(5)), 0, 10));
+        $tracking = 'AJN-' . gmdate('Y') . '-' . strtoupper(bin2hex(random_bytes(32)));
+        $trackingHash = hash('sha256', $tracking);
         $now = time();
+        $trackingExpires = $now + AJN_TRACKING_TTL_SECONDS;
+        $phoneEncrypted = ajn_encrypt($phone, $config);
+        $cpfEncrypted = ajn_encrypt((string) $cpf, $config);
+        $phoneMasked = ajn_mask_phone($phone);
         try {
             $db->beginTransaction();
-            $candidateValues = [$name, $phone, $city, $state, $linkedinUrl, $portfolioUrl, ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null, (int) $consentRetention, $now, $candidateId];
+            $candidateValues = [$name, $phoneMasked, $phoneEncrypted, $cpfEncrypted, 'v1', $city, $state, $linkedinUrl, $portfolioUrl, ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null, (int) $consentRetention, $now, $candidateId];
             if ($candidate) {
-                ajn_exec($db, 'UPDATE candidates SET full_name=?,phone=?,city=?,state=?,linkedin_url=?,portfolio_url=?,current_title=?,summary=?,is_talent_pool=?,updated_at=? WHERE id=?', $candidateValues);
+                ajn_exec($db, 'UPDATE candidates SET full_name=?,phone=?,phone_encrypted=?,cpf_encrypted=?,key_version=?,city=?,state=?,linkedin_url=?,portfolio_url=?,current_title=?,summary=?,is_talent_pool=?,updated_at=? WHERE id=?', $candidateValues);
             } else {
                 ajn_exec($db,
-                    'INSERT INTO candidates (id,full_name,email,phone,cpf_hash,cpf_masked,city,state,linkedin_url,portfolio_url,current_title,summary,is_talent_pool,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                    [$candidateId, $name, $email, $phone, $cpfHash, '***.***.' . substr((string) $cpf, 6, 3) . '-' . substr((string) $cpf, 9), $city, $state,
+                    'INSERT INTO candidates (id,full_name,email,phone,phone_encrypted,cpf_hash,cpf_masked,cpf_encrypted,key_version,city,state,linkedin_url,portfolio_url,current_title,summary,is_talent_pool,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                    [$candidateId, $name, $email, $phoneMasked, $phoneEncrypted, $cpfHash, '***.***.' . substr((string) $cpf, 6, 3) . '-' . substr((string) $cpf, 9), $cpfEncrypted, 'v1', $city, $state,
                         $linkedinUrl, $portfolioUrl,
                         ajn_text($_POST['currentTitle'] ?? null, 200) ?: null, ajn_text($_POST['summary'] ?? null, 5000) ?: null,
                         (int) $consentRetention, $now, $now]
@@ -225,8 +247,8 @@ function ajn_public_applications(PDO $db, string $method, string $path, array $c
             );
             $stage = ajn_fetch($db, 'SELECT id FROM recruitment_stages WHERE job_id IS NULL AND stage_order=1 LIMIT 1');
             ajn_exec($db,
-                'INSERT INTO job_applications (id,job_id,candidate_id,resume_id,current_stage_id,tracking_code,status,source,applied_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
-                [$applicationId, $job['id'] ?? null, $candidateId, $resumeId, $stage['id'] ?? null, $tracking, 'active', $job ? 'portal' : 'talentos', $now, $now]
+                'INSERT INTO job_applications (id,job_id,candidate_id,resume_id,current_stage_id,tracking_code,tracking_token_hash,tracking_expires_at,status,source,applied_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+                [$applicationId, $job['id'] ?? null, $candidateId, $resumeId, $stage['id'] ?? null, $tracking, $trackingHash, $trackingExpires, 'active', $job ? 'portal' : 'talentos', $now, $now]
             );
             ajn_audit($db, 'candidate', $candidateId, $job ? 'APPLICATION_SUBMITTED' : 'TALENT_POOL_REGISTERED', 'application', $applicationId);
             $db->commit();
@@ -247,13 +269,35 @@ function ajn_admin_candidates(PDO $db, string $method, string $path, array $conf
     if ($path === '/api/admin/candidates' || $path === '/api/admin/candidates/') {
         ajn_auth($db, 'candidates:read');
         [$limit, $offset] = ajn_pagination(200, 200);
-        $rows = ajn_list($db, 'SELECT c.id,c.full_name,c.email,c.phone,c.city,c.state,c.current_title,c.created_at FROM candidates c ORDER BY c.created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset);
+        $rows = ajn_list($db, 'SELECT c.id,c.full_name,c.email,c.phone,c.phone_encrypted,c.city,c.state,c.current_title,c.created_at FROM candidates c ORDER BY c.created_at DESC LIMIT ? OFFSET ?', [$limit, $offset]);
         $candidates = array_map(static fn(array $c): array => [
             'id' => $c['id'], 'fullName' => $c['full_name'], 'email' => $c['email'],
-            'phone' => $c['phone'], 'city' => $c['city'], 'state' => $c['state'],
+            'phone' => ajn_decrypt_pii($c['phone_encrypted'] ?? null, (string) $c['phone'], $config), 'city' => $c['city'], 'state' => $c['state'],
             'currentTitle' => $c['current_title'], 'createdAt' => gmdate('c', (int) $c['created_at']),
         ], $rows);
         ajn_json(['candidates' => $candidates, 'count' => count($candidates), 'limit' => $limit, 'offset' => $offset]);
+    }
+    if ($path === '/api/admin/candidates/export') {
+        $admin = ajn_auth($db, 'candidates:export');
+        ajn_rate_limit($db, 'admin-candidates-export', 5, 900, (string) $admin['id']);
+        ajn_require_step_up($db, $admin, $config);
+        [$limit, $offset] = ajn_pagination(500, 1000);
+        $rows = ajn_list($db, 'SELECT c.id,c.full_name,c.email,c.phone,c.phone_encrypted,c.cpf_masked,c.city,c.state,c.current_title,c.is_talent_pool,c.created_at FROM candidates c ORDER BY c.created_at DESC LIMIT ? OFFSET ?', [$limit, $offset]);
+        $candidates = array_map(static fn(array $c): array => [
+            'id' => $c['id'],
+            'fullName' => $c['full_name'],
+            'email' => $c['email'],
+            'phone' => ajn_decrypt_pii($c['phone_encrypted'] ?? null, (string) $c['phone'], $config),
+            'cpfMasked' => $c['cpf_masked'],
+            'city' => $c['city'],
+            'state' => $c['state'],
+            'currentTitle' => $c['current_title'],
+            'isTalentPool' => (bool) $c['is_talent_pool'],
+            'createdAt' => gmdate('c', (int) $c['created_at']),
+        ], $rows);
+        ajn_audit($db, 'admin', $admin['id'], 'CANDIDATES_EXPORTED', 'candidate', null, ['count' => count($candidates)]);
+        ajn_security_alert($db, $config, 'CANDIDATES_MASS_EXPORT', 'Exportacao em massa de candidatos realizada.', ['actor_id' => $admin['id'], 'count' => count($candidates)]);
+        ajn_json(['candidates' => $candidates, 'count' => count($candidates), 'csrfToken' => $admin['csrf_token'] ?? null]);
     }
     if (preg_match('~^/api/admin/candidates/([a-f0-9-]{36})/resume$~D', $path, $match)) {
         $admin = ajn_auth($db, 'resumes:read');
@@ -275,6 +319,8 @@ function ajn_admin_candidates(PDO $db, string $method, string $path, array $conf
         header('Content-Disposition: attachment; filename="curriculo.' . pathinfo($filename, PATHINFO_EXTENSION) . '"');
         header('Content-Length: ' . filesize($filename));
         header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: DENY');
+        header("Content-Security-Policy: sandbox; default-src 'none'; frame-ancestors 'none'");
         header('Cache-Control: private, no-store');
         readfile($filename);
         exit;

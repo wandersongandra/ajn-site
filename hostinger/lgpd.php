@@ -23,6 +23,7 @@ function ajn_public_lgpd(PDO $db, string $method, string $path, array $config): 
     ajn_require_origin($config);
     ajn_rate_limit($db, 'lgpd-request', 5, 900);
     $body = ajn_body();
+    ajn_check_anti_abuse($body, 2);
     $email = mb_strtolower(ajn_text($body['email'] ?? null, 254));
     $cpf = preg_replace('/\D+/', '', ajn_text($body['cpf'] ?? null, 20));
     $requestType = $path === '/api/lgpd/deletion-request' ? 'erasure' : ajn_text($body['requestType'] ?? null, 30);
@@ -30,7 +31,7 @@ function ajn_public_lgpd(PDO $db, string $method, string $path, array $config): 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !ajn_valid_cpf((string) $cpf) || !in_array($requestType, ['access', 'rectification', 'erasure', 'portability', 'revocation'], true)) {
         ajn_json(['error' => 'Dados da solicitação inválidos.'], 400);
     }
-    ajn_verify_turnstile($config, $body['turnstileToken'] ?? $body['cf-turnstile-response'] ?? null);
+    ajn_verify_turnstile($config, $body['turnstileToken'] ?? $body['cf-turnstile-response'] ?? null, 'lgpd');
     $secret = hex2bin($config['encryption_key'] ?? '');
     if (!is_string($secret) || strlen($secret) !== 32) ajn_json(['error' => 'Configuração de privacidade indisponível.'], 503);
     $candidate = ajn_fetch($db, 'SELECT id FROM candidates WHERE email=? AND cpf_hash=? LIMIT 1', [$email, hash_hmac('sha256', (string) $cpf, $secret)]);
@@ -49,12 +50,15 @@ function ajn_admin_lgpd(PDO $db, string $method, string $path, array $config): n
     if ($method === 'GET' && in_array($path, ['/api/admin/lgpd/requests', '/api/admin/lgpd/requests/'], true)) {
         ajn_auth($db, 'lgpd:read');
         [$limit, $offset] = ajn_pagination(200, 200);
-        $rows = ajn_list($db, 'SELECT r.id,r.request_type,r.status,r.reason,r.requested_at,r.completed_at,c.full_name,c.email FROM data_subject_requests r JOIN candidates c ON c.id=r.candidate_id ORDER BY r.requested_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset);
+        $rows = ajn_list($db, 'SELECT r.id,r.request_type,r.status,r.reason,r.requested_at,r.completed_at,c.full_name,c.email FROM data_subject_requests r JOIN candidates c ON c.id=r.candidate_id ORDER BY r.requested_at DESC LIMIT ? OFFSET ?', [$limit, $offset]);
         ajn_json(['requests' => array_map('ajn_lgpd_request_payload', $rows), 'count' => count($rows), 'limit' => $limit, 'offset' => $offset]);
     }
     if ($method === 'POST' && preg_match('~^/api/admin/lgpd/requests/([a-f0-9-]{36})/execute$~D', $path, $match)) {
         $admin = ajn_auth($db, 'lgpd:execute');
         ajn_require_origin($config);
+        ajn_require_csrf($admin, $config);
+        $body = ajn_body();
+        ajn_require_step_up($db, $admin, $config, $body);
         $request = ajn_fetch($db, 'SELECT r.*,c.email FROM data_subject_requests r JOIN candidates c ON c.id=r.candidate_id WHERE r.id=? LIMIT 1', [$match[1]]);
         if (!$request) ajn_json(['error' => 'Solicitação não encontrada.'], 404);
         if (!in_array($request['status'], ['pending', 'in_analysis'], true)) ajn_json(['error' => 'Solicitação já atendida.'], 409);
@@ -79,10 +83,12 @@ function ajn_admin_lgpd(PDO $db, string $method, string $path, array $config): n
                 error_log('[AJN_CAREERS] LGPD erasure failed: ' . get_class($error));
                 ajn_json(['error' => 'Não foi possível concluir a solicitação.'], 503);
             }
+            ajn_security_alert($db, $config, 'LGPD_ERASURE_EXECUTED', 'Exclusao definitiva LGPD executada.', ['request_id' => $match[1], 'candidate_id' => $candidateId, 'actor_id' => $admin['id']]);
             ajn_json(['success' => true, 'message' => 'Solicitação de exclusão concluída.']);
         }
         ajn_exec($db, 'UPDATE data_subject_requests SET status=\'fulfilled\',completed_at=?,completed_by=? WHERE id=? AND status IN (\'pending\',\'in_analysis\')', [time(), $admin['id'], $match[1]]);
         ajn_audit($db, 'admin', $admin['id'], 'LGPD_REQUEST_FULFILLED', 'data_subject_request', $match[1]);
+        ajn_security_alert($db, $config, 'LGPD_ERASURE_EXECUTED', 'Solicitacao LGPD concluida.', ['request_id' => $match[1], 'request_type' => $request['request_type'], 'actor_id' => $admin['id']]);
         ajn_json(['success' => true, 'message' => 'Solicitação registrada como concluída.']);
     }
     ajn_json(['error' => 'Endpoint não encontrado.'], 404);

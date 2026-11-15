@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * AJN Carreiras: entrada de API para PHP/PDO na Hostinger Premium.
- * Este código depende de um banco dedicado e de configuração privada.
+ * Este codigo depende de um banco dedicado e de configuracao privada.
  */
 
 function ajn_job(array $row, bool $withDetails = false): array
@@ -67,7 +67,16 @@ function ajn_job_page(?array $job, array $config): never
 {
     $found = $job !== null;
     http_response_code($found ? 200 : 404);
+    if (function_exists('header_remove')) {
+        @header_remove('X-Powered-By');
+    }
     header('Content-Type: text/html; charset=utf-8');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Cross-Origin-Opener-Policy: same-origin');
+    header('Cross-Origin-Resource-Policy: same-origin');
+    header('Strict-Transport-Security: max-age=63072000; includeSubDomains; preload');
     header("Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; style-src 'self'; font-src 'self'; img-src 'self'");
     header("Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()");
     if (!$found) {
@@ -124,7 +133,7 @@ function ajn_public_jobs(PDO $db, string $method, string $path, array $config): 
             $term = '%' . ajn_escape_like(mb_substr(trim($_GET['q']), 0, 100)) . '%';
             array_push($values, $term, $term);
         }
-        $rows = ajn_list($db, 'SELECT * FROM job_postings WHERE ' . implode(' AND ', $where) . ' ORDER BY published_at DESC, created_at DESC LIMIT 200', $values);
+        $rows = ajn_list($db, 'SELECT * FROM job_postings WHERE ' . implode(' AND ', $where) . ' ORDER BY published_at DESC, created_at DESC LIMIT ?', [...$values, 200]);
         $jobs = array_map(static fn(array $row): array => ajn_job($row), $rows);
         ajn_json(['jobs' => $jobs, 'count' => count($jobs)]);
     }
@@ -142,6 +151,96 @@ function ajn_public_jobs(PDO $db, string $method, string $path, array $config): 
     ajn_json(['error' => 'Endpoint não encontrado.'], 404);
 }
 
+/**
+ * Tabela centralizada de RBAC e metodos HTTP para /api/admin/* (deny-by-default).
+ * Qualquer rota em /api/admin/* sem declaracao explicita nesta tabela falha fechada.
+ */
+function ajn_admin_route_policy(): array
+{
+    return [
+        ['pattern' => '~^/api/admin/auth/login$~D', 'methods' => ['POST' => '__public_auth__']],
+        ['pattern' => '~^/api/admin/auth/logout$~D', 'methods' => ['POST' => '__public_auth__']],
+        ['pattern' => '~^/api/admin/auth/forgot-password$~D', 'methods' => ['POST' => '__public_auth__']],
+        ['pattern' => '~^/api/admin/auth/reset-password$~D', 'methods' => ['POST' => '__public_auth__']],
+        ['pattern' => '~^/api/admin/auth/me$~D', 'methods' => ['GET' => '__authenticated__']],
+        ['pattern' => '~^/api/admin/auth/step-up$~D', 'methods' => ['POST' => '__authenticated__']],
+        ['pattern' => '~^/api/admin/auth/mfa/(?:setup|activate)$~D', 'methods' => ['POST' => '__authenticated__']],
+        ['pattern' => '~^/api/admin/jobs/?$~D', 'methods' => ['GET' => 'jobs:read', 'POST' => 'jobs:write']],
+        ['pattern' => '~^/api/admin/jobs/[a-f0-9-]{36}$~D', 'methods' => ['PUT' => 'jobs:write']],
+        ['pattern' => '~^/api/admin/users/?$~D', 'methods' => ['GET' => 'super_admin', 'POST' => 'super_admin']],
+        ['pattern' => '~^/api/admin/users/[a-f0-9-]{36}/status$~D', 'methods' => ['PUT' => 'super_admin']],
+        ['pattern' => '~^/api/admin/users/[a-f0-9-]{36}/role$~D', 'methods' => ['PUT' => 'super_admin']],
+        ['pattern' => '~^/api/admin/users/[a-f0-9-]{36}/rotate-mfa$~D', 'methods' => ['POST' => 'super_admin']],
+        ['pattern' => '~^/api/admin/candidates/?$~D', 'methods' => ['GET' => 'candidates:read']],
+        ['pattern' => '~^/api/admin/candidates/export$~D', 'methods' => ['GET' => 'candidates:export']],
+        ['pattern' => '~^/api/admin/candidates/[a-f0-9-]{36}/resume$~D', 'methods' => ['GET' => 'resumes:read']],
+        ['pattern' => '~^/api/admin/pipeline/[a-f0-9-]{36}$~D', 'methods' => ['GET' => 'applications:read']],
+        ['pattern' => '~^/api/admin/pipeline/move-stage$~D', 'methods' => ['POST' => 'applications:stage_move']],
+        ['pattern' => '~^/api/admin/audit/?$~D', 'methods' => ['GET' => 'audit:read']],
+        ['pattern' => '~^/api/admin/lgpd/requests/?$~D', 'methods' => ['GET' => 'lgpd:read']],
+        ['pattern' => '~^/api/admin/lgpd/requests/[a-f0-9-]{36}/execute$~D', 'methods' => ['POST' => 'lgpd:execute']],
+    ];
+}
+
+function ajn_public_route_policy(): array
+{
+    return [
+        ['pattern' => '~^/api/health$~D', 'methods' => ['GET']],
+        ['pattern' => '~^/api/applications/track/AJN-[0-9]{4}-[A-Z0-9]{6,64}$~D', 'methods' => ['GET']],
+        ['pattern' => '~^/api/applications/recover-tracking$~D', 'methods' => ['POST']],
+        ['pattern' => '~^/api/applications/verify-recovery$~D', 'methods' => ['POST']],
+        ['pattern' => '~^/api/applications/talent-pool$~D', 'methods' => ['POST']],
+        ['pattern' => '~^/api/applications/jobs/[a-z0-9-]+/apply$~D', 'methods' => ['POST']],
+        ['pattern' => '~^/api/lgpd/(?:requests|deletion-request)$~D', 'methods' => ['POST']],
+    ];
+}
+
+function ajn_enforce_central_gate(PDO $db, string $method, string $path, array $config): void
+{
+    $GLOBALS['__ajn_active_config'] = $config;
+    if (str_starts_with($path, '/api/admin/')) {
+        foreach (ajn_admin_route_policy() as $route) {
+            if (preg_match($route['pattern'], $path) === 1) {
+                $methods = $route['methods'] ?? [];
+                if (!is_array($methods) || !array_key_exists($method, $methods)) {
+                    header('Allow: ' . implode(', ', array_keys(is_array($methods) ? $methods : [])));
+                    ajn_json(['error' => 'Método não permitido.'], 405);
+                }
+                $permission = trim((string) $methods[$method]);
+                if ($permission === '') {
+                    ajn_json(['error' => 'Rota administrativa sem permissão declarada (deny-by-default).'], 403);
+                }
+                if ($permission === '__public_auth__') {
+                    return;
+                }
+                $user = ajn_auth($db, ($permission === '__authenticated__' || $permission === 'super_admin') ? null : $permission);
+                if ($permission === 'super_admin' && $user['role'] !== 'super_admin') {
+                    ajn_json(['error' => 'Apenas administradores podem gerenciar operadores.'], 403);
+                }
+                if (in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
+                    ajn_require_origin($config);
+                    ajn_require_csrf($user, $config);
+                }
+                $GLOBALS['__ajn_authorized_user'] = $user;
+                $GLOBALS['__ajn_authorized_perm'] = $permission;
+                return;
+            }
+        }
+        ajn_json(['error' => 'Endpoint não encontrado.'], 404);
+    }
+
+    foreach (ajn_public_route_policy() as $route) {
+        if (preg_match($route['pattern'], $path) === 1) {
+            $allowed = $route['methods'] ?? [];
+            if (!in_array($method, $allowed, true)) {
+                header('Allow: ' . implode(', ', $allowed));
+                ajn_json(['error' => 'Método não permitido.'], 405);
+            }
+            return;
+        }
+    }
+}
+
 require_once __DIR__ . '/admin.php';
 require_once __DIR__ . '/applications.php';
 require_once __DIR__ . '/lgpd.php';
@@ -151,6 +250,8 @@ function ajn_dispatch(PDO $db, array $config): never
     $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
     if (!is_string($path) || strlen($path) > 1024) ajn_json(['error' => 'Caminho inválido.'], 400);
+
+    ajn_enforce_central_gate($db, $method, $path, $config);
 
     if ($path === '/api/health' && $method === 'GET') {
         // Endpoint anonimo: limitar antes de tocar o banco.

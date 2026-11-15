@@ -1,16 +1,32 @@
 <?php
 declare(strict_types=1);
 
-// Esta pasta deve ser instalada fora da raiz pública do site.
-// Não pode ser incluída no build Astro nem publicada via FTP em public_html.
+// Esta pasta deve ser instalada fora da raiz publica do site.
+// Nao pode ser incluida no build Astro nem publicada via FTP em public_html.
+@ini_set('display_errors', '0');
+@ini_set('display_startup_errors', '0');
+@ini_set('log_errors', '1');
+@ini_set('session.use_strict_mode', '1');
+@ini_set('session.cookie_secure', '1');
+@ini_set('session.cookie_httponly', '1');
+@ini_set('session.cookie_samesite', 'Strict');
+@ini_set('expose_php', '0');
+
 if (PHP_SAPI !== 'cli') {
+    if (function_exists('header_remove')) {
+        @header_remove('X-Powered-By');
+    }
     header('Content-Type: application/json; charset=utf-8');
-    header('Cache-Control: no-store');
+    header('Cache-Control: no-store, max-age=0');
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: DENY');
     header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()');
+    header('Cross-Origin-Opener-Policy: same-origin');
     // A resposta nunca deve ser lida por outra origem nem reaproveitada por cache compartilhado.
     header('Cross-Origin-Resource-Policy: same-origin');
+    header('Strict-Transport-Security: max-age=63072000; includeSubDomains; preload');
+    header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'");
     header('Vary: Origin');
 }
 
@@ -18,8 +34,10 @@ if (PHP_SAPI !== 'cli') {
 // o cookie se nao vier com Secure, path=/ e sem Domain, o que impede que um
 // subdominio comprometido injete sessao no dominio principal.
 const AJN_SESSION_COOKIE = '__Host-ajn_admin_session';
-const AJN_SESSION_IDLE_SECONDS = 1800;
+const AJN_SESSION_IDLE_SECONDS = 1200;
 const AJN_SESSION_ABSOLUTE_SECONDS = 28800;
+const AJN_STEP_UP_SECONDS = 300;
+const AJN_TRACKING_TTL_SECONDS = 7776000;
 
 function ajn_json(array $payload, int $status = 200): never
 {
@@ -47,7 +65,7 @@ function ajn_body(): array
         ajn_json(['error' => 'Requisição muito grande.'], 413);
     }
     $data = json_decode($raw, true);
-    if (!is_array($data) || array_is_list($data)) {
+    if (!is_array($data) || ($data !== [] && array_is_list($data)) || str_starts_with(ltrim($raw), '[')) {
         ajn_json(['error' => 'JSON inválido.'], 400);
     }
     return $data;
@@ -62,7 +80,21 @@ function ajn_pagination(int $defaultLimit = 200, int $maxLimit = 200): array
 
 function ajn_pdo(array $config): PDO
 {
+    if (!empty($config['error_log_path']) && is_string($config['error_log_path'])) {
+        $logDir = dirname($config['error_log_path']);
+        if (is_dir($logDir) && is_writable($logDir)) {
+            @ini_set('error_log', $config['error_log_path']);
+        }
+    }
     $dbc = $config['database'] ?? [];
+    if (!empty($dbc['dsn']) && is_string($dbc['dsn'])) {
+        return new PDO(
+            $dbc['dsn'],
+            $dbc['username'] ?? '',
+            $dbc['password'] ?? '',
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+        );
+    }
     return new PDO(
         'mysql:host=' . ($dbc['host'] ?? '') . ';port=' . (int) ($dbc['port'] ?? 3306) . ';dbname=' . ($dbc['name'] ?? '') . ';charset=utf8mb4',
         $dbc['username'] ?? '', $dbc['password'] ?? '',
@@ -128,33 +160,106 @@ function ajn_private_resume_dir(array $config, bool $requireWritable = false): ?
     return $privateDirectory;
 }
 
-function ajn_fetch(PDO $db, string $sql, array $values = []): ?array
+function ajn_prepare_and_execute(PDO $db, string $sql, array $values = []): PDOStatement
 {
     $query = $db->prepare($sql);
-    $query->execute($values);
+    $index = 1;
+    foreach ($values as $key => $val) {
+        $param = is_int($key) ? $index : (str_starts_with((string) $key, ':') ? (string) $key : ':' . (string) $key);
+        if (is_int($val)) {
+            $query->bindValue($param, $val, PDO::PARAM_INT);
+        } elseif (is_bool($val)) {
+            $query->bindValue($param, $val ? 1 : 0, PDO::PARAM_INT);
+        } elseif ($val === null) {
+            $query->bindValue($param, null, PDO::PARAM_NULL);
+        } else {
+            $query->bindValue($param, (string) $val, PDO::PARAM_STR);
+        }
+        $index++;
+    }
+    $query->execute();
+    return $query;
+}
+
+function ajn_fetch(PDO $db, string $sql, array $values = []): ?array
+{
+    $query = ajn_prepare_and_execute($db, $sql, $values);
     $row = $query->fetch(PDO::FETCH_ASSOC);
     return is_array($row) ? $row : null;
 }
 
 function ajn_list(PDO $db, string $sql, array $values = []): array
 {
-    $query = $db->prepare($sql);
-    $query->execute($values);
+    $query = ajn_prepare_and_execute($db, $sql, $values);
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function ajn_exec(PDO $db, string $sql, array $values = []): int
 {
-    $query = $db->prepare($sql);
-    $query->execute($values);
+    $query = ajn_prepare_and_execute($db, $sql, $values);
     return $query->rowCount();
 }
 
-function ajn_audit(PDO $db, string $actorType, ?string $actorId, string $action, string $resource, ?string $resourceId = null): void
+function ajn_sanitize_audit_details(?array $details): ?string
 {
+    if ($details === null || $details === []) return null;
+    $forbidden = ['cpf', 'cpf_raw', 'password', 'newpassword', 'stepuppassword', 'mfacode', 'stepupmfacode', 'recoverycode', 'token', 'turnstiletoken'];
+    $clean = [];
+    foreach ($details as $k => $v) {
+        if (in_array(strtolower((string) $k), $forbidden, true)) continue;
+        $clean[$k] = $v;
+    }
+    if ($clean === []) return null;
+    $encoded = json_encode($clean, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    return is_string($encoded) ? $encoded : null;
+}
+
+function ajn_compute_audit_hash(
+    string $prevHash,
+    string $id,
+    string $actorType,
+    ?string $actorId,
+    string $action,
+    string $resource,
+    ?string $resourceId,
+    ?string $detailsJson,
+    ?string $ip,
+    ?string $ua,
+    int $timestamp
+): string {
+    return hash('sha256', implode('|', [
+        $prevHash,
+        $id,
+        $actorType,
+        (string) ($actorId ?? ''),
+        $action,
+        $resource,
+        (string) ($resourceId ?? ''),
+        (string) ($detailsJson ?? ''),
+        (string) ($ip ?? ''),
+        (string) ($ua ?? ''),
+        (string) $timestamp,
+    ]));
+}
+
+function ajn_audit(PDO $db, string $actorType, ?string $actorId, string $action, string $resource, ?string $resourceId = null, ?array $details = null): void
+{
+    $id = ajn_uuid();
+    $now = time();
+    $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+    $ua = mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500);
+    $detailsJson = ajn_sanitize_audit_details($details);
+
+    $prevRow = ajn_fetch(
+        $db,
+        'SELECT entry_hash FROM audit_logs WHERE entry_hash IS NOT NULL AND NOT EXISTS (SELECT 1 FROM audit_logs a2 WHERE a2.prev_hash = audit_logs.entry_hash) ORDER BY timestamp DESC, id DESC LIMIT 1'
+    );
+    $prevHash = (string) ($prevRow['entry_hash'] ?? str_repeat('0', 64));
+    $entryHash = ajn_compute_audit_hash($prevHash, $id, $actorType, $actorId, $action, $resource, $resourceId, $detailsJson, $ip, $ua, $now);
+
     ajn_exec($db,
-        'INSERT INTO audit_logs (id,actor_id,actor_type,action,resource,resource_id,ip_address,user_agent,timestamp) VALUES (?,?,?,?,?,?,?,?,?)',
-        [ajn_uuid(), $actorId, $actorType, $action, $resource, $resourceId, $_SERVER['REMOTE_ADDR'] ?? null, mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500), time()]
+        'INSERT INTO audit_logs (id,actor_id,actor_type,action,resource,resource_id,details_json,ip_address,user_agent,prev_hash,entry_hash,timestamp) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        [$id, $actorId, $actorType, $action, $resource, $resourceId, $detailsJson, $ip, $ua, $prevHash, $entryHash, $now]
     );
 }
 
@@ -188,17 +293,91 @@ function ajn_rate_limit(PDO $db, string $scope, int $max, int $window, ?string $
     }
 }
 
+function ajn_allowed_origins(array $config): array
+{
+    $list = [$config['app_url'] ?? ''];
+    if (is_array($config['cors_allowed_origins'] ?? null)) {
+        $list = array_merge($list, $config['cors_allowed_origins']);
+    }
+    $out = [];
+    foreach ($list as $origin) {
+        if (!is_string($origin)) continue;
+        $norm = rtrim(trim($origin), '/');
+        if ($norm !== '' && !in_array($norm, $out, true)) {
+            $out[] = $norm;
+        }
+    }
+    return $out;
+}
+
 function ajn_require_origin(array $config): void
 {
+    $secFetchSite = strtolower(trim((string) ($_SERVER['HTTP_SEC_FETCH_SITE'] ?? '')));
+    if ($secFetchSite !== '' && !in_array($secFetchSite, ['same-origin', 'none'], true)) {
+        ajn_json(['error' => 'Requisição cross-site bloqueada.'], 403);
+    }
     $expected = rtrim($config['app_url'] ?? '', '/');
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    if (!is_string($origin) || !hash_equals($expected, $origin)) {
+    if (!is_string($origin)) {
         ajn_json(['error' => 'Origem não autorizada.'], 403);
+    }
+    $normalizedOrigin = rtrim(trim($origin), '/');
+    $matched = false;
+    foreach (ajn_allowed_origins($config) as $allowed) {
+        if (hash_equals($allowed, $normalizedOrigin)) {
+            $matched = true;
+            break;
+        }
+    }
+    if (!$matched && !hash_equals($expected, $origin)) {
+        ajn_json(['error' => 'Origem não autorizada.'], 403);
+    }
+    if (PHP_SAPI !== 'cli' && $normalizedOrigin !== '') {
+        header('Access-Control-Allow-Origin: ' . $normalizedOrigin);
+        header('Access-Control-Allow-Credentials: true');
+    }
+}
+
+function ajn_csrf_token(string $sessionTokenHash, array $config = []): string
+{
+    $key = (string) ($config['encryption_key'] ?? ($GLOBALS['__ajn_active_config']['encryption_key'] ?? AJN_SESSION_COOKIE));
+    return hash_hmac('sha256', 'csrf:' . $sessionTokenHash, $key);
+}
+
+function ajn_require_csrf(array $user, array $config = [], ?array $body = null): void
+{
+    $sessionHash = (string) ($user['session_token_hash'] ?? '');
+    if ($sessionHash === '') {
+        ajn_json(['error' => 'Token CSRF inválido ou ausente.'], 403);
+    }
+    $provided = trim((string) ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($body['csrfToken'] ?? '')));
+    $expected = ajn_csrf_token($sessionHash, $config);
+    if ($provided === '' || !hash_equals($expected, $provided)) {
+        ajn_json(['error' => 'Token CSRF inválido ou ausente.'], 403);
+    }
+}
+
+function ajn_check_anti_abuse(array $input, int $minSeconds = 2): void
+{
+    $honeypot = trim((string) ($input['website'] ?? ($input['company_website'] ?? '')));
+    if ($honeypot !== '') {
+        ajn_json(['error' => 'Não foi possível processar sua solicitação.'], 400);
+    }
+    if (isset($input['formStartedAt']) && $input['formStartedAt'] !== '' && $input['formStartedAt'] !== null) {
+        $raw = (int) $input['formStartedAt'];
+        if ($raw > 0) {
+            $nowMs = (int) round(microtime(true) * 1000);
+            $startedMs = $raw < 10000000000 ? ($raw * 1000) : $raw;
+            $elapsedMs = $nowMs - $startedMs;
+            if ($elapsedMs < ($minSeconds * 1000) || $elapsedMs > 86400000) {
+                ajn_json(['error' => 'Preenchimento muito rápido ou inválido. Aguarde alguns segundos e tente novamente.'], 400);
+            }
+        }
     }
 }
 
 if (!function_exists('ajn_verify_turnstile')) {
-function ajn_verify_turnstile(array $config, mixed $token): void
+function ajn_verify_turnstile(array $config, mixed $token, ?string $expectedAction = null): void
 {
     $secret = $config['turnstile_secret_key'] ?? '';
     if (!is_string($secret) || strlen($secret) < 10 || !function_exists('curl_init')) {
@@ -230,6 +409,11 @@ function ajn_verify_turnstile(array $config, mixed $token): void
         !is_string($host) || !hash_equals($host, (string) ($verification['hostname'] ?? ''))) {
         ajn_json(['error' => 'Verificação antispam inválida ou expirada.'], 400);
     }
+    if ($expectedAction !== null && isset($verification['action']) && (string) $verification['action'] !== '') {
+        if (!hash_equals($expectedAction, (string) $verification['action'])) {
+            ajn_json(['error' => 'Ação antispam inválida.'], 400);
+        }
+    }
 }
 }
 
@@ -240,15 +424,23 @@ function ajn_session(PDO $db): ?array
     $now = time();
     $hash = hash('sha256', $token);
     $row = ajn_fetch($db,
-        'SELECT u.id,u.name,u.email,u.role,u.is_active,u.mfa_enabled,u.mfa_required,s.expires_at,s.absolute_expires_at FROM admin_sessions s JOIN admin_users u ON u.id=s.user_id WHERE s.session_token_hash=? AND s.expires_at>? AND s.absolute_expires_at>? LIMIT 1',
+        'SELECT u.id,u.name,u.email,u.role,u.is_active,u.mfa_enabled,u.mfa_required,u.mfa_secret,u.mfa_last_counter,u.password_hash,s.id AS session_id,s.session_token_hash,s.expires_at,s.absolute_expires_at,s.step_up_until FROM admin_sessions s JOIN admin_users u ON u.id=s.user_id WHERE s.session_token_hash=? AND s.expires_at>? AND s.absolute_expires_at>? LIMIT 1',
         [$hash, $now, $now]
     );
-    if (!$row || !(int) $row['is_active']) return null;
+    if (!$row || !hash_equals((string) ($row['session_token_hash'] ?? ''), $hash)) return null;
+    if (!(int) $row['is_active'] || !(int) ($row['mfa_enabled'] ?? 0) || !(int) ($row['mfa_required'] ?? 0) || empty($row['mfa_secret'])) {
+        ajn_exec($db, 'DELETE FROM admin_sessions WHERE session_token_hash=?', [$hash]);
+        return null;
+    }
     // expires_at e a janela de inatividade e desliza a cada uso, sempre limitada
     // pelo teto absoluto gravado na emissao da sessao.
     $next = min($now + AJN_SESSION_IDLE_SECONDS, (int) $row['absolute_expires_at']);
     if ($next > (int) $row['expires_at']) {
         ajn_exec($db, 'UPDATE admin_sessions SET expires_at=? WHERE session_token_hash=?', [$next, $hash]);
+    }
+    $row['csrf_token'] = ajn_csrf_token($hash);
+    if (PHP_SAPI !== 'cli') {
+        header('X-CSRF-Token: ' . $row['csrf_token']);
     }
     return $row;
 }
@@ -284,6 +476,29 @@ function ajn_password_is_weak(string $password): bool
     return false;
 }
 
+function ajn_password_algo(): string|int
+{
+    return defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT;
+}
+
+function ajn_password_options(): array
+{
+    if (defined('PASSWORD_ARGON2ID')) {
+        return ['memory_cost' => 65536, 'time_cost' => 3, 'threads' => 1];
+    }
+    return ['cost' => 12];
+}
+
+function ajn_password_hash(string $password): string
+{
+    return password_hash($password, ajn_password_algo(), ajn_password_options());
+}
+
+function ajn_password_needs_rehash(string $hash): bool
+{
+    return password_needs_rehash($hash, ajn_password_algo(), ajn_password_options());
+}
+
 function ajn_user_public(array $user): array
 {
     return [
@@ -293,19 +508,134 @@ function ajn_user_public(array $user): array
     ];
 }
 
-function ajn_issue_session(PDO $db, array $user): void
+function ajn_issue_session(PDO $db, array $user, ?int $stepUpUntil = null): string
 {
+    $prevToken = $_COOKIE[AJN_SESSION_COOKIE] ?? '';
+    if (is_string($prevToken) && preg_match('/^[a-f0-9]{64}$/D', $prevToken)) {
+        ajn_exec($db, 'DELETE FROM admin_sessions WHERE session_token_hash=?', [hash('sha256', $prevToken)]);
+    }
     $token = bin2hex(random_bytes(32));
+    $hash = hash('sha256', $token);
     $now = time();
     $absolute = $now + AJN_SESSION_ABSOLUTE_SECONDS;
     ajn_exec($db,
-        'INSERT INTO admin_sessions (id,user_id,session_token_hash,role,ip_address,user_agent,expires_at,absolute_expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
-        [ajn_uuid(), $user['id'], hash('sha256', $token), $user['role'], $_SERVER['REMOTE_ADDR'] ?? null, mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500), $now + AJN_SESSION_IDLE_SECONDS, $absolute, $now]
+        'INSERT INTO admin_sessions (id,user_id,session_token_hash,role,ip_address,user_agent,expires_at,absolute_expires_at,step_up_until,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
+        [ajn_uuid(), $user['id'], $hash, $user['role'], $_SERVER['REMOTE_ADDR'] ?? null, mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500), $now + AJN_SESSION_IDLE_SECONDS, $absolute, $stepUpUntil, $now]
     );
     setcookie(AJN_SESSION_COOKIE, $token, [
         'expires' => $absolute, 'path' => '/', 'secure' => true,
         'httponly' => true, 'samesite' => 'Strict',
     ]);
+    $_COOKIE[AJN_SESSION_COOKIE] = $token;
+    $csrf = ajn_csrf_token($hash);
+    if (PHP_SAPI !== 'cli') {
+        header('X-CSRF-Token: ' . $csrf);
+    }
+    return $csrf;
+}
+
+function ajn_rotate_session(PDO $db, array &$user, ?int $stepUpUntil = null): string
+{
+    if (!empty($user['session_token_hash'])) {
+        ajn_exec($db, 'DELETE FROM admin_sessions WHERE session_token_hash=?', [(string) $user['session_token_hash']]);
+    }
+    $csrf = ajn_issue_session($db, $user, $stepUpUntil);
+    $user['session_token_hash'] = hash('sha256', (string) ($_COOKIE[AJN_SESSION_COOKIE] ?? ''));
+    $user['csrf_token'] = $csrf;
+    $user['step_up_until'] = $stepUpUntil;
+    return $csrf;
+}
+
+function ajn_generate_recovery_codes(PDO $db, string $userId, int $count = 8): array
+{
+    ajn_exec($db, 'DELETE FROM admin_recovery_codes WHERE user_id=?', [$userId]);
+    $now = time();
+    $codes = [];
+    for ($i = 0; $i < $count; $i++) {
+        $raw = strtoupper(bin2hex(random_bytes(6)));
+        $formatted = substr($raw, 0, 4) . '-' . substr($raw, 4, 4) . '-' . substr($raw, 8, 4);
+        $codes[] = $formatted;
+        ajn_exec(
+            $db,
+            'INSERT INTO admin_recovery_codes (id,user_id,code_hash,used_at,created_at) VALUES (?,?,?,NULL,?)',
+            [ajn_uuid(), $userId, hash('sha256', $raw), $now]
+        );
+    }
+    return $codes;
+}
+
+function ajn_consume_recovery_code(PDO $db, string $userId, string $rawCode): bool
+{
+    $normalized = strtoupper((string) preg_replace('/[^A-Za-z0-9]/', '', $rawCode));
+    if (strlen($normalized) < 8) return false;
+    $candidateHash = hash('sha256', $normalized);
+    $rows = ajn_list($db, 'SELECT id,code_hash FROM admin_recovery_codes WHERE user_id=? AND used_at IS NULL', [$userId]);
+    $matchedId = null;
+    foreach ($rows as $row) {
+        if (hash_equals((string) $row['code_hash'], $candidateHash)) {
+            $matchedId = (string) $row['id'];
+        }
+    }
+    if ($matchedId === null) return false;
+    $updated = ajn_exec($db, 'UPDATE admin_recovery_codes SET used_at=? WHERE id=? AND used_at IS NULL', [time(), $matchedId]);
+    return $updated === 1;
+}
+
+function ajn_verify_mfa_or_recovery(PDO $db, array $user, array $config, mixed $code, string &$failureReason = 'AUTH_MFA_FAILED'): bool
+{
+    if (!is_string($code) || trim($code) === '') {
+        $failureReason = 'AUTH_MFA_REQUIRED';
+        return false;
+    }
+    $trimmed = trim($code);
+    if (preg_match('/^\d{6}$/D', $trimmed)) {
+        $secret = ajn_decrypt((string) ($user['mfa_secret'] ?? ''), $config);
+        $counter = $secret === '' ? null : ajn_totp($secret, 1, $trimmed);
+        $consumed = $counter === null ? 0 : ajn_exec($db,
+            'UPDATE admin_users SET mfa_last_counter=?,updated_at=? WHERE id=? AND (mfa_last_counter IS NULL OR mfa_last_counter < ?)',
+            [$counter, time(), $user['id'], $counter]
+        );
+        if ($counter === null || $consumed !== 1) {
+            $failureReason = $counter === null ? 'AUTH_MFA_FAILED' : 'AUTH_MFA_REPLAY_BLOCKED';
+            return false;
+        }
+        return true;
+    }
+    if (ajn_consume_recovery_code($db, (string) $user['id'], $trimmed)) {
+        ajn_audit($db, 'admin', (string) $user['id'], 'AUTH_RECOVERY_CODE_USED', 'auth', (string) $user['id']);
+        return true;
+    }
+    $failureReason = 'AUTH_MFA_FAILED';
+    return false;
+}
+
+function ajn_require_step_up(PDO $db, array &$admin, array $config, ?array $body = null): void
+{
+    $now = time();
+    $stepUpPassword = $body['stepUpPassword'] ?? ($_SERVER['HTTP_X_STEP_UP_PASSWORD'] ?? null);
+    $stepUpMfa = $body['stepUpMfaCode'] ?? ($body['stepUpRecoveryCode'] ?? ($_SERVER['HTTP_X_STEP_UP_MFA'] ?? null));
+
+    if (is_string($stepUpPassword) && $stepUpPassword !== '' && is_string($stepUpMfa) && trim($stepUpMfa) !== '') {
+        $userRow = ajn_fetch($db, 'SELECT * FROM admin_users WHERE id=? AND is_active=1 LIMIT 1', [$admin['id']]);
+        if (!$userRow || !password_verify($stepUpPassword, (string) $userRow['password_hash'])) {
+            ajn_audit($db, 'admin', (string) $admin['id'], 'AUTH_STEP_UP_FAILED', 'auth', (string) $admin['id']);
+            ajn_json(['error' => 'Falha na confirmação step-up (senha inválida).', 'stepUpRequired' => true], 403);
+        }
+        $reason = 'AUTH_MFA_FAILED';
+        if (!ajn_verify_mfa_or_recovery($db, $userRow, $config, $stepUpMfa, $reason)) {
+            ajn_audit($db, 'admin', (string) $admin['id'], $reason, 'auth', (string) $admin['id']);
+            ajn_json(['error' => 'Falha na confirmação step-up (código MFA inválido ou reutilizado).', 'stepUpRequired' => true], 403);
+        }
+        ajn_rotate_session($db, $admin, $now + AJN_STEP_UP_SECONDS);
+        ajn_audit($db, 'admin', (string) $admin['id'], 'AUTH_STEP_UP_VERIFIED', 'auth', (string) $admin['id']);
+        return;
+    }
+
+    if ((int) ($admin['step_up_until'] ?? 0) > $now) {
+        return;
+    }
+
+    ajn_json(['error' => 'Confirmação de segurança (step-up: senha + TOTP) obrigatória para esta ação.', 'stepUpRequired' => true], 403);
 }
 
 /**
@@ -316,6 +646,7 @@ function ajn_issue_session(PDO $db, array $user): void
 function ajn_totp(string $secret, int $window = 1, ?string $code = null): ?int
 {
     if ($code === null || !preg_match('/^\d{6}$/D', $code)) return null;
+    $window = max(0, min(1, $window));
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     $bits = '';
     foreach (str_split(strtoupper(rtrim($secret, '='))) as $char) {
@@ -338,27 +669,110 @@ function ajn_totp(string $secret, int $window = 1, ?string $code = null): ?int
     return null;
 }
 
-function ajn_decrypt(string $value, array $config): string
+function ajn_all_encryption_keys(array $config): array
 {
-    // O novo backend não tenta interpretar ciphertext do Web Crypto antigo.
-    $key = hex2bin($config['encryption_key'] ?? '');
-    if (!is_string($key) || strlen($key) !== 32) return '';
-    $binary = base64_decode($value, true);
-    if (!is_string($binary) || strlen($binary) < 29) return '';
+    $keys = [];
+    $primary = @hex2bin((string) ($config['encryption_key'] ?? ''));
+    if (is_string($primary) && strlen($primary) === 32) {
+        $keys[] = $primary;
+    }
+    if (is_array($config['previous_encryption_keys'] ?? null)) {
+        foreach ($config['previous_encryption_keys'] as $hexKey) {
+            if (!is_string($hexKey)) continue;
+            $bin = @hex2bin($hexKey);
+            if (is_string($bin) && strlen($bin) === 32) {
+                $keys[] = $bin;
+            }
+        }
+    }
+    return $keys;
+}
+
+function ajn_decrypt_single_key(string $value, string $key): ?string
+{
+    if (str_starts_with($value, 's1:')) {
+        if (!function_exists('sodium_crypto_secretbox_open')) return null;
+        $binary = base64_decode(substr($value, 3), true);
+        if (!is_string($binary) || strlen($binary) <= SODIUM_CRYPTO_SECRETBOX_NONCEBYTES) return null;
+        $nonce = substr($binary, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $cipher = substr($binary, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $plain = sodium_crypto_secretbox_open($cipher, $nonce, $key);
+        return is_string($plain) ? $plain : null;
+    }
+    $rawB64 = str_starts_with($value, 'g1:') ? substr($value, 3) : $value;
+    $binary = base64_decode($rawB64, true);
+    if (!is_string($binary) || strlen($binary) < 29) return null;
     $iv = substr($binary, 0, 12);
     $tag = substr($binary, 12, 16);
-    return openssl_decrypt(substr($binary, 28), 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag) ?: '';
+    $plain = openssl_decrypt(substr($binary, 28), 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+    return is_string($plain) ? $plain : null;
+}
+
+function ajn_decrypt(string $value, array $config): string
+{
+    // Suporta libsodium secretbox (s1:) e AES-256-GCM legado, com rotacao de chaves.
+    $keys = ajn_all_encryption_keys($config);
+    if ($keys === []) return '';
+    foreach ($keys as $key) {
+        $plain = ajn_decrypt_single_key($value, $key);
+        if ($plain !== null) return $plain;
+    }
+    return '';
 }
 
 function ajn_encrypt(string $value, array $config): string
 {
-    $key = hex2bin($config['encryption_key'] ?? '');
+    $key = @hex2bin((string) ($config['encryption_key'] ?? ''));
     if (!is_string($key) || strlen($key) !== 32) throw new RuntimeException('Encryption key missing.');
+    if (function_exists('sodium_crypto_secretbox')) {
+        $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $encrypted = sodium_crypto_secretbox($value, $nonce, $key);
+        return 's1:' . base64_encode($nonce . $encrypted);
+    }
     $iv = random_bytes(12);
     $tag = '';
     $encrypted = openssl_encrypt($value, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
     if (!is_string($encrypted)) throw new RuntimeException('Encryption failed.');
     return base64_encode($iv . $tag . $encrypted);
+}
+
+function ajn_needs_reencrypt(string $value, array $config): bool
+{
+    $primary = @hex2bin((string) ($config['encryption_key'] ?? ''));
+    if (!is_string($primary) || strlen($primary) !== 32) return false;
+    if (function_exists('sodium_crypto_secretbox') && !str_starts_with($value, 's1:')) return true;
+    return ajn_decrypt_single_key($value, $primary) === null;
+}
+
+function ajn_mask_phone(string $phone): string
+{
+    $digits = preg_replace('/\D+/', '', $phone) ?? '';
+    if (strlen($digits) < 4) return '(**) *****-****';
+    return '(**) *****-' . substr($digits, -4);
+}
+
+function ajn_decrypt_pii(?string $encrypted, string $fallback, array $config): string
+{
+    if (is_string($encrypted) && $encrypted !== '') {
+        $plain = ajn_decrypt($encrypted, $config);
+        if ($plain !== '') return $plain;
+    }
+    return $fallback;
+}
+
+function ajn_security_alert(PDO $db, array $config, string $event, string $summary, string|array|null $resourceId = null, array $details = []): void
+{
+    if (is_array($resourceId)) {
+        $details = $resourceId;
+        $resourceId = isset($details['user_id']) ? (string) $details['user_id'] : (isset($details['actor_id']) ? (string) $details['actor_id'] : null);
+    }
+    ajn_audit($db, 'system', null, 'SECURITY_ALERT', $event, $resourceId, array_merge(['summary' => $summary], $details));
+    $recipient = trim((string) ($config['security_alert_email'] ?? ($config['smtp']['from'] ?? '')));
+    if ($recipient !== '' && filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+        $ref = $resourceId ?? 'n/a';
+        $body = "Alerta de seguranca AJN Carreiras\n\nEvento: $event\nRecurso ID: $ref\nResumo: $summary\nData (UTC): " . gmdate('c');
+        @ajn_send_email($config, $recipient, '[ALERTA DE SEGURANCA AJN] ' . $event, $body);
+    }
 }
 
 function ajn_email_configured(array $config): bool
@@ -477,6 +891,7 @@ if (!defined('AJN_DISABLE_AUTO_DISPATCH')) {
     if (!is_array($config) || !filter_var($config['app_url'] ?? null, FILTER_VALIDATE_URL) || !str_starts_with($config['app_url'], 'https://')) {
         ajn_json(['error' => 'Configuração do ambiente inválida.'], 503);
     }
+    $GLOBALS['__ajn_active_config'] = $config;
 
     try {
         $db = ajn_pdo($config);
