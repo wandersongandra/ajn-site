@@ -174,6 +174,23 @@ $dbFile = $tmpRoot . DIRECTORY_SEPARATOR . 'careers.sqlite';
 $mailLog = $tmpRoot . DIRECTORY_SEPARATOR . 'mails.jsonl';
 $flagBadStorage = $tmpRoot . DIRECTORY_SEPARATOR . 'use_bad_storage.flag';
 $flagProdEnv = $tmpRoot . DIRECTORY_SEPARATOR . 'use_prod_env.flag';
+$turnstileSecretFile = $tmpRoot . DIRECTORY_SEPARATOR . 'turnstile_secret.txt';
+$cliMailStubFile = $tmpRoot . DIRECTORY_SEPARATOR . 'cli-mail-stub.php';
+file_put_contents($cliMailStubFile, sprintf(<<<'PHP'
+<?php
+$GLOBALS['__ajn_mail_log'] = %s;
+if (!function_exists('ajn_send_email')) {
+    function ajn_send_email(array $config, string $recipient, string $subject, string $body): bool
+    {
+        file_put_contents($GLOBALS['__ajn_mail_log'], json_encode(['to' => $recipient, 'subject' => $subject, 'body' => $body], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
+        return true;
+    }
+}
+PHP,
+    var_export($mailLog, true)
+));
+file_put_contents($docRoot . DIRECTORY_SEPARATOR . 'index.html', '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>AJN</title></head><body>ok</body></html>');
+@mkdir($docRoot . DIRECTORY_SEPARATOR . 'styles', 0700, true);
 $routerFile = $tmpRoot . DIRECTORY_SEPARATOR . 'router.php';
 $encKey = bin2hex(random_bytes(32));
 $appUrl = 'https://ajnengenharia.com.br';
@@ -221,8 +238,11 @@ try {
     fn_check('ajn_password_is_weak recusa repeticao longa', ajn_password_is_weak('aaaaaaaaaaaaaaaa') === true);
     fn_check('ajn_password_is_weak recusa sequencia numerica', ajn_password_is_weak('Ajn@0123456789!#') === true);
     fn_check('ajn_password_is_weak aceita passphrase forte', ajn_password_is_weak('N8#pQ2!vL9@xR4$mZ1') === false);
-    fn_check('password_verify aceita hash dummy bcrypt sem falhar',
-        password_verify('qualquer-senha', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy') === false);
+    $dummyArgonHash = ajn_dummy_password_hash();
+    fn_check('ajn_dummy_password_hash retorna Argon2id com custo equivalente ao baseline e sem necessitar rehash',
+        str_starts_with($dummyArgonHash, '$argon2id$')
+        && !ajn_password_needs_rehash($dummyArgonHash)
+        && password_verify('qualquer-senha', $dummyArgonHash) === false);
     fn_check('ajn_mime_header codifica assunto UTF-8 em Base64 encoded-word',
         str_starts_with(ajn_mime_header('Recuperação de acesso AJN'), '=?UTF-8?B?'));
     fn_check('ajn_email_configured recusa placeholder SUBSTITUIR_',
@@ -328,6 +348,18 @@ try {
             bucket_key TEXT PRIMARY KEY, window_started_at INTEGER NOT NULL,
             hits INTEGER NOT NULL, expires_at INTEGER NOT NULL
         );
+        CREATE TABLE admin_login_locks (
+            id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+            ip_address TEXT NOT NULL, failed_attempts INTEGER NOT NULL DEFAULT 0,
+            locked_until INTEGER, updated_at INTEGER NOT NULL,
+            UNIQUE(user_id, ip_address)
+        );
+        CREATE TABLE security_alert_queue (
+            id TEXT PRIMARY KEY, event_type TEXT NOT NULL, recipient_email TEXT NOT NULL,
+            subject TEXT NOT NULL, body TEXT NOT NULL, context_json TEXT,
+            status TEXT NOT NULL DEFAULT 'pending', attempts INTEGER NOT NULL DEFAULT 0,
+            created_at INTEGER NOT NULL, sent_at INTEGER, last_error TEXT
+        );
     ");
 
     $now = time();
@@ -378,13 +410,14 @@ try {
     $inactiveId = ajn_uuid();
     $noMfaId = ajn_uuid();
 
-    $insertUser = static function (PDO $db, string $id, string $name, string $email, string $pass, string $role, int $active, int $mfaEnabled, ?string $encMfa, int $now): void {
+    $insertUser = static function (PDO $db, string $id, string $name, string $email, string $pass, string $role, int $active, int $mfaEnabled, ?string $encMfa, int $now, bool $useBcrypt = false): void {
+        $hash = $useBcrypt ? password_hash($pass, PASSWORD_BCRYPT, ['cost' => 4]) : ajn_password_hash($pass);
         ajn_exec($db,
             'INSERT INTO admin_users (id,name,email,password_hash,role,is_active,mfa_enabled,mfa_secret,mfa_required,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-            [$id, $name, $email, password_hash($pass, PASSWORD_BCRYPT, ['cost' => 4]), $role, $active, $mfaEnabled, $encMfa, 1, $now, $now]
+            [$id, $name, $email, $hash, $role, $active, $mfaEnabled, $encMfa, 1, $now, $now]
         );
     };
-    $insertUser($pdo, $superId, 'Super Admin', 'super@ajnengenharia.com.br', $superPass, 'super_admin', 1, 1, ajn_encrypt($testSecret, $encCfg), $now);
+    $insertUser($pdo, $superId, 'Super Admin', 'super@ajnengenharia.com.br', $superPass, 'super_admin', 1, 1, ajn_encrypt($testSecret, $encCfg), $now, true);
     $insertUser($pdo, $recruiterId, 'Recruiter', 'recruiter@ajnengenharia.com.br', $recruiterPass, 'recruiter', 1, 1, ajn_encrypt($recruiterSecret, $encCfg), $now);
     $insertUser($pdo, $viewerId, 'Viewer', 'viewer@ajnengenharia.com.br', $viewerPass, 'viewer', 1, 1, ajn_encrypt($viewerSecret, $encCfg), $now);
     $insertUser($pdo, $dpoId, 'DPO', 'dpo@ajnengenharia.com.br', $dpoPass, 'dpo', 1, 1, ajn_encrypt($dpoSecret, $encCfg), $now);
@@ -392,6 +425,8 @@ try {
     $insertUser($pdo, $noMfaId, 'No MFA', 'nomfa@ajnengenharia.com.br', $viewerPass, 'viewer', 1, 0, null, $now);
 
     // 3. Gera router temporario para php -S (somente dentro de sys_get_temp_dir)
+    $port = fn_find_free_port();
+    $baseUrl = "http://127.0.0.1:$port";
     $hostingerDir = str_replace('\\', '/', realpath(__DIR__ . '/..'));
     $routerCode = sprintf(<<<'PHP'
 <?php
@@ -400,13 +435,8 @@ define('AJN_DISABLE_AUTO_DISPATCH', true);
 $GLOBALS['__ajn_mail_log'] = %s;
 $__docRoot = %s;
 $_SERVER['DOCUMENT_ROOT'] = $__docRoot;
-if (!function_exists('ajn_verify_turnstile')) {
-    function ajn_verify_turnstile(array $config, mixed $token, ?string $expectedAction = null): void
-    {
-        if (!is_string($token) || $token !== 'valid-test-turnstile-token') {
-            ajn_json(['error' => 'Verificação antispam inválida ou expirada.'], 400);
-        }
-    }
+if (isset($_SERVER['HTTP_X_AJN_TEST_CLIENT_IP']) && filter_var($_SERVER['HTTP_X_AJN_TEST_CLIENT_IP'], FILTER_VALIDATE_IP)) {
+    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_AJN_TEST_CLIENT_IP'];
 }
 if (!function_exists('ajn_send_email')) {
     function ajn_send_email(array $config, string $recipient, string $subject, string $body): bool
@@ -417,12 +447,14 @@ if (!function_exists('ajn_send_email')) {
 }
 require_once %s . '/bootstrap.php';
 require_once %s . '/app.php';
+$__turnstileFile = %s;
 $config = [
     'app_url' => %s,
+    'cors_allowed_origins' => [%s],
     'environment' => file_exists(%s) ? 'production' : 'staging',
     'encryption_key' => %s,
     'resume_directory' => file_exists(%s) ? %s : %s,
-    'turnstile_secret_key' => 'test-secret-key-min-len',
+    'turnstile_secret_key' => is_file($__turnstileFile) ? trim((string) file_get_contents($__turnstileFile)) : '1x0000000000000000000000000000000AA',
     'security_alert_email' => 'security@ajnengenharia.com.br',
     'smtp' => ['host' => 'smtp.example.com', 'port' => 465, 'username' => 'noreply', 'password' => 'secret', 'from' => 'noreply@ajnengenharia.com.br'],
 ];
@@ -435,6 +467,20 @@ $db->exec('PRAGMA foreign_keys = ON;');
 $db->exec('PRAGMA busy_timeout = 3000;');
 $__reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 if (!str_starts_with($__reqPath, '/api/') && !preg_match('~^/carreiras/vaga(?:/|$)~', $__reqPath)) {
+    $__legacyRedirects = [
+        '/sitemap.xml' => '/sitemap-index.xml',
+        '/informacoes' => '/mapa-site',
+        '/empresa' => '/sobre/',
+        '/fale-conosco' => '/contato/',
+        '/projetos-eletricos-prediais' => '/servicos',
+        '/regularizacao-avcb' => '/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/',
+    ];
+    $__normPath = $__reqPath === '/' ? '/' : rtrim($__reqPath, '/');
+    if (isset($__legacyRedirects[$__normPath])) {
+        http_response_code(301);
+        header('Location: ' . $__legacyRedirects[$__normPath]);
+        exit;
+    }
     if (preg_match('~(?:^|/)\.(?!well-known(?:/|$))~i', $__reqPath)
         || preg_match('~\.(?:sql|env|md|log|bak|old|orig|swp|dist|ini|sh|zip|tar|gz)$~i', $__reqPath)
         || preg_match('~(?:composer\.(?:json|lock)|package(?:-lock)?\.json)$~i', $__reqPath)
@@ -447,6 +493,13 @@ if (!str_starts_with($__reqPath, '/api/') && !preg_match('~^/carreiras/vaga(?:/|
         http_response_code(403);
         exit('Directory listing denied');
     }
+    if ($__reqPath === '/' && is_file($__docRoot . DIRECTORY_SEPARATOR . 'index.html')) {
+        http_response_code(200);
+        header('Content-Type: text/html; charset=utf-8');
+        header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data:");
+        readfile($__docRoot . DIRECTORY_SEPARATOR . 'index.html');
+        exit;
+    }
 }
 ajn_dispatch($db, $config);
 PHP,
@@ -454,7 +507,9 @@ PHP,
         var_export($docRoot, true),
         var_export($hostingerDir, true),
         var_export($hostingerDir, true),
+        var_export($turnstileSecretFile, true),
         var_export($appUrl, true),
+        var_export($baseUrl, true),
         var_export($flagProdEnv, true),
         var_export($encKey, true),
         var_export($flagBadStorage, true),
@@ -463,9 +518,6 @@ PHP,
         var_export($dbFile, true)
     );
     file_put_contents($routerFile, $routerCode);
-
-    $port = fn_find_free_port();
-    $baseUrl = "http://127.0.0.1:$port";
     $descriptors = [
         0 => ['pipe', 'r'],
         1 => ['file', $tmpRoot . DIRECTORY_SEPARATOR . 'server.out.log', 'a'],
@@ -551,7 +603,7 @@ PHP,
     ]);
     $tLockedMs = (hrtime(true) - $t0) / 1e6;
 
-    $viewerLockRow = ajn_fetch($pdo, 'SELECT failed_attempts, locked_until FROM admin_users WHERE id=?', [$viewerId]);
+    $viewerLockRow = ajn_fetch($pdo, "SELECT failed_attempts, locked_until FROM admin_login_locks WHERE user_id=? AND ip_address='127.0.0.1'", [$viewerId]);
     $lockedAuditRow = ajn_fetch($pdo, "SELECT id FROM audit_logs WHERE action='AUTH_LOGIN_LOCKED_ATTEMPT' AND resource_id=? LIMIT 1", [$viewerId]);
 
     fn_check('HTTP conta inexistente, inativa, senha errada e conta bloqueada retornam 401 e corpo identico byte a byte',
@@ -565,13 +617,27 @@ PHP,
         && ($wrongPassLogin['body'] ?? '') === $lockedViewer['body']
         && $tUnknownMs > 1.0 && $tInactiveMs > 1.0 && $tWrongPassMs > 1.0 && $tLockedMs > 1.0);
 
-    fn_check('HTTP bloqueio progressivo apos 5 falhas permanece ativo no servidor e audita tentativa sem revelar 423 ao cliente',
+    fn_check('HTTP bloqueio progressivo apos 5 falhas permanece ativo por (conta + IP) e audita tentativa sem revelar 423 ao cliente',
         (int) ($viewerLockRow['failed_attempts'] ?? 0) >= 5
         && (int) ($viewerLockRow['locked_until'] ?? 0) > time()
         && $lockedAuditRow !== null);
 
-    // Desbloqueia viewer para testes de RBAC posteriores
-    ajn_exec($pdo, 'UPDATE admin_users SET failed_attempts=0, locked_until=NULL WHERE id=?', [$viewerId]);
+    // 3.a IP B legitimo nao e bloqueado pelas falhas do IP A (127.0.0.1)
+    $viewerIpB = fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
+        'headers' => ['Origin: ' . $appUrl, 'X-AJN-Test-Client-Ip: 198.51.100.77'],
+        'json' => ['email' => 'viewer@ajnengenharia.com.br', 'password' => $viewerPass, 'mfaCode' => fn_rfc6238_totp($viewerSecret)],
+    ]);
+    $viewerLockedStillIpA = fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
+        'headers' => ['Origin: ' . $appUrl],
+        'json' => ['email' => 'viewer@ajnengenharia.com.br', 'password' => $viewerPass, 'mfaCode' => fn_rfc6238_totp($viewerSecret)],
+    ]);
+    fn_check('HTTP 3.a bloqueio por (conta + IP): IP A segue bloqueado (401) enquanto IP B autentica com 200',
+        $viewerIpB['status'] === 200 && $viewerLockedStillIpA['status'] === 401);
+
+    // Desbloqueia viewer e limpa sessao/replay temporarios para testes de RBAC posteriores
+    ajn_exec($pdo, 'DELETE FROM admin_login_locks WHERE user_id=?', [$viewerId]);
+    ajn_exec($pdo, 'DELETE FROM admin_sessions WHERE user_id=?', [$viewerId]);
+    ajn_exec($pdo, 'UPDATE admin_users SET failed_attempts=0, locked_until=NULL, mfa_last_counter=NULL WHERE id=?', [$viewerId]);
 
     // 4.5 Login super_admin com MFA TOTP + protecao anti-replay + rehash Argon2id + MFA obrigatorio
     $totpCode = fn_rfc6238_totp($testSecret);
@@ -658,6 +724,10 @@ PHP,
     }
     $resetToken = $ResetTokenFound;
     $newRecruiterPass = 'R9#kM4!qV7@pX2$wZ';
+    ajn_exec($pdo, 'UPDATE admin_users SET failed_attempts=5, locked_until=? WHERE id=?', [time() + 900, $recruiterId]);
+    ajn_exec($pdo, 'INSERT OR REPLACE INTO admin_login_locks (id,user_id,ip_address,failed_attempts,locked_until,updated_at) VALUES (?,?,?,?,?,?)',
+        [ajn_uuid(), $recruiterId, '203.0.113.10', 5, time() + 900, time()]);
+
     $resetOnce = fn_http($baseUrl, 'POST', '/api/admin/auth/reset-password', [
         'headers' => ['Origin: ' . $appUrl],
         'json' => ['token' => $resetToken, 'newPassword' => $newRecruiterPass],
@@ -666,18 +736,35 @@ PHP,
         'headers' => ['Origin: ' . $appUrl],
         'json' => ['token' => $resetToken, 'newPassword' => 'Z8#pM5!qW3@kR9$vL'],
     ]);
-    fn_check('HTTP token de redefinicao funciona uma unica vez (consumo atomico)',
-        $forgot['status'] === 202 && $resetToken !== '' && $resetOnce['status'] === 200 && $resetTwice['status'] === 400);
+    $recUserAfterReset = ajn_fetch($pdo, 'SELECT failed_attempts, locked_until FROM admin_users WHERE id=?', [$recruiterId]);
+    $recLocksAfterReset = (int) (ajn_fetch($pdo, 'SELECT COUNT(*) AS c FROM admin_login_locks WHERE user_id=?', [$recruiterId])['c'] ?? 0);
+    fn_check('HTTP token de redefinicao funciona uma unica vez e zera bloqueios da conta (3.b)',
+        $forgot['status'] === 202
+        && $resetToken !== ''
+        && $resetOnce['status'] === 200
+        && $resetTwice['status'] === 400
+        && (int) ($recUserAfterReset['failed_attempts'] ?? -1) === 0
+        && is_array($recUserAfterReset)
+        && $recUserAfterReset['locked_until'] === null
+        && $recLocksAfterReset === 0);
 
-    $rateLimitedLogin = fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
-        'headers' => ['Origin: ' . $appUrl],
-        'json' => ['email' => 'recruiter@ajnengenharia.com.br', 'password' => $newRecruiterPass],
-    ]);
-    fn_check('HTTP 11a tentativa de login na mesma janela retorna 429 com Retry-After',
+    $rateLimitedLogin = ['status' => 0, 'headers' => []];
+    for ($rlTry = 0; $rlTry < 32; $rlTry++) {
+        $rateLimitedLogin = fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
+            'headers' => ['Origin: ' . $appUrl],
+            'json' => ['email' => 'recruiter@ajnengenharia.com.br', 'password' => $newRecruiterPass],
+        ]);
+        if ($rateLimitedLogin['status'] === 429) {
+            break;
+        }
+    }
+    fn_check('HTTP rate limit de login excedido na mesma janela retorna 429 com Retry-After',
         $rateLimitedLogin['status'] === 429 && !empty($rateLimitedLogin['headers']['retry-after'][0]));
 
-    // Limpa janela de rate limit de login para prosseguir com os testes de RBAC por perfil
+    // Limpa janela de rate limit e locks de login para prosseguir com os testes de RBAC por perfil
     ajn_exec($pdo, 'DELETE FROM request_rate_limits');
+    ajn_exec($pdo, 'DELETE FROM admin_login_locks');
+    ajn_exec($pdo, 'UPDATE admin_users SET failed_attempts=0, locked_until=NULL');
 
     $noMfaLogin = fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
         'headers' => ['Origin: ' . $appUrl],
@@ -1238,7 +1325,54 @@ PHP,
     fn_check('HTTP super_admin cria operador (201), altera papel (200) e rotaciona MFA (200) com step-up',
         $createOpRes['status'] === 201 && $createdOpId !== '' && $changeRoleRes['status'] === 200 && $rotateMfaRes['status'] === 200);
 
-    // 4.14f Item 7: Um teste comportamental por evento de alerta de seguranca (7 eventos) sem PII no corpo do e-mail
+    // 4.14f Item 7 e 3.c: Alertas de seguranca assincronos via fila + envio via send-security-alerts.php sem PII no corpo
+    $cliConfigFile = $tmpRoot . DIRECTORY_SEPARATOR . 'cli-config.php';
+    file_put_contents($cliConfigFile, sprintf(
+        "<?php return ['app_url' => %s, 'environment' => 'staging', 'encryption_key' => %s, 'resume_directory' => %s, 'security_alert_email' => 'security@ajnengenharia.com.br', 'smtp' => ['host' => 'smtp.example.com', 'port' => 465, 'username' => 'noreply', 'password' => 'secret', 'from' => 'noreply@ajnengenharia.com.br'], 'database' => ['dsn' => %s]];",
+        var_export($appUrl, true),
+        var_export($encKey, true),
+        var_export($privateDir, true),
+        var_export('sqlite:' . $dbFile, true)
+    ));
+    $runCliScript = static function (string $scriptPath, array $args = [], array $envVars = [], ?string $stdin = null, array $extraPhpIni = []) use ($docRoot): array {
+        $cmd = [PHP_BINARY, '-d', 'extension=sodium', ...$extraPhpIni, $scriptPath, ...$args];
+        $desc = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+        $env = array_merge($_ENV, getenv() ?: [], ['DOCUMENT_ROOT' => $docRoot], $envVars);
+        $proc = proc_open($cmd, $desc, $p, dirname($scriptPath), $env);
+        if (!is_resource($proc)) throw new RuntimeException("Falha ao iniciar $scriptPath");
+        if ($stdin !== null) fwrite($p[0], $stdin);
+        fclose($p[0]);
+        $out = (string) stream_get_contents($p[1]);
+        $err = (string) stream_get_contents($p[2]);
+        fclose($p[1]);
+        fclose($p[2]);
+        $code = proc_close($proc);
+        return ['code' => $code, 'out' => $out, 'err' => $err];
+    };
+
+    $syncAlertMails = array_values(array_filter(array_map(
+        static fn(string $line): ?array => is_array($d = json_decode($line, true)) ? $d : null,
+        is_file($mailLog) ? (file($mailLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []) : []
+    ), static fn(?array $m): bool => is_array($m) && str_starts_with((string) ($m['subject'] ?? ''), '[ALERTA DE SEGURANCA AJN]')));
+    $queuedAlertsCount = (int) (ajn_fetch($pdo, "SELECT COUNT(*) AS c FROM security_alert_queue WHERE status='pending'")['c'] ?? 0);
+    fn_check('Alerta L.1 / 3.c: requisicoes HTTP enfileiram alertas sem bloquear em SMTP sincrono',
+        $syncAlertMails === [] && $queuedAlertsCount >= 7);
+
+    $sendAlertsScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'send-security-alerts.php';
+    $dryAlertsRes = $runCliScript($sendAlertsScript, ['--dry-run'], ['AJN_CONFIG_PATH' => $cliConfigFile]);
+    $dryAlertsJson = json_decode(trim($dryAlertsRes['out']), true);
+    $drainAlertsRes = $runCliScript($sendAlertsScript, [], ['AJN_CONFIG_PATH' => $cliConfigFile], null, ['-d', 'auto_prepend_file=' . $cliMailStubFile]);
+    $drainAlertsJson = json_decode(trim($drainAlertsRes['out']), true);
+    $remainingPending = (int) (ajn_fetch($pdo, "SELECT COUNT(*) AS c FROM security_alert_queue WHERE status='pending'")['c'] ?? -1);
+    fn_check('CLI send-security-alerts.php --dry-run nao envia e execucao real drena fila de alertas para sent',
+        $dryAlertsRes['code'] === 0
+        && ($dryAlertsJson['dryRun'] ?? false) === true
+        && (int) ($dryAlertsJson['sent'] ?? -1) === 0
+        && (int) ($dryAlertsJson['pending'] ?? 0) >= 7
+        && $drainAlertsRes['code'] === 0
+        && (int) ($drainAlertsJson['sent'] ?? 0) >= 7
+        && $remainingPending === 0);
+
     $allMails = array_values(array_filter(array_map(
         static fn(string $line): ?array => is_array($d = json_decode($line, true)) ? $d : null,
         file($mailLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []
@@ -1387,14 +1521,6 @@ PHP,
         $rMfaViewer['status'] === 403 && $rMfaRec['status'] === 403 && $rMfaDpo['status'] === 403 && $rMfaSuper404['status'] === 404 && $rotateMfaRes['status'] === 200);
 
     // 4.14h Item 4: Migracao de dados legados (migrate-legacy-data.php --dry-run e real)
-    $cliConfigFile = $tmpRoot . DIRECTORY_SEPARATOR . 'cli-config.php';
-    file_put_contents($cliConfigFile, sprintf(
-        "<?php return ['app_url' => %s, 'environment' => 'staging', 'encryption_key' => %s, 'resume_directory' => %s, 'database' => ['dsn' => %s]];",
-        var_export($appUrl, true),
-        var_export($encKey, true),
-        var_export($privateDir, true),
-        var_export('sqlite:' . $dbFile, true)
-    ));
     $legacyAdminId = ajn_uuid();
     $legacyAdminPass = 'L7#mK4!pQ9@vR2$xZ';
     $legacyTotpPlain = ajn_base32_encode(random_bytes(10));
@@ -1410,22 +1536,6 @@ PHP,
     $legacyAppId = ajn_uuid();
     ajn_exec($pdo, 'INSERT INTO job_applications (id,job_id,candidate_id,current_stage_id,tracking_code,tracking_token_hash,tracking_expires_at,status,source,applied_at,updated_at) VALUES (?,?,?,?,?,NULL,NULL,?,?,?,?)',
         [$legacyAppId, $normalJobId, $legacyCandId, 'stage-1-triagem', 'AJN-2025-AB12CD', 'active', 'portal', $now - 86400, $now - 86400]);
-
-    $runCliScript = static function (string $scriptPath, array $args = [], array $envVars = [], ?string $stdin = null) use ($docRoot): array {
-        $cmd = [PHP_BINARY, '-d', 'extension=sodium', $scriptPath, ...$args];
-        $desc = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
-        $env = array_merge($_ENV, getenv() ?: [], ['DOCUMENT_ROOT' => $docRoot], $envVars);
-        $proc = proc_open($cmd, $desc, $p, dirname($scriptPath), $env);
-        if (!is_resource($proc)) throw new RuntimeException("Falha ao iniciar $scriptPath");
-        if ($stdin !== null) fwrite($p[0], $stdin);
-        fclose($p[0]);
-        $out = (string) stream_get_contents($p[1]);
-        $err = (string) stream_get_contents($p[2]);
-        fclose($p[1]);
-        fclose($p[2]);
-        $code = proc_close($proc);
-        return ['code' => $code, 'out' => $out, 'err' => $err];
-    };
 
     $migrateScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'migrate-legacy-data.php';
     $dryMigrate = $runCliScript($migrateScript, ['--dry-run'], ['AJN_CONFIG_PATH' => $cliConfigFile]);
@@ -1514,6 +1624,180 @@ PHP,
         && $seededUserRow !== null
         && str_starts_with((string) ($seededUserRow['password_hash'] ?? ''), '$argon2id$')
         && str_starts_with((string) ($seededUserRow['mfa_secret'] ?? ''), 's1:'));
+
+    // 4.14j Item 2 (2.b / 2.d): Turnstile fail-closed em production (503/400) e chaves de teste em staging
+    ajn_exec($pdo, 'DELETE FROM request_rate_limits');
+    $tsProdEmpty503 = null;
+    $tsProdTestKey503 = null;
+    $tsProdDummyTok400 = null;
+    $tsStagingFail2x400 = null;
+    $tsStagingDummyOk200 = null;
+    $tsMissingToken400 = null;
+    try {
+        $tsStagingDummyOk200 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=XXXX.DUMMY.TOKEN.XXXX");
+        $tsMissingToken400 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode");
+
+        file_put_contents($turnstileSecretFile, '2x0000000000000000000000000000000AA');
+        $tsStagingFail2x400 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=XXXX.DUMMY.TOKEN.XXXX");
+
+        file_put_contents($flagProdEnv, '1');
+        file_put_contents($turnstileSecretFile, '');
+        $tsProdEmpty503 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=valid-prod-token-sample-123");
+
+        file_put_contents($turnstileSecretFile, '1x0000000000000000000000000000000AA');
+        $tsProdTestKey503 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=valid-prod-token-sample-123");
+
+        file_put_contents($turnstileSecretFile, 'prod-real-secret-key-min-len-99999');
+        $tsProdDummyTok400 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=XXXX.DUMMY.TOKEN.XXXX");
+    } finally {
+        @unlink($flagProdEnv);
+        @unlink($turnstileSecretFile);
+    }
+    fn_check('HTTP Turnstile: staging aceita chave 1x (200) e bloqueia 2x/vazio (400); production falha fechado (503) sem segredo ou com chave 1x e rejeita DUMMY.TOKEN (400)',
+        ($tsStagingDummyOk200['status'] ?? 0) === 200
+        && ($tsMissingToken400['status'] ?? 0) === 400
+        && ($tsStagingFail2x400['status'] ?? 0) === 400
+        && ($tsProdEmpty503['status'] ?? 0) === 503
+        && ($tsProdTestKey503['status'] ?? 0) === 503
+        && ($tsProdDummyTok400['status'] ?? 0) === 400);
+
+    // 4.14k Item 3.b e 3.e: unlock-admin.php e equidade temporal real HTTP (20 amostras por caso, mediana <= 25%)
+    ajn_exec($pdo, 'DELETE FROM request_rate_limits');
+    ajn_exec($pdo, 'DELETE FROM admin_login_locks');
+    ajn_exec($pdo, 'UPDATE admin_users SET failed_attempts=0, locked_until=NULL');
+    for ($l = 0; $l < 5; $l++) {
+        fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
+            'headers' => ['Origin: ' . $appUrl, 'X-AJN-Test-Client-Ip: 198.51.100.88'],
+            'json' => ['email' => 'recruiter@ajnengenharia.com.br', 'password' => 'WrongPassword#UnlockTest'],
+        ]);
+    }
+    $locksBeforeCliUnlock = (int) (ajn_fetch($pdo, 'SELECT COUNT(*) AS c FROM admin_login_locks WHERE user_id=?', [$recruiterId])['c'] ?? 0);
+    $unlockScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'unlock-admin.php';
+    $unlockRes = $runCliScript($unlockScript, ['--email=recruiter@ajnengenharia.com.br', '--reason=Teste funcional 3.b'], ['AJN_CONFIG_PATH' => $cliConfigFile]);
+    $unlockJson = json_decode(trim($unlockRes['out']), true);
+    $locksAfterCliUnlock = (int) (ajn_fetch($pdo, 'SELECT COUNT(*) AS c FROM admin_login_locks WHERE user_id=?', [$recruiterId])['c'] ?? 0);
+    $unlockAudit = ajn_fetch($pdo, "SELECT id FROM audit_logs WHERE action='ADMIN_USER_UNLOCKED' AND resource_id=? LIMIT 1", [$recruiterId]);
+    fn_check('CLI unlock-admin.php limpa admin_login_locks e audita desbloqueio (3.b)',
+        $locksBeforeCliUnlock === 1
+        && $unlockRes['code'] === 0
+        && ($unlockJson['ok'] ?? false) === true
+        && (int) ($unlockJson['clearedIpLocks'] ?? 0) === 1
+        && $locksAfterCliUnlock === 0
+        && $unlockAudit !== null);
+
+    ajn_exec($pdo, 'DELETE FROM request_rate_limits');
+    ajn_exec($pdo, 'DELETE FROM admin_login_locks');
+    ajn_exec($pdo, 'UPDATE admin_users SET failed_attempts=0, locked_until=NULL');
+
+    $timingCases = ['missing' => [], 'inactive' => [], 'wrong_pass' => [], 'trigger_lock' => [], 'locked' => []];
+    $timingUniformOk = true;
+    $medianOf = static function (array $vals): float {
+        sort($vals, SORT_NUMERIC);
+        $n = count($vals);
+        $mid = intdiv($n, 2);
+        return ($n % 2 === 1) ? (float) $vals[$mid] : (((float) $vals[$mid - 1] + (float) $vals[$mid]) / 2.0);
+    };
+    $measureLogin = static function (string $email, string $pass, string $ip) use ($baseUrl, $appUrl, &$timingUniformOk): float {
+        $t0 = hrtime(true);
+        $res = fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
+            'headers' => ['Origin: ' . $appUrl, 'X-AJN-Test-Client-Ip: ' . $ip],
+            'json' => ['email' => $email, 'password' => $pass],
+        ]);
+        $ms = (hrtime(true) - $t0) / 1e6;
+        if ($res['status'] !== 401 || $res['body'] !== '{"error":"Credenciais inválidas."}') {
+            $timingUniformOk = false;
+        }
+        return $ms;
+    };
+    for ($sIdx = 0; $sIdx < 20; $sIdx++) {
+        $ipMissing = '198.51.100.' . (10 + $sIdx);
+        $ipLock = '198.51.101.' . (10 + $sIdx);
+        $timingCases['missing'][] = $measureLogin("no-user-$sIdx@ajnengenharia.com.br", 'WrongPass#Timing2026', $ipMissing);
+        $timingCases['inactive'][] = $measureLogin('inactive@ajnengenharia.com.br', $inactivePass, $ipMissing);
+        $timingCases['wrong_pass'][] = $measureLogin('dpo@ajnengenharia.com.br', 'WrongPass#Timing2026', $ipMissing);
+
+        ajn_exec($pdo, 'INSERT OR REPLACE INTO admin_login_locks (id,user_id,ip_address,failed_attempts,locked_until,updated_at) VALUES (?,?,?,?,NULL,?)',
+            [ajn_uuid(), $dpoId, $ipLock, 4, time()]);
+        $timingCases['trigger_lock'][] = $measureLogin('dpo@ajnengenharia.com.br', 'WrongPass#Timing2026', $ipLock);
+        $timingCases['locked'][] = $measureLogin('dpo@ajnengenharia.com.br', $dpoPass, $ipLock);
+    }
+    $medians = [];
+    foreach ($timingCases as $k => $arr) {
+        $medians[$k] = $medianOf($arr);
+    }
+    $minMed = min($medians);
+    $maxMed = max($medians);
+    $spreadRatio = $minMed > 0.0 ? (($maxMed - $minMed) / $minMed) : 999.0;
+    fn_check('HTTP 3.e paridade temporal de login (20 amostras x 5 ramos): todos 401 identicos e medianas dentro de 25%',
+        $timingUniformOk && $spreadRatio <= 0.25,
+        sprintf('spread=%.1f%% medians(missing=%.1f,inactive=%.1f,wrong=%.1f,trig=%.1f,locked=%.1f)',
+            $spreadRatio * 100.0,
+            $medians['missing'],
+            $medians['inactive'],
+            $medians['wrong_pass'],
+            $medians['trigger_lock'],
+            $medians['locked']));
+
+    // Limpa estado pos timing test (inclusive fila gerada pelos 20 trigger_lock)
+    ajn_exec($pdo, 'DELETE FROM request_rate_limits');
+    ajn_exec($pdo, 'DELETE FROM admin_login_locks');
+    ajn_exec($pdo, 'UPDATE admin_users SET failed_attempts=0, locked_until=NULL');
+
+    // 4.14l Item 5: Todos os 7 scripts CLI funcionam sob disable_functions=system,exec,shell_exec,passthru,proc_open,popen
+    $disabledFnIni = ['-d', 'disable_functions=system,exec,shell_exec,passthru,proc_open,popen'];
+    $verifyScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'verify-audit-chain.php';
+    $provisionScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'provision-user-mfa.php';
+
+    $dfVerify = $runCliScript($verifyScript, [], ['AJN_CONFIG_PATH' => $cliConfigFile], null, $disabledFnIni);
+    $dfPurge = $runCliScript($purgeScript, ['--dry-run'], ['AJN_CONFIG_PATH' => $cliConfigFile], null, $disabledFnIni);
+    $dfMigrate = $runCliScript($migrateScript, ['--dry-run'], ['AJN_CONFIG_PATH' => $cliConfigFile], null, $disabledFnIni);
+    $dfAlerts = $runCliScript($sendAlertsScript, ['--dry-run'], ['AJN_CONFIG_PATH' => $cliConfigFile], null, $disabledFnIni);
+    $dfUnlock = $runCliScript($unlockScript, ['--email=recruiter@ajnengenharia.com.br', '--reason=DisableFunctions'], ['AJN_CONFIG_PATH' => $cliConfigFile], null, $disabledFnIni);
+    $dfSeed = $runCliScript($seedScript, [], [
+        'AJN_CONFIG_PATH' => $cliConfigFile,
+        'AJN_ADMIN_EMAIL' => 'cli.disabled@ajnengenharia.com.br',
+        'AJN_ADMIN_NAME' => 'Cli Disabled',
+        'AJN_ADMIN_INITIAL_PASSWORD' => '',
+    ], "D7#nQ4!wK8@pM2\$xV\n", $disabledFnIni);
+    $dfProvision = $runCliScript($provisionScript, [], [
+        'AJN_CONFIG_PATH' => $cliConfigFile,
+        'AJN_ADMIN_EMAIL' => '',
+        'AJN_MFA_ROTATE' => '1',
+    ], "cli.disabled@ajnengenharia.com.br\n", $disabledFnIni);
+    fn_check('CLIs (todos os 7 scripts) executam sob disable_functions=system,exec,shell_exec,passthru,proc_open,popen com fallback STDIN seguro',
+        $dfVerify['code'] === 0 && str_contains($dfVerify['out'], 'OK: Cadeia de auditoria integra')
+        && $dfPurge['code'] === 0 && str_contains($dfPurge['out'], 'DRY-RUN:')
+        && $dfMigrate['code'] === 0 && str_contains($dfMigrate['out'], '[DRY-RUN]')
+        && $dfAlerts['code'] === 0 && str_contains($dfAlerts['out'], '"ok":true')
+        && $dfUnlock['code'] === 0 && str_contains($dfUnlock['out'], '"ok":true')
+        && $dfSeed['code'] === 0 && str_contains($dfSeed['out'], 'otpauth://totp/') && str_contains($dfSeed['err'], 'Aviso: system() indisponivel')
+        && $dfProvision['code'] === 0 && str_contains($dfProvision['out'], 'otpauth://totp/') && str_contains($dfProvision['err'], 'Aviso: system() indisponivel'),
+        sprintf('codes=%d,%d,%d,%d,%d,%d,%d',
+            $dfVerify['code'], $dfPurge['code'], $dfMigrate['code'], $dfAlerts['code'], $dfUnlock['code'], $dfSeed['code'], $dfProvision['code']));
+
+    // 4.14m Item 6: Executa audit-live-hardening.mjs contra o servidor HTTP real de teste (inclui 301 legados)
+    ajn_exec($pdo, 'DELETE FROM request_rate_limits');
+    $liveAuditScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'audit-live-hardening.mjs';
+    $nodeProc = proc_open(
+        ['node', $liveAuditScript, '--url=' . $baseUrl],
+        [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+        $np,
+        dirname(__DIR__, 2)
+    );
+    $liveAuditOut = '';
+    $liveAuditErr = '';
+    $liveAuditCode = 1;
+    if (is_resource($nodeProc)) {
+        fclose($np[0]);
+        $liveAuditOut = (string) stream_get_contents($np[1]);
+        $liveAuditErr = (string) stream_get_contents($np[2]);
+        fclose($np[1]);
+        fclose($np[2]);
+        $liveAuditCode = proc_close($nodeProc);
+    }
+    fn_check('Script scripts/audit-live-hardening.mjs passa contra servidor HTTP de teste (inclui headers, bloqueios e 301 legados)',
+        $liveAuditCode === 0 && str_contains($liveAuditOut, '[live-audit] PASS:'),
+        trim($liveAuditErr !== '' ? $liveAuditErr : $liveAuditOut));
 
     // 4.15 Logout limpa dados e invalida cookie de sessao
     $logout = fn_http($baseUrl, 'POST', '/api/admin/auth/logout', [

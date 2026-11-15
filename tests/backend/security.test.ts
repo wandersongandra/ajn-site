@@ -480,13 +480,46 @@ describe('Testes Específicos de Segurança, Autorização e Uploads Maliciosos'
       const dataMissing = (await resMissingKey.json()) as any;
       expect(dataMissing.error).toContain('antispam');
 
-      // 2. Em produção com chave dummy/inválida: não permite bypass
-      const resDummyKey = await app.request(
+      // 2. Em produção com chave dummy/inválida ou chave de teste Cloudflare (1x/2x/3x): não permite bypass
+      for (const forbiddenProdSecret of [
+        'dummy_secret',
+        '1x0000000000000000000000000000000AA',
+        '2x0000000000000000000000000000000AA',
+        '3x0000000000000000000000000000000AA',
+      ]) {
+        const resDummyKey = await app.request(
+          '/api/applications/talent-pool',
+          { method: 'POST', body: form },
+          { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: forbiddenProdSecret, RATE_LIMITER_DO: mockDOBinding } as any
+        );
+        expect(resDummyKey.status).toBe(400);
+      }
+
+      // 3. Em produção com segredo real mas token de teste XXXX.DUMMY.TOKEN.XXXX: rejeita com 400
+      const formDummyToken = new FormData();
+      formDummyToken.append('fullName', 'Teste Turnstile Token');
+      formDummyToken.append('email', 'turnstile.token@teste.com');
+      formDummyToken.append('phone', '(31) 99999-0000');
+      formDummyToken.append('cpf', '00000000191');
+      formDummyToken.append('city', 'Belo Horizonte');
+      formDummyToken.append('state', 'MG');
+      formDummyToken.append('consentTerms', 'true');
+      formDummyToken.append('resume', new File([pdfBytes], 'curriculo.pdf', { type: 'application/pdf' }));
+      formDummyToken.append('turnstileToken', 'XXXX.DUMMY.TOKEN.XXXX');
+      const resDummyToken = await app.request(
         '/api/applications/talent-pool',
-        { method: 'POST', body: form },
-        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: 'dummy_secret', RATE_LIMITER_DO: mockDOBinding } as any
+        { method: 'POST', body: formDummyToken },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'production', TURNSTILE_SECRET_KEY: '0x4AAAAAAABkMYinukE_real_secret', RATE_LIMITER_DO: mockDOBinding } as any
       );
-      expect(resDummyKey.status).toBe(400);
+      expect(resDummyToken.status).toBe(400);
+
+      // 4. Em teste isolado com chave oficial de falha 2x0000000000000000000000000000000AA: rejeita com 400
+      const resFailSecret = await app.request(
+        '/api/applications/talent-pool',
+        { method: 'POST', body: formDummyToken },
+        { DB: {} as any, RESUMES_BUCKET: mockR2Bucket, ENVIRONMENT: 'test', TURNSTILE_SECRET_KEY: '2x0000000000000000000000000000000AA' } as any
+      );
+      expect(resFailSecret.status).toBe(400);
     });
 
     it('P0-2: Impede alteração de cadastros com apenas CPF sem comprovação de titularidade por e-mail', async () => {

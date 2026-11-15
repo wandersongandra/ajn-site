@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { prepareHostingerDeploy } from './prepare-hostinger-deploy.mjs';
 
-function createFixtureTree(root, { withTurnstile = false, forbiddenInDist = null } = {}) {
+function createFixtureTree(root, { withTurnstile = false, siteKey = '0x4AAAAAAABkMYinukE_real_prod_key', forbiddenInDist = null } = {}) {
   const distFiles = {
     '.htaccess': 'Options -Indexes\n',
     'index.html': '<!doctype html><html><head><meta name="robots" content="index,follow"><link rel="canonical" href="https://ajnengenharia.com.br/"></head><body></body></html>',
@@ -16,7 +16,7 @@ function createFixtureTree(root, { withTurnstile = false, forbiddenInDist = null
     'scripts/carreiras.js': '// ok',
     'scripts/admin-carreiras.js': '// ok',
     'carreiras/talentos/index.html': withTurnstile
-      ? '<form><div class="cf-turnstile" data-sitekey="pub-key"></div></form>'
+      ? `<form><div class="cf-turnstile" data-sitekey="${siteKey}"></div></form>`
       : '<form><p>A verificação antispam será habilitada quando o ambiente for configurado.</p></form>',
     'contato/index.html': '<form data-contact-endpoint="https://api.opengscgandra.tech/contact"></form>',
   };
@@ -43,6 +43,8 @@ function createFixtureTree(root, { withTurnstile = false, forbiddenInDist = null
     'verify-audit-chain.php',
     'purge-expired-data.php',
     'migrate-legacy-data.php',
+    'unlock-admin.php',
+    'send-security-alerts.php',
     'config.example.php',
     'resumes-directory.htaccess',
     'config.php',
@@ -52,6 +54,7 @@ function createFixtureTree(root, { withTurnstile = false, forbiddenInDist = null
     'migrations/003_least_privilege.sql',
     'migrations/004_indexes.sql',
     'migrations/005_security_hardening.sql',
+    'migrations/006_security_alerts_and_ip_locks.sql',
   ];
   for (const rel of hostingerFiles) {
     const target = join(root, 'hostinger', rel);
@@ -64,7 +67,7 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
   const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-pack-'));
   try {
     createFixtureTree(root, { withTurnstile: false });
-    const summary = prepareHostingerDeploy({ rootDir: root });
+    const summary = prepareHostingerDeploy({ rootDir: root, requireTurnstile: false });
 
     assert.equal(summary.canonicalOrigin, 'https://ajnengenharia.com.br');
     assert.equal(summary.indexingAllowed, true);
@@ -83,6 +86,9 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
       'provision-user-mfa.php',
       'verify-audit-chain.php',
       'purge-expired-data.php',
+      'migrate-legacy-data.php',
+      'unlock-admin.php',
+      'send-security-alerts.php',
       'config.php',
       'config.example.php',
       'bootstrap.php',
@@ -100,6 +106,8 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/bootstrap.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/verify-audit-chain.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/purge-expired-data.php')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/unlock-admin.php')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/send-security-alerts.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/resumes/.htaccess')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/config.example.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/config.php')), false);
@@ -108,6 +116,7 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
     assert.equal(existsSync(join(summary.outputDir, 'database/002_hardening.sql')), true);
     assert.equal(existsSync(join(summary.outputDir, 'database/004_indexes.sql')), true);
     assert.equal(existsSync(join(summary.outputDir, 'database/005_security_hardening.sql')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'database/006_security_alerts_and_ip_locks.sql')), true);
 
     const checklist = readFileSync(join(summary.outputDir, 'DEPLOY-CHECKLIST.md'), 'utf8');
     assert.match(checklist, /BLOQUEIO CRITICO/);
@@ -143,23 +152,31 @@ test('recusa empacotar quando conteúdo privado (config, tests, migrations, CLI)
   }
 });
 
-test('falha quando pacote de produção exige Indexação=true e Turnstile=true mas qualquer um dos dois está em false', () => {
+test('falha por padrão quando Indexação=false, Turnstile=false ou sitekey é de teste (1x/2x/3x)', () => {
   const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-prod-guard-'));
   try {
     createFixtureTree(root, { withTurnstile: false });
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root, requireIndexing: true, requireTurnstile: true }),
+      () => prepareHostingerDeploy({ rootDir: root }),
       /Turnstile no HTML está em false/
     );
 
-    createFixtureTree(root, { withTurnstile: true });
+    for (const testSiteKey of ['1x00000000000000000000AA', '2x00000000000000000000AB', '3x00000000000000000000FF']) {
+      createFixtureTree(root, { withTurnstile: true, siteKey: testSiteKey });
+      assert.throws(
+        () => prepareHostingerDeploy({ rootDir: root }),
+        /chave de teste Turnstile/
+      );
+    }
+
+    createFixtureTree(root, { withTurnstile: true, siteKey: '0x4AAAAAAABkMYinukE_real_prod_key' });
     writeFileSync(
       join(root, 'dist', 'index.html'),
       '<!doctype html><html><head><meta name="robots" content="noindex,nofollow"><link rel="canonical" href="https://ajnengenharia.com.br/"></head><body></body></html>',
       'utf8'
     );
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root, requireIndexing: true, requireTurnstile: true }),
+      () => prepareHostingerDeploy({ rootDir: root }),
       /Indexação está em false/
     );
   } finally {

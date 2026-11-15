@@ -86,9 +86,13 @@ $functional = source_contract($root . '/tests/functional.php');
 $smoke = source_contract($root . '/tests/smoke.php');
 $seedAdmin = source_contract($root . '/seed-admin.php');
 $provisionMfa = source_contract($root . '/provision-user-mfa.php');
+$unlockAdmin = source_contract($root . '/unlock-admin.php');
+$sendSecurityAlerts = source_contract($root . '/send-security-alerts.php');
+$migrateLegacyData = source_contract($root . '/migrate-legacy-data.php');
 $schemaIndexes = source_contract($root . '/migrations/004_indexes.sql');
+$schema006 = source_contract($root . '/migrations/006_security_alerts_and_ip_locks.sql');
 
-$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional, $seedAdmin, $provisionMfa];
+$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional, $seedAdmin, $provisionMfa, $unlockAdmin, $sendSecurityAlerts, $migrateLegacyData];
 $allPhpValid = true;
 foreach ($phpFilesToParse as $phpSource) {
     try {
@@ -182,11 +186,33 @@ check_contract('RBAC centralizado deny-by-default, CSRF por sessao e validacao S
     && str_contains($bootstrap, 'HTTP_SEC_FETCH_SITE'));
 $verifyAuditChain = source_contract($root . '/verify-audit-chain.php');
 $purgeExpiredData = source_contract($root . '/purge-expired-data.php');
-check_contract('scripts CLI (seed, provision, verify-audit-chain, purge-expired-data) exigem PHP_SAPI === cli',
+check_contract('scripts CLI (todos os 7 scripts) exigem PHP_SAPI === cli',
     str_contains($seedAdmin, "PHP_SAPI !== 'cli'")
     && str_contains($provisionMfa, "PHP_SAPI !== 'cli'")
     && str_contains($verifyAuditChain, "PHP_SAPI !== 'cli'")
-    && str_contains($purgeExpiredData, "PHP_SAPI !== 'cli'"));
+    && str_contains($purgeExpiredData, "PHP_SAPI !== 'cli'")
+    && str_contains($migrateLegacyData, "PHP_SAPI !== 'cli'")
+    && str_contains($unlockAdmin, "PHP_SAPI !== 'cli'")
+    && str_contains($sendSecurityAlerts, "PHP_SAPI !== 'cli'"));
+
+check_contract('migration 006 cria admin_login_locks e security_alert_queue sem IF NOT EXISTS em indices',
+    str_contains($schema006, 'admin_login_locks')
+    && str_contains($schema006, 'security_alert_queue')
+    && preg_match('/(?:INDEX|KEY)\s+IF\s+NOT\s+EXISTS/i', $schema006) === 0);
+
+check_contract('seed-admin e provision-user-mfa protegem stty via function_exists(system) com finally',
+    str_contains($seedAdmin, "function_exists('system')")
+    && str_contains($seedAdmin, 'finally {')
+    && str_contains($provisionMfa, "function_exists('system')")
+    && str_contains($provisionMfa, 'finally {'));
+
+check_contract('login usa dummy Argon2id, bloqueio por (conta + IP) e enfileira alertas em security_alert_queue',
+    str_contains($bootstrap, 'function ajn_dummy_password_hash')
+    && str_contains($bootstrap, 'INSERT INTO security_alert_queue')
+    && str_contains($bootstrap, 'function ajn_process_security_alert_queue')
+    && str_contains($admin, 'ajn_dummy_password_hash()')
+    && !str_contains($admin, '$2y$')
+    && str_contains($admin, 'admin_login_locks'));
 check_contract('.htaccess forca HTTPS, HSTS preload, COOP/CORP, bloqueia execucao PHP em diretorios estaticos e endurece flags PHP',
     str_contains($htaccess, 'RewriteCond %{HTTPS} !=on')
     && str_contains($bootstrap, 'max-age=63072000; includeSubDomains; preload')

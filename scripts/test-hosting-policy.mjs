@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { cspSourcesEqual, cspSourceIsExact, isAllowedResourceUrl } from './hosting-policy.mjs';
 import { extractScriptElements, getHtmlAttributeValue, isJsonLdScript, hasExactHtmlAttribute, stripScriptElements } from './security-html.mjs';
+import { MAX_CSP_HEADER_BYTES, verifyCspStyleHashes } from './sync-csp-style-hashes.mjs';
 
 const origin = 'https://ajnengenharia.com.br';
 const policy = "style-src 'self'; font-src 'self'; script-src 'self'";
@@ -49,4 +53,45 @@ test('remove apenas elementos script completos ao preparar o corpo textual', () 
 test('preserva texto parecido com script e elementos incompletos', () => {
 	const html = 'string <scripture>texto</scripture> e <script>incompleto';
 	assert.equal(stripScriptElements(html), html);
+});
+
+test('CSP de public/.htaccess cobre 100% dos atributos style das 182 páginas de dist/ e respeita o limite de 4 KB', () => {
+	const distDir = resolve(process.cwd(), 'dist');
+	const htaccessPath = resolve(process.cwd(), 'public', '.htaccess');
+	if (!existsSync(distDir)) {
+		return;
+	}
+	const result = verifyCspStyleHashes({ distDir, htaccessPath });
+	assert.equal(result.ok, true, `Falhas CSP: ${result.errors.join(' | ')}`);
+	assert.equal(result.htmlFileCount, 182, 'Deve validar todas as 182 páginas HTML de dist/');
+	assert.ok(
+		result.cspByteLength <= MAX_CSP_HEADER_BYTES,
+		`Header CSP (${result.cspByteLength} bytes) não pode passar de ${MAX_CSP_HEADER_BYTES} bytes`
+	);
+
+	// Prova de falha: atributo style ausente da lista ou CSP > 4 KB deve falhar
+	const fakeMap = new Map([['dist/index.html', ['color: #ff00ff; font-size: 999px;']]]);
+	const failMissingHash = verifyCspStyleHashes({ distDir, htaccessPath, perFileStyles: fakeMap });
+	assert.equal(failMissingHash.ok, false);
+	assert.match(failMissingHash.errors.join(' '), /Estilo inline sem hash/);
+
+	const tmpDir = mkdtempSync(join(tmpdir(), 'ajn-csp-size-'));
+	try {
+		const oversizedHtaccess = join(tmpDir, '.htaccess');
+		const hugeHashes = Array.from({ length: 100 }, (_, i) => `'sha256-${String(i).padStart(43, 'A')}='`).join(' ');
+		writeFileSync(
+			oversizedHtaccess,
+			`Header always set Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-hashes' ${hugeHashes}"\n`,
+			'utf8'
+		);
+		const failOversized = verifyCspStyleHashes({
+			distDir,
+			htaccessPath: oversizedHtaccess,
+			perFileStyles: new Map(),
+		});
+		assert.equal(failOversized.ok, false);
+		assert.match(failOversized.errors.join(' '), /ultrapassa o limite máximo de 4096 bytes/);
+	} finally {
+		rmSync(tmpDir, { recursive: true, force: true });
+	}
 });

@@ -155,6 +155,14 @@ for (const vp of viewports) {
     const pageErrors = [];
     page.on('pageerror', (err) => pageErrors.push(err.message));
 
+    await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (reqRoute) => {
+      await reqRoute.fulfill({
+        status: 200,
+        contentType: 'application/javascript; charset=utf-8',
+        body: 'window.turnstile = { getResponse: () => "XXXX.DUMMY.TOKEN.XXXX", reset: () => {} }; document.querySelectorAll(".cf-turnstile").forEach((el) => { if (!el.querySelector("[name=cf-turnstile-response]")) { const inp = document.createElement("input"); inp.type = "hidden"; inp.name = "cf-turnstile-response"; inp.value = "XXXX.DUMMY.TOKEN.XXXX"; el.appendChild(inp); } });',
+      });
+    });
+
     if (route === '/carreiras/') {
       await page.route('**/api/jobs', request => request.fulfill({
         status: 200,
@@ -445,6 +453,94 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
   await context.close();
 }
 
+// Item 2.d Turnstile E2E: formulario renderiza o widget e envia o token (=201); sem token responde 400
+{
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const page = await context.newPage();
+  let turnstileWidgetActive = true;
+
+  await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
+    const tokenJs = turnstileWidgetActive
+      ? 'window.turnstile = { getResponse: () => "XXXX.DUMMY.TOKEN.XXXX", reset: () => {} }; document.querySelectorAll(".cf-turnstile").forEach((el) => { const inp = document.createElement("input"); inp.type = "hidden"; inp.name = "cf-turnstile-response"; inp.value = "XXXX.DUMMY.TOKEN.XXXX"; el.appendChild(inp); });'
+      : 'window.turnstile = { getResponse: () => "", reset: () => {} };';
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/javascript; charset=utf-8',
+      body: tokenJs,
+    });
+  });
+
+  const capturedTokens = [];
+  await page.route('**/api/applications/talent-pool', async (route) => {
+    const postBody = (route.request().postDataBuffer() ?? Buffer.from(route.request().postData() || '')).toString('utf8');
+    const tokenMatch = postBody.match(/name="turnstileToken"(?:;[^\r\n]*)?\r?\n\r?\n([^\r\n]*)/);
+    const token = (tokenMatch?.[1] ?? '').trim();
+    capturedTokens.push(token);
+    if (!token) {
+      return route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Conclua a verificação antispam antes de enviar.' }),
+      });
+    }
+    return route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        message: 'Candidatura registrada no banco de talentos!',
+        trackingCode: 'AJN-2026-E2ETEST',
+      }),
+    });
+  });
+
+  // Caso 1: widget Turnstile renderizado com data-sitekey e envia token no POST
+  await page.goto(new URL('/carreiras/talentos/', base).href, { waitUntil: 'networkidle' });
+  await dismissPrivacyNotice(page);
+  const widgetSiteKey = await page.locator('[data-application-form] .cf-turnstile').getAttribute('data-sitekey');
+  assert(Boolean(widgetSiteKey && widgetSiteKey.length >= 10), `Widget Turnstile renderizado em /carreiras/talentos/ (sitekey=${widgetSiteKey})`);
+
+  const talentForm = page.locator('[data-application-form]');
+  await talentForm.locator('[name="fullName"]').fill('Candidata E2E Turnstile');
+  await talentForm.locator('[name="email"]').fill('e2e.turnstile@example.invalid');
+  await talentForm.locator('[name="phone"]').fill('(31) 99999-8888');
+  await talentForm.locator('[name="cpf"]').fill('52998224725');
+  await talentForm.locator('[name="city"]').fill('Belo Horizonte');
+  await talentForm.locator('[name="state"]').fill('MG');
+  await talentForm.locator('[name="consentTerms"]').check();
+  await talentForm.locator('[name="consentRetention"]').check();
+  await talentForm.locator('input[type="file"]').setInputFiles({
+    name: 'cv-e2e.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from('%PDF-1.4\n%E2E\n'),
+  });
+  await talentForm.locator('button[type="submit"]').click();
+  await page.waitForFunction(() => document.querySelector('[data-notice]')?.textContent.includes('AJN-2026-E2ETEST'));
+  assert(capturedTokens[0] === 'XXXX.DUMMY.TOKEN.XXXX', `Formulário enviou turnstileToken do widget: ${capturedTokens[0]}`);
+
+  // Caso 2: envio sem token Turnstile recebe 400 do backend e exibe erro
+  turnstileWidgetActive = false;
+  await page.reload({ waitUntil: 'networkidle' });
+  await dismissPrivacyNotice(page);
+  await talentForm.locator('[name="fullName"]').fill('Candidata Sem Token');
+  await talentForm.locator('[name="email"]').fill('sem.token@example.invalid');
+  await talentForm.locator('[name="phone"]').fill('(31) 99999-7777');
+  await talentForm.locator('[name="cpf"]').fill('52998224725');
+  await talentForm.locator('[name="city"]').fill('Belo Horizonte');
+  await talentForm.locator('[name="state"]').fill('MG');
+  await talentForm.locator('[name="consentTerms"]').check();
+  await talentForm.locator('[name="consentRetention"]').check();
+  await talentForm.locator('input[type="file"]').setInputFiles({
+    name: 'cv-sem-token.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from('%PDF-1.4\n%E2E\n'),
+  });
+  await talentForm.locator('button[type="submit"]').click();
+  await page.waitForFunction(() => document.querySelector('[data-notice]')?.textContent.includes('verificação antispam'));
+  assert(capturedTokens[1] === '', 'Submissão sem token enviou string vazia para o servidor e recebeu HTTP 400');
+  await context.close();
+}
+
 // Item 2 (F.1 CSP): Zero violações de CSP no console e em securitypolicyviolation
 // em home (/), /carreiras/, /carreiras/vaga/, /carreiras/acompanhamento/ e /admin/carreiras/
 {
@@ -462,6 +558,13 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
 
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   await installAdminSessionFixture(context, 'super_admin');
+  await context.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/javascript; charset=utf-8',
+      body: 'window.turnstile = { getResponse: () => "XXXX.DUMMY.TOKEN.XXXX", reset: () => {} };',
+    });
+  });
   await context.addInitScript(() => {
     window.__ajnCspViolations = [];
     document.addEventListener('securitypolicyviolation', (e) => {
