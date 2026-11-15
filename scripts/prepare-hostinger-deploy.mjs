@@ -1,6 +1,7 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { verifyHtaccessCspSync } from './sync-csp-style-hashes.mjs';
 
 const PRIVATE_RUNTIME_FILES = [
   'admin.php',
@@ -68,6 +69,22 @@ function assertRequiredFiles(baseDir, relativePaths, label) {
   }
 }
 
+function collectHtmlFiles(baseDir, currentDir = baseDir) {
+  const files = [];
+  for (const entry of readdirSync(currentDir, { withFileTypes: true })) {
+    const full = join(currentDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectHtmlFiles(baseDir, full));
+    } else if (entry.isFile() && entry.name.endsWith('.html')) {
+      files.push({
+        relPath: relative(baseDir, full).replace(/\\/g, '/'),
+        fullPath: full,
+      });
+    }
+  }
+  return files.sort((a, b) => a.relPath.localeCompare(b.relPath));
+}
+
 export function inspectDistBuild(distDir) {
   assertRequiredFiles(distDir, REQUIRED_DIST_FILES, 'dist');
 
@@ -80,8 +97,18 @@ export function inspectDistBuild(distDir) {
   const canonicalUrl = canonicalMatch?.[1] ?? '';
   const canonicalOrigin = canonicalUrl ? canonicalUrl.replace(/\/+$/, '') : '';
 
+  const htmlFiles = collectHtmlFiles(distDir);
+  const pagesWithoutNoindex = htmlFiles
+    .filter(({ fullPath }) => {
+      const html = readFileSync(fullPath, 'utf8');
+      return !/<meta\s+[^>]*name=["']robots["'][^>]*content=["'][^"']*\bnoindex\b/i.test(html);
+    })
+    .map(({ relPath }) => relPath);
+
+  const robotsDisallowAll = /^\s*Disallow:\s*\/\s*$/m.test(robotsTxt) && !/^\s*Allow:\s*\//m.test(robotsTxt);
+  const allPagesNoindex = htmlFiles.length > 0 && pagesWithoutNoindex.length === 0;
   const indexingAllowed = /<meta\s+name="robots"\s+content="index,follow/i.test(homeHtml)
-    && !robotsTxt.includes('Disallow: /');
+    && !robotsDisallowAll;
 
   const contactMatch = contactHtml.match(/data-contact-endpoint="([^"]*)"/i);
   const contactEndpoint = contactMatch?.[1] ?? '';
@@ -91,12 +118,18 @@ export function inspectDistBuild(distDir) {
   );
   const turnstileSiteKey = (siteKeyMatch?.[1] ?? siteKeyMatch?.[2] ?? '').trim();
   const isTurnstileTestKey = /^(1x|2x|3x)/i.test(turnstileSiteKey);
-  const turnstileEnabled = hasTurnstileWidget && Boolean(turnstileSiteKey) && !isTurnstileTestKey;
+  const hasTurnstileSiteKey = hasTurnstileWidget && Boolean(turnstileSiteKey);
+  const turnstileEnabled = hasTurnstileSiteKey && !isTurnstileTestKey;
 
   return {
     canonicalOrigin,
     indexingAllowed,
+    robotsDisallowAll,
+    allPagesNoindex,
+    htmlFileCount: htmlFiles.length,
+    pagesWithoutNoindex,
     contactEndpoint,
+    hasTurnstileSiteKey,
     turnstileEnabled,
     turnstileSiteKey,
     isTurnstileTestKey,
@@ -119,32 +152,41 @@ function buildChecklistMarkdown(summary) {
     blockers.push('- **Aviso de contato:** `PUBLIC_CONTACT_ENDPOINT` vazio no HTML de `/contato/`.');
   }
 
-  return `# Pacote de Deploy Hostinger — AJN Consultoria e Engenharia
+  const turnstileChecklistStatus = summary.turnstileEnabled
+    ? 'ATIVO (`.cf-turnstile` com sitekey de produção)'
+    : summary.mode === 'staging' && summary.hasTurnstileSiteKey
+      ? 'STAGING (`.cf-turnstile` com chave de teste Cloudflare)'
+      : 'AUSENTE — REBUILD NECESSARIO';
+
+  return `# Pacote de Deploy Hostinger (${summary.mode.toUpperCase()}) — AJN Consultoria e Engenharia
 
 Gerado em: ${summary.generatedAt}
+Modo do pacote: ${summary.mode}
 Origem compilada (\`PUBLIC_SITE_ORIGIN\`): ${summary.canonicalOrigin || '(não detectada)'}
-Indexação permitida: ${summary.indexingAllowed ? 'SIM (`index,follow`)' : 'NAO (`noindex` / staging)'}
+Indexação permitida: ${summary.indexingAllowed ? 'SIM (`index,follow`)' : `NAO (\`noindex\` em ${summary.htmlFileCount}/${summary.htmlFileCount} páginas / staging)`}
 Endpoint de contato: ${summary.contactEndpoint || '(desativado)'}
-Turnstile no HTML (\`PUBLIC_TURNSTILE_SITE_KEY\`): ${summary.turnstileEnabled ? 'ATIVO (`.cf-turnstile` presente)' : 'AUSENTE — REBUILD NECESSARIO'}
+Turnstile no HTML (\`PUBLIC_TURNSTILE_SITE_KEY\`): ${turnstileChecklistStatus}
+SHA-256 CSP (\`.htaccess\`): \`${summary.htaccessCspSha256 || 'n/a'}\`
 
 ${blockers.length ? `## Alertas deste pacote\n\n${blockers.join('\n')}\n` : '## Status do pacote\n\nBuild coerente para publicação após configurar `config.php`, banco e MFA no servidor.\n'}
 ## 1. Estrutura gerada
 
 - \`public_html/\` (${summary.publicFileCount} arquivos): enviar para a raiz web \`public_html/\` do domínio na Hostinger (inclui \`.htaccess\`, \`.well-known/security.txt\` e \`api/index.php\`).
 - \`ajn-carreiras-private/\` (${summary.privateFileCount} arquivos): enviar para **fora** de \`public_html/\`, como pasta irmã (\`../ajn-carreiras-private/\`). **Nunca colocar dentro de \`public_html/\`.**
-- \`database/\` (${summary.migrationCount} migrations SQL): importar no banco MySQL/MariaDB dedicado ao módulo de carreiras, na ordem numérica \`001\` -> \`002\` -> \`003\` -> \`004\` -> \`005\`. **Não enviar para \`public_html/\`.**
+- \`database/\` (${summary.migrationCount} migrations SQL): importar no banco MySQL/MariaDB dedicado ao módulo de carreiras, na ordem numérica \`001\` -> \`002\` -> \`003\` -> \`004\` -> \`005\` -> \`006\`. **Não enviar para \`public_html/\`.**
 
 ## 2. Banco de dados e menor privilégio (usuário de migration vs runtime)
 
 1. Crie um banco MySQL/MariaDB exclusivo para carreiras e **dois usuários distintos** no hPanel (ou via DBA):
-   - \`u000_ajn_migrator\`: usado apenas para importar \`001_initial.sql\`, \`002_hardening.sql\`, \`003_least_privilege.sql\`, \`004_indexes.sql\` e \`005_security_hardening.sql\`.
+   - \`u000_ajn_migrator\`: usado apenas para importar \`001_initial.sql\`, \`002_hardening.sql\`, \`003_least_privilege.sql\`, \`004_indexes.sql\`, \`005_security_hardening.sql\` e \`006_security_alerts_and_ip_locks.sql\`.
    - \`u000_ajn_app_rw\`: usuário de runtime em \`config.php\`, restrito exclusivamente a \`SELECT, INSERT, UPDATE, DELETE\` nas tabelas do sistema (sem \`DROP\`, \`ALTER\`, \`CREATE\` ou \`TRUNCATE\`).
-2. Importe via phpMyAdmin ou CLI nesta ordem exata:
+2. Importe via CLI (consulte \`hostinger/DEPLOY.md\`) nesta ordem exata:
    - \`database/001_initial.sql\`
    - \`database/002_hardening.sql\`
    - \`database/003_least_privilege.sql\`
    - \`database/004_indexes.sql\`
    - \`database/005_security_hardening.sql\`
+   - \`database/006_security_alerts_and_ip_locks.sql\`
 
 ## 3. Configuração privada no servidor (\`ajn-carreiras-private/\`)
 
@@ -220,26 +262,57 @@ php verify-audit-chain.php
 
 export function prepareHostingerDeploy({
   rootDir = process.cwd(),
-  outputDir = resolve(rootDir, 'output', 'hostinger-deploy'),
-  requireIndexing = true,
-  requireTurnstile = true,
+  mode = 'production',
+  outputDir = null,
+  requireIndexing = mode !== 'staging',
+  requireTurnstile = mode !== 'staging',
 } = {}) {
+  const normalizedMode = mode === 'staging' ? 'staging' : 'production';
+  const productionDir = resolve(rootDir, 'output', 'hostinger-deploy');
+  const defaultOutputDir = normalizedMode === 'staging'
+    ? resolve(rootDir, 'output', 'hostinger-staging')
+    : productionDir;
+  const resolvedOutputDir = outputDir ? resolve(outputDir) : defaultOutputDir;
+  if (normalizedMode === 'staging' && resolvedOutputDir === productionDir) {
+    throw new Error('Pacote de staging não pode gravar na pasta de produção (output/hostinger-deploy).');
+  }
+
   const distDir = resolve(rootDir, 'dist');
   const hostingerDir = resolve(rootDir, 'hostinger');
   const migrationsDir = join(hostingerDir, 'migrations');
+  const publicHtaccessPath = resolve(rootDir, 'public', '.htaccess');
+  const distHtaccessPath = join(distDir, '.htaccess');
 
   const buildSummary = inspectDistBuild(distDir);
+  const tag = normalizedMode === 'staging' ? 'pack:hostinger:staging' : 'pack:hostinger';
   console.log(
-    `[pack:hostinger] Origem: ${buildSummary.canonicalOrigin} | Indexação: ${buildSummary.indexingAllowed} | Contato: ${buildSummary.contactEndpoint} | Turnstile no HTML: ${buildSummary.turnstileEnabled}`
+    `[${tag}] Modo: ${normalizedMode} | Origem: ${buildSummary.canonicalOrigin} | Indexação: ${buildSummary.indexingAllowed} | Contato: ${buildSummary.contactEndpoint} | Turnstile no HTML: ${normalizedMode === 'staging' ? buildSummary.hasTurnstileSiteKey : buildSummary.turnstileEnabled}`
   );
-  if (requireIndexing && !buildSummary.indexingAllowed) {
-    throw new Error('Pacote de produção rejeitado: Indexação está em false (noindex / Disallow).');
-  }
-  if (requireTurnstile && !buildSummary.turnstileEnabled) {
-    const reason = buildSummary.isTurnstileTestKey
-      ? `chave de teste Turnstile (${buildSummary.turnstileSiteKey}) não é permitida em produção`
-      : 'Turnstile no HTML está em false';
-    throw new Error(`Pacote de produção rejeitado: ${reason}.`);
+  if (normalizedMode === 'staging') {
+    if (buildSummary.indexingAllowed) {
+      throw new Error('Pacote de staging rejeitado: Indexação está em true (staging exige PUBLIC_ALLOW_INDEXING=false).');
+    }
+    if (!buildSummary.robotsDisallowAll) {
+      throw new Error('Pacote de staging rejeitado: robots.txt precisa conter Disallow: / e nenhum Allow: /.');
+    }
+    if (!buildSummary.allPagesNoindex) {
+      throw new Error(
+        `Pacote de staging rejeitado: páginas sem meta noindex: ${buildSummary.pagesWithoutNoindex.slice(0, 5).join(', ')}`
+      );
+    }
+    if (!buildSummary.hasTurnstileSiteKey) {
+      throw new Error('Pacote de staging rejeitado: Turnstile ausente no HTML (aceita chave de teste 1x ou real).');
+    }
+  } else {
+    if (requireIndexing && !buildSummary.indexingAllowed) {
+      throw new Error('Pacote de produção rejeitado: Indexação está em false (noindex / Disallow).');
+    }
+    if (requireTurnstile && !buildSummary.turnstileEnabled) {
+      const reason = buildSummary.isTurnstileTestKey
+        ? `chave de teste Turnstile (${buildSummary.turnstileSiteKey}) não é permitida em produção`
+        : 'Turnstile no HTML está em false';
+      throw new Error(`Pacote de produção rejeitado: ${reason}.`);
+    }
   }
   assertRequiredFiles(hostingerDir, [...PRIVATE_RUNTIME_FILES, 'resumes-directory.htaccess'], 'hostinger');
   assertRequiredFiles(migrationsDir, MIGRATION_FILES, 'hostinger/migrations');
@@ -250,11 +323,11 @@ export function prepareHostingerDeploy({
     }
   }
 
-  rmSync(outputDir, { recursive: true, force: true });
-  const publicDest = join(outputDir, 'public_html');
-  const privateDest = join(outputDir, 'ajn-carreiras-private');
+  rmSync(resolvedOutputDir, { recursive: true, force: true });
+  const publicDest = join(resolvedOutputDir, 'public_html');
+  const privateDest = join(resolvedOutputDir, 'ajn-carreiras-private');
   const resumesDest = join(privateDest, 'resumes');
-  const databaseDest = join(outputDir, 'database');
+  const databaseDest = join(resolvedOutputDir, 'database');
 
   mkdirSync(publicDest, { recursive: true });
   mkdirSync(resumesDest, { recursive: true });
@@ -277,6 +350,16 @@ export function prepareHostingerDeploy({
     cpSync(join(migrationsDir, migration), join(databaseDest, migration));
   }
 
+  const htaccessTargets = [
+    existsSync(publicHtaccessPath) ? publicHtaccessPath : null,
+    distHtaccessPath,
+    join(publicDest, '.htaccess'),
+  ].filter(Boolean);
+  const cspSync = verifyHtaccessCspSync(htaccessTargets);
+  if (!cspSync.ok) {
+    throw new Error(`Divergência de CSP/.htaccess no empacotamento: ${cspSync.errors.join('; ')}`);
+  }
+
   const countFiles = (dir) => {
     let count = 0;
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -288,23 +371,30 @@ export function prepareHostingerDeploy({
 
   const summary = {
     ...buildSummary,
+    mode: normalizedMode,
     generatedAt: new Date().toISOString(),
-    outputDir,
+    outputDir: resolvedOutputDir,
+    htaccessCspSha256: cspSync.cspSha256,
+    htaccessEntries: cspSync.entries,
     publicFileCount: countFiles(publicDest),
     privateFileCount: countFiles(privateDest),
     migrationCount: countFiles(databaseDest),
   };
 
-  writeFileSync(join(outputDir, 'DEPLOY-CHECKLIST.md'), buildChecklistMarkdown(summary), 'utf8');
+  writeFileSync(join(resolvedOutputDir, 'DEPLOY-CHECKLIST.md'), buildChecklistMarkdown(summary), 'utf8');
   return summary;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const result = prepareHostingerDeploy();
-  console.log(`[pack:hostinger] Pacote gerado em: ${result.outputDir}`);
-  console.log(`[pack:hostinger] public_html: ${result.publicFileCount} arquivos | ajn-carreiras-private: ${result.privateFileCount} arquivos | database: ${result.migrationCount} SQLs`);
-  console.log(`[pack:hostinger] Origem: ${result.canonicalOrigin} | Indexação: ${result.indexingAllowed} | Contato: ${result.contactEndpoint} | Turnstile no HTML: ${result.turnstileEnabled}`);
-  if (!result.turnstileEnabled) {
-    console.warn('[pack:hostinger] AVISO: dist/ foi gerado sem PUBLIC_TURNSTILE_SITE_KEY; formulários públicos de carreiras exigirão rebuild com essa variável antes de aceitar envios em produção.');
+  const cliArgs = process.argv.slice(2);
+  const mode = cliArgs.includes('--staging') ? 'staging' : 'production';
+  const result = prepareHostingerDeploy({ mode });
+  const tag = mode === 'staging' ? 'pack:hostinger:staging' : 'pack:hostinger';
+  console.log(`[${tag}] Pacote gerado em: ${result.outputDir}`);
+  console.log(`[${tag}] public_html: ${result.publicFileCount} arquivos | ajn-carreiras-private: ${result.privateFileCount} arquivos | database: ${result.migrationCount} SQLs`);
+  console.log(`[${tag}] Origem: ${result.canonicalOrigin} | Indexação: ${result.indexingAllowed} | HTML noindex: ${result.allPagesNoindex} (${result.htmlFileCount}) | Contato: ${result.contactEndpoint} | Turnstile no HTML: ${mode === 'staging' ? result.hasTurnstileSiteKey : result.turnstileEnabled}`);
+  console.log(`[${tag}] SHA-256 CSP (.htaccess sincronizado): ${result.htaccessCspSha256}`);
+  if (!result.turnstileEnabled && mode === 'production') {
+    console.warn(`[${tag}] AVISO: dist/ foi gerado sem PUBLIC_TURNSTILE_SITE_KEY; formulários públicos de carreiras exigirão rebuild com essa variável antes de aceitar envios em produção.`);
   }
 }

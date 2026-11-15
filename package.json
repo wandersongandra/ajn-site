@@ -12,6 +12,7 @@
     "check": "astro check",
     "preview": "astro preview",
     "pack:hostinger": "node scripts/prepare-hostinger-deploy.mjs",
+    "pack:hostinger:staging": "node scripts/prepare-hostinger-deploy.mjs --staging",
     "test:backend": "vitest run",
     "test:carreiras-interactions": "node --test scripts/test-carreiras-interactions.mjs",
     "test:php": "php -d extension=sodium hostinger/tests/smoke.php && php -d extension=sodium hostinger/tests/contract.php && php -d extension=sodium hostinger/tests/functional.php",

@@ -35,10 +35,16 @@ export async function auditLiveSecurity({ fetchImpl = fetch, timeoutMs = DEFAULT
 		assert(hstsMatch !== null && Number(hstsMatch?.[1]) >= 300, url + ': HSTS max-age ausente ou inferior a 300s.');
 		assert(!/(?:^|;)\s*(?:includesubdomains|preload)(?:;|$)/i.test(hsts), url + ': HSTS inclui subdomínios/preload sem validação.');
 		const enforced = headers.get('content-security-policy') ?? '';
-		const candidate = headers.get('content-security-policy-report-only') ?? '';
-		assert(enforced.includes("script-src 'self'"), url + ': CSP enforced ausente ou diferente do baseline de scripts.');
-		assert(candidate.includes("script-src 'self'") && candidate.includes("form-action 'self'") &&
-			candidate.includes("img-src 'self' data:"), url + ': candidata CSP Report-Only ausente ou incompleta.');
+		const reportOnly = headers.get('content-security-policy-report-only') ?? '';
+		assert(
+			enforced.includes("script-src 'self'") &&
+				enforced.includes("form-action 'self'") &&
+				enforced.includes("img-src 'self' data:") &&
+				!enforced.includes("'unsafe-inline'") &&
+				!enforced.includes("'unsafe-eval'"),
+			url + ': CSP enforced ausente, permissiva (unsafe-inline/eval) ou diferente do baseline restrito.'
+		);
+		assert(reportOnly === '', url + ': Content-Security-Policy-Report-Only sem endpoint de relatório deve ser removido.');
 		assert((headers.get('x-content-type-options') ?? '').toLowerCase() === 'nosniff', url + ': X-Content-Type-Options ausente.');
 		assert((headers.get('x-frame-options') ?? '').toUpperCase() === 'DENY', url + ': X-Frame-Options diferente de DENY.');
 		assert(Boolean(headers.get('referrer-policy')), url + ': Referrer-Policy ausente.');

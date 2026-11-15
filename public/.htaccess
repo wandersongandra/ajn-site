@@ -41,8 +41,10 @@ AddType text/plain .txt
   # Block PHP execution anywhere except the single API entrypoint (api/index.php)
   RewriteRule ^(?!api/index\.php$).*\.php$ - [F,L,NC]
 
-  # Route /api/* and dynamic job slugs to the hardened PHP entrypoint
+  # Route /api/*, maintenance /admin/*, and dynamic job slugs to the hardened PHP entrypoint
   RewriteRule ^api/index\.php$ - [L]
+  RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f
+  RewriteRule ^(?:api|admin)(?:/.*)?$ api/index.php [QSA,L]
   RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]
   RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]
 

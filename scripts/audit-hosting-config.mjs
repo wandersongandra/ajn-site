@@ -13,6 +13,10 @@ const enforced = header('Content-Security-Policy');
 
 check(Boolean(enforced), 'A CSP enforced deve estar presente em public/.htaccess.');
 check(
+	!header('Content-Security-Policy-Report-Only') && !/Content-Security-Policy-Report-Only/i.test(config),
+	'Content-Security-Policy-Report-Only sem endpoint de relatório não deve permanecer em public/.htaccess.'
+);
+check(
 	Buffer.byteLength(enforced, 'utf8') <= MAX_CSP_HEADER_BYTES,
 	`A CSP enforced (${Buffer.byteLength(enforced, 'utf8')} bytes) não pode exceder ${MAX_CSP_HEADER_BYTES} bytes.`
 );
@@ -136,6 +140,6 @@ if (failures.length) {
 	failures.forEach(message => console.error('[hosting-config][FAIL] ' + message));
 	process.exitCode = 1;
 } else {
-	console.log('[hosting-config] PASS: CSP enforced preservada, candidata em Report-Only e ' +
+	console.log('[hosting-config] PASS: CSP restrita aplicada (enforced), sem Report-Only obsoleta, e ' +
 		htmlFiles.length + ' HTML + CSS verificados. Não comprova configuração live da Hostinger.');
 }

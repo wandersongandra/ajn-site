@@ -231,6 +231,67 @@ export function verifyCspStyleHashes({
   };
 }
 
+export function extractCspHeaderFromHtaccess(htaccessPath) {
+  const content = readFileSync(htaccessPath, 'utf8');
+  const match = content.match(/^\s*Header always set Content-Security-Policy\s+"([^"]+)"/m);
+  return {
+    content,
+    cspHeaderValue: match ? match[1] : null,
+  };
+}
+
+export function verifyHtaccessCspSync(htaccessPaths) {
+  const resolved = htaccessPaths.filter(Boolean);
+  if (resolved.length < 2) {
+    throw new Error('verifyHtaccessCspSync exige ao menos 2 arquivos .htaccess.');
+  }
+  const errors = [];
+  const entries = [];
+
+  for (const htaccessPath of resolved) {
+    if (!existsSync(htaccessPath)) {
+      errors.push(`Arquivo .htaccess ausente para validação de sincronia: ${htaccessPath}`);
+      continue;
+    }
+    const { content, cspHeaderValue } = extractCspHeaderFromHtaccess(htaccessPath);
+    if (!cspHeaderValue) {
+      errors.push(`Header Content-Security-Policy ausente em ${htaccessPath}`);
+      continue;
+    }
+    const cspSha256 = createHash('sha256').update(cspHeaderValue, 'utf8').digest('hex');
+    const fileSha256 = createHash('sha256').update(content, 'utf8').digest('hex');
+    entries.push({
+      path: htaccessPath,
+      cspSha256,
+      fileSha256,
+      cspByteLength: Buffer.byteLength(cspHeaderValue, 'utf8'),
+    });
+  }
+
+  if (entries.length >= 2) {
+    const baseline = entries[0];
+    for (const entry of entries.slice(1)) {
+      if (entry.cspSha256 !== baseline.cspSha256) {
+        errors.push(
+          `CSP divergiu entre ${baseline.path} (${baseline.cspSha256}) e ${entry.path} (${entry.cspSha256})`
+        );
+      }
+      if (entry.fileSha256 !== baseline.fileSha256) {
+        errors.push(
+          `Conteúdo .htaccess divergiu entre ${baseline.path} (${entry.fileSha256}) e ${entry.path} (${entry.fileSha256})`
+        );
+      }
+    }
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+    cspSha256: entries[0]?.cspSha256 ?? null,
+    entries,
+  };
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const result = syncCspStyleHashes();
   console.log(

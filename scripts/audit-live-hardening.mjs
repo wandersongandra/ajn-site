@@ -20,24 +20,84 @@ const BLOCKED_PATHS = [
   '/styles/',
 ];
 
-function parseBaseUrl(argv = process.argv) {
-  for (const arg of argv.slice(2)) {
-    if (arg.startsWith('--url=')) {
-      return arg.slice('--url='.length).trim();
-    }
-    if (!arg.startsWith('--')) {
-      return arg.trim();
-    }
-  }
-  return (process.env.LIVE_URL || process.env.BASE_URL || '').trim();
+function isCredentialCliFlag(arg) {
+  return (
+    arg === '-u' ||
+    arg === '-p' ||
+    arg.startsWith('-u=') ||
+    arg.startsWith('-p=') ||
+    /^--(?:basic-auth|auth|user|username|password|pass)(?:=|$)/i.test(arg)
+  );
 }
 
-export async function runLiveHardeningAudit(rawBaseUrl) {
+export function parseLiveAuditConfig(argv = process.argv, env = process.env) {
+  let rawBaseUrl = '';
+  for (const arg of argv.slice(2)) {
+    if (isCredentialCliFlag(arg)) {
+      throw new Error(
+        'Credenciais Basic Auth não podem ser passadas em argumentos de linha de comando; use LIVE_AUDIT_BASIC_USER e LIVE_AUDIT_BASIC_PASS (ou LIVE_AUDIT_BASIC_AUTH) no ambiente.'
+      );
+    }
+    if (arg.startsWith('--url=')) {
+      rawBaseUrl = arg.slice('--url='.length).trim();
+    } else if (!arg.startsWith('--')) {
+      rawBaseUrl = arg.trim();
+    } else {
+      throw new Error(`Argumento não reconhecido: ${arg}`);
+    }
+  }
+  if (!rawBaseUrl) {
+    rawBaseUrl = String(env.LIVE_URL || env.BASE_URL || '').trim();
+  }
+  if (rawBaseUrl) {
+    const parsed = new URL(rawBaseUrl);
+    if (parsed.username || parsed.password) {
+      throw new Error(
+        'Credenciais Basic Auth na URL (--url=https://user:pass@...) são proibidas; informe apenas por variáveis de ambiente.'
+      );
+    }
+  }
+
+  let basicAuth = null;
+  const splitPair = String(env.LIVE_AUDIT_BASIC_AUTH || '');
+  const envUser = env.LIVE_AUDIT_BASIC_USER;
+  const envPass = env.LIVE_AUDIT_BASIC_PASS;
+  if (typeof envUser === 'string' && envUser !== '' && typeof envPass === 'string') {
+    basicAuth = { user: envUser, pass: envPass };
+  } else if (splitPair !== '') {
+    const sepIndex = splitPair.indexOf(':');
+    if (sepIndex <= 0) {
+      throw new Error('LIVE_AUDIT_BASIC_AUTH deve estar no formato usuario:senha.');
+    }
+    basicAuth = {
+      user: splitPair.slice(0, sepIndex),
+      pass: splitPair.slice(sepIndex + 1),
+    };
+  }
+
+  return { rawBaseUrl, basicAuth };
+}
+
+function buildBasicAuthHeaders(basicAuth) {
+  if (!basicAuth) return {};
+  const token = Buffer.from(`${basicAuth.user}:${basicAuth.pass}`, 'utf8').toString('base64');
+  return { Authorization: `Basic ${token}` };
+}
+
+export async function runLiveHardeningAudit(rawBaseUrl, { env = process.env, basicAuth = null } = {}) {
   if (!rawBaseUrl) {
     throw new Error('Uso: node scripts/audit-live-hardening.mjs --url=https://staging.ajnengenharia.com.br');
   }
+  const parsedUrl = new URL(rawBaseUrl);
+  if (parsedUrl.username || parsedUrl.password) {
+    throw new Error('Credenciais Basic Auth não devem ser incluídas na URL.');
+  }
+  const resolvedBasicAuth = basicAuth ?? parseLiveAuditConfig(['node', 'audit-live-hardening.mjs', `--url=${rawBaseUrl}`], env).basicAuth;
+  const authHeaders = buildBasicAuthHeaders(resolvedBasicAuth);
+  const withAuthHeaders = (extra = {}) => ({ ...authHeaders, ...extra });
+
   const baseUrl = rawBaseUrl.replace(/\/+$/, '');
-  const origin = new URL(baseUrl).origin;
+  const origin = parsedUrl.origin;
   const checks = [];
   const failures = [];
 
@@ -49,7 +109,10 @@ export async function runLiveHardeningAudit(rawBaseUrl) {
   };
 
   // 1. /api/health = 200 + headers de segurança
-  const healthRes = await fetch(`${baseUrl}/api/health`, { redirect: 'manual' });
+  const healthRes = await fetch(`${baseUrl}/api/health`, {
+    headers: withAuthHeaders(),
+    redirect: 'manual',
+  });
   const healthText = await healthRes.text();
   let healthJson = null;
   try {
@@ -88,7 +151,7 @@ export async function runLiveHardeningAudit(rawBaseUrl) {
   record('Ausência de X-Powered-By', poweredBy === null, poweredBy ?? 'ausente');
 
   // 1b. Home HTML = 200 + CSP estrito sem unsafe-eval
-  const homeRes = await fetch(`${baseUrl}/`, { redirect: 'manual' });
+  const homeRes = await fetch(`${baseUrl}/`, { headers: withAuthHeaders(), redirect: 'manual' });
   const homeCsp = homeRes.headers.get('content-security-policy') || '';
   record(
     'GET / HTML = 200 e CSP default-src self sem unsafe-eval',
@@ -98,7 +161,7 @@ export async function runLiveHardeningAudit(rawBaseUrl) {
 
   // 2. Arquivos sensíveis, .php fora de api/index.php e listagem de diretório = 403/404
   for (const path of BLOCKED_PATHS) {
-    const res = await fetch(`${baseUrl}${path}`, { redirect: 'manual' });
+    const res = await fetch(`${baseUrl}${path}`, { headers: withAuthHeaders(), redirect: 'manual' });
     const body = await res.text();
     const statusOk = res.status === 403 || res.status === 404;
     const noDirIndex = !/Index of \//i.test(body);
@@ -112,10 +175,10 @@ export async function runLiveHardeningAudit(rawBaseUrl) {
   // 3. Login com credencial inválida = 401 genérico
   const loginRes = await fetch(`${baseUrl}/api/admin/auth/login`, {
     method: 'POST',
-    headers: {
+    headers: withAuthHeaders({
       'Content-Type': 'application/json',
       Origin: origin,
-    },
+    }),
     body: JSON.stringify({
       email: `auditoria-inexistente-${Date.now()}@ajnengenharia.com.br`,
       password: 'SenhaInvalidaAuditoria#2026',
@@ -132,10 +195,10 @@ export async function runLiveHardeningAudit(rawBaseUrl) {
   // 4. Mutação sem CSRF / Origin inválido = 403
   const csrfRes = await fetch(`${baseUrl}/api/admin/auth/logout`, {
     method: 'POST',
-    headers: {
+    headers: withAuthHeaders({
       'Content-Type': 'application/json',
       Origin: 'https://attacker.evil.example',
-    },
+    }),
     redirect: 'manual',
   });
   record(
@@ -146,7 +209,7 @@ export async function runLiveHardeningAudit(rawBaseUrl) {
 
   // 5. Redirects 301 legados no servidor real
   for (const rule of LEGACY_301_REDIRECTS) {
-    const redirRes = await fetch(`${baseUrl}${rule.from}`, { redirect: 'manual' });
+    const redirRes = await fetch(`${baseUrl}${rule.from}`, { headers: withAuthHeaders(), redirect: 'manual' });
     const locationHeader = redirRes.headers.get('location') || '';
     let normalizedLocation = locationHeader;
     try {
@@ -169,15 +232,19 @@ export async function runLiveHardeningAudit(rawBaseUrl) {
   return {
     ok: failures.length === 0,
     baseUrl,
+    basicAuthEnabled: Boolean(resolvedBasicAuth),
     checks,
     failures,
   };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const targetUrl = parseBaseUrl();
   try {
-    const result = await runLiveHardeningAudit(targetUrl);
+    const { rawBaseUrl, basicAuth } = parseLiveAuditConfig(process.argv, process.env);
+    if (basicAuth) {
+      console.log('[live-audit] Basic Auth configurada por variável de ambiente (credenciais omitidas).');
+    }
+    const result = await runLiveHardeningAudit(rawBaseUrl, { basicAuth });
     for (const item of result.checks) {
       console.log(`[live-audit][${item.ok ? 'PASS' : 'FAIL'}] ${item.name} (${item.detail})`);
     }
