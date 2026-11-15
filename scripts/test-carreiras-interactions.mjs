@@ -154,3 +154,9 @@ test('Turnstile lê e reinicia apenas o widget do formulário submetido', () => 
   assert.equal(context.getFormTurnstileToken(fakeForm), '');
   assert.doesNotThrow(() => context.resetTurnstileWidget(fakeForm));
 });
+
+test('build falha se PUBLIC_TURNSTILE_SITE_KEY estiver ausente quando PUBLIC_ALLOW_INDEXING=true', () => {
+  const carreirasTs = readFileSync(new URL('../src/data/carreiras.ts', import.meta.url), 'utf8');
+  assert.match(carreirasTs, /export function assertTurnstileForIndexingBuild/);
+  assert.match(carreirasTs, /PUBLIC_TURNSTILE_SITE_KEY é obrigatório quando PUBLIC_ALLOW_INDEXING=true/);
+});

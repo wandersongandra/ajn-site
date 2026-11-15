@@ -160,6 +160,48 @@ check_contract('CLI seed e provisionamento MFA reutilizam bootstrap e validam fo
     && str_contains($provisionMfa, "define('AJN_DISABLE_AUTO_DISPATCH', true)")
     && str_contains($provisionMfa, 'AJN_MFA_ROTATE')
     && str_contains($provisionMfa, 'mfa_last_counter=NULL'));
+$schemaHardening005 = source_contract($root . '/migrations/005_security_hardening.sql');
+check_contract('migration 005 adiciona criptografia PII, step-up, recovery codes e cadeia de hash sem IF NOT EXISTS em indices',
+    !preg_match('/CREATE\s+INDEX\s+IF\s+NOT\s+EXISTS/i', $schemaHardening005)
+    && str_contains($schemaHardening005, 'admin_recovery_codes')
+    && str_contains($schemaHardening005, 'phone_encrypted')
+    && str_contains($schemaHardening005, 'cpf_encrypted')
+    && str_contains($schemaHardening005, 'entry_hash')
+    && str_contains($schemaHardening005, 'step_up_until'));
+check_contract('Argon2id com rehash automatico, libsodium secretbox com rotacao de chave e step-up implementados',
+    str_contains($bootstrap, 'PASSWORD_ARGON2ID')
+    && str_contains($bootstrap, 'ajn_password_needs_rehash')
+    && str_contains($bootstrap, 'sodium_crypto_secretbox')
+    && str_contains($bootstrap, 'previous_encryption_keys')
+    && str_contains($bootstrap, 'ajn_require_step_up')
+    && str_contains($admin, '/api/admin/auth/step-up'));
+check_contract('RBAC centralizado deny-by-default, CSRF por sessao e validacao Sec-Fetch-Site ativos',
+    str_contains($app, 'ajn_admin_route_policy')
+    && str_contains($app, 'ajn_enforce_central_gate')
+    && str_contains($bootstrap, 'ajn_require_csrf')
+    && str_contains($bootstrap, 'HTTP_SEC_FETCH_SITE'));
+$verifyAuditChain = source_contract($root . '/verify-audit-chain.php');
+$purgeExpiredData = source_contract($root . '/purge-expired-data.php');
+check_contract('scripts CLI (seed, provision, verify-audit-chain, purge-expired-data) exigem PHP_SAPI === cli',
+    str_contains($seedAdmin, "PHP_SAPI !== 'cli'")
+    && str_contains($provisionMfa, "PHP_SAPI !== 'cli'")
+    && str_contains($verifyAuditChain, "PHP_SAPI !== 'cli'")
+    && str_contains($purgeExpiredData, "PHP_SAPI !== 'cli'"));
+check_contract('.htaccess forca HTTPS, HSTS preload, COOP/CORP, bloqueia execucao PHP em diretorios estaticos e endurece flags PHP',
+    str_contains($htaccess, 'RewriteCond %{HTTPS} !=on')
+    && str_contains($bootstrap, 'max-age=63072000; includeSubDomains; preload')
+    && str_contains($htaccess, 'Cross-Origin-Opener-Policy')
+    && str_contains($htaccess, 'Cross-Origin-Resource-Policy')
+    && str_contains($htaccess, '^(?!api/index\.php$).*\.php$')
+    && str_contains($htaccess, 'session.use_strict_mode')
+    && str_contains($bootstrap, 'session.use_strict_mode')
+    && str_contains($bootstrap, 'expose_php'));
+$securityTxt = source_contract(dirname($root) . '/public/.well-known/security.txt');
+$carreirasData = source_contract(dirname($root) . '/src/data/carreiras.ts');
+check_contract('security.txt publicado em public/.well-known/security.txt e trava de build Turnstile implementada',
+    str_contains($securityTxt, 'Contact:')
+    && str_contains($securityTxt, 'Expires:')
+    && str_contains($carreirasData, 'assertTurnstileForIndexingBuild'));
 
 foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);

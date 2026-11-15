@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 
 const base = process.env.BASE_URL || 'http://localhost:4321';
@@ -36,7 +37,7 @@ async function installAdminSessionFixture(context, role = 'super_admin') {
     let body = {};
 
     if (requestUrl.pathname.endsWith('/auth/me')) {
-      body = { user: { id: 'usr-browser', name: 'RH Browser', role } };
+      body = { user: { id: 'usr-browser', name: 'RH Browser', role }, csrfToken: 'csrf-browser-fixture' };
     } else if (requestUrl.pathname.endsWith('/jobs') && route.request().method() === 'GET') {
       body = {
         jobs: [{
@@ -244,6 +245,8 @@ for (const vp of viewports) {
     if (route === '/carreiras/acompanhamento/') {
       const recoveryForm = page.locator('[data-recovery-form]');
       assert(await recoveryForm.count() === 1, `Recuperação de protocolo disponível em ${vp.name}`);
+      assert(await page.locator('[data-tracking-form] input[name="website"]').count() === 1, `Honeypot presente no formulário de acompanhamento em ${vp.name}`);
+      assert(await recoveryForm.locator('input[name="website"]').count() === 1, `Honeypot anti-bot presente na recuperação em ${vp.name}`);
       await page.route('**/api/applications/track/**', route => route.fulfill({
         status: 404,
         contentType: 'application/json',
@@ -362,6 +365,7 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
   await page.route('**/api/admin/pipeline/**', async (route) => {
     if (route.request().method() === 'POST') {
       const data = route.request().postDataJSON();
+      assert(route.request().headers()['x-csrf-token'] === 'csrf-browser-fixture', 'Movimentação envia cabeçalho X-CSRF-Token da sessão');
       assert(data.applicationId === 'application-fixture', 'Movimentação preserva ID da candidatura');
       assert(data.targetStageId === 'stage-requisitos', 'Movimentação envia etapa selecionada');
       assert(data.rating === 4 && data.notes === 'Validação humana fictícia', 'Movimentação envia nota e observações humanas');
@@ -438,6 +442,61 @@ for (const role of ['recruiter', 'viewer', 'dpo']) {
   await confirmModal.waitFor({ state: 'hidden' });
   await page.waitForFunction(() => document.querySelector('[data-lgpd-notice]')?.textContent.includes('Solicitação de exclusão concluída'));
   assert(nativeDialogCount === 0, 'Fluxo administrativo não usa prompts ou alertas nativos');
+  await context.close();
+}
+
+// Item 2 (F.1 CSP): Zero violações de CSP no console e em securitypolicyviolation
+// em home (/), /carreiras/, /carreiras/vaga/, /carreiras/acompanhamento/ e /admin/carreiras/
+{
+  const htaccessRaw = readFileSync(new URL('../public/.htaccess', import.meta.url), 'utf8');
+  const cspMatch = htaccessRaw.match(/Header\s+always\s+set\s+Content-Security-Policy\s+"([^"]+)"/i);
+  const rawCsp = cspMatch ? cspMatch[1] : '';
+  assert(rawCsp.length > 0, 'Header Content-Security-Policy extraído de public/.htaccess');
+  assert(!rawCsp.includes("'unsafe-inline'"), "CSP em public/.htaccess não contém 'unsafe-inline'");
+  assert(!rawCsp.includes("'unsafe-eval'"), "CSP em public/.htaccess não contém 'unsafe-eval'");
+
+  // Em servidor local HTTP (preview), remove apenas upgrade-insecure-requests para não forçar TLS em 127.0.0.1/localhost
+  const effectiveCsp = base.startsWith('http://')
+    ? rawCsp.replace(/;\s*upgrade-insecure-requests/gi, '')
+    : rawCsp;
+
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  await installAdminSessionFixture(context, 'super_admin');
+  await context.addInitScript(() => {
+    window.__ajnCspViolations = [];
+    document.addEventListener('securitypolicyviolation', (e) => {
+      window.__ajnCspViolations.push(`${e.violatedDirective}:${e.blockedURI}`);
+    });
+  });
+
+  const parsedOrigin = new URL(base).origin;
+  await context.route(`${parsedOrigin}/**`, async (route) => {
+    const reqUrl = new URL(route.request().url());
+    if (reqUrl.pathname.startsWith('/api/')) {
+      return route.fallback();
+    }
+    const response = await route.fetch();
+    const headers = { ...response.headers(), 'content-security-policy': effectiveCsp };
+    await route.fulfill({ response, headers });
+  });
+
+  const page = await context.newPage();
+  const cspConsoleViolations = [];
+  page.on('console', (msg) => {
+    if (msg.type() === 'error' && /Content Security Policy|CSP/i.test(msg.text())) {
+      cspConsoleViolations.push(msg.text());
+    }
+  });
+
+  for (const routePath of ['/', '/carreiras/', '/carreiras/vaga/', '/carreiras/acompanhamento/', '/admin/carreiras/']) {
+    cspConsoleViolations.length = 0;
+    await page.goto(new URL(routePath, base).href, { waitUntil: 'networkidle' });
+    const domViolations = await page.evaluate(() => window.__ajnCspViolations || []);
+    assert(
+      cspConsoleViolations.length === 0 && domViolations.length === 0,
+      `Zero violações de CSP em ${routePath} (console=${cspConsoleViolations.length}, dom=${domViolations.length})`
+    );
+  }
   await context.close();
 }
 

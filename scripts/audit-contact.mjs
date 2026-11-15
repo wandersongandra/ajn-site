@@ -1,6 +1,11 @@
 // A-001 / A-003: não simular captação de leads quando o provedor não existe.
 import { readFile } from 'node:fs/promises';
 
+if (process.env.PUBLIC_CONTACT_ENDPOINT === undefined && typeof process.loadEnvFile === 'function') {
+  try { process.loadEnvFile('.env.production'); } catch {}
+  try { process.loadEnvFile('.env'); } catch {}
+}
+
 const html = await readFile('dist/contato/index.html', 'utf8');
 const footer = await readFile('dist/index.html', 'utf8');
 const issues = [];
