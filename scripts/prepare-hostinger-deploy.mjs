@@ -1,5 +1,5 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const PRIVATE_RUNTIME_FILES = [
@@ -10,6 +10,9 @@ const PRIVATE_RUNTIME_FILES = [
   'lgpd.php',
   'provision-user-mfa.php',
   'seed-admin.php',
+  'verify-audit-chain.php',
+  'purge-expired-data.php',
+  'migrate-legacy-data.php',
   'config.example.php',
 ];
 
@@ -18,6 +21,24 @@ const MIGRATION_FILES = [
   '002_hardening.sql',
   '003_least_privilege.sql',
   '004_indexes.sql',
+  '005_security_hardening.sql',
+];
+
+const FORBIDDEN_IN_PUBLIC_HTML = [
+  'config.php',
+  'config.example.php',
+  'hostinger',
+  'migrations',
+  'tests',
+  'seed-admin.php',
+  'provision-user-mfa.php',
+  'verify-audit-chain.php',
+  'purge-expired-data.php',
+  'migrate-legacy-data.php',
+  'bootstrap.php',
+  'admin.php',
+  'applications.php',
+  'lgpd.php',
 ];
 
 const REQUIRED_DIST_FILES = [
@@ -68,7 +89,7 @@ function buildChecklistMarkdown(summary) {
   const blockers = [];
   if (!summary.turnstileEnabled) {
     blockers.push(
-      '- **BLOQUEIO CRITICO — Turnstile ausente no HTML:** o build atual foi gerado sem `PUBLIC_TURNSTILE_SITE_KEY`. Candidaturas, recuperação de código e solicitações LGPD falharão até rebuildar com `PUBLIC_TURNSTILE_SITE_KEY` e rodar `npm run pack:hostinger` novamente.'
+      '- **BLOQUEIO CRITICO — Turnstile ausente no HTML:** o build atual foi gerado sem `PUBLIC_TURNSTILE_SITE_KEY`. Candidaturas, acompanhamento, recuperação de código e solicitações LGPD falharão até rebuildar com `PUBLIC_TURNSTILE_SITE_KEY` e rodar `npm run pack:hostinger` novamente.'
     );
   }
   if (!summary.indexingAllowed) {
@@ -91,32 +112,37 @@ Turnstile no HTML (\`PUBLIC_TURNSTILE_SITE_KEY\`): ${summary.turnstileEnabled ? 
 ${blockers.length ? `## Alertas deste pacote\n\n${blockers.join('\n')}\n` : '## Status do pacote\n\nBuild coerente para publicação após configurar `config.php`, banco e MFA no servidor.\n'}
 ## 1. Estrutura gerada
 
-- \`public_html/\` (${summary.publicFileCount} arquivos): enviar para a raiz web \`public_html/\` do domínio na Hostinger (inclui \`.htaccess\` e \`api/index.php\`).
+- \`public_html/\` (${summary.publicFileCount} arquivos): enviar para a raiz web \`public_html/\` do domínio na Hostinger (inclui \`.htaccess\`, \`.well-known/security.txt\` e \`api/index.php\`).
 - \`ajn-carreiras-private/\` (${summary.privateFileCount} arquivos): enviar para **fora** de \`public_html/\`, como pasta irmã (\`../ajn-carreiras-private/\`). **Nunca colocar dentro de \`public_html/\`.**
-- \`database/\` (${summary.migrationCount} migrations SQL): importar no banco MySQL/MariaDB dedicado ao módulo de carreiras, na ordem numérica \`001\` -> \`002\` -> \`003\` -> \`004\`. **Não enviar para \`public_html/\`.**
+- \`database/\` (${summary.migrationCount} migrations SQL): importar no banco MySQL/MariaDB dedicado ao módulo de carreiras, na ordem numérica \`001\` -> \`002\` -> \`003\` -> \`004\` -> \`005\`. **Não enviar para \`public_html/\`.**
 
-## 2. Banco de dados (banco exclusivo de carreiras)
+## 2. Banco de dados e menor privilégio (usuário de migration vs runtime)
 
-1. Crie um banco MySQL/MariaDB separado (não usar o banco do WordPress legado).
+1. Crie um banco MySQL/MariaDB exclusivo para carreiras e **dois usuários distintos** no hPanel (ou via DBA):
+   - \`u000_ajn_migrator\`: usado apenas para importar \`001_initial.sql\`, \`002_hardening.sql\`, \`003_least_privilege.sql\`, \`004_indexes.sql\` e \`005_security_hardening.sql\`.
+   - \`u000_ajn_app_rw\`: usuário de runtime em \`config.php\`, restrito exclusivamente a \`SELECT, INSERT, UPDATE, DELETE\` nas tabelas do sistema (sem \`DROP\`, \`ALTER\`, \`CREATE\` ou \`TRUNCATE\`).
 2. Importe via phpMyAdmin ou CLI nesta ordem exata:
    - \`database/001_initial.sql\`
    - \`database/002_hardening.sql\`
    - \`database/003_least_privilege.sql\`
    - \`database/004_indexes.sql\`
+   - \`database/005_security_hardening.sql\`
 
 ## 3. Configuração privada no servidor (\`ajn-carreiras-private/\`)
 
-1. Confirme a presença de \`ajn-carreiras-private/resumes/.htaccess\` (bloqueia acesso HTTP caso alguém mova a pasta). Preferência de permissão em \`resumes/\`: \`0700\`.
+1. Confirme a presença de \`ajn-carreiras-private/resumes/.htaccess\` (bloqueia acesso HTTP caso alguém mova a pasta). Permissão em \`resumes/\`: \`0700\`.
 2. Crie \`ajn-carreiras-private/config.php\` manualmente a partir de \`config.example.php\` (**este pacote não inclui nem sobrescreve \`config.php\`**):
    - \`environment\`: \`'staging'\` na homologação ou \`'production'\` em produção;
    - \`app_url\`: URL HTTPS exata do ambiente (ex.: \`'https://ajnengenharia.com.br'\`);
-   - \`database\`: host, porta \`3306\`, nome, usuário e senha do banco exclusivo;
+   - \`database\`: host, porta \`3306\`, nome, usuário de runtime (\`u000_ajn_app_rw\`) e senha;
    - \`resume_directory\`: \`__DIR__ . '/resumes'\` (fora de \`public_html\`);
    - \`encryption_key\`: 64 caracteres hexadecimais gerados com \`php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"\`;
+   - \`previous_encryption_keys\`: array de chaves hex anteriores durante rotação de chave;
    - \`turnstile_secret_key\`: chave secreta Turnstile do mesmo par da \`PUBLIC_TURNSTILE_SITE_KEY\`;
+   - \`security_alert_email\`: caixa corporativa que recebe alertas de segurança;
    - \`smtp\`: host, porta \`465\`, usuário, senha e remetente reais.
 
-## 4. Provisionar superadmin e MFA via SSH (nunca pela web)
+## 4. Provisionar superadmin, MFA, auditoria e expurgo via SSH (nunca pela web)
 
 No diretório privado \`ajn-carreiras-private/\`:
 
@@ -127,35 +153,74 @@ AJN_ADMIN_INITIAL_PASSWORD="USE_UMA_FRASE_SENHA_COM_NO_MINIMO_16_CARACTERES" \\
 php seed-admin.php
 \`\`\`
 
-- Guarde o segredo/URI TOTP exibido uma única vez no seu autenticador.
+- Guarde o segredo/URI TOTP e os 8 códigos de recuperação de uso único exibidos no cofre de senhas.
 - Novos recrutadores/operadores criados no painel nascem inativos; ative cada um via SSH com:
 
 \`\`\`bash
 AJN_ADMIN_EMAIL="recrutador@ajnengenharia.com.br" php provision-user-mfa.php
 \`\`\`
 
-## 5. Verificação pós-upload
+- Verificar integridade da cadeia de hashes da auditoria (\`audit_logs\`):
+
+\`\`\`bash
+php verify-audit-chain.php
+\`\`\`
+
+- Executar rotina de retenção/expurgo LGPD (agendar em Cron diário no hPanel):
+
+\`\`\`bash
+AJN_RETENTION_DAYS=730 php purge-expired-data.php
+\`\`\`
+
+## 5. Backup cifrado e teste periódico de restauração
+
+\`\`\`bash
+# 1. Dump + compactação + cifragem AES-256 (fora de public_html)
+mysqldump --single-transaction --routines --triggers -u u000_ajn_app_rw -p u000_ajn_carreiras \\
+  | gzip -9 \\
+  | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -out ~/backups/ajn-carreiras-$(date +%F).sql.gz.enc
+
+# 2. Backup cifrado dos currículos privados
+tar -czf - -C ~/ajn-carreiras-private resumes \\
+  | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -out ~/backups/ajn-resumes-$(date +%F).tar.gz.enc
+
+# 3. Teste mensal de restauração em banco de homologação + validação da cadeia de auditoria
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in ~/backups/ajn-carreiras-$(date +%F).sql.gz.enc \\
+  | gunzip \\
+  | mysql -u u000_ajn_staging -p u000_ajn_carreiras_restore_test
+php verify-audit-chain.php
+\`\`\`
+
+## 6. Verificação pós-upload
 
 1. \`GET /api/health\` retorna \`200\` com \`{"status":"ok"}\` (em \`production\`, sem expor o campo \`environment\`).
 2. \`GET /.env\` e \`GET /.git/config\` retornam \`403\` (ou bloqueio sem listar arquivos).
 3. \`GET /ajn-carreiras-private/config.php\` retorna \`404\` (pasta inacessível pela web).
-4. Testar em staging antes de produção: login MFA do zero, criação de vaga, candidatura com PDF + Turnstile, e-mail SMTP de verificação/recuperação, download privado de currículo e exclusão LGPD + backup/restauração.
+4. Testar em staging antes de produção: login MFA + step-up, criação de vaga, candidatura com PDF + Turnstile, e-mail SMTP de verificação/recuperação, download privado de currículo e exclusão LGPD + backup/restauração.
 `;
 }
 
 export function prepareHostingerDeploy({
   rootDir = process.cwd(),
   outputDir = resolve(rootDir, 'output', 'hostinger-deploy'),
+  requireIndexing = false,
+  requireTurnstile = false,
 } = {}) {
   const distDir = resolve(rootDir, 'dist');
   const hostingerDir = resolve(rootDir, 'hostinger');
   const migrationsDir = join(hostingerDir, 'migrations');
 
   const buildSummary = inspectDistBuild(distDir);
+  if (requireIndexing && !buildSummary.indexingAllowed) {
+    throw new Error('Pacote de produção rejeitado: Indexação está em false (noindex / Disallow).');
+  }
+  if (requireTurnstile && !buildSummary.turnstileEnabled) {
+    throw new Error('Pacote de produção rejeitado: Turnstile no HTML está em false.');
+  }
   assertRequiredFiles(hostingerDir, [...PRIVATE_RUNTIME_FILES, 'resumes-directory.htaccess'], 'hostinger');
   assertRequiredFiles(migrationsDir, MIGRATION_FILES, 'hostinger/migrations');
 
-  for (const forbidden of ['config.php', 'hostinger', 'migrations', 'tests']) {
+  for (const forbidden of FORBIDDEN_IN_PUBLIC_HTML) {
     if (existsSync(join(distDir, forbidden))) {
       throw new Error(`Conteúdo privado/proibido detectado dentro de dist/: ${forbidden}`);
     }
@@ -172,6 +237,12 @@ export function prepareHostingerDeploy({
   mkdirSync(databaseDest, { recursive: true });
 
   cpSync(distDir, publicDest, { recursive: true });
+
+  for (const forbidden of FORBIDDEN_IN_PUBLIC_HTML) {
+    if (existsSync(join(publicDest, forbidden))) {
+      throw new Error(`Conteúdo privado/proibido detectado dentro de public_html/: ${forbidden}`);
+    }
+  }
 
   for (const file of PRIVATE_RUNTIME_FILES) {
     cpSync(join(hostingerDir, file), join(privateDest, file));

@@ -40,6 +40,9 @@ function createFixtureTree(root, { withTurnstile = false, forbiddenInDist = null
     'lgpd.php',
     'provision-user-mfa.php',
     'seed-admin.php',
+    'verify-audit-chain.php',
+    'purge-expired-data.php',
+    'migrate-legacy-data.php',
     'config.example.php',
     'resumes-directory.htaccess',
     'config.php',
@@ -48,6 +51,7 @@ function createFixtureTree(root, { withTurnstile = false, forbiddenInDist = null
     'migrations/002_hardening.sql',
     'migrations/003_least_privilege.sql',
     'migrations/004_indexes.sql',
+    'migrations/005_security_hardening.sql',
   ];
   for (const rel of hostingerFiles) {
     const target = join(root, 'hostinger', rel);
@@ -69,7 +73,33 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
 
     assert.equal(existsSync(join(summary.outputDir, 'public_html/.htaccess')), true);
     assert.equal(existsSync(join(summary.outputDir, 'public_html/api/index.php')), true);
+
+    // G.4: tests/, migrations/, CLI scripts e arquivos de configuração NUNCA entram em public_html
+    for (const forbidden of [
+      'tests',
+      'migrations',
+      'hostinger',
+      'seed-admin.php',
+      'provision-user-mfa.php',
+      'verify-audit-chain.php',
+      'purge-expired-data.php',
+      'config.php',
+      'config.example.php',
+      'bootstrap.php',
+      'admin.php',
+      'applications.php',
+      'lgpd.php',
+    ]) {
+      assert.equal(
+        existsSync(join(summary.outputDir, 'public_html', forbidden)),
+        false,
+        `${forbidden} jamais pode existir dentro de public_html`
+      );
+    }
+
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/bootstrap.php')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/verify-audit-chain.php')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/purge-expired-data.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/resumes/.htaccess')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/config.example.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/config.php')), false);
@@ -77,17 +107,19 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/migrations')), false);
     assert.equal(existsSync(join(summary.outputDir, 'database/002_hardening.sql')), true);
     assert.equal(existsSync(join(summary.outputDir, 'database/004_indexes.sql')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'database/005_security_hardening.sql')), true);
 
     const checklist = readFileSync(join(summary.outputDir, 'DEPLOY-CHECKLIST.md'), 'utf8');
     assert.match(checklist, /BLOQUEIO CRITICO/);
     assert.match(checklist, /PUBLIC_TURNSTILE_SITE_KEY/);
-    assert.match(checklist, /004_indexes\.sql/);
+    assert.match(checklist, /005_security_hardening\.sql/);
+    assert.match(checklist, /Backup cifrado/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 });
 
-test('recusa empacotar quando conteúdo privado vaza para dist/ e reconhece Turnstile ativo', () => {
+test('recusa empacotar quando conteúdo privado (config, tests, migrations, CLI) vaza para dist/ e reconhece Turnstile ativo', () => {
   const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-turnstile-'));
   try {
     createFixtureTree(root, { withTurnstile: true });
@@ -96,8 +128,40 @@ test('recusa empacotar quando conteúdo privado vaza para dist/ e reconhece Turn
     const checklist = readFileSync(join(summary.outputDir, 'DEPLOY-CHECKLIST.md'), 'utf8');
     assert.doesNotMatch(checklist, /BLOQUEIO CRITICO/);
 
-    writeFileSync(join(root, 'dist/config.php'), '<?php return [];', 'utf8');
-    assert.throws(() => prepareHostingerDeploy({ rootDir: root }), /config\.php/);
+    for (const leaked of ['config.php', 'seed-admin.php', 'provision-user-mfa.php', 'tests', 'migrations']) {
+      const target = join(root, 'dist', leaked);
+      if (leaked.endsWith('.php')) {
+        writeFileSync(target, '<?php return [];', 'utf8');
+      } else {
+        mkdirSync(target, { recursive: true });
+      }
+      assert.throws(() => prepareHostingerDeploy({ rootDir: root }), new RegExp(leaked.replace('.', '\\.')));
+      rmSync(target, { recursive: true, force: true });
+    }
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('falha quando pacote de produção exige Indexação=true e Turnstile=true mas qualquer um dos dois está em false', () => {
+  const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-prod-guard-'));
+  try {
+    createFixtureTree(root, { withTurnstile: false });
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, requireIndexing: true, requireTurnstile: true }),
+      /Turnstile no HTML está em false/
+    );
+
+    createFixtureTree(root, { withTurnstile: true });
+    writeFileSync(
+      join(root, 'dist', 'index.html'),
+      '<!doctype html><html><head><meta name="robots" content="noindex,nofollow"><link rel="canonical" href="https://ajnengenharia.com.br/"></head><body></body></html>',
+      'utf8'
+    );
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, requireIndexing: true, requireTurnstile: true }),
+      /Indexação está em false/
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
