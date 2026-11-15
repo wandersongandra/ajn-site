@@ -84,15 +84,19 @@ check_contract('painel administrativo sem cache', str_contains($htaccess, 'no-st
     str_contains($htaccess, 'env=AJN_ADMIN_AREA') && !str_contains($htaccess, '<If '));
 $functional = source_contract($root . '/tests/functional.php');
 $smoke = source_contract($root . '/tests/smoke.php');
+$verifyAuditChain = source_contract($root . '/verify-audit-chain.php');
+$purgeExpiredData = source_contract($root . '/purge-expired-data.php');
 $seedAdmin = source_contract($root . '/seed-admin.php');
 $provisionMfa = source_contract($root . '/provision-user-mfa.php');
 $unlockAdmin = source_contract($root . '/unlock-admin.php');
 $sendSecurityAlerts = source_contract($root . '/send-security-alerts.php');
 $migrateLegacyData = source_contract($root . '/migrate-legacy-data.php');
+$configExample = source_contract($root . '/config.example.php');
+$deployDoc = source_contract($root . '/DEPLOY.md');
 $schemaIndexes = source_contract($root . '/migrations/004_indexes.sql');
 $schema006 = source_contract($root . '/migrations/006_security_alerts_and_ip_locks.sql');
 
-$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional, $seedAdmin, $provisionMfa, $unlockAdmin, $sendSecurityAlerts, $migrateLegacyData];
+$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional, $seedAdmin, $provisionMfa, $unlockAdmin, $sendSecurityAlerts, $migrateLegacyData, $purgeExpiredData, $verifyAuditChain];
 $allPhpValid = true;
 foreach ($phpFilesToParse as $phpSource) {
     try {
@@ -184,8 +188,6 @@ check_contract('RBAC centralizado deny-by-default, CSRF por sessao e validacao S
     && str_contains($app, 'ajn_enforce_central_gate')
     && str_contains($bootstrap, 'ajn_require_csrf')
     && str_contains($bootstrap, 'HTTP_SEC_FETCH_SITE'));
-$verifyAuditChain = source_contract($root . '/verify-audit-chain.php');
-$purgeExpiredData = source_contract($root . '/purge-expired-data.php');
 check_contract('scripts CLI (todos os 7 scripts) exigem PHP_SAPI === cli',
     str_contains($seedAdmin, "PHP_SAPI !== 'cli'")
     && str_contains($provisionMfa, "PHP_SAPI !== 'cli'")
@@ -228,6 +230,21 @@ check_contract('security.txt publicado em public/.well-known/security.txt e trav
     str_contains($securityTxt, 'Contact:')
     && str_contains($securityTxt, 'Expires:')
     && str_contains($carreirasData, 'assertTurnstileForIndexingBuild'));
+check_contract('CSP restrita aplicada sem Report-Only obsoleto, turnstile_secret_key canônico e AJN_CONFIG_PATH restrito a CLI',
+    !str_contains($htaccess, 'Content-Security-Policy-Report-Only')
+    && str_contains($bootstrap, "\$config['turnstile_secret_key']")
+    && !str_contains($bootstrap, "\$config['turnstile_secret']")
+    && str_contains($bootstrap, 'function ajn_cli_config_path')
+    && str_contains($bootstrap, "PHP_SAPI === 'cli'")
+    && !str_contains($seedAdmin . $provisionMfa . $unlockAdmin . $sendSecurityAlerts . $migrateLegacyData . $purgeExpiredData, "getenv('AJN_CONFIG_PATH')"));
+check_contract('modo manutenção por flag fora do webroot no .htaccess/PHP e e-mail de alerta unificado com security.txt',
+    str_contains($htaccess, 'ajn-carreiras-private/maintenance.flag')
+    && str_contains($bootstrap, 'function ajn_enforce_maintenance_mode')
+    && str_contains($app, 'ajn_enforce_maintenance_mode($config, $path)')
+    && str_contains($securityTxt, 'faleconosco@ajnengenharia.com.br')
+    && str_contains($configExample, 'faleconosco@ajnengenharia.com.br')
+    && !str_contains($configExample . $deployDoc, 'seguranca@ajnengenharia.com.br')
+    && !str_contains($configExample . $functional, 'security@ajnengenharia.com.br'));
 
 foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);

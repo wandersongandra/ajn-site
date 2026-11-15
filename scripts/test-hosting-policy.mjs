@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { cspSourcesEqual, cspSourceIsExact, isAllowedResourceUrl } from './hosting-policy.mjs';
 import { extractScriptElements, getHtmlAttributeValue, isJsonLdScript, hasExactHtmlAttribute, stripScriptElements } from './security-html.mjs';
-import { MAX_CSP_HEADER_BYTES, verifyCspStyleHashes } from './sync-csp-style-hashes.mjs';
+import { MAX_CSP_HEADER_BYTES, verifyCspStyleHashes, verifyHtaccessCspSync } from './sync-csp-style-hashes.mjs';
 
 const origin = 'https://ajnengenharia.com.br';
 const policy = "style-src 'self'; font-src 'self'; script-src 'self'";
@@ -91,6 +91,24 @@ test('CSP de public/.htaccess cobre 100% dos atributos style das 182 páginas de
 		});
 		assert.equal(failOversized.ok, false);
 		assert.match(failOversized.errors.join(' '), /ultrapassa o limite máximo de 4096 bytes/);
+
+		// Prova de sincronia: public/.htaccess e dist/.htaccess devem coincidir e falha se divergirem
+		const distHtaccessPath = join(distDir, '.htaccess');
+		if (existsSync(distHtaccessPath)) {
+			const syncOk = verifyHtaccessCspSync([htaccessPath, distHtaccessPath]);
+			assert.equal(syncOk.ok, true, `Divergência .htaccess: ${syncOk.errors.join(' | ')}`);
+			assert.equal(syncOk.entries.length, 2);
+			assert.equal(syncOk.entries[0].cspSha256, syncOk.entries[1].cspSha256);
+			assert.equal(syncOk.entries[0].fileSha256, syncOk.entries[1].fileSha256);
+		}
+		writeFileSync(
+			oversizedHtaccess,
+			`Header always set Content-Security-Policy "default-src 'self'; style-src 'self'"\n`,
+			'utf8'
+		);
+		const syncFail = verifyHtaccessCspSync([htaccessPath, oversizedHtaccess]);
+		assert.equal(syncFail.ok, false);
+		assert.match(syncFail.errors.join(' '), /CSP divergiu/);
 	} finally {
 		rmSync(tmpDir, { recursive: true, force: true });
 	}

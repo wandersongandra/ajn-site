@@ -5,21 +5,40 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { prepareHostingerDeploy } from './prepare-hostinger-deploy.mjs';
 
-function createFixtureTree(root, { withTurnstile = false, siteKey = '0x4AAAAAAABkMYinukE_real_prod_key', forbiddenInDist = null } = {}) {
+function createFixtureTree(
+  root,
+  {
+    withTurnstile = false,
+    siteKey = '0x4AAAAAAABkMYinukE_real_prod_key',
+    forbiddenInDist = null,
+    indexing = true,
+  } = {}
+) {
+  const robotsMeta = indexing ? 'index,follow' : 'noindex,nofollow,noarchive';
+  const robotsTxt = indexing
+    ? 'User-agent: *\nAllow: /\nSitemap: https://ajnengenharia.com.br/sitemap-index.xml\n'
+    : 'User-agent: *\nDisallow: /\n';
+  const htaccessContent =
+    'Options -Indexes\nHeader always set Content-Security-Policy "default-src \'self\'; style-src \'self\'"\n';
+
   const distFiles = {
-    '.htaccess': 'Options -Indexes\n',
-    'index.html': '<!doctype html><html><head><meta name="robots" content="index,follow"><link rel="canonical" href="https://ajnengenharia.com.br/"></head><body></body></html>',
-    'robots.txt': 'User-agent: *\nAllow: /\nSitemap: https://ajnengenharia.com.br/sitemap-index.xml\n',
+    '.htaccess': htaccessContent,
+    'index.html': `<!doctype html><html><head><meta name="robots" content="${robotsMeta}"><link rel="canonical" href="https://ajnengenharia.com.br/"></head><body></body></html>`,
+    'robots.txt': robotsTxt,
     'api/index.php': '<?php require dirname(__DIR__, 2) . "/ajn-carreiras-private/bootstrap.php";',
     'styles/global.css': 'body{}',
     'styles/carreiras.css': '.carreiras-page{}',
     'scripts/carreiras.js': '// ok',
     'scripts/admin-carreiras.js': '// ok',
     'carreiras/talentos/index.html': withTurnstile
-      ? `<form><div class="cf-turnstile" data-sitekey="${siteKey}"></div></form>`
-      : '<form><p>A verificação antispam será habilitada quando o ambiente for configurado.</p></form>',
-    'contato/index.html': '<form data-contact-endpoint="https://api.opengscgandra.tech/contact"></form>',
+      ? `<!doctype html><html><head><meta name="robots" content="${robotsMeta}"></head><body><form><div class="cf-turnstile" data-sitekey="${siteKey}"></div></form></body></html>`
+      : `<!doctype html><html><head><meta name="robots" content="${robotsMeta}"></head><body><form><p>A verificação antispam será habilitada quando o ambiente for configurado.</p></form></body></html>`,
+    'contato/index.html': `<!doctype html><html><head><meta name="robots" content="${robotsMeta}"></head><body><form data-contact-endpoint="https://api.opengscgandra.tech/contact"></form></body></html>`,
   };
+
+  const publicHtaccessTarget = join(root, 'public', '.htaccess');
+  mkdirSync(join(publicHtaccessTarget, '..'), { recursive: true });
+  writeFileSync(publicHtaccessTarget, htaccessContent, 'utf8');
 
   for (const [rel, content] of Object.entries(distFiles)) {
     const target = join(root, 'dist', rel);
@@ -178,6 +197,69 @@ test('falha por padrão quando Indexação=false, Turnstile=false ou sitekey é 
     assert.throws(
       () => prepareHostingerDeploy({ rootDir: root }),
       /Indexação está em false/
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('pack:hostinger:staging grava em output/hostinger-staging, exige noindex/Disallow, aceita test key e falha em divergência CSP', () => {
+  const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-staging-'));
+  try {
+    createFixtureTree(root, {
+      withTurnstile: true,
+      siteKey: '1x00000000000000000000AA',
+      indexing: false,
+    });
+    const stagingSummary = prepareHostingerDeploy({ rootDir: root, mode: 'staging' });
+    assert.equal(stagingSummary.mode, 'staging');
+    assert.equal(stagingSummary.indexingAllowed, false);
+    assert.equal(stagingSummary.allPagesNoindex, true);
+    assert.equal(stagingSummary.robotsDisallowAll, true);
+    assert.equal(stagingSummary.outputDir, join(root, 'output', 'hostinger-staging'));
+    assert.equal(existsSync(join(root, 'output', 'hostinger-staging', 'public_html', '.htaccess')), true);
+    assert.equal(existsSync(join(root, 'output', 'hostinger-deploy')), false);
+    assert.equal(stagingSummary.htaccessEntries.length, 3);
+    assert.equal(
+      new Set(stagingSummary.htaccessEntries.map((entry) => entry.cspSha256)).size,
+      1,
+      'public/.htaccess, dist/.htaccess e output/.../public_html/.htaccess devem ter o mesmo SHA-256 CSP'
+    );
+
+    // Proibido gravar staging dentro da pasta de producao
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', outputDir: join(root, 'output', 'hostinger-deploy') }),
+      /não pode gravar na pasta de produção/
+    );
+
+    // Staging falha se alguma pagina HTML perder meta noindex
+    writeFileSync(
+      join(root, 'dist', 'contato', 'index.html'),
+      '<!doctype html><html><head><meta name="robots" content="index,follow"></head><body></body></html>',
+      'utf8'
+    );
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging' }),
+      /páginas sem meta noindex: contato\/index\.html/
+    );
+
+    // Staging falha se indexacao estiver ativa (index,follow + Allow: /)
+    createFixtureTree(root, { withTurnstile: true, siteKey: '1x00000000000000000000AA', indexing: true });
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging' }),
+      /Indexação está em true/
+    );
+
+    // Staging + Producao falham se public/.htaccess divergir de dist/.htaccess
+    createFixtureTree(root, { withTurnstile: true, siteKey: '1x00000000000000000000AA', indexing: false });
+    writeFileSync(
+      join(root, 'dist', '.htaccess'),
+      'Options -Indexes\nHeader always set Content-Security-Policy "default-src \'none\'"\n',
+      'utf8'
+    );
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging' }),
+      /Divergência de CSP\/\.htaccess/
     );
   } finally {
     rmSync(root, { recursive: true, force: true });

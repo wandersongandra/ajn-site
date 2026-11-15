@@ -174,7 +174,9 @@ $dbFile = $tmpRoot . DIRECTORY_SEPARATOR . 'careers.sqlite';
 $mailLog = $tmpRoot . DIRECTORY_SEPARATOR . 'mails.jsonl';
 $flagBadStorage = $tmpRoot . DIRECTORY_SEPARATOR . 'use_bad_storage.flag';
 $flagProdEnv = $tmpRoot . DIRECTORY_SEPARATOR . 'use_prod_env.flag';
+$flagWrongTurnstileKey = $tmpRoot . DIRECTORY_SEPARATOR . 'use_wrong_turnstile_key.flag';
 $turnstileSecretFile = $tmpRoot . DIRECTORY_SEPARATOR . 'turnstile_secret.txt';
+$maintenanceFlagFile = $tmpRoot . DIRECTORY_SEPARATOR . 'maintenance.flag';
 $cliMailStubFile = $tmpRoot . DIRECTORY_SEPARATOR . 'cli-mail-stub.php';
 file_put_contents($cliMailStubFile, sprintf(<<<'PHP'
 <?php
@@ -190,6 +192,8 @@ PHP,
     var_export($mailLog, true)
 ));
 file_put_contents($docRoot . DIRECTORY_SEPARATOR . 'index.html', '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>AJN</title></head><body>ok</body></html>');
+@mkdir($docRoot . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'carreiras', 0700, true);
+file_put_contents($docRoot . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'carreiras' . DIRECTORY_SEPARATOR . 'index.html', '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Admin</title></head><body>admin</body></html>');
 @mkdir($docRoot . DIRECTORY_SEPARATOR . 'styles', 0700, true);
 $routerFile = $tmpRoot . DIRECTORY_SEPARATOR . 'router.php';
 $encKey = bin2hex(random_bytes(32));
@@ -448,16 +452,23 @@ if (!function_exists('ajn_send_email')) {
 require_once %s . '/bootstrap.php';
 require_once %s . '/app.php';
 $__turnstileFile = %s;
+$__wrongTurnstileFlag = %s;
 $config = [
     'app_url' => %s,
     'cors_allowed_origins' => [%s],
     'environment' => file_exists(%s) ? 'production' : 'staging',
     'encryption_key' => %s,
     'resume_directory' => file_exists(%s) ? %s : %s,
-    'turnstile_secret_key' => is_file($__turnstileFile) ? trim((string) file_get_contents($__turnstileFile)) : '1x0000000000000000000000000000000AA',
-    'security_alert_email' => 'security@ajnengenharia.com.br',
+    'maintenance_flag_path' => %s,
+    'maintenance_retry_after' => 300,
+    'security_alert_email' => 'faleconosco@ajnengenharia.com.br',
     'smtp' => ['host' => 'smtp.example.com', 'port' => 465, 'username' => 'noreply', 'password' => 'secret', 'from' => 'noreply@ajnengenharia.com.br'],
 ];
+if (file_exists($__wrongTurnstileFlag)) {
+    $config['turnstile_secret'] = 'prod-real-secret-key-min-len-99999';
+} else {
+    $config['turnstile_secret_key'] = is_file($__turnstileFile) ? trim((string) file_get_contents($__turnstileFile)) : '1x0000000000000000000000000000000AA';
+}
 $db = new PDO('sqlite:' . %s, null, null, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_EMULATE_PREPARES => false,
@@ -466,6 +477,17 @@ $db = new PDO('sqlite:' . %s, null, null, [
 $db->exec('PRAGMA foreign_keys = ON;');
 $db->exec('PRAGMA busy_timeout = 3000;');
 $__reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+if ($__reqPath === '/__test-config-sapi') {
+    $resolved = ajn_cli_config_path();
+    $envRaw = getenv('AJN_CONFIG_PATH');
+    header('X-Test-Sapi: ' . PHP_SAPI);
+    header('X-Test-Env-Set: ' . ($envRaw !== false && $envRaw !== '' ? '1' : '0'));
+    header('X-Test-Resolved-Path: ' . $resolved);
+    ajn_config();
+}
+if (file_exists($config['maintenance_flag_path']) && (str_starts_with($__reqPath, '/api/') || str_starts_with($__reqPath, '/admin/'))) {
+    ajn_dispatch($db, $config);
+}
 if (!str_starts_with($__reqPath, '/api/') && !preg_match('~^/carreiras/vaga(?:/|$)~', $__reqPath)) {
     $__legacyRedirects = [
         '/sitemap.xml' => '/sitemap-index.xml',
@@ -493,6 +515,15 @@ if (!str_starts_with($__reqPath, '/api/') && !preg_match('~^/carreiras/vaga(?:/|
         http_response_code(403);
         exit('Directory listing denied');
     }
+    if ($__reqPath === '/admin/carreiras' || $__reqPath === '/admin/carreiras/') {
+        $adminHtml = $__docRoot . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'carreiras' . DIRECTORY_SEPARATOR . 'index.html';
+        if (is_file($adminHtml)) {
+            http_response_code(200);
+            header('Content-Type: text/html; charset=utf-8');
+            readfile($adminHtml);
+            exit;
+        }
+    }
     if ($__reqPath === '/' && is_file($__docRoot . DIRECTORY_SEPARATOR . 'index.html')) {
         http_response_code(200);
         header('Content-Type: text/html; charset=utf-8');
@@ -508,6 +539,7 @@ PHP,
         var_export($hostingerDir, true),
         var_export($hostingerDir, true),
         var_export($turnstileSecretFile, true),
+        var_export($flagWrongTurnstileKey, true),
         var_export($appUrl, true),
         var_export($baseUrl, true),
         var_export($flagProdEnv, true),
@@ -515,15 +547,19 @@ PHP,
         var_export($flagBadStorage, true),
         var_export($insideDocDir, true),
         var_export($privateDir, true),
+        var_export($maintenanceFlagFile, true),
         var_export($dbFile, true)
     );
+    $cliSapiConfigFile = $tmpRoot . DIRECTORY_SEPARATOR . 'sapi-override-config.php';
+    file_put_contents($cliSapiConfigFile, "<?php return ['app_url' => 'https://attacker.invalid', 'environment' => 'staging', 'encryption_key' => " . var_export($encKey, true) . ", 'resume_directory' => " . var_export($privateDir, true) . "];");
     file_put_contents($routerFile, $routerCode);
     $descriptors = [
         0 => ['pipe', 'r'],
         1 => ['file', $tmpRoot . DIRECTORY_SEPARATOR . 'server.out.log', 'a'],
         2 => ['file', $tmpRoot . DIRECTORY_SEPARATOR . 'server.err.log', 'a'],
     ];
-    $process = proc_open([PHP_BINARY, '-d', 'extension=sodium', '-S', "127.0.0.1:$port", '-t', $docRoot, $routerFile], $descriptors, $pipes);
+    $serverEnv = array_merge($_ENV, getenv() ?: [], ['AJN_CONFIG_PATH' => $cliSapiConfigFile]);
+    $process = proc_open([PHP_BINARY, '-d', 'extension=sodium', '-S', "127.0.0.1:$port", '-t', $docRoot, $routerFile], $descriptors, $pipes, null, $serverEnv);
     if (!is_resource($process)) {
         throw new RuntimeException('Não foi possível iniciar o servidor PHP temporário.');
     }
@@ -1328,7 +1364,7 @@ PHP,
     // 4.14f Item 7 e 3.c: Alertas de seguranca assincronos via fila + envio via send-security-alerts.php sem PII no corpo
     $cliConfigFile = $tmpRoot . DIRECTORY_SEPARATOR . 'cli-config.php';
     file_put_contents($cliConfigFile, sprintf(
-        "<?php return ['app_url' => %s, 'environment' => 'staging', 'encryption_key' => %s, 'resume_directory' => %s, 'security_alert_email' => 'security@ajnengenharia.com.br', 'smtp' => ['host' => 'smtp.example.com', 'port' => 465, 'username' => 'noreply', 'password' => 'secret', 'from' => 'noreply@ajnengenharia.com.br'], 'database' => ['dsn' => %s]];",
+        "<?php return ['app_url' => %s, 'environment' => 'staging', 'encryption_key' => %s, 'resume_directory' => %s, 'security_alert_email' => 'faleconosco@ajnengenharia.com.br', 'smtp' => ['host' => 'smtp.example.com', 'port' => 465, 'username' => 'noreply', 'password' => 'secret', 'from' => 'noreply@ajnengenharia.com.br'], 'database' => ['dsn' => %s]];",
         var_export($appUrl, true),
         var_export($encKey, true),
         var_export($privateDir, true),
@@ -1379,7 +1415,7 @@ PHP,
     )));
     $findSecurityAlertMail = static function (string $event) use ($allMails): ?array {
         foreach ($allMails as $m) {
-            if (($m['to'] ?? '') === 'security@ajnengenharia.com.br'
+            if (($m['to'] ?? '') === 'faleconosco@ajnengenharia.com.br'
                 && ($m['subject'] ?? '') === '[ALERTA DE SEGURANCA AJN] ' . $event) {
                 return $m;
             }
@@ -1625,9 +1661,10 @@ PHP,
         && str_starts_with((string) ($seededUserRow['password_hash'] ?? ''), '$argon2id$')
         && str_starts_with((string) ($seededUserRow['mfa_secret'] ?? ''), 's1:'));
 
-    // 4.14j Item 2 (2.b / 2.d): Turnstile fail-closed em production (503/400) e chaves de teste em staging
+    // 4.14j Item 1.e / Item 2: Turnstile fail-closed em production (503/400, incluindo chave com nome errado) e chaves de teste em staging
     ajn_exec($pdo, 'DELETE FROM request_rate_limits');
     $tsProdEmpty503 = null;
+    $tsProdWrongKey503 = null;
     $tsProdTestKey503 = null;
     $tsProdDummyTok400 = null;
     $tsStagingFail2x400 = null;
@@ -1644,6 +1681,10 @@ PHP,
         file_put_contents($turnstileSecretFile, '');
         $tsProdEmpty503 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=valid-prod-token-sample-123");
 
+        file_put_contents($flagWrongTurnstileKey, '1');
+        $tsProdWrongKey503 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=valid-prod-token-sample-123");
+        @unlink($flagWrongTurnstileKey);
+
         file_put_contents($turnstileSecretFile, '1x0000000000000000000000000000000AA');
         $tsProdTestKey503 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=valid-prod-token-sample-123");
 
@@ -1651,15 +1692,80 @@ PHP,
         $tsProdDummyTok400 = fn_http($baseUrl, 'GET', "/api/applications/track/$idorTrackCode?turnstileToken=XXXX.DUMMY.TOKEN.XXXX");
     } finally {
         @unlink($flagProdEnv);
+        @unlink($flagWrongTurnstileKey);
         @unlink($turnstileSecretFile);
     }
-    fn_check('HTTP Turnstile: staging aceita chave 1x (200) e bloqueia 2x/vazio (400); production falha fechado (503) sem segredo ou com chave 1x e rejeita DUMMY.TOKEN (400)',
+    fn_check('HTTP Turnstile: chave com nome errado em production = 503 (alem de vazio/1x = 503, DUMMY = 400 e staging 1x = 200)',
         ($tsStagingDummyOk200['status'] ?? 0) === 200
         && ($tsMissingToken400['status'] ?? 0) === 400
         && ($tsStagingFail2x400['status'] ?? 0) === 400
         && ($tsProdEmpty503['status'] ?? 0) === 503
+        && ($tsProdWrongKey503['status'] ?? 0) === 503
         && ($tsProdTestKey503['status'] ?? 0) === 503
         && ($tsProdDummyTok400['status'] ?? 0) === 400);
+
+    // 4.14j-bis Item 1.f & Item 2.2 & Item 6: AJN_CONFIG_PATH so CLI, modo manutencao (503 + Retry-After) e --test-alert
+    $sapiRes = fn_http($baseUrl, 'GET', '/__test-config-sapi');
+    $sapiHeader = $sapiRes['headers']['x-test-sapi'][0] ?? '';
+    $sapiEnvSet = $sapiRes['headers']['x-test-env-set'][0] ?? '';
+    $sapiResolved = $sapiRes['headers']['x-test-resolved-path'][0] ?? '';
+    fn_check('Item 1.f: AJN_CONFIG_PATH e aceito em CLI e completamente ignorado em SAPI web (cli-server = 503)',
+        $sapiHeader !== 'cli'
+        && $sapiEnvSet === '1'
+        && $sapiResolved !== $cliSapiConfigFile
+        && !str_contains($sapiResolved, 'sapi-override-config.php')
+        && $sapiRes['status'] === 503);
+
+    $maintApiOff = fn_http($baseUrl, 'GET', '/api/health');
+    $maintAdminOff = fn_http($baseUrl, 'GET', '/admin/carreiras/');
+    $maintHomeOff = fn_http($baseUrl, 'GET', '/');
+    file_put_contents($maintenanceFlagFile, (string) time());
+    try {
+        $maintApiOn = fn_http($baseUrl, 'GET', '/api/health');
+        $maintLoginOn = fn_http($baseUrl, 'POST', '/api/admin/auth/login', [
+            'headers' => ['Origin: ' . $appUrl],
+            'json' => ['email' => 'missing@ajnengenharia.com.br', 'password' => 'SenhaTeste#2026'],
+        ]);
+        $maintAdminOn = fn_http($baseUrl, 'GET', '/admin/carreiras/');
+        $maintHomeOn = fn_http($baseUrl, 'GET', '/');
+    } finally {
+        @unlink($maintenanceFlagFile);
+    }
+    $maintApiRestored = fn_http($baseUrl, 'GET', '/api/health');
+    fn_check('Item 2.2: modo manutencao por flag fora do webroot retorna 503 + Retry-After em /api/* e /admin/* mantendo / em 200',
+        $maintApiOff['status'] === 200
+        && $maintAdminOff['status'] === 200
+        && $maintHomeOff['status'] === 200
+        && ($maintApiOn['status'] ?? 0) === 503
+        && ($maintApiOn['headers']['retry-after'][0] ?? '') === '300'
+        && ($maintLoginOn['status'] ?? 0) === 503
+        && ($maintLoginOn['headers']['retry-after'][0] ?? '') === '300'
+        && ($maintAdminOn['status'] ?? 0) === 503
+        && ($maintAdminOn['headers']['retry-after'][0] ?? '') === '300'
+        && ($maintHomeOn['status'] ?? 0) === 200
+        && $maintApiRestored['status'] === 200);
+
+    $testAlertRes = $runCliScript($sendAlertsScript, ['--test-alert'], ['AJN_CONFIG_PATH' => $cliConfigFile], null, ['-d', 'auto_prepend_file=' . $cliMailStubFile]);
+    $testAlertJson = json_decode(trim($testAlertRes['out']), true);
+    $allMailsAfterTestAlert = array_values(array_filter(array_map(
+        static fn(string $line): ?array => is_array($d = json_decode($line, true)) ? $d : null,
+        file($mailLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []
+    )));
+    $foundTestAlertMail = false;
+    foreach ($allMailsAfterTestAlert as $m) {
+        if (($m['to'] ?? '') === 'faleconosco@ajnengenharia.com.br'
+            && ($m['subject'] ?? '') === '[ALERTA DE SEGURANCA AJN] DEPLOY_TEST_ALERT') {
+            $foundTestAlertMail = true;
+            break;
+        }
+    }
+    fn_check('Item 6: CLI send-security-alerts.php --test-alert envia alerta de teste para faleconosco@ajnengenharia.com.br',
+        $testAlertRes['code'] === 0
+        && ($testAlertJson['ok'] ?? false) === true
+        && ($testAlertJson['testAlert'] ?? false) === true
+        && ($testAlertJson['recipient'] ?? '') === 'faleconosco@ajnengenharia.com.br'
+        && (int) ($testAlertJson['sent'] ?? 0) >= 1
+        && $foundTestAlertMail);
 
     // 4.14k Item 3.b e 3.e: unlock-admin.php e equidade temporal real HTTP (20 amostras por caso, mediana <= 25%)
     ajn_exec($pdo, 'DELETE FROM request_rate_limits');
@@ -1722,15 +1828,21 @@ PHP,
         $timingCases['locked'][] = $measureLogin('dpo@ajnengenharia.com.br', $dpoPass, $ipLock);
     }
     $medians = [];
+    $allTimingSamples = [];
     foreach ($timingCases as $k => $arr) {
         $medians[$k] = $medianOf($arr);
+        foreach ($arr as $sampleMs) {
+            $allTimingSamples[] = $sampleMs;
+        }
     }
+    $minSampleMs = $allTimingSamples !== [] ? min($allTimingSamples) : 0.0;
     $minMed = min($medians);
     $maxMed = max($medians);
     $spreadRatio = $minMed > 0.0 ? (($maxMed - $minMed) / $minMed) : 999.0;
-    fn_check('HTTP 3.e paridade temporal de login (20 amostras x 5 ramos): todos 401 identicos e medianas dentro de 25%',
-        $timingUniformOk && $spreadRatio <= 0.25,
-        sprintf('spread=%.1f%% medians(missing=%.1f,inactive=%.1f,wrong=%.1f,trig=%.1f,locked=%.1f)',
+    fn_check('HTTP 3.e / Item 5 paridade temporal de login (20 amostras x 5 ramos): min >= 400ms e medianas dentro de 5%',
+        $timingUniformOk && $minSampleMs >= 400.0 && $spreadRatio <= 0.05,
+        sprintf('min_sample=%.1fms spread=%.2f%% medians(missing=%.1f,inactive=%.1f,wrong=%.1f,trig=%.1f,locked=%.1f)',
+            $minSampleMs,
             $spreadRatio * 100.0,
             $medians['missing'],
             $medians['inactive'],
