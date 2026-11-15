@@ -26,13 +26,19 @@ foreach (array_slice($argv ?? [], 1) as $arg) {
     }
 }
 $isTty = function_exists('stream_isatty') ? @stream_isatty(STDIN) : false;
-if ($isTty && DIRECTORY_SEPARATOR === '/') {
+if ($isTty && DIRECTORY_SEPARATOR === '/' && function_exists('system')) {
     fwrite(STDERR, 'Senha inicial do super_admin (min. 16 caracteres, oculta): ');
     @system('stty -echo');
-    $rawPassword = fgets(STDIN);
-    @system('stty echo');
-    fwrite(STDERR, "\n");
+    try {
+        $rawPassword = fgets(STDIN);
+    } finally {
+        @system('stty echo');
+        fwrite(STDERR, "\n");
+    }
 } else {
+    if (!function_exists('system')) {
+        fwrite(STDERR, "Aviso: system() indisponivel; lendo de STDIN sem stty.\n");
+    }
     if ($isTty) {
         fwrite(STDERR, 'Senha inicial do super_admin (min. 16 caracteres): ');
     }

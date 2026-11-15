@@ -15,38 +15,78 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
         // A origem e verificada antes do contador: trafego cross-origin nao deve
         // consumir a cota de tentativas nem gerar escrita no banco.
         ajn_require_origin($config);
-        ajn_rate_limit($db, 'admin-login', 10, 900);
+        $currentIp = (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+        ajn_rate_limit($db, 'admin-login', 30, 900);
         $body = ajn_body();
         $email = mb_strtolower(ajn_text($body['email'] ?? null, 254));
         $password = $body['password'] ?? null;
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !is_string($password) || strlen($password) > 1024) {
             ajn_json(['error' => 'E-mail ou senha inválidos.'], 400);
         }
-        ajn_rate_limit($db, 'admin-login-account', 10, 900, $email);
+        ajn_rate_limit($db, 'admin-login-account', 20, 900, $email . '|' . $currentIp);
         $user = ajn_fetch($db, 'SELECT * FROM admin_users WHERE email=? LIMIT 1', [$email]);
-        $dummyHash = '$argon2id$v=19$m=65536,t=4,p=1$c29tZXNhbHQxMjM0NTY3OA$RdescudvJCsgt3ub+b+dWRWJTmaaJObG';
+        $lookupUserId = $user ? (string) $user['id'] : '__nonexistent__';
+        $ipLock = null;
+        try {
+            $ipLock = ajn_fetch(
+                $db,
+                'SELECT id, failed_attempts, locked_until FROM admin_login_locks WHERE user_id=? AND ip_address=? LIMIT 1',
+                [$lookupUserId, $currentIp]
+            );
+        } catch (Throwable) {
+            $ipLock = null;
+        }
+        $dummyHash = ajn_dummy_password_hash();
         $passwordValid = password_verify($password, $user ? (string) $user['password_hash'] : $dummyHash);
+        $recordIpFailure = static function () use ($db, $config, $user, $currentIp, $ipLock): array {
+            $ipAttempts = ($ipLock ? (int) $ipLock['failed_attempts'] : 0) + 1;
+            $lockSeconds = $ipAttempts >= 5 ? min(86400, 900 * (1 << min(5, $ipAttempts - 5))) : 0;
+            $lockedUntil = $lockSeconds > 0 ? time() + $lockSeconds : null;
+            $now = time();
+            try {
+                if ($ipLock && !empty($ipLock['id'])) {
+                    ajn_exec(
+                        $db,
+                        'UPDATE admin_login_locks SET failed_attempts=?,locked_until=?,updated_at=? WHERE id=?',
+                        [$ipAttempts, $lockedUntil, $now, $ipLock['id']]
+                    );
+                } else {
+                    ajn_exec(
+                        $db,
+                        'INSERT INTO admin_login_locks (id,user_id,ip_address,failed_attempts,locked_until,updated_at) VALUES (?,?,?,?,?,?)',
+                        [ajn_uuid(), $user['id'], $currentIp, $ipAttempts, $lockedUntil, $now]
+                    );
+                }
+            } catch (Throwable) {
+                // Fallback caso a tabela admin_login_locks nao exista no banco
+            }
+            $totalAttempts = ((int) $user['failed_attempts']) + 1;
+            ajn_exec($db, 'UPDATE admin_users SET failed_attempts=?,updated_at=? WHERE id=?', [
+                $totalAttempts,
+                $now,
+                $user['id'],
+            ]);
+            return [$ipAttempts, $lockSeconds, $lockedUntil];
+        };
         if (!$user || !(int) $user['is_active']) {
             // Mesma resposta, status e tempo para conta inexistente ou inativa (sem enumeracao).
+            ajn_totp('JBSWY3DPEHPK3PXP', 1, '000000');
             ajn_json(['error' => 'Credenciais inválidas.'], 401);
         }
-        if ($user['locked_until'] && (int) $user['locked_until'] > time()) {
+        $isAccountLocked = ($user['locked_until'] && (int) $user['locked_until'] > time())
+            || ($ipLock && !empty($ipLock['locked_until']) && (int) $ipLock['locked_until'] > time());
+        if ($isAccountLocked) {
             // Bloqueio segue ativo no servidor e auditado, sem revelar estado de bloqueio ao cliente.
-            ajn_audit($db, 'admin', $user['id'], 'AUTH_LOGIN_LOCKED_ATTEMPT', 'auth', $user['id']);
+            ajn_totp('JBSWY3DPEHPK3PXP', 1, '000000');
+            ajn_audit($db, 'admin', $user['id'], 'AUTH_LOGIN_LOCKED_ATTEMPT', 'auth', $user['id'], ['ip' => $currentIp]);
             ajn_json(['error' => 'Credenciais inválidas.'], 401);
         }
         if (!$passwordValid) {
-            $attempts = ((int) $user['failed_attempts']) + 1;
-            $lockSeconds = $attempts >= 5 ? min(86400, 900 * (1 << min(5, $attempts - 5))) : 0;
-            $lockedUntil = $lockSeconds > 0 ? time() + $lockSeconds : null;
-            ajn_exec($db, 'UPDATE admin_users SET failed_attempts=?,locked_until=?,updated_at=? WHERE id=?', [
-                $attempts,
-                $lockedUntil,
-                time(), $user['id'],
-            ]);
+            [$attempts, $lockSeconds, $lockedUntil] = $recordIpFailure();
+            ajn_totp('JBSWY3DPEHPK3PXP', 1, '000000');
             ajn_audit($db, 'admin', $user['id'], 'AUTH_LOGIN_FAILED', 'auth');
             if ($lockedUntil !== null) {
-                ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada por {$lockSeconds}s apos {$attempts} falhas.", (string) $user['id']);
+                ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada temporariamente por {$lockSeconds}s apos {$attempts} falhas.", (string) $user['id'], ['ip' => $currentIp]);
             }
             ajn_json(['error' => 'Credenciais inválidas.'], 401);
         }
@@ -71,32 +111,18 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
                 [$counter, time(), $user['id'], $counter]
             );
             if ($counter === null || $consumed !== 1) {
-                $attempts = ((int) $user['failed_attempts']) + 1;
-                $lockSeconds = $attempts >= 5 ? min(86400, 900 * (1 << min(5, $attempts - 5))) : 0;
-                $lockedUntil = $lockSeconds > 0 ? time() + $lockSeconds : null;
-                ajn_exec($db, 'UPDATE admin_users SET failed_attempts=?,locked_until=?,updated_at=? WHERE id=?', [
-                    $attempts,
-                    $lockedUntil,
-                    time(), $user['id'],
-                ]);
+                [$attempts, $lockSeconds, $lockedUntil] = $recordIpFailure();
                 ajn_audit($db, 'admin', $user['id'], $counter === null ? 'AUTH_MFA_FAILED' : 'AUTH_MFA_REPLAY_BLOCKED', 'auth');
                 if ($lockedUntil !== null) {
-                    ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada por falha MFA.", (string) $user['id']);
+                    ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada temporariamente por falha MFA.", (string) $user['id'], ['ip' => $currentIp]);
                 }
                 ajn_json(['error' => 'Código MFA inválido.'], 401);
             }
         } elseif (!ajn_consume_recovery_code($db, (string) $user['id'], $mfaTrimmed)) {
-            $attempts = ((int) $user['failed_attempts']) + 1;
-            $lockSeconds = $attempts >= 5 ? min(86400, 900 * (1 << min(5, $attempts - 5))) : 0;
-            $lockedUntil = $lockSeconds > 0 ? time() + $lockSeconds : null;
-            ajn_exec($db, 'UPDATE admin_users SET failed_attempts=?,locked_until=?,updated_at=? WHERE id=?', [
-                $attempts,
-                $lockedUntil,
-                time(), $user['id'],
-            ]);
+            [$attempts, $lockSeconds, $lockedUntil] = $recordIpFailure();
             ajn_audit($db, 'admin', $user['id'], 'AUTH_MFA_FAILED', 'auth');
             if ($lockedUntil !== null) {
-                ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada por falha MFA.", (string) $user['id']);
+                ajn_security_alert($db, $config, 'ACCOUNT_LOCKED', "Conta ID {$user['id']} bloqueada temporariamente por falha MFA.", (string) $user['id'], ['ip' => $currentIp]);
             }
             ajn_json(['error' => 'Código MFA inválido.'], 401);
         } else {
@@ -115,7 +141,6 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
             }
         }
 
-        $currentIp = (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
         $knownIps = json_decode((string) ($user['known_ips_json'] ?? '[]'), true);
         if (!is_array($knownIps)) $knownIps = [];
         $isNewIp = !in_array($currentIp, $knownIps, true);
@@ -124,6 +149,10 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
             if (count($knownIps) > 20) $knownIps = array_slice($knownIps, -20);
         }
 
+        try {
+            ajn_exec($db, 'DELETE FROM admin_login_locks WHERE user_id=? AND ip_address=?', [$user['id'], $currentIp]);
+        } catch (Throwable) {
+        }
         ajn_exec($db, 'UPDATE admin_users SET password_hash=?,mfa_secret=?,known_ips_json=?,failed_attempts=0,locked_until=NULL,updated_at=? WHERE id=?', [
             $newHash,
             $newMfaSecret,
@@ -231,6 +260,10 @@ function ajn_admin_auth(PDO $db, string $method, string $path, array $config): n
             $updated = ajn_exec($db, 'UPDATE admin_users SET password_hash=?,reset_token_hash=NULL,reset_expires_at=NULL,reset_attempts=0,failed_attempts=0,locked_until=NULL,updated_at=? WHERE id=? AND reset_token_hash=? AND reset_expires_at>?', [ajn_password_hash($newPassword), time(), $user['id'], hash('sha256', $token), time()]);
             if ($updated !== 1) throw new RuntimeException('Password reset token already consumed.');
             ajn_exec($db, 'DELETE FROM admin_sessions WHERE user_id=?', [$user['id']]);
+            try {
+                ajn_exec($db, 'DELETE FROM admin_login_locks WHERE user_id=?', [$user['id']]);
+            } catch (Throwable) {
+            }
             ajn_audit($db, 'admin', $user['id'], 'AUTH_PASSWORD_RESET', 'auth', $user['id']);
             $db->commit();
         } catch (Throwable $error) {

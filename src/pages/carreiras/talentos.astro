@@ -58,10 +58,10 @@ const jsonLd = [
       </header>
 
       <div class="carreiras-form-container">
-        <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+        <h2 class="carreiras-section-title">
           Cadastro de currículo
         </h2>
-        <p style="font-size: 0.9375rem; color: var(--text-soft); margin-bottom: 2rem; text-align: center;">
+        <p class="carreiras-section-lead">
           Utilizaremos os dados informados para avaliar possíveis oportunidades. Consulte a Política de Privacidade para saber como são tratados.
         </p>
 
@@ -99,7 +99,7 @@ const jsonLd = [
 
             <div class="carreiras-field">
               <label class="carreiras-label" for="talent-state">Estado (UF) *</label>
-              <input class="carreiras-input" id="talent-state" name="state" type="text" required maxlength="2" placeholder="MG" style="text-transform: uppercase;" />
+              <input class="carreiras-input carreiras-input--uf" id="talent-state" name="state" type="text" required maxlength="2" placeholder="MG" />
             </div>
 
             <div class="carreiras-field">
@@ -120,12 +120,12 @@ const jsonLd = [
             <div class="carreiras-field carreiras-form-full">
               <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
               <div class="carreiras-file-drop">
-                <label for="talent-resume" style="cursor: pointer;">
-                  <span data-file-label style="font-size: 0.875rem; color: var(--brand-action); font-weight: 500;">
+                <label for="talent-resume">
+                  <span data-file-label>
                     Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
                   </span>
                 </label>
-                <input id="talent-resume" name="resume" type="file" required accept=".pdf,.doc,.docx" style="position: absolute; opacity: 0; width: 1px; height: 1px;" />
+                <input id="talent-resume" name="resume" type="file" required accept=".pdf,.doc,.docx" />
               </div>
             </div>
 
@@ -153,8 +153,8 @@ const jsonLd = [
               )}
             </div>
 
-            <div class="carreiras-form-full" style="margin-top: 1.5rem;">
-              <button class="carreiras-button carreiras-button--primary" style="width: 100%;" type="submit">
+            <div class="carreiras-form-full">
+              <button class="carreiras-button carreiras-button--primary carreiras-button--block" type="submit">
                 Enviar currículo <span aria-hidden="true">→</span>
               </button>
             </div>

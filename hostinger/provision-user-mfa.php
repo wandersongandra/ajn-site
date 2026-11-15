@@ -11,11 +11,30 @@ if (PHP_SAPI !== 'cli') {
 define('AJN_DISABLE_AUTO_DISPATCH', true);
 require_once __DIR__ . '/bootstrap.php';
 
-$configFile = __DIR__ . '/config.php';
+$configFile = getenv('AJN_CONFIG_PATH') ?: (__DIR__ . '/config.php');
 $config = is_file($configFile) ? require $configFile : null;
 $rawEmail = getenv('AJN_ADMIN_EMAIL');
 $email = is_string($rawEmail) ? mb_strtolower(trim($rawEmail), 'UTF-8') : '';
 $rotate = getenv('AJN_MFA_ROTATE') === '1';
+if ($email === '') {
+    $isTty = function_exists('stream_isatty') ? @stream_isatty(STDIN) : false;
+    if ($isTty && DIRECTORY_SEPARATOR === '/' && function_exists('system')) {
+        fwrite(STDERR, 'E-mail do operador: ');
+        @system('stty -echo');
+        try {
+            $stdinEmail = fgets(STDIN);
+        } finally {
+            @system('stty echo');
+            fwrite(STDERR, "\n");
+        }
+    } else {
+        if (!function_exists('system')) {
+            fwrite(STDERR, "Aviso: system() indisponivel; lendo de STDIN sem stty.\n");
+        }
+        $stdinEmail = stream_get_contents(STDIN);
+    }
+    $email = is_string($stdinEmail) ? mb_strtolower(trim($stdinEmail), 'UTF-8') : '';
+}
 
 if (!is_array($config) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     fwrite(STDERR, "Defina AJN_ADMIN_EMAIL e instale config.php privado.\n");

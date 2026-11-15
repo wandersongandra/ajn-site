@@ -18,6 +18,8 @@ export interface CareerJob {
   publishedAt: Date | null;
 }
 
+export const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA';
+
 export function assertTurnstileForIndexingBuild(env: {
   PUBLIC_ALLOW_INDEXING?: string | undefined;
   PUBLIC_TURNSTILE_SITE_KEY?: string | undefined;
@@ -26,10 +28,15 @@ export function assertTurnstileForIndexingBuild(env: {
   const siteKey = (env.PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
   const allowIndexing = (env.PUBLIC_ALLOW_INDEXING ?? '').trim().toLowerCase() === 'true';
   const requireTurnstile = (env.PUBLIC_REQUIRE_TURNSTILE ?? 'true').trim().toLowerCase() !== 'false';
-  if (allowIndexing && requireTurnstile && !siteKey) {
-    throw new Error(
-      '[SECURITY GATE] Build bloqueado: PUBLIC_TURNSTILE_SITE_KEY é obrigatório quando PUBLIC_ALLOW_INDEXING=true.'
-    );
+  if (allowIndexing && requireTurnstile) {
+    if (!siteKey || /^(1x|2x|3x)/i.test(siteKey)) {
+      throw new Error(
+        '[SECURITY GATE] Build bloqueado: PUBLIC_TURNSTILE_SITE_KEY de produção real é obrigatório quando PUBLIC_ALLOW_INDEXING=true (chaves de teste 1x/2x/3x não são aceitas).'
+      );
+    }
+  }
+  if (!siteKey && !allowIndexing && requireTurnstile) {
+    return TURNSTILE_TEST_SITE_KEY;
   }
   return siteKey;
 }

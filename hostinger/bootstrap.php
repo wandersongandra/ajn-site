@@ -379,12 +379,31 @@ function ajn_check_anti_abuse(array $input, int $minSeconds = 2): void
 if (!function_exists('ajn_verify_turnstile')) {
 function ajn_verify_turnstile(array $config, mixed $token, ?string $expectedAction = null): void
 {
-    $secret = $config['turnstile_secret_key'] ?? '';
-    if (!is_string($secret) || strlen($secret) < 10 || !function_exists('curl_init')) {
+    $secret = trim((string) ($config['turnstile_secret_key'] ?? ($config['turnstile_secret'] ?? '')));
+    $env = strtolower(trim((string) ($config['environment'] ?? 'production')));
+    if ($secret === '' || strlen($secret) < 10 || ($env === 'production' && preg_match('/^[123]x/i', $secret) === 1)) {
         ajn_json(['error' => 'Verificação antispam ainda não configurada.'], 503);
     }
-    if (!is_string($token) || strlen($token) < 10 || strlen($token) > 2048) {
+    if (!is_string($token) || strlen(trim($token)) < 10 || strlen($token) > 2048) {
         ajn_json(['error' => 'Conclua a verificação antispam antes de enviar.'], 400);
+    }
+    $token = trim($token);
+    if ($env === 'production' && ($token === 'XXXX.DUMMY.TOKEN.XXXX' || stripos($token, 'DUMMY.TOKEN') !== false)) {
+        ajn_json(['error' => 'Verificação antispam inválida ou expirada.'], 400);
+    }
+    if ($env !== 'production') {
+        if ($secret === '1x0000000000000000000000000000000AA') {
+            if ($token === 'invalid-token' || str_starts_with($token, 'invalid')) {
+                ajn_json(['error' => 'Verificação antispam inválida ou expirada.'], 400);
+            }
+            return;
+        }
+        if ($secret === '2x0000000000000000000000000000000AA' || preg_match('/^[23]x/i', $secret) === 1) {
+            ajn_json(['error' => 'Verificação antispam inválida ou expirada.'], 400);
+        }
+    }
+    if (!function_exists('curl_init')) {
+        ajn_json(['error' => 'Verificação antispam ainda não configurada.'], 503);
     }
     $payload = ['secret' => $secret, 'response' => $token];
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
@@ -492,6 +511,19 @@ function ajn_password_options(): array
 function ajn_password_hash(string $password): string
 {
     return password_hash($password, ajn_password_algo(), ajn_password_options());
+}
+
+function ajn_dummy_password_hash(): string
+{
+    static $hash = null;
+    if (!is_string($hash)) {
+        // Hash Argon2id valido com os mesmos parametros de ajn_password_options() (m=65536,t=3,p=1).
+        $baseline = '$argon2id$v=19$m=65536,t=3,p=1$VWtlZkpodEtWTEl4a1FMUw$1ekwnPtcb7GFrkRlnFniXfdBydfu15hucXcXKQE28G4';
+        $hash = ajn_password_needs_rehash($baseline)
+            ? ajn_password_hash('ajn-constant-time-dummy-' . bin2hex(random_bytes(8)))
+            : $baseline;
+    }
+    return $hash;
 }
 
 function ajn_password_needs_rehash(string $hash): bool
@@ -766,23 +798,72 @@ function ajn_security_alert(PDO $db, array $config, string $event, string $summa
         $details = $resourceId;
         $resourceId = isset($details['user_id']) ? (string) $details['user_id'] : (isset($details['actor_id']) ? (string) $details['actor_id'] : null);
     }
-    ajn_audit($db, 'system', null, 'SECURITY_ALERT', $event, $resourceId, array_merge(['summary' => $summary], $details));
-    $recipient = trim((string) ($config['security_alert_email'] ?? ($config['smtp']['from'] ?? '')));
+    $mergedDetails = array_merge(['summary' => $summary], $details);
+    ajn_audit($db, 'system', null, 'SECURITY_ALERT', $event, $resourceId, $mergedDetails);
+    $recipient = trim((string) ($config['security_alert_email'] ?? ($config['smtp']['from'] ?? ($config['smtp']['from_email'] ?? ''))));
     if ($recipient !== '' && filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
         $ref = $resourceId ?? 'n/a';
+        $subject = '[ALERTA DE SEGURANCA AJN] ' . $event;
         $body = "Alerta de seguranca AJN Carreiras\n\nEvento: $event\nRecurso ID: $ref\nResumo: $summary\nData (UTC): " . gmdate('c');
-        @ajn_send_email($config, $recipient, '[ALERTA DE SEGURANCA AJN] ' . $event, $body);
+        $contextJson = ajn_sanitize_audit_details($mergedDetails);
+        try {
+            ajn_exec(
+                $db,
+                'INSERT INTO security_alert_queue (id,event_type,recipient_email,subject,body,context_json,status,attempts,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+                [ajn_uuid(), $event, $recipient, $subject, $body, $contextJson, 'pending', 0, time()]
+            );
+        } catch (Throwable) {
+            // Se a migration 006 ainda nao estiver aplicada, registra apenas na auditoria sem bloquear a requisicao.
+        }
     }
+}
+
+function ajn_process_security_alert_queue(PDO $db, array $config, int $limit = 50, bool $dryRun = false): array
+{
+    $limit = max(1, min(500, $limit));
+    $rows = ajn_list(
+        $db,
+        "SELECT * FROM security_alert_queue WHERE status='pending' AND attempts < 5 ORDER BY created_at ASC LIMIT ?",
+        [$limit]
+    );
+    if ($dryRun) {
+        return ['pending' => count($rows), 'sent' => 0, 'failed' => 0, 'items' => $rows];
+    }
+    $sent = 0;
+    $failed = 0;
+    $now = time();
+    foreach ($rows as $row) {
+        $ok = @ajn_send_email($config, (string) $row['recipient_email'], (string) $row['subject'], (string) $row['body']);
+        $attempts = ((int) ($row['attempts'] ?? 0)) + 1;
+        if ($ok) {
+            ajn_exec(
+                $db,
+                "UPDATE security_alert_queue SET status='sent',attempts=?,sent_at=?,last_error=NULL WHERE id=?",
+                [$attempts, $now, $row['id']]
+            );
+            $sent++;
+        } else {
+            $newStatus = $attempts >= 5 ? 'failed' : 'pending';
+            ajn_exec(
+                $db,
+                'UPDATE security_alert_queue SET status=?,attempts=?,last_error=? WHERE id=?',
+                [$newStatus, $attempts, 'Falha no envio SMTP', $row['id']]
+            );
+            $failed++;
+        }
+    }
+    return ['pending' => count($rows), 'sent' => $sent, 'failed' => $failed];
 }
 
 function ajn_email_configured(array $config): bool
 {
     $smtp = $config['smtp'] ?? null;
     if (!is_array($smtp)) return false;
-    foreach (['host', 'username', 'password', 'from'] as $key) {
-        if (!is_string($smtp[$key] ?? null) || trim($smtp[$key]) === '' || str_starts_with($smtp[$key], 'SUBSTITUIR_')) return false;
+    $from = $smtp['from'] ?? ($smtp['from_email'] ?? null);
+    foreach ([$smtp['host'] ?? null, $smtp['username'] ?? null, $smtp['password'] ?? null, $from] as $val) {
+        if (!is_string($val) || trim($val) === '' || str_starts_with($val, 'SUBSTITUIR_') || str_starts_with($val, 'SUBSTITUA_')) return false;
     }
-    return filter_var($smtp['from'], FILTER_VALIDATE_EMAIL) !== false &&
+    return filter_var($from, FILTER_VALIDATE_EMAIL) !== false &&
         !str_contains($smtp['host'], "\r") && !str_contains($smtp['host'], "\n");
 }
 
@@ -834,7 +915,8 @@ function ajn_send_email(array $config, string $recipient, string $subject, strin
     }
     $smtp = $config['smtp'];
     $host = trim($smtp['host']);
-    if ($host === '' || preg_match('/[\r\n\0\s]/', $host) || preg_match('/[\r\n\0]/', $recipient . $subject . $smtp['from'])) {
+    $from = trim((string) ($smtp['from'] ?? ($smtp['from_email'] ?? '')));
+    if ($host === '' || preg_match('/[\r\n\0\s]/', $host) || preg_match('/[\r\n\0]/', $recipient . $subject . $from)) {
         return false;
     }
     $port = (int) ($smtp['port'] ?? 465);
@@ -866,12 +948,12 @@ function ajn_send_email(array $config, string $recipient, string $subject, strin
         if (!ajn_smtp_command($socket, 'AUTH LOGIN', [334]) ||
             !ajn_smtp_command($socket, base64_encode($smtp['username']), [334]) ||
             !ajn_smtp_command($socket, base64_encode($smtp['password']), [235]) ||
-            !ajn_smtp_command($socket, 'MAIL FROM:<' . $smtp['from'] . '>', [250]) ||
+            !ajn_smtp_command($socket, 'MAIL FROM:<' . $from . '>', [250]) ||
             !ajn_smtp_command($socket, 'RCPT TO:<' . $recipient . '>', [250, 251]) ||
             !ajn_smtp_command($socket, 'DATA', [354])) return false;
         $safeBody = str_replace(["\r\n", "\r", "\n"], "\r\n", $body);
         $safeBody = preg_replace('/^\./m', '..', $safeBody) ?? $safeBody;
-        $message = 'From: AJN Carreiras <' . $smtp['from'] . ">\r\n" .
+        $message = 'From: AJN Carreiras <' . $from . ">\r\n" .
             'To: <' . $recipient . ">\r\n" .
             'Subject: ' . ajn_mime_header($subject) . "\r\n" .
             "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n" . $safeBody . "\r\n.";
@@ -882,6 +964,30 @@ function ajn_send_email(array $config, string $recipient, string $subject, strin
         fclose($socket);
     }
 }
+}
+
+if (!function_exists('ajn_config')) {
+    function ajn_config(): array
+    {
+        $envPath = getenv('AJN_CONFIG_PATH');
+        $configFile = (is_string($envPath) && $envPath !== '') ? $envPath : (__DIR__ . '/config.php');
+        if (!is_file($configFile)) {
+            if (PHP_SAPI === 'cli') {
+                fwrite(STDERR, "Instale config.php privado ou defina AJN_CONFIG_PATH.\n");
+                exit(1);
+            }
+            ajn_json(['error' => 'Configuração privada ausente.'], 503);
+        }
+        $cfg = require $configFile;
+        if (!is_array($cfg)) {
+            if (PHP_SAPI === 'cli') {
+                fwrite(STDERR, "Configuração privada inválida.\n");
+                exit(1);
+            }
+            ajn_json(['error' => 'Configuração do ambiente inválida.'], 503);
+        }
+        return $cfg;
+    }
 }
 
 if (!defined('AJN_DISABLE_AUTO_DISPATCH')) {

@@ -637,3 +637,264 @@
     transform: none !important;
   }
 }
+
+/* Utilitários semânticos para eliminar estilos inline e reduzir hashes CSP */
+.carreiras-section-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.carreiras-section-lead {
+  font-size: 0.9375rem;
+  color: var(--text-soft);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.carreiras-input--uf {
+  text-transform: uppercase;
+}
+
+.carreiras-file-drop label {
+  cursor: pointer;
+}
+
+.carreiras-file-drop [data-file-label] {
+  font-size: 0.875rem;
+  color: var(--brand-action);
+  font-weight: 500;
+}
+
+.carreiras-file-drop input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.carreiras-button--block {
+  width: 100%;
+}
+
+.carreiras-auth-card {
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+.carreiras-auth-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.carreiras-auth-card > p {
+  font-size: 0.875rem;
+  color: var(--text-soft);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.carreiras-auth-card .carreiras-field {
+  margin-bottom: 1.25rem;
+}
+
+.carreiras-input--mfa {
+  text-align: center;
+  letter-spacing: 0.2em;
+  font-family: monospace;
+}
+
+.carreiras-link-row {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.carreiras-link-button {
+  background: none;
+  border: none;
+  color: var(--brand-action, #166534);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.875rem;
+}
+
+.carreiras-link-button--muted {
+  color: var(--text-soft);
+}
+
+.admin-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin-bottom: 0.25rem;
+}
+
+.admin-header__meta {
+  font-size: 0.875rem;
+  color: var(--text-soft);
+}
+
+.admin-header__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.carreiras-nav-bar--tabs {
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+}
+
+.admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-toolbar__label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.admin-toolbar__select {
+  max-width: 380px;
+}
+
+.admin-toolbar__hint {
+  font-size: 0.8125rem;
+  color: var(--text-soft);
+}
+
+.admin-pane-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin: 0 0 1rem;
+  color: var(--ink);
+}
+
+.admin-toolbar .admin-pane-title {
+  margin: 0;
+}
+
+.admin-form-card {
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.admin-form-card--compact {
+  max-width: 600px;
+}
+
+.admin-form-card h4 {
+  font-size: 1.125rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+
+.carreiras-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.admin-pane-lead {
+  font-size: 0.875rem;
+  color: var(--text-soft);
+  margin-bottom: 1rem;
+}
+
+.carreiras-job-closed {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 4rem;
+}
+
+.carreiras-job-closed h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.carreiras-job-closed p {
+  font-size: 1.125rem;
+  color: var(--text-soft);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.carreiras-job-closed__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.carreiras-header--left {
+  text-align: left;
+  max-width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.carreiras-job-salary {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--brand-action);
+  margin-top: 0.5rem;
+}
+
+.carreiras-job-card-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.carreiras-job-section {
+  margin-bottom: 2rem;
+}
+
+.carreiras-job-section h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.carreiras-job-section p {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--text-soft);
+}
+
+.carreiras-job-section ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  line-height: 1.8;
+  color: var(--text-soft);
+}
+
+.carreiras-form-container--flush {
+  max-width: 100%;
+  margin: 0;
+}

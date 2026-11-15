@@ -37,38 +37,38 @@ const jsonLd = [
       </header>
 
       <!-- Cartão de Login Administrativo -->
-      <div class="carreiras-form-container" data-admin-login-card style="max-width: 480px; margin-inline: auto;">
-        <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+      <div class="carreiras-form-container carreiras-auth-card" data-admin-login-card>
+        <h2>
           Entrar na área de recrutamento
         </h2>
-        <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
+        <p>
           Entre com seu e-mail corporativo e senha. O código de autenticação será solicitado quando necessário.
         </p>
 
         <div class="carreiras-notice" data-login-notice role="alert"></div>
 
         <form data-admin-login-form>
-          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+          <div class="carreiras-field">
             <label class="carreiras-label" for="admin-email">E-mail corporativo</label>
             <input class="carreiras-input" id="admin-email" name="email" type="email" required autocomplete="username" placeholder="nome@ajnengenharia.com.br" />
           </div>
 
-          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+          <div class="carreiras-field">
             <label class="carreiras-label" for="admin-password">Senha de acesso</label>
             <input class="carreiras-input" id="admin-password" name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="Sua senha" />
           </div>
 
-          <div class="carreiras-field" data-mfa-field style="display: none; margin-bottom: 1.25rem;">
+          <div class="carreiras-field" data-mfa-field style="display: none;">
             <label class="carreiras-label" for="admin-mfa">Código do aplicativo autenticador</label>
-            <input class="carreiras-input" id="admin-mfa" name="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" style="text-align: center; letter-spacing: 0.2em; font-family: monospace;" />
+            <input class="carreiras-input carreiras-input--mfa" id="admin-mfa" name="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" />
           </div>
 
-          <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
+          <button class="carreiras-button carreiras-button--primary carreiras-button--block" type="submit">
             Entrar no painel
           </button>
 
-          <div style="margin-top: 1rem; text-align: center;">
-            <button class="carreiras-link-button" data-show-forgot-btn type="button" style="background: none; border: none; color: var(--brand-action, #166534); cursor: pointer; text-decoration: underline; font-size: 0.875rem;">
+          <div class="carreiras-link-row">
+            <button class="carreiras-link-button" data-show-forgot-btn type="button">
               Esqueceu sua senha de acesso?
             </button>
           </div>
@@ -76,17 +76,17 @@ const jsonLd = [
 
         <!-- Formulário de Solicitação de Redefinição de Senha -->
         <form data-admin-forgot-form style="display: none;">
-          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+          <div class="carreiras-field">
             <label class="carreiras-label" for="admin-forgot-email">E-mail corporativo</label>
             <input class="carreiras-input" id="admin-forgot-email" name="forgotEmail" type="email" required placeholder="nome@ajnengenharia.com.br" />
           </div>
 
-          <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
+          <button class="carreiras-button carreiras-button--primary carreiras-button--block" type="submit">
             Enviar instruções por e-mail
           </button>
 
-          <div style="margin-top: 1rem; text-align: center;">
-            <button class="carreiras-link-button" data-show-login-btn type="button" style="background: none; border: none; color: var(--text-soft); cursor: pointer; text-decoration: underline; font-size: 0.875rem;">
+          <div class="carreiras-link-row">
+            <button class="carreiras-link-button carreiras-link-button--muted" data-show-login-btn type="button">
               ← Voltar para o formulário de login
             </button>
           </div>
@@ -94,28 +94,28 @@ const jsonLd = [
       </div>
 
       <!-- Cartão de Redefinição com Token (Ativado via ?resetToken=...) -->
-      <div class="carreiras-form-container" data-admin-reset-card style="display: none; max-width: 480px; margin-inline: auto;">
-        <h2 style="font-family: var(--font-display); font-size: 1.375rem; color: var(--ink); margin-bottom: 0.5rem; text-align: center;">
+      <div class="carreiras-form-container carreiras-auth-card" data-admin-reset-card style="display: none;">
+        <h2>
           Redefinir senha
         </h2>
-        <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1.5rem; text-align: center;">
+        <p>
           Crie uma nova senha segura para restaurar seu acesso administrativo.
         </p>
 
         <div class="carreiras-notice" data-reset-notice role="alert"></div>
 
         <form data-admin-reset-form>
-          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+          <div class="carreiras-field">
             <label class="carreiras-label" for="admin-new-password">Nova senha (mínimo de 16 caracteres)</label>
             <input class="carreiras-input" id="admin-new-password" name="newPassword" type="password" required minlength="16" placeholder="••••••••••••" />
           </div>
 
-          <div class="carreiras-field" style="margin-bottom: 1.25rem;">
+          <div class="carreiras-field">
             <label class="carreiras-label" for="admin-confirm-password">Confirmar nova senha</label>
             <input class="carreiras-input" id="admin-confirm-password" name="confirmPassword" type="password" required minlength="16" placeholder="••••••••••••" />
           </div>
 
-          <button class="carreiras-button carreiras-button--primary" style="width: 100%; margin-top: 0.5rem;" type="submit">
+          <button class="carreiras-button carreiras-button--primary carreiras-button--block" type="submit">
             Salvar nova senha
           </button>
         </form>
@@ -125,15 +125,15 @@ const jsonLd = [
       <div data-admin-dashboard style="display: none;">
         <div class="admin-header">
           <div>
-            <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); margin-bottom: 0.25rem;">
+            <h2>
               Olá, <span data-admin-user-name>recrutador</span>
             </h2>
-            <div style="font-size: 0.875rem; color: var(--text-soft);">
+            <div class="admin-header__meta">
               Perfil ativo: <span class="carreiras-badge carreiras-badge--primary" data-admin-user-role>recruiter</span>
             </div>
           </div>
 
-          <div style="display: flex; gap: 0.75rem;">
+          <div class="admin-header__actions">
             <a class="carreiras-button carreiras-button--secondary" href="/carreiras/" target="_blank" rel="noopener noreferrer">
               Ver portal de vagas
             </a>
@@ -144,7 +144,7 @@ const jsonLd = [
         </div>
 
         <!-- Abas do Dashboard -->
-        <div class="carreiras-nav-bar" style="justify-content: flex-start; margin-bottom: 2rem;">
+        <div class="carreiras-nav-bar carreiras-nav-bar--tabs">
           <button class="carreiras-nav-link" data-admin-tab="pipeline" aria-selected="true" type="button">
             Etapas de seleção
           </button>
@@ -167,16 +167,16 @@ const jsonLd = [
 
         <!-- Painel 1: Pipeline & Kanban -->
         <div data-admin-pane="pipeline">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <label for="pipeline-select" style="font-weight: 600; font-size: 0.9375rem; color: var(--ink);">
+          <div class="admin-toolbar">
+            <div class="admin-toolbar__group">
+              <label class="admin-toolbar__label" for="pipeline-select">
                 Selecione uma vaga:
               </label>
-              <select class="carreiras-select" id="pipeline-select" data-pipeline-job-select style="max-width: 380px;">
+              <select class="carreiras-select admin-toolbar__select" id="pipeline-select" data-pipeline-job-select>
                 <option value="">Carregando vagas…</option>
               </select>
             </div>
-            <div style="font-size: 0.8125rem; color: var(--text-soft);">
+            <div class="admin-toolbar__hint">
               A avaliação de candidatos é feita pela equipe de recrutamento.
             </div>
           </div>
@@ -225,7 +225,7 @@ const jsonLd = [
 
         <!-- Painel 2: Candidatos & Currículos -->
         <div data-admin-pane="candidates" style="display: none;">
-          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
+          <h3 class="admin-pane-title">
             Candidatos e banco de talentos
           </h3>
           <div class="carreiras-notice" data-candidates-notice role="alert" aria-live="polite"></div>
@@ -249,8 +249,8 @@ const jsonLd = [
 
         <!-- Painel 3: Vagas Cadastradas -->
         <div data-admin-pane="jobs" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-            <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin: 0; color: var(--ink);">
+          <div class="admin-toolbar">
+            <h3 class="admin-pane-title">
               Vagas cadastradas
             </h3>
             <button class="carreiras-button carreiras-button--primary" data-toggle-job-form type="button">
@@ -258,8 +258,8 @@ const jsonLd = [
             </button>
           </div>
           <div class="carreiras-notice" data-jobs-notice role="alert"></div>
-          <div class="carreiras-form-container" data-job-form-card style="display: none; max-width: 760px; margin-bottom: 2rem;">
-            <h4 style="font-size: 1.125rem; margin-top: 0; margin-bottom: 1rem; color: var(--ink);" data-job-form-title>Nova vaga</h4>
+          <div class="carreiras-form-container admin-form-card" data-job-form-card style="display: none;">
+            <h4 data-job-form-title>Nova vaga</h4>
             <form data-job-form>
               <input type="hidden" name="jobId" />
               <div class="carreiras-form-grid">
@@ -319,7 +319,7 @@ const jsonLd = [
                   <label class="carreiras-label" for="admin-job-requirements">Requisitos (um por linha) *</label>
                   <textarea class="carreiras-textarea" id="admin-job-requirements" name="requirements" required rows="4"></textarea>
                 </div>
-                <div class="carreiras-form-full" style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+                <div class="carreiras-form-full carreiras-form-actions">
                   <button class="carreiras-button carreiras-button--primary" type="submit" data-job-form-submit>Salvar vaga</button>
                   <button class="carreiras-button carreiras-button--secondary" data-cancel-job-form type="button">Cancelar</button>
                 </div>
@@ -348,10 +348,10 @@ const jsonLd = [
 
         <!-- Painel 4: Gestão LGPD -->
         <div data-admin-pane="lgpd" style="display: none;">
-          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
+          <h3 class="admin-pane-title">
             Solicitações de titulares de dados
           </h3>
-          <p style="font-size: 0.875rem; color: var(--text-soft); margin-bottom: 1rem;">
+          <p class="admin-pane-lead">
             Confira os dados e o fundamento de cada solicitação antes de executar uma exclusão. A remoção de currículos pode ser irreversível.
           </p>
           <div class="carreiras-notice" data-lgpd-notice role="status" aria-live="polite"></div>
@@ -375,7 +375,7 @@ const jsonLd = [
 
         <!-- Painel 5: Trilha de Auditoria -->
         <div data-admin-pane="audit" style="display: none;">
-          <h3 style="font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 1rem; color: var(--ink);">
+          <h3 class="admin-pane-title">
             Histórico de ações administrativas
           </h3>
           <div class="carreiras-notice" data-audit-notice role="alert" aria-live="polite"></div>
@@ -399,8 +399,8 @@ const jsonLd = [
 
         <!-- Painel 6: Gestão de Contas de Recrutadores (Apenas Administradores) -->
         <div data-admin-pane="users" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-            <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin: 0;">
+          <div class="admin-toolbar">
+            <h3 class="admin-pane-title">
               Equipe de recrutamento e permissões
             </h3>
             <button class="carreiras-button carreiras-button--primary" data-toggle-create-user-btn type="button">
@@ -411,8 +411,8 @@ const jsonLd = [
           <div class="carreiras-notice" data-users-notice role="alert"></div>
 
           <!-- Formulário de Criação de Usuário (Oculto por padrão) -->
-          <div class="carreiras-form-container" data-create-user-card style="display: none; max-width: 600px; margin-bottom: 2rem;">
-            <h4 style="font-size: 1.125rem; margin-top: 0; margin-bottom: 1rem; color: var(--ink);">Novo acesso administrativo</h4>
+          <div class="carreiras-form-container admin-form-card admin-form-card--compact" data-create-user-card style="display: none;">
+            <h4>Novo acesso administrativo</h4>
             <form data-create-user-form>
               <div class="carreiras-form-grid">
                 <div class="carreiras-field">
@@ -435,7 +435,7 @@ const jsonLd = [
                   <label class="carreiras-label" for="new-user-password">Senha provisória *</label>
                   <input class="carreiras-input" id="new-user-password" name="password" type="password" required minlength="16" placeholder="Mínimo de 16 caracteres" />
                 </div>
-                <div class="carreiras-form-full" style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+                <div class="carreiras-form-full carreiras-form-actions">
                   <button class="carreiras-button carreiras-button--primary" type="submit">Salvar usuário</button>
                   <button class="carreiras-button carreiras-button--secondary" data-cancel-create-user type="button">Cancelar</button>
                 </div>

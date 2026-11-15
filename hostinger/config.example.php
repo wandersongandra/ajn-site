@@ -8,10 +8,11 @@ declare(strict_types=1);
  * NUNCA versione ajn-carreiras-config.php com segredos reais.
  */
 return [
-    'app_url' => 'https://ajnsolucoes.com',
+    'environment' => 'production',
+    'app_url' => 'https://ajnengenharia.com.br',
     'allowed_origins' => [
-        'https://ajnsolucoes.com',
-        'https://www.ajnsolucoes.com',
+        'https://ajnengenharia.com.br',
+        'https://www.ajnengenharia.com.br',
     ],
     // Chave primaria de 32 bytes em hex (64 caracteres hexadecimais) usada para:
     // - libsodium crypto_secretbox (segredo MFA TOTP, CPF e telefone em repouso)
@@ -20,26 +21,22 @@ return [
     'encryption_key' => 'SUBSTITUA_POR_64_CARACTERES_HEXADECIMAIS_CSPRNG',
     // Chaves anteriores para rotacao sem perda de leitura (opcional):
     'previous_encryption_keys' => [],
-    'private_storage_dir' => dirname(__DIR__) . '/ajn-carreiras-private',
+    'resume_directory' => dirname(__DIR__) . '/ajn-carreiras-private/resumes',
     'error_log_path' => dirname(__DIR__) . '/ajn-carreiras-private/php-errors.log',
-    'security_alert_email' => 'seguranca@ajnsolucoes.com',
+    'security_alert_email' => 'seguranca@ajnengenharia.com.br',
     'retention' => [
         'candidate_days' => 365,
         'talent_pool_days' => 730,
         'audit_log_days' => 1825,
     ],
-    // Cloudflare Turnstile (obrigatorio em producao)
-    'turnstile_secret' => 'SUBSTITUA_PELO_TURNSTILE_SECRET_KEY',
-    'turnstile_expected_hostnames' => [
-        'ajnsolucoes.com',
-        'www.ajnsolucoes.com',
-    ],
+    // Cloudflare Turnstile (obrigatorio em producao; nunca usar chaves 1x/2x/3x em producao)
+    'turnstile_secret_key' => 'SUBSTITUA_PELO_TURNSTILE_SECRET_KEY',
     // Banco de dados MySQL (usuario de runtime apenas com SELECT, INSERT, UPDATE, DELETE)
     'database' => [
         'host' => '127.0.0.1',
         'port' => 3306,
         'name' => 'u000000000_ajn_carreiras',
-        'username' => 'u000000000_ajn_app',
+        'username' => 'u000000000_ajn_app_rw',
         'password' => 'SUBSTITUA_PELA_SENHA_DO_USUARIO_DE_RUNTIME',
     ],
     // SMTP para verificacao de candidatos e alertas de seguranca
@@ -47,9 +44,8 @@ return [
         'host' => 'smtp.hostinger.com',
         'port' => 465,
         'encryption' => 'ssl',
-        'username' => 'carreiras@ajnsolucoes.com',
+        'username' => 'carreiras@ajnengenharia.com.br',
         'password' => 'SUBSTITUA_PELA_SENHA_SMTP',
-        'from_email' => 'carreiras@ajnsolucoes.com',
-        'from_name' => 'AJN Carreiras',
+        'from' => 'carreiras@ajnengenharia.com.br',
     ],
 ];

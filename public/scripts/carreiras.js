@@ -511,11 +511,7 @@ function initApplicationForm() {
 
     // Obtenção do token Turnstile do widget ou input hidden
     const turnstileToken = getFormTurnstileToken(form, formData);
-    if (!turnstileToken) {
-      showNotice(noticeBox, 'A verificação antispam ainda não foi concluída. Tente novamente em instantes.', 'error');
-      return;
-    }
-    formData.set('turnstileToken', String(turnstileToken));
+    formData.set('turnstileToken', String(turnstileToken || ''));
     formData.set('formStartedAt', String(form.dataset.formStartedAt || (Date.now() - 5000)));
 
     const endpoint = form.getAttribute('action') || '/api/applications/talent-pool';
@@ -643,6 +639,7 @@ function initTrackingForm() {
     } catch (err) {
       showNotice(noticeBox, 'Erro ao consultar o servidor. Tente novamente mais tarde.', 'error');
     } finally {
+      resetTurnstileWidget(form);
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Consultar Status';
