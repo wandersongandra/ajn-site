@@ -53,7 +53,23 @@ test('keeps career routes on Hostinger PHP same-origin, no Worker redirect', () 
 		'RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]',
 	];
 	for (const expectedRule of expectedRules) {
-		assert.ok(configLines.some((line) => line === expectedRule));
+		assert.ok(configLines.some((line) => line === expectedRule), `Missing RewriteRule: ${expectedRule}`);
 	}
 	assert.equal(config.includes('carreiras.ajnengenharia.com.br'), false);
+});
+
+test('preserves mod_alias RedirectMatch rules for sitemap, informacoes, and retired electrical/elevator routes', async () => {
+	const astroConfig = await readFile('astro.config.mjs', 'utf8');
+	const servicosRedirects = [...astroConfig.matchAll(/'([^']+)':\s*\{\s*destination:\s*'\/servicos',\s*status:\s*301\s*\}/g)]
+		.map(([, path]) => path);
+	assert.equal(servicosRedirects.length, 49);
+	assert.ok(configLines.includes('RedirectMatch 301 ^/sitemap\\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml'));
+	assert.ok(configLines.includes('RedirectMatch 301 ^/informacoes/?$ /mapa-site'));
+	for (const route of servicosRedirects) {
+		const escaped = route.replace(/\//g, '/');
+		assert.ok(
+			configLines.includes(`RedirectMatch 301 ^${escaped}/?$ /servicos`),
+			`Missing RedirectMatch 301 for ${route}`
+		);
+	}
 });

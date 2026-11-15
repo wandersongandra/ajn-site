@@ -27,7 +27,7 @@ AddType text/plain .txt
   RewriteEngine On
 
   # Force canonical host (no-www) and HTTPS in a single hop for www requests
-  RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::\d+)?$ [NC]
+  RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::[0-9]+)?$ [NC]
   RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
 
   # Force HTTPS on canonical host
@@ -41,13 +41,10 @@ AddType text/plain .txt
   # Block PHP execution anywhere except the single API entrypoint (api/index.php)
   RewriteRule ^(?!api/index\.php$).*\.php$ - [F,L,NC]
 
-  # Route /api/* to the hardened PHP entrypoint
-  RewriteRule ^api(?:/.*)?$ api/index.php [L,QSA]
-
-  # Route dynamic public job detail slugs /carreiras/{slug} when no static directory exists
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^carreiras/([a-z0-9-]+)/?$ /api/index.php [L,QSA]
+  # Route /api/* and dynamic job slugs to the hardened PHP entrypoint
+  RewriteRule ^api/index\.php$ - [L]
+  RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]
+  RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]
 
   # Legacy WordPress permanent redirects (301)
   RewriteRule ^index\.php$ / [R=301,L]
@@ -73,7 +70,72 @@ AddType text/plain .txt
 </IfModule>
 
 ErrorDocument 404 /404.html
-RedirectMatch 301 ^/informacoes/?$ /mapa-site/
+
+# Redirecionamento permanente de Informações e URLs legadas; ocorre no servidor antes do fallback Astro.
+<IfModule mod_alias.c>
+  # Compatibilidade com o sitemap legado; enviar crawlers ao índice atual.
+  RedirectMatch 301 ^/sitemap\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml
+  RedirectMatch 301 ^/informacoes/?$ /mapa-site
+
+  # URLs editoriais do WordPress ainda rastreadas no Search Console (nov/2026).
+  RedirectMatch 301 ^/blog/avcb-o-que-voce-precisa-saber-sobre-o-auto-de-vistoria-do-corpo-de-bombeiros/?$ /blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/
+  RedirectMatch 301 ^/blog/ltcat-evento-esocial-o-que-voce-precisa-saber-para-estar-atualizado/?$ /ltcat-evento-esocial/
+  RedirectMatch 301 ^/blog/sistemas-contra-incendio-bh-o-que-voce-precisa-saber/?$ /sistemas-incendio-bh/
+
+  # Endereços legados de regularização AVCB com serviço equivalente ativo.
+  RedirectMatch 301 ^/(regularizacao-avcb|avcb-auto-vistoria-do-corpo-bombeiros|renovacao-avcb-preco|renovacao-avcb|orcamento-avcb|avcb-custo|laudo-tecnico-avcb|avcb-orcamento|empresa-avcb)/?$ /servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/
+
+  # Remoção 2026-10: elétrica, elevadores, SPDA e cabeamento
+  RedirectMatch 301 ^/analise-projetos-eletricos-bh/?$ /servicos
+  RedirectMatch 301 ^/elevacao-vertical/?$ /servicos
+  RedirectMatch 301 ^/elevador-bh/?$ /servicos
+  RedirectMatch 301 ^/empresa-elevador/?$ /servicos
+  RedirectMatch 301 ^/empresa-elevador-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/empresa-escada-rolante/?$ /servicos
+  RedirectMatch 301 ^/empresa-plataforma-elevatoria/?$ /servicos
+  RedirectMatch 301 ^/empresa-projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/empresa-projeto-eletrico-bh/?$ /servicos
+  RedirectMatch 301 ^/empresas-elevadores-bh/?$ /servicos
+  RedirectMatch 301 ^/empresas-manutencao-elevadores-bh/?$ /servicos
+  RedirectMatch 301 ^/escada-rolante/?$ /servicos
+  RedirectMatch 301 ^/escada-rolante-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/escada-rolante-bh/?$ /servicos
+  RedirectMatch 301 ^/instalacao-predial-eletrica/?$ /servicos
+  RedirectMatch 301 ^/instalacoes-eletricas-projeto/?$ /servicos
+  RedirectMatch 301 ^/manutencao-elevadores-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/manutencao-elevadores-bh/?$ /servicos
+  RedirectMatch 301 ^/orcamento-projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/plataforma-acessibilidade/?$ /servicos
+  RedirectMatch 301 ^/plataforma-acessibilidade-bh/?$ /servicos
+  RedirectMatch 301 ^/plataforma-acessibilidade-preco/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria-bh/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria-preco/?$ /servicos
+  RedirectMatch 301 ^/preco-projetos-eletricos/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-bh/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-comercial/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-industrial/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-industrial-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-industrial-preco/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-preco/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial-completo/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial-orcamento/?$ /servicos
+  RedirectMatch 301 ^/projeto-instalacao-eletrica-residencial/?$ /servicos
+  RedirectMatch 301 ^/projeto-instalacoes-eletricas/?$ /servicos
+  RedirectMatch 301 ^/projetos-eletricos-orcamento/?$ /servicos
+  RedirectMatch 301 ^/projetos-eletricos-prediais/?$ /servicos
+  RedirectMatch 301 ^/projetos-engenharia-eletrica/?$ /servicos
+  RedirectMatch 301 ^/projetos-instalacoes-eletricas-prediais/?$ /servicos
+  RedirectMatch 301 ^/servico-projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/projetos-spda/?$ /servicos
+  RedirectMatch 301 ^/projetos-cabeamento-estruturado/?$ /servicos
+  RedirectMatch 301 ^/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia/?$ /servicos
+</IfModule>
 
 <IfModule mod_php.c>
   php_value session.use_strict_mode 1
