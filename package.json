@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "postbuild": "node scripts/sync-worker-assets.mjs",
+    "postbuild": "node scripts/sync-csp-style-hashes.mjs && node scripts/sync-worker-assets.mjs",
     "check": "astro check",
     "preview": "astro preview",
     "pack:hostinger": "node scripts/prepare-hostinger-deploy.mjs",

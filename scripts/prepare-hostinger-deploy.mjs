@@ -13,6 +13,8 @@ const PRIVATE_RUNTIME_FILES = [
   'verify-audit-chain.php',
   'purge-expired-data.php',
   'migrate-legacy-data.php',
+  'unlock-admin.php',
+  'send-security-alerts.php',
   'config.example.php',
 ];
 
@@ -22,6 +24,7 @@ const MIGRATION_FILES = [
   '003_least_privilege.sql',
   '004_indexes.sql',
   '005_security_hardening.sql',
+  '006_security_alerts_and_ip_locks.sql',
 ];
 
 const FORBIDDEN_IN_PUBLIC_HTML = [
@@ -35,6 +38,8 @@ const FORBIDDEN_IN_PUBLIC_HTML = [
   'verify-audit-chain.php',
   'purge-expired-data.php',
   'migrate-legacy-data.php',
+  'unlock-admin.php',
+  'send-security-alerts.php',
   'bootstrap.php',
   'admin.php',
   'applications.php',
@@ -80,9 +85,22 @@ export function inspectDistBuild(distDir) {
 
   const contactMatch = contactHtml.match(/data-contact-endpoint="([^"]*)"/i);
   const contactEndpoint = contactMatch?.[1] ?? '';
-  const turnstileEnabled = /class="cf-turnstile"/i.test(talentHtml);
+  const hasTurnstileWidget = /class="cf-turnstile"/i.test(talentHtml);
+  const siteKeyMatch = talentHtml.match(
+    /class="cf-turnstile"[^>]*data-sitekey="([^"]*)"|data-sitekey="([^"]*)"[^>]*class="cf-turnstile"/i
+  );
+  const turnstileSiteKey = (siteKeyMatch?.[1] ?? siteKeyMatch?.[2] ?? '').trim();
+  const isTurnstileTestKey = /^(1x|2x|3x)/i.test(turnstileSiteKey);
+  const turnstileEnabled = hasTurnstileWidget && Boolean(turnstileSiteKey) && !isTurnstileTestKey;
 
-  return { canonicalOrigin, indexingAllowed, contactEndpoint, turnstileEnabled };
+  return {
+    canonicalOrigin,
+    indexingAllowed,
+    contactEndpoint,
+    turnstileEnabled,
+    turnstileSiteKey,
+    isTurnstileTestKey,
+  };
 }
 
 function buildChecklistMarkdown(summary) {
@@ -203,19 +221,25 @@ php verify-audit-chain.php
 export function prepareHostingerDeploy({
   rootDir = process.cwd(),
   outputDir = resolve(rootDir, 'output', 'hostinger-deploy'),
-  requireIndexing = false,
-  requireTurnstile = false,
+  requireIndexing = true,
+  requireTurnstile = true,
 } = {}) {
   const distDir = resolve(rootDir, 'dist');
   const hostingerDir = resolve(rootDir, 'hostinger');
   const migrationsDir = join(hostingerDir, 'migrations');
 
   const buildSummary = inspectDistBuild(distDir);
+  console.log(
+    `[pack:hostinger] Origem: ${buildSummary.canonicalOrigin} | Indexação: ${buildSummary.indexingAllowed} | Contato: ${buildSummary.contactEndpoint} | Turnstile no HTML: ${buildSummary.turnstileEnabled}`
+  );
   if (requireIndexing && !buildSummary.indexingAllowed) {
     throw new Error('Pacote de produção rejeitado: Indexação está em false (noindex / Disallow).');
   }
   if (requireTurnstile && !buildSummary.turnstileEnabled) {
-    throw new Error('Pacote de produção rejeitado: Turnstile no HTML está em false.');
+    const reason = buildSummary.isTurnstileTestKey
+      ? `chave de teste Turnstile (${buildSummary.turnstileSiteKey}) não é permitida em produção`
+      : 'Turnstile no HTML está em false';
+    throw new Error(`Pacote de produção rejeitado: ${reason}.`);
   }
   assertRequiredFiles(hostingerDir, [...PRIVATE_RUNTIME_FILES, 'resumes-directory.htaccess'], 'hostinger');
   assertRequiredFiles(migrationsDir, MIGRATION_FILES, 'hostinger/migrations');
