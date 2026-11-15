@@ -69,6 +69,9 @@ const jsonLd = [
         <div class="carreiras-notice" data-notice role="alert"></div>
 
         <form data-tracking-form>
+          <div class="sr-only" aria-hidden="true">
+            <label>Não preencha este campo <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 240px;">
               <label class="sr-only" for="track-code-input">Código de acompanhamento</label>
@@ -87,7 +90,7 @@ const jsonLd = [
             </button>
           </div>
           {TURNSTILE_SITE_KEY ? (
-            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" style="margin-top: 1rem;"></div>
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="track" data-theme="light" style="margin-top: 1rem;"></div>
           ) : (
             <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
           )}
@@ -130,6 +133,9 @@ const jsonLd = [
         </p>
 
         <form data-recovery-form>
+          <div class="sr-only" aria-hidden="true">
+            <label>Não preencha este campo <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
           <div class="carreiras-notice" data-notice role="alert" aria-live="polite"></div>
           <div class="carreiras-form-grid">
             <div class="carreiras-field">
@@ -146,7 +152,7 @@ const jsonLd = [
             </div>
             <div class="carreiras-field carreiras-form-full">
               {TURNSTILE_SITE_KEY ? (
-                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="recover" data-theme="light"></div>
               ) : (
                 <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
               )}
@@ -170,6 +176,9 @@ const jsonLd = [
         </p>
 
         <form data-lgpd-form>
+          <div class="sr-only" aria-hidden="true">
+            <label>Não preencha este campo <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
           <div class="carreiras-form-grid">
             <div class="carreiras-field">
               <label class="carreiras-label" for="lgpd-email">E-mail Cadastrado *</label>
@@ -188,7 +197,7 @@ const jsonLd = [
 
             <div class="carreiras-field carreiras-form-full">
               {TURNSTILE_SITE_KEY ? (
-                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+                <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="lgpd" data-theme="light"></div>
               ) : (
                 <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
               )}

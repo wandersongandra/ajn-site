@@ -1,121 +1,145 @@
-# Runtime hardening for Apache-compatible hosting (Hostinger/LiteSpeed).
-# O site institucional Astro permanece estático. Somente a API e as páginas
-# dinâmicas de vagas são executadas pelo PHP da mesma hospedagem.
-Options -Indexes
+# ============================================================================
+# Apache/.htaccess baseline for Hostinger production
+# Canonical target: https://ajnengenharia.com.br
+# ============================================================================
 
-<FilesMatch "^\.(?!well-known)">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
-    </IfModule>
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+
+AddDefaultCharset UTF-8
+AddType image/svg+xml .svg .svgz
+AddType image/webp .webp
+AddType image/avif .avif
+AddType font/woff2 .woff2
+AddType text/plain .txt
+
+<FilesMatch "(?i:(?:^composer\.(?:json|lock)$|^package(?:-lock)?\.json$|\.(?:sql|env|md|log|bak|zip|ini|sh|phar)))$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
 </FilesMatch>
 
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::[0-9]+)?$ [NC]
-    RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
+  RewriteEngine On
 
-    # Bloqueia arquivos e diretórios ocultos (exceto validação ACME /.well-known).
-    RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L]
+  # Force canonical host (no-www) and HTTPS in a single hop for www requests
+  RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::\d+)?$ [NC]
+  RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
 
-    # API same-origin: o bootstrap privado falha fechado até configuração do
-    # banco/segredos. Evita loop ao reescrever a própria entrada PHP.
-    RewriteRule ^api/index\.php$ - [L]
-    RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]
+  # Force HTTPS on canonical host
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+  RewriteRule ^(.*)$ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
 
-    # Vagas individuais recebem status HTTP/SEO reais via PHP. Páginas
-    # estáticas (talentos, acompanhamento e vaga) continuam com Astro.
-    RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]
+  # Block hidden files and directories (.git, .env, etc.), except /.well-known/
+  RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+  # Block PHP execution anywhere except the single API entrypoint (api/index.php)
+  RewriteRule ^(?!api/index\.php$).*\.php$ - [F,L,NC]
+
+  # Route /api/* to the hardened PHP entrypoint
+  RewriteRule ^api(?:/.*)?$ api/index.php [L,QSA]
+
+  # Route dynamic public job detail slugs /carreiras/{slug} when no static directory exists
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^carreiras/([a-z0-9-]+)/?$ /api/index.php [L,QSA]
+
+  # Legacy WordPress permanent redirects (301)
+  RewriteRule ^index\.php$ / [R=301,L]
+  RewriteRule ^home/?$ / [R=301,L]
+  RewriteRule ^empresa/?$ /sobre/ [R=301,L]
+  RewriteRule ^quem-somos/?$ /sobre/ [R=301,L]
+  RewriteRule ^institucional/?$ /sobre/ [R=301,L]
+  RewriteRule ^atuacao/?$ /servicos/ [R=301,L]
+  RewriteRule ^areas-de-atuacao/?$ /servicos/ [R=301,L]
+  RewriteRule ^nossos-servicos/?$ /servicos/ [R=301,L]
+  RewriteRule ^obras/?$ /portfolio/ [R=301,L]
+  RewriteRule ^projetos/?$ /portfolio/ [R=301,L]
+  RewriteRule ^cases/?$ /portfolio/ [R=301,L]
+  RewriteRule ^fale-conosco/?$ /contato/ [R=301,L]
+  RewriteRule ^trabalhe-conosco/?$ /carreiras/ [R=301,L]
+  RewriteRule ^vagas/?$ /carreiras/ [R=301,L]
+  RewriteRule ^privacidade/?$ /politica-de-privacidade/ [R=301,L]
+  RewriteRule ^lgpd/?$ /politica-de-privacidade/ [R=301,L]
+  RewriteRule ^termos/?$ /termos-de-uso/ [R=301,L]
+
+  # Explicit gone responses for retired WordPress system paths
+  RewriteRule ^(?:wp-admin|wp-login\.php|xmlrpc\.php|wp-json)(?:/.*)?$ - [G,L,NC]
 </IfModule>
-# Redirecionamento permanente de Informações; ocorre no servidor antes do fallback Astro.
-<IfModule mod_alias.c>
-    # Compatibilidade com o sitemap legado; enviar crawlers ao índice atual.
-    RedirectMatch 301 ^/sitemap\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml
-    RedirectMatch 301 ^/informacoes/?$ /mapa-site
 
-    # URLs editoriais do WordPress ainda rastreadas no Search Console (nov/2026).
-    # Redirecionar apenas quando há conteúdo atual equivalente; páginas alheias
-    # à atuação da AJN e arquivos de plugins antigos continuam retornando 404.
-    RedirectMatch 301 ^/blog/avcb-o-que-voce-precisa-saber-sobre-o-auto-de-vistoria-do-corpo-de-bombeiros/?$ /blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/
-    RedirectMatch 301 ^/blog/ltcat-evento-esocial-o-que-voce-precisa-saber-para-estar-atualizado/?$ /ltcat-evento-esocial/
-    RedirectMatch 301 ^/blog/sistemas-contra-incendio-bh-o-que-voce-precisa-saber/?$ /sistemas-incendio-bh/
+ErrorDocument 404 /404.html
+RedirectMatch 301 ^/informacoes/?$ /mapa-site/
 
-    # Endereços legados de regularização AVCB com serviço equivalente ativo.
-    RedirectMatch 301 ^/(regularizacao-avcb|avcb-auto-vistoria-do-corpo-bombeiros|renovacao-avcb-preco|renovacao-avcb|orcamento-avcb|avcb-custo|laudo-tecnico-avcb|avcb-orcamento|empresa-avcb)/?$ /servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/
+<IfModule mod_php.c>
+  php_value session.use_strict_mode 1
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value expose_php 0
+  php_value display_errors 0
 </IfModule>
-# O painel administrativo nao pode ficar em cache de navegador nem de proxy
-# compartilhado. O HTML em si nao carrega dado, mas a pagina indica a existencia
-# do painel e pode voltar pelo historico em estacao compartilhada.
-# Usa SetEnvIf em vez de <If> porque a diretiva <If> depende de Apache 2.4 e o
-# host roda LiteSpeed; se nao fosse reconhecida, derrubaria o site com HTTP 500.
+<IfModule mod_php8.c>
+  php_value session.use_strict_mode 1
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value expose_php 0
+  php_value display_errors 0
+</IfModule>
+<IfModule lsapi_module>
+  php_value session.use_strict_mode 1
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value expose_php 0
+  php_value display_errors 0
+</IfModule>
+
 <IfModule mod_setenvif.c>
-    SetEnvIf Request_URI "^/admin(/|$)" AJN_ADMIN_AREA=1
-</IfModule>
-# Keep this file in the published output; verify the headers on the real host.
-<IfModule mod_headers.c>
-	Header always set Cache-Control "no-store, max-age=0" env=AJN_ADMIN_AREA
-	Header always set X-Robots-Tag "noindex, nofollow" env=AJN_ADMIN_AREA
-	Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://www.googletagmanager.com https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.google-analytics.com https://region1.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://api.opengscgandra.tech https://challenges.cloudflare.com; media-src 'self'; worker-src 'self'; manifest-src 'self'"
-	Header always set Content-Security-Policy-Report-Only "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://www.googletagmanager.com https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.google-analytics.com https://region1.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://api.opengscgandra.tech https://challenges.cloudflare.com; media-src 'self'; worker-src 'self'; manifest-src 'self'"
-	Header always set Strict-Transport-Security "max-age=300"
-	Header always set X-Content-Type-Options "nosniff"
-	Header always set X-Frame-Options "DENY"
-	Header always set Referrer-Policy "strict-origin-when-cross-origin"
-	Header always set Permissions-Policy "accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()"
+  SetEnvIf Request_URI "^/admin(/|$)" AJN_ADMIN_AREA=1
+  SetEnvIf Request_URI "^/api(/|$)" AJN_ADMIN_AREA=1
 </IfModule>
 
-# Remoção 2026-10: elétrica, elevadores, SPDA e cabeamento
-<IfModule mod_alias.c>
-    RedirectMatch 301 ^/analise-projetos-eletricos-bh/?$ /servicos
-    RedirectMatch 301 ^/elevacao-vertical/?$ /servicos
-    RedirectMatch 301 ^/elevador-bh/?$ /servicos
-    RedirectMatch 301 ^/empresa-elevador/?$ /servicos
-    RedirectMatch 301 ^/empresa-elevador-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/empresa-escada-rolante/?$ /servicos
-    RedirectMatch 301 ^/empresa-plataforma-elevatoria/?$ /servicos
-    RedirectMatch 301 ^/empresa-projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/empresa-projeto-eletrico-bh/?$ /servicos
-    RedirectMatch 301 ^/empresas-elevadores-bh/?$ /servicos
-    RedirectMatch 301 ^/empresas-manutencao-elevadores-bh/?$ /servicos
-    RedirectMatch 301 ^/escada-rolante/?$ /servicos
-    RedirectMatch 301 ^/escada-rolante-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/escada-rolante-bh/?$ /servicos
-    RedirectMatch 301 ^/instalacao-predial-eletrica/?$ /servicos
-    RedirectMatch 301 ^/instalacoes-eletricas-projeto/?$ /servicos
-    RedirectMatch 301 ^/manutencao-elevadores-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/manutencao-elevadores-bh/?$ /servicos
-    RedirectMatch 301 ^/orcamento-projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/plataforma-acessibilidade/?$ /servicos
-    RedirectMatch 301 ^/plataforma-acessibilidade-bh/?$ /servicos
-    RedirectMatch 301 ^/plataforma-acessibilidade-preco/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria-bh/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria-preco/?$ /servicos
-    RedirectMatch 301 ^/preco-projetos-eletricos/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-bh/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-comercial/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-industrial/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-industrial-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-industrial-preco/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-preco/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial-completo/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial-orcamento/?$ /servicos
-    RedirectMatch 301 ^/projeto-instalacao-eletrica-residencial/?$ /servicos
-    RedirectMatch 301 ^/projeto-instalacoes-eletricas/?$ /servicos
-    RedirectMatch 301 ^/projetos-eletricos-orcamento/?$ /servicos
-    RedirectMatch 301 ^/projetos-eletricos-prediais/?$ /servicos
-    RedirectMatch 301 ^/projetos-engenharia-eletrica/?$ /servicos
-    RedirectMatch 301 ^/projetos-instalacoes-eletricas-prediais/?$ /servicos
-    RedirectMatch 301 ^/servico-projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/projetos-spda/?$ /servicos
-    RedirectMatch 301 ^/projetos-cabeamento-estruturado/?$ /servicos
-    RedirectMatch 301 ^/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia/?$ /servicos
+<IfModule mod_headers.c>
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-hashes' 'sha256-PWyTJULqcIPwB6eFo5869yxwWqwGvqHOwdNHnxmAPOU=' 'sha256-GL/uJNH5AaVbEYs5b9okOsUiadKbDPQFi2dzcBh8KR8=' 'sha256-8uZ9rqmNfyApS7PMtCVmXkpSP8r4LsfsY3qTAan3ewY=' 'sha256-AUuT5/Oo+kqFNJzW2fGEG6F8RFgfFbYdEA1TJyp+pr4=' 'sha256-j88MXDVp4QJNxs+dkyENFghjjarfWuFbycVqmYhtQZE=' 'sha256-pzarclX/iykc+oAalZiOYxAowvMf+U3VOwqqcspmSD8=' 'sha256-QZ8e8Uy/TY5Bn7RLnkmZ887kqfPtPF4UAaciqWRv4xw=' 'sha256-928g1ElPaHljmRtpGttYQvL7tSBB3wqOiaVa7HfUP3E=' 'sha256-vkcAT6Yl34sQpdrABeT01k6tXrrBTzVQZiTQMFpYEZ8=' 'sha256-biLFinpqYMtWHmXfkA1BPeCY0/fNt46SAZ+BBk5YUog=' 'sha256-QWcT2PfqHwTpnRnEXWi0NSe8v1CeOHj/MZS6DRkOua4=' 'sha256-uGOCwaGZUkqID5r4Q72ChvZUgcxWrBuT5KgCtSLEQV8=' 'sha256-0YjGAIn59oxSlZfhVUz3ViqW7OXHW5As79wZX1NjiOU=' 'sha256-R5AAGwZuvcVndnbUigiNK0aW4xnmEc/RPOImF/y5VbM=' 'sha256-UAyMvm8TdUeV6tVun+b6seCOQ+hk1b/MCaedF5Us/s8=' 'sha256-KMhMBV8Tj4YqJmWCq/UKYCROdUj9t4OIkeaaa/GWmd4=' 'sha256-2RiHIbTLDGYJ99j6Q/mw3/HaWqPcj18ItfRuyhkZ6jM=' 'sha256-wqrh9aT+eOjLvE9ElGJdv2Fs/VM+cGb6+8ug8ACDEgA=' 'sha256-2ER76Bk6tSLugD3YAskTPHlhhvizKAVtLNhyxbCUcz0=' 'sha256-dROUiySGPTrCrKbwC8JMxmYpXFdo7DSTJ3t7uDkRJWU=' 'sha256-vLyhV0jC3hC6Jhk+KvcA9z0xaoAMbhrqtgeZRnOL4lk=' 'sha256-+qy56OegahQMOaIPPezSvkDrAFgHo9IY26OaV5RAF8A=' 'sha256-kOu3Res+QgzvqCJ7K60Ktd2ClvE4dWU7RWc3Nro6678=' 'sha256-99I7cWBVUq55SDPRyNCQyZQwwj1BFNWSrtodkVgHTXk=' 'sha256-/Rv2nnbvhY4ob9rTBRO+6drIJmS5kLKE2GzTpkKrKhY=' 'sha256-cOZdPZB4Rx7N3qX8Jw6SA7GUrZmrHLmYQn4zsxy7Y0Q=' 'sha256-eJ3axdZkbWrJrXa05sOxGXoygnxzCZSbKwiKuAU9lsw=' 'sha256-AWbse9OHspAiG+Dg/f+nW4yHHQtCiVOVJjUQ4Wwn6p8=' 'sha256-oN1AhgZ8NduygZsWv7jJN5cVmaRRVQI8asn5BtQu5hU=' 'sha256-jtoFypQnL4jQkDgu8Tw2+XLfG/ovc8YWjQ2Yc7uIz+s=' 'sha256-g+7DfEM45lIZ1HGlbyScW3dbTG7+v9F0s6GYaSvtudU=' 'sha256-lEny66nN2R1sEjBhtevb6aiODn0QjFx7I26Ki2w7LZk=' 'sha256-KBZ5OoZCfPdD4jnNjNBJTDpuOvvAYq0AEoU6lxvjzi0=' 'sha256-+B6Z/c3oTS7znl3mzWIDVTOjY9UsMi9UauwyYKg2DaY=' 'sha256-IvkWHlIh++yk1iKxW5n7nVTEX1T+ELdJ2HnNUglYris=' 'sha256-mfIVJkElSK5MQPwRz1n0gJGebVnCzLk8T7fq5sPdFAA=' 'sha256-JrptAByDqw24UY5ucaAo2fZtR6HhoDy9Sm6/kLYNaNg=' 'sha256-Oxqq8E6c5xX44u5mIYs3zH2/rDQePs8DtsblczPohiw=' 'sha256-eZZleEp2/rzBLGQ1BM/turBpXm0vaJai7eJq0CWJEUA=' 'sha256-2Zog2YBHV+cTXG5ZoDg0YTQFPfWT1iM9/ddZkJ9jKSk=' 'sha256-pD4WAdbyPG4V6t1okVCPU/dQ+wQaiincDog+zuaGE/Y=' 'sha256-5D79IwHvUNHBDTgYqdHo7dabIt3Q8wSD/RjPYVNHwAY=' 'sha256-PZ34nvhNd2GJWH0zTDBjQP3K/Kdp5AfPgEmhCOmjMgI=' 'sha256-gvwk5yHWGvUOV1kInG4Y0a0DP17g/KXJsMAyo2ZHtz0=' 'sha256-AC3CbEeLPJf2W6daVbkfUpWh5e6gLviBovIHzqhb7I4=' 'sha256-j16tsThERRpo633wjVny78/SZE7fmYOuQgMLsHOAeQU=' 'sha256-Ez67q4tdn2K8XnLTwfwnZagVlPmZSAKs/5W+FTQeHvk=' 'sha256-TvdlSExiJNN5fAeDtAH3GFBpcfRvKzcwX2fZEmu/Fkk=' 'sha256-4PL9lp7UJa6oIE366iGByvJoADzKhWHP6lt6XN4RfNk=' 'sha256-a73mk1p9mSkbrd39WGdIz7aYPj9OusyI0AAurWxQ42o=' 'sha256-OGw4ecMelVkvkuV9scK7ypZFCWY2/DYGG0cQKAOQqkY=' 'sha256-cDAOhirvlw2ij2jBStJHUmqLSorQLmDtYmW3rkZDwgA=' 'sha256-qX2ceMBNeqxuF3c6E7ugxLcCwRFe392d+/6n6bcbZaI=' 'sha256-IMTUjKz/HQmkmNhw8htCRXS+J9PYgY3Qx2amd0NKrG4=' 'sha256-ZQQiFFgFmNhjTundzQaZ80eVdNn5g8hkh5QQ6jGsbJQ=' 'sha256-ry6PQ6il9cUkGyt4ZyxodaQomBIcTcW17zMfQgtctN4=' 'sha256-fA+Gq1RWMzVOfRLxqhYDHEkv5mTE5Id9hCuHr3/ce8A=' 'sha256-f5DTKrUgxM/V39v+adRVjD0jIlrM0yEBXdS3xHekG3o=' 'sha256-ze4uIntZlfdFHu+qkR5CpFhsm0l0ZpKnR2nOp1cD9l8=' 'sha256-i2sZysJsK6bSduhXCopySYrSJWwkyofJX+CaFV8z00c=' 'sha256-N6tSydZ64AHCaOWfwKbUhxXx2fRFDxHOaL3e3CO7GPI=' 'sha256-JamKOmpIVQSPv+gDrYtzbxnVclnrvhrOMLmA+WaGPIE=' 'sha256-9hoHkmwkoTnl0evcj0bWJzyN8hUMHqZ8kWEwHwq0kfA=' 'sha256-geEGClohD66+Y4xlJOHbtrp1Mz0/ei3AGU1P0Qf/Bmw=' 'sha256-dzveYljtDRDjz5LJcCpkDH+2XUpytpCgRYV666g6/jI=' 'sha256-8suaSEN3UaDIST6eKtfCBHv+MMnURdm4s3sKTFUm/ug=' 'sha256-+PT+RnB8zmHhWzfNtgApDPXlwYElBuEDgJc5FEAHtlA=' 'sha256-Xw9HDabXhHQNezc9Lv9NHlSYB3vG+XVt4nF5JrIHPv0=' 'sha256-cmz0e+tv62jZeP19j7YzXHd7eJj42CIDhlCRKPcWRWY=' 'sha256-ZTL88RJMUOw6FgQYVqNU4XbtXjAy3mJJ7VOZ56uXt+Y=' 'sha256-VRfHVe8qUU8zp2cjtb77ZmldAHu/QMZ07MZBSyAbWUg=' 'sha256-HNiWpXaWt2LIZnxwvhkuVd7Wm1LEyIXrCJ3LC4ED7jw=' 'sha256-pMmUOHILONMjzwUbl1R2YIwvRZrjvziyrqWQ9m20p7o=' 'sha256-OaKKhkCn3vqrDgPGXl8y1ZZBpG/JC3AM31UBmlJMTso=' 'sha256-dyGVKquQK/wBRH6DFfsi/W4N+Jc1q4xJGuSIigZWB+A=' 'sha256-yVju1XFhepIXHbcwe+VoEEmwgwwKLSWjZdBUpTDDtq0=' 'sha256-lo3m6kjvaMgmi5A0ejB0aq2/iXeo/vxlerg6bAHZ/3g=' 'sha256-X0PRvCW27P1XQ4opaxjqvJIetMzNMa8HlSQnKCPPCIU=' 'sha256-mnRyqew64Lcv5/Qgb/4HP8LfJi5MjjQCGLPt+/cJZis=' 'sha256-x/RuHVALzb9/vCFr6ix5dnl9UqbBpG9jioCdfV6cszU=' 'sha256-ozoiTq7lyNvHcCpgpkruq1cm53rVubUx3k3P5SXC7tw=' 'sha256-ti4wxJ8HJ4LUKRhLt0PKW9/zoevG9tCNWwr546/FPOA=' 'sha256-HTQa36GmqjEpygOJX8KQJjLExKHq84Zsm9GzqV2Gbm8=' 'sha256-CZJfWJ1Q5myENaBuC7hA3b93qGtUQS/Ec4yGk8wfdtg=' 'sha256-hmFSkLXjlBIlFouqXZeMhygA6InndMD4pMuBbCeovDs=' 'sha256-tT6bfQE72ktZTXmuj0rEuxMNyQMio46qrAnIAZ5CY40=' 'sha256-NHNjlhtUsYnsAiZdWxb9Raw2s3sTVJ9GyPLXm6Oy+zg=' 'sha256-6uVeqQGN83H3UbNkCkXf1GZFlcttbe4rGnDGynS6+1o=' 'sha256-PYGQBI7NMg6qtgjQEp8MPFQrR3yJVL3isa2XwOcUDvc=' 'sha256-9sJLPqOQ/Itv6XgEpzR50+Aq6q3F9C09hGwv5d/24EU='; font-src 'self' data:; img-src 'self' data: https:; connect-src 'self' https://api.opengscgandra.tech https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+
+  # Safe initial HSTS during cutover; PHP API/SSR emits 63072000; includeSubDomains; preload
+  Header always set Strict-Transport-Security "max-age=300" env=HTTPS
+
+  # Fingerprinted Astro bundles: immutable 1-year cache
+  <FilesMatch "\.(?:css|js|mjs|woff2|avif|webp|png|jpg|jpeg|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Stable Root-level identity files: 1-day cache
+  <FilesMatch "^(?:favicon\.svg|apple-touch-icon\.png|og-default\.svg|robots\.txt|sitemap.*\.xml|security\.txt)$">
+    Header set Cache-Control "public, max-age=86400, must-revalidate"
+  </FilesMatch>
+
+  # HTML documents: always revalidate on deploy
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Admin and API routes must never be cached by browser or shared proxies
+  Header always set Cache-Control "no-store, max-age=0" env=AJN_ADMIN_AREA
+  Header always set X-Robots-Tag "noindex, nofollow" env=AJN_ADMIN_AREA
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript application/json image/svg+xml
 </IfModule>

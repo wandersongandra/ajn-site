@@ -3,12 +3,37 @@
 
 (() => {
   let currentUser = null;
+  let csrfToken = '';
   let currentJobId = '';
   let listenersRegistered = false;
   let pendingMove = null;
   let lastMoveTrigger = null;
   let confirmResolver = null;
   let confirmTrigger = null;
+
+  async function adminFetch(url, options = {}) {
+    const opts = { ...options, credentials: 'include' };
+    const method = String(opts.method || 'GET').toUpperCase();
+    const headers = { ...(opts.headers || {}) };
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+      if (!headers['Content-Type'] && !(opts.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+      }
+      if (opts.body === undefined) {
+        opts.body = '{}';
+      }
+    }
+    opts.headers = headers;
+    const res = await fetch(url, opts);
+    const headerCsrf = res.headers && typeof res.headers.get === 'function' ? res.headers.get('X-CSRF-Token') : '';
+    if (headerCsrf) {
+      csrfToken = headerCsrf;
+    }
+    return res;
+  }
 
   const lgpdRequestLabels = {
     erasure: 'Exclusão Definitiva',
@@ -118,7 +143,7 @@
         }
 
         try {
-          const res = await fetch(getApiEndpoint('/api/admin/auth/reset-password'), {
+          const res = await adminFetch(getApiEndpoint('/api/admin/auth/reset-password'), {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -175,7 +200,7 @@
         const noticeEl = loginCard?.querySelector('[data-login-notice]');
 
         try {
-          const res = await fetch(getApiEndpoint('/api/admin/auth/forgot-password'), {
+          const res = await adminFetch(getApiEndpoint('/api/admin/auth/forgot-password'), {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -206,7 +231,7 @@
         const noticeEl = loginCard?.querySelector('[data-login-notice]');
 
         try {
-          const res = await fetch(getApiEndpoint('/api/admin/auth/login'), {
+          const res = await adminFetch(getApiEndpoint('/api/admin/auth/login'), {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -214,7 +239,8 @@
           });
 
           const data = await res.json();
-          if (res.ok && data.success) {
+          if (data.csrfToken) csrfToken = data.csrfToken;
+          if (res.ok && (data.success || data.user)) {
             currentUser = data.user;
             setAuthView(elements, true);
             updateUserBadge();
@@ -235,7 +261,7 @@
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {
         try {
-          await fetch(getApiEndpoint('/api/admin/auth/logout'), {
+          await adminFetch(getApiEndpoint('/api/admin/auth/logout'), {
             method: 'POST',
             credentials: 'include',
           });
@@ -334,7 +360,7 @@
 
         const noticeEl = document.querySelector('[data-jobs-notice]');
         try {
-          const res = await fetch(getApiEndpoint(jobId ? `/api/admin/jobs/${encodeURIComponent(jobId)}` : '/api/admin/jobs'), {
+          const res = await adminFetch(getApiEndpoint(jobId ? `/api/admin/jobs/${encodeURIComponent(jobId)}` : '/api/admin/jobs'), {
             method: jobId ? 'PUT' : 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -382,7 +408,7 @@
         const noticeEl = document.querySelector('[data-users-notice]');
 
         try {
-          const res = await fetch(getApiEndpoint('/api/admin/users'), {
+          const res = await adminFetch(getApiEndpoint('/api/admin/users'), {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -413,7 +439,7 @@
 
   async function restoreAdminSession(elements) {
     try {
-      const meRes = await fetch(getApiEndpoint('/api/admin/auth/me'), {
+      const meRes = await adminFetch(getApiEndpoint('/api/admin/auth/me'), {
         method: 'GET',
         credentials: 'include',
       });
@@ -421,6 +447,7 @@
       if (!meRes.ok) return false;
       const meData = await meRes.json();
       if (!meData.user) return false;
+      if (meData.csrfToken) csrfToken = meData.csrfToken;
 
       currentUser = meData.user;
       setAuthView(elements, true);
@@ -553,7 +580,7 @@
     clearErrorNotice(notice);
 
     try {
-      const res = await fetch(getApiEndpoint('/api/admin/jobs'), {
+      const res = await adminFetch(getApiEndpoint('/api/admin/jobs'), {
         credentials: 'include',
       });
       const data = await res.json().catch(() => ({}));
@@ -657,7 +684,7 @@
     }
 
     try {
-      const res = await fetch(getApiEndpoint(`/api/admin/pipeline/${encodeURIComponent(jobId)}`), {
+      const res = await adminFetch(getApiEndpoint(`/api/admin/pipeline/${encodeURIComponent(jobId)}`), {
         credentials: 'include',
       });
       const data = await res.json().catch(() => ({}));
@@ -788,7 +815,7 @@
     if (cancelButton) cancelButton.disabled = true;
     form.setAttribute('aria-busy', 'true');
     try {
-      const res = await fetch(getApiEndpoint('/api/admin/pipeline/move-stage'), {
+      const res = await adminFetch(getApiEndpoint('/api/admin/pipeline/move-stage'), {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -825,7 +852,7 @@
     clearErrorNotice(notice);
 
     try {
-      const res = await fetch(getApiEndpoint('/api/admin/candidates'), {
+      const res = await adminFetch(getApiEndpoint('/api/admin/candidates'), {
         credentials: 'include',
       });
       const data = await res.json().catch(() => ({}));
@@ -884,7 +911,7 @@
     const notice = document.querySelector('[data-candidates-notice]');
     clearErrorNotice(notice);
     try {
-      const res = await fetch(getApiEndpoint(`/api/admin/candidates/${encodeURIComponent(candidateId)}/resume`), {
+      const res = await adminFetch(getApiEndpoint(`/api/admin/candidates/${encodeURIComponent(candidateId)}/resume`), {
         credentials: 'include',
       });
 
@@ -925,7 +952,7 @@
     clearErrorNotice(notice);
 
     try {
-      const res = await fetch(getApiEndpoint('/api/admin/lgpd/requests'), {
+      const res = await adminFetch(getApiEndpoint('/api/admin/lgpd/requests'), {
         credentials: 'include',
       });
       const data = await res.json().catch(() => ({}));
@@ -1010,7 +1037,7 @@
 
     const notice = document.querySelector('[data-lgpd-notice]');
     try {
-      const res = await fetch(getApiEndpoint(`/api/admin/lgpd/requests/${encodeURIComponent(req.id)}/execute`), {
+      const res = await adminFetch(getApiEndpoint(`/api/admin/lgpd/requests/${encodeURIComponent(req.id)}/execute`), {
         method: 'POST',
         credentials: 'include',
       });
@@ -1034,7 +1061,7 @@
     clearErrorNotice(notice);
 
     try {
-      const res = await fetch(getApiEndpoint('/api/admin/audit'), {
+      const res = await adminFetch(getApiEndpoint('/api/admin/audit'), {
         credentials: 'include',
       });
       const data = await res.json().catch(() => ({}));
@@ -1086,7 +1113,7 @@
     clearErrorNotice(notice);
 
     try {
-      const res = await fetch(getApiEndpoint('/api/admin/users'), {
+      const res = await adminFetch(getApiEndpoint('/api/admin/users'), {
         credentials: 'include',
       });
       const data = await res.json().catch(() => ({}));
@@ -1169,7 +1196,7 @@
 
     const notice = document.querySelector('[data-users-notice]');
     try {
-      const res = await fetch(getApiEndpoint(`/api/admin/users/${encodeURIComponent(userId)}/status`), {
+      const res = await adminFetch(getApiEndpoint(`/api/admin/users/${encodeURIComponent(userId)}/status`), {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

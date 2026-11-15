@@ -121,6 +121,9 @@ const jsonLd = [
             <div class="carreiras-notice" data-notice role="alert"></div>
 
             <form action="/api/applications/talent-pool" method="POST" enctype="multipart/form-data" data-application-form>
+              <div class="sr-only" aria-hidden="true">
+                <label>Não preencha este campo <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+              </div>
               <fieldset class="carreiras-form-fields" data-job-application-fields disabled>
               <div class="carreiras-form-grid">
                 <div class="carreiras-field carreiras-form-full">
@@ -198,7 +201,7 @@ const jsonLd = [
 
                 <div class="carreiras-field carreiras-form-full">
                   {TURNSTILE_SITE_KEY ? (
-                    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+                    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="apply" data-theme="light"></div>
                   ) : (
                     <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
                   )}

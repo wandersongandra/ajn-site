@@ -159,6 +159,9 @@ const jsonLd = [
           <div class="carreiras-notice" data-notice role="alert"></div>
 
           <form action={`/api/applications/jobs/${job.slug}/apply`} method="POST" enctype="multipart/form-data" data-application-form>
+            <div class="sr-only" aria-hidden="true">
+              <label>Não preencha este campo <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+            </div>
             <div class="carreiras-form-grid">
               <div class="carreiras-field carreiras-form-full">
                 <label class="carreiras-label" for="apply-name">Nome Completo *</label>
@@ -226,7 +229,7 @@ const jsonLd = [
                 </div>
 
                 <div class="carreiras-checkbox-group">
-                  <input id="apply-consent-retention" name="consentRetention" type="checkbox" value="true" checked />
+                  <input id="apply-consent-retention" name="consentRetention" type="checkbox" value="true" />
                   <label class="carreiras-checkbox-label" for="apply-consent-retention">
                     Autorizo a AJN a manter meu currículo no banco de talentos pelo período de até 2 anos para futuras oportunidades profissionais.
                   </label>
@@ -235,7 +238,7 @@ const jsonLd = [
 
                 <div class="carreiras-field carreiras-form-full">
                   {TURNSTILE_SITE_KEY ? (
-                    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+                    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="apply" data-theme="light"></div>
                   ) : (
                     <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
                   )}

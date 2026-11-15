@@ -469,6 +469,7 @@ async function checkCurrentJobStatus() {
 function initApplicationForm() {
   const form = document.querySelector('[data-application-form]');
   if (!form) return;
+  form.dataset.formStartedAt = String(Date.now());
 
   const fileInput = form.querySelector('input[type="file"]');
   const fileLabel = form.querySelector('[data-file-label]');
@@ -515,6 +516,7 @@ function initApplicationForm() {
       return;
     }
     formData.set('turnstileToken', String(turnstileToken));
+    formData.set('formStartedAt', String(form.dataset.formStartedAt || (Date.now() - 5000)));
 
     const endpoint = form.getAttribute('action') || '/api/applications/talent-pool';
 
@@ -601,6 +603,7 @@ function initApplicationForm() {
 function initTrackingForm() {
   const form = document.querySelector('[data-tracking-form]');
   if (!form) return;
+  form.dataset.formStartedAt = String(Date.now());
 
   const resultContainer = document.querySelector('[data-tracking-result]');
   const noticeBox = findNotice(form);
@@ -624,8 +627,11 @@ function initTrackingForm() {
     }
 
     try {
+      const turnstileToken = getFormTurnstileToken(form);
+      const headers = turnstileToken ? { 'X-Turnstile-Token': String(turnstileToken) } : {};
       const response = await fetch(getApiEndpoint(`/api/applications/track/${encodeURIComponent(code)}`), {
         credentials: 'include',
+        headers,
       });
       const data = await response.json();
 
@@ -647,6 +653,7 @@ function initTrackingForm() {
   // Fluxo de recuperação de código com verificação de posse do e-mail
   const recoveryForm = document.querySelector('[data-recovery-form]');
   if (recoveryForm) {
+    recoveryForm.dataset.formStartedAt = String(Date.now());
     const recNotice = findNotice(recoveryForm);
     const recBtn = recoveryForm.querySelector('button[type="submit"]');
 
@@ -676,7 +683,13 @@ function initTrackingForm() {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, cpf, turnstileToken }),
+            body: JSON.stringify({
+              email,
+              cpf,
+              turnstileToken,
+              website: recoveryForm.querySelector('[name="website"]')?.value || '',
+              formStartedAt: Number(recoveryForm.dataset.formStartedAt || (Date.now() - 5000)),
+            }),
           });
           const data = await res.json();
           if (res.ok && data.success) {
@@ -758,6 +771,7 @@ function renderTrackingResult(container, app) {
 function initLgpdForm() {
   const form = document.querySelector('[data-lgpd-form]');
   if (!form) return;
+  form.dataset.formStartedAt = String(Date.now());
 
   const noticeBox = findNotice(form);
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -786,7 +800,14 @@ function initLgpdForm() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, cpf, reason, turnstileToken }),
+        body: JSON.stringify({
+          email,
+          cpf,
+          reason,
+          turnstileToken,
+          website: form.querySelector('[name="website"]')?.value || '',
+          formStartedAt: Number(form.dataset.formStartedAt || (Date.now() - 5000)),
+        }),
       });
 
       const data = await response.json();
