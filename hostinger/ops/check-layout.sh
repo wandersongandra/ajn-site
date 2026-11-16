@@ -1,23 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROD_PUBLIC=""
-STAGING_PUBLIC=""
+ENV_FILE=""
+PROD_PUBLIC="${PROD_PUBLIC:-}"
+STAGING_PUBLIC="${STAGING_PUBLIC:-${STG_PUBLIC:-}}"
 PRIVATE_ARGS=()
 
 for arg in "$@"; do
   case "$arg" in
+    --env-file=*)
+      ENV_FILE="${arg#*=}"
+      [ -n "$ENV_FILE" ] || { echo "ERRO: --env-file nao pode ser vazio." >&2; exit 1; }
+      ;;
     --prod-public=*)
       PROD_PUBLIC="${arg#*=}"
+      [ -n "$PROD_PUBLIC" ] || { echo "ERRO: --prod-public nao pode ser vazio." >&2; exit 1; }
       ;;
     --staging-public=*)
       STAGING_PUBLIC="${arg#*=}"
+      [ -n "$STAGING_PUBLIC" ] || { echo "ERRO: --staging-public nao pode ser vazio." >&2; exit 1; }
       ;;
     --private-dir=*)
+      [ -n "${arg#*=}" ] || { echo "ERRO: --private-dir nao pode ser vazio." >&2; exit 1; }
       PRIVATE_ARGS+=("${arg#*=}")
       ;;
     --help|-h)
-      echo "Uso: $0 --prod-public=DIR --staging-public=DIR [--private-dir=DIR ...]"
+      echo "Uso: $0 [--env-file=PATH] [--prod-public=DIR] [--staging-public=DIR] [--private-dir=DIR ...]"
       exit 0
       ;;
     *)
@@ -27,8 +35,31 @@ for arg in "$@"; do
   esac
 done
 
+if [ -n "$ENV_FILE" ]; then
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "ERRO: arquivo --env-file nao encontrado: $ENV_FILE" >&2
+    exit 1
+  fi
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+  [ -z "$PROD_PUBLIC" ] && PROD_PUBLIC="${PROD_PUBLIC:-}"
+  [ -z "$STAGING_PUBLIC" ] && STAGING_PUBLIC="${STG_PUBLIC:-}"
+fi
+
+for env_var in PROD_PRIVATE STG_PRIVATE; do
+  if [ "${!env_var+set}" = "set" ] && [ -z "${!env_var}" ]; then
+    echo "ERRO: variavel obrigatoria de ambiente vazia: $env_var" >&2
+    exit 1
+  fi
+done
+
+if [ "${#PRIVATE_ARGS[@]}" -eq 0 ]; then
+  [ -n "${PROD_PRIVATE:-}" ] && PRIVATE_ARGS+=("$PROD_PRIVATE")
+  [ -n "${STG_PRIVATE:-}" ] && PRIVATE_ARGS+=("$STG_PRIVATE")
+fi
+
 if [ -z "$PROD_PUBLIC" ] || [ -z "$STAGING_PUBLIC" ]; then
-  echo "Informe --prod-public=... e --staging-public=..." >&2
+  echo "Informe --prod-public=... e --staging-public=... (ou carregue env.sh)." >&2
   exit 1
 fi
 
@@ -65,7 +96,10 @@ case "$PROD_REAL/" in
 esac
 
 for priv_raw in "${PRIVATE_ARGS[@]}"; do
-  [ -z "$priv_raw" ] && continue
+  if [ -z "$priv_raw" ]; then
+    echo "ABORTAR: diretorio privado nao pode ser vazio." >&2
+    exit 1
+  fi
   PRIV_REAL="$(resolve_dir "$priv_raw")"
   for root in "$PROD_REAL" "$STAGING_REAL"; do
     case "$PRIV_REAL/" in

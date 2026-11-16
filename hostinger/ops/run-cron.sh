@@ -2,6 +2,7 @@
 set -euo pipefail
 umask 077
 
+ENV_FILE=""
 LOG_DIR=""
 JOB_NAME=""
 MAX_BYTES=1048576
@@ -9,20 +10,29 @@ KEEP=5
 
 while [ $# -gt 0 ]; do
   case "$1" in
+    --env-file=*)
+      ENV_FILE="${1#*=}"
+      [ -n "$ENV_FILE" ] || { echo "ERRO: --env-file nao pode ser vazio." >&2; exit 1; }
+      shift
+      ;;
     --log-dir=*)
       LOG_DIR="${1#*=}"
+      [ -n "$LOG_DIR" ] || { echo "ERRO: --log-dir nao pode ser vazio." >&2; exit 1; }
       shift
       ;;
     --name=*)
       JOB_NAME="${1#*=}"
+      [ -n "$JOB_NAME" ] || { echo "ERRO: --name nao pode ser vazio." >&2; exit 1; }
       shift
       ;;
     --max-bytes=*)
       MAX_BYTES="${1#*=}"
+      [ -n "$MAX_BYTES" ] || { echo "ERRO: --max-bytes nao pode ser vazio." >&2; exit 1; }
       shift
       ;;
     --keep=*)
       KEEP="${1#*=}"
+      [ -n "$KEEP" ] || { echo "ERRO: --keep nao pode ser vazio." >&2; exit 1; }
       shift
       ;;
     --)
@@ -30,7 +40,7 @@ while [ $# -gt 0 ]; do
       break
       ;;
     --help|-h)
-      echo "Uso: $0 --log-dir=DIR --name=JOB [--max-bytes=1048576] [--keep=5] -- COMANDO [ARGS...]"
+      echo "Uso: $0 [--env-file=PATH] --log-dir=DIR --name=JOB [--max-bytes=1048576] [--keep=5] -- COMANDO [ARGS...]"
       exit 0
       ;;
     *)
@@ -40,7 +50,16 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ -z "$LOG_DIR" ] || [ -z "$JOB_NAME" ] || [ $# -eq 0 ]; then
+if [ -n "$ENV_FILE" ]; then
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "ERRO: arquivo --env-file nao encontrado: $ENV_FILE" >&2
+    exit 1
+  fi
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+fi
+
+if [ -z "$LOG_DIR" ] || [ -z "$JOB_NAME" ] || [ $# -eq 0 ] || [ -z "${1:-}" ]; then
   echo "ERRO: informe --log-dir=..., --name=... e '-- COMANDO'." >&2
   exit 1
 fi

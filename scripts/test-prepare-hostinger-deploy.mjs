@@ -19,8 +19,17 @@ function createFixtureTree(
   const robotsTxt = indexing
     ? `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap-index.xml\n`
     : 'User-agent: *\nDisallow: /\n';
-  const htaccessContent =
-    'Options -Indexes\nHeader always set Content-Security-Policy "default-src \'self\'; style-src \'self\'"\n';
+  const htaccessContent = [
+    'Options -Indexes',
+    'Header always set Content-Security-Policy "default-src \'self\'; style-src \'self\'"',
+    '<IfModule mod_rewrite.c>',
+    '  RewriteEngine On',
+    '  RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f [OR]',
+    '  RewriteCond %{DOCUMENT_ROOT}/../ajn-private/prod/maintenance.flag -f',
+    '  RewriteRule ^(?:api|admin)(?:/.*)?$ api/index.php [QSA,L]',
+    '</IfModule>',
+    '',
+  ].join('\n');
 
   const distFiles = {
     '.htaccess': htaccessContent,
@@ -68,6 +77,7 @@ function createFixtureTree(
     'send-security-alerts.php',
     'config.example.php',
     'resumes-directory.htaccess',
+    'ops/env.sh',
     'ops/backup.sh',
     'ops/rollback.sh',
     'ops/check-layout.sh',
@@ -92,17 +102,34 @@ function createFixtureTree(
 
 test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem config.php/tests e database', () => {
   const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-pack-'));
+  const validProdPrivate = '/home/u123456/ajn-private/prod';
   try {
     createFixtureTree(root, { withTurnstile: false });
-    const summary = prepareHostingerDeploy({ rootDir: root, requireTurnstile: false });
+    const summary = prepareHostingerDeploy({
+      rootDir: root,
+      requireTurnstile: false,
+      prodPrivateDir: validProdPrivate,
+    });
 
     assert.equal(summary.canonicalOrigin, 'https://ajnengenharia.com.br');
     assert.equal(summary.indexingAllowed, true);
     assert.equal(summary.contactEndpoint, 'https://api.opengscgandra.tech/contact');
     assert.equal(summary.turnstileEnabled, false);
+    assert.equal(summary.prodPrivateDir, validProdPrivate);
 
-    assert.equal(existsSync(join(summary.outputDir, 'public_html/.htaccess')), true);
+    const prodHtaccessPath = join(summary.outputDir, 'public_html/.htaccess');
+    assert.equal(existsSync(prodHtaccessPath), true);
     assert.equal(existsSync(join(summary.outputDir, 'public_html/api/index.php')), true);
+
+    const prodHtaccess = readFileSync(prodHtaccessPath, 'utf8');
+    const sourcePublicHtaccess = readFileSync(join(root, 'public/.htaccess'), 'utf8');
+    const sourceDistHtaccess = readFileSync(join(root, 'dist/.htaccess'), 'utf8');
+    assert.match(prodHtaccess, new RegExp(`SetEnv AJN_PRIVATE_DIR "${validProdPrivate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+    assert.match(prodHtaccess, new RegExp(`SetEnvIf Request_URI "\\^" AJN_PRIVATE_DIR=${validProdPrivate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+    assert.match(prodHtaccess, new RegExp(`RewriteCond "${validProdPrivate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/maintenance\\.flag" -f \\[OR\\]`));
+    assert.equal(/SetEnv AJN_PRIVATE_DIR/.test(sourcePublicHtaccess), false);
+    assert.equal(/SetEnv AJN_PRIVATE_DIR/.test(sourceDistHtaccess), false);
+    assert.equal(new Set(summary.htaccessEntries.map((entry) => entry.cspSha256)).size, 1);
 
     // G.4: tests/, migrations/, CLI scripts e arquivos de configuração NUNCA entram em public_html
     for (const forbidden of [
@@ -134,6 +161,7 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
 
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/bootstrap.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/migrate.php')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/env.sh')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ops/backup.sh')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ops/rollback.sh')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ops/check-layout.sh')), true);
@@ -167,9 +195,10 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
 
 test('recusa empacotar quando conteúdo privado (config, tests, migrations, CLI) vaza para dist/ e reconhece Turnstile ativo', () => {
   const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-turnstile-'));
+  const validProdPrivate = '/home/u123456/ajn-private/prod';
   try {
     createFixtureTree(root, { withTurnstile: true });
-    const summary = prepareHostingerDeploy({ rootDir: root });
+    const summary = prepareHostingerDeploy({ rootDir: root, prodPrivateDir: validProdPrivate });
     assert.equal(summary.turnstileEnabled, true);
     const checklist = readFileSync(join(summary.outputDir, 'DEPLOY-CHECKLIST.md'), 'utf8');
     assert.doesNotMatch(checklist, /BLOQUEIO CRITICO/);
@@ -181,7 +210,7 @@ test('recusa empacotar quando conteúdo privado (config, tests, migrations, CLI)
       } else {
         mkdirSync(target, { recursive: true });
       }
-      assert.throws(() => prepareHostingerDeploy({ rootDir: root }), new RegExp(leaked.replace('.', '\\.')));
+      assert.throws(() => prepareHostingerDeploy({ rootDir: root, prodPrivateDir: validProdPrivate }), new RegExp(leaked.replace('.', '\\.')));
       rmSync(target, { recursive: true, force: true });
     }
   } finally {
@@ -189,31 +218,45 @@ test('recusa empacotar quando conteúdo privado (config, tests, migrations, CLI)
   }
 });
 
-test('falha por padrão quando Indexação=false, Turnstile=false ou sitekey é de teste (1x/2x/3x)', () => {
+test('falha por padrão quando Indexação=false, Turnstile=false, sitekey é de teste ou PROD_PRIVATE_DIR inválido/ausente', () => {
   const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-prod-guard-'));
+  const validProdPrivate = '/home/u123456/ajn-private/prod';
   try {
     createFixtureTree(root, { withTurnstile: false });
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root }),
+      () => prepareHostingerDeploy({ rootDir: root, prodPrivateDir: validProdPrivate }),
       /Turnstile no HTML está em false/
     );
 
     for (const testSiteKey of ['1x00000000000000000000AA', '2x00000000000000000000AB', '3x00000000000000000000FF']) {
       createFixtureTree(root, { withTurnstile: true, siteKey: testSiteKey });
       assert.throws(
-        () => prepareHostingerDeploy({ rootDir: root }),
+        () => prepareHostingerDeploy({ rootDir: root, prodPrivateDir: validProdPrivate }),
         /chave de teste Turnstile/
       );
     }
 
     createFixtureTree(root, { withTurnstile: true, siteKey: '0x4AAAAAAABkMYinukE_real_prod_key' });
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, prodPrivateDir: '' }),
+      /PROD_PRIVATE_DIR é obrigatório/
+    );
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, prodPrivateDir: '/home/u123456/public_html/ajn-private' }),
+      /PROD_PRIVATE_DIR inseguro.*webroot público/
+    );
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, prodPrivateDir: 'ajn-private/prod' }),
+      /PROD_PRIVATE_DIR inválido/
+    );
+
     writeFileSync(
       join(root, 'dist', 'index.html'),
       '<!doctype html><html><head><meta name="robots" content="noindex,nofollow"><link rel="canonical" href="https://ajnengenharia.com.br/"></head><body></body></html>',
       'utf8'
     );
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root }),
+      () => prepareHostingerDeploy({ rootDir: root, prodPrivateDir: validProdPrivate }),
       /Indexação está em false/
     );
   } finally {
@@ -342,7 +385,7 @@ test('pack:hostinger:staging grava em output/hostinger-staging, rejeita origem p
       'utf8'
     );
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root, mode: 'production' }),
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'production', prodPrivateDir: '/home/u123456/ajn-private/prod' }),
       /AuthType\/AuthUserFile/
     );
 

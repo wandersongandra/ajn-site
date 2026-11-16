@@ -21,6 +21,7 @@ const PRIVATE_RUNTIME_FILES = [
 ];
 
 const OPS_SHARED_FILES = [
+  'env.sh',
   'check-layout.sh',
   'backup.sh',
   'rollback.sh',
@@ -299,6 +300,40 @@ function validateSafeServerPosixPath(rawValue, label) {
   return val.replace(/\/+$/, '') || '/';
 }
 
+function buildPrivateDirEnvLines(privateDir) {
+  if (!privateDir) return [];
+  return [
+    '<IfModule mod_env.c>',
+    `  SetEnv AJN_PRIVATE_DIR "${privateDir}"`,
+    '</IfModule>',
+    '<IfModule mod_setenvif.c>',
+    `  SetEnvIf Request_URI "^" AJN_PRIVATE_DIR=${privateDir}`,
+    '</IfModule>',
+  ];
+}
+
+function injectMaintenanceFlagCondition(htaccessContent, privateDir) {
+  if (!privateDir) return htaccessContent;
+  const anchor = 'RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f [OR]';
+  if (!htaccessContent.includes(anchor)) {
+    throw new Error('Arquivo .htaccess base não contém a condição esperada de maintenance.flag.');
+  }
+  return htaccessContent.replace(
+    anchor,
+    `RewriteCond "${privateDir}/maintenance.flag" -f [OR]\n  ${anchor}`
+  );
+}
+
+function buildProdPrivateDirHtaccessBlock(prodPrivateDir) {
+  return [
+    '# BEGIN AJN_PROD_PRIVATE_DIR (injetado exclusivamente em output/hostinger-deploy)',
+    ...buildPrivateDirEnvLines(prodPrivateDir),
+    '# END AJN_PROD_PRIVATE_DIR',
+    '',
+    '',
+  ].join('\n');
+}
+
 function buildStagingAuthHtaccessBlock(htpasswdFile, stagingPrivateDir = '') {
   const lines = [
     '# BEGIN AJN_STAGING_BASIC_AUTH (injetado exclusivamente em output/hostinger-staging)',
@@ -307,17 +342,8 @@ function buildStagingAuthHtaccessBlock(htpasswdFile, stagingPrivateDir = '') {
     `AuthUserFile "${htpasswdFile}"`,
     'Require valid-user',
     '# END AJN_STAGING_BASIC_AUTH',
+    ...buildPrivateDirEnvLines(stagingPrivateDir),
   ];
-  if (stagingPrivateDir) {
-    lines.push(
-      '<IfModule mod_env.c>',
-      `  SetEnv AJN_PRIVATE_DIR "${stagingPrivateDir}"`,
-      '</IfModule>',
-      '<IfModule mod_setenvif.c>',
-      `  SetEnvIf Request_URI "^" AJN_PRIVATE_DIR=${stagingPrivateDir}`,
-      '</IfModule>'
-    );
-  }
   return `${lines.join('\n')}\n\n`;
 }
 
@@ -329,6 +355,7 @@ export function prepareHostingerDeploy({
   requireTurnstile = mode !== 'staging',
   stagingHtpasswdFile = process.env.STAGING_HTPASSWD_FILE ?? null,
   stagingPrivateDir = process.env.STAGING_PRIVATE_DIR ?? process.env.AJN_PRIVATE_DIR ?? '',
+  prodPrivateDir = process.env.PROD_PRIVATE_DIR ?? '',
 } = {}) {
   const normalizedMode = mode === 'staging' ? 'staging' : 'production';
   const productionDir = resolve(rootDir, 'output', 'hostinger-deploy');
@@ -353,6 +380,7 @@ export function prepareHostingerDeploy({
   );
   let validatedHtpasswdFile = '';
   let validatedStagingPrivateDir = '';
+  let validatedProdPrivateDir = '';
   if (normalizedMode === 'staging') {
     if (!buildSummary.canonicalOrigin) {
       throw new Error('Pacote de staging rejeitado: PUBLIC_SITE_ORIGIN ausente no HTML compilado.');
@@ -396,6 +424,7 @@ export function prepareHostingerDeploy({
         : 'Turnstile no HTML está em false';
       throw new Error(`Pacote de produção rejeitado: ${reason}.`);
     }
+    validatedProdPrivateDir = validateSafeServerPosixPath(prodPrivateDir, 'PROD_PRIVATE_DIR');
   }
   assertRequiredFiles(hostingerDir, [...PRIVATE_RUNTIME_FILES, 'resumes-directory.htaccess'], 'hostinger');
   assertRequiredFiles(migrationsDir, MIGRATION_FILES, 'hostinger/migrations');
@@ -460,29 +489,28 @@ export function prepareHostingerDeploy({
     }
   }
 
+  const baseSync = verifyHtaccessCspSync(
+    [existsSync(publicHtaccessPath) ? publicHtaccessPath : null, distHtaccessPath],
+    { requireByteMatch: true }
+  );
+  if (!baseSync.ok) {
+    throw new Error(`Divergência de CSP/.htaccess no empacotamento: ${baseSync.errors.join('; ')}`);
+  }
+
   const packedHtaccessPath = join(publicDest, '.htaccess');
   if (normalizedMode === 'staging') {
-    const baseSync = verifyHtaccessCspSync(
-      [existsSync(publicHtaccessPath) ? publicHtaccessPath : null, distHtaccessPath],
-      { requireByteMatch: true }
-    );
-    if (!baseSync.ok) {
-      throw new Error(`Divergência de CSP/.htaccess no empacotamento: ${baseSync.errors.join('; ')}`);
-    }
     const existingHtaccess = readFileSync(packedHtaccessPath, 'utf8');
     let stagingHtaccess = buildStagingAuthHtaccessBlock(validatedHtpasswdFile, validatedStagingPrivateDir) + existingHtaccess;
-    if (validatedStagingPrivateDir) {
-      stagingHtaccess = stagingHtaccess.replace(
-        'RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f [OR]',
-        `RewriteCond "${validatedStagingPrivateDir}/maintenance.flag" -f [OR]\n  RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f [OR]`
-      );
-    }
+    stagingHtaccess = injectMaintenanceFlagCondition(stagingHtaccess, validatedStagingPrivateDir);
     writeFileSync(packedHtaccessPath, stagingHtaccess, 'utf8');
   } else {
     const prodHtRaw = readFileSync(packedHtaccessPath, 'utf8');
     if (/\b(?:AuthType|AuthUserFile)\b/i.test(prodHtRaw)) {
       throw new Error('Pacote de produção rejeitado: public_html/.htaccess contém AuthType/AuthUserFile.');
     }
+    let prodHtaccess = buildProdPrivateDirHtaccessBlock(validatedProdPrivateDir) + prodHtRaw;
+    prodHtaccess = injectMaintenanceFlagCondition(prodHtaccess, validatedProdPrivateDir);
+    writeFileSync(packedHtaccessPath, prodHtaccess, 'utf8');
   }
 
   const htaccessTargets = [
@@ -491,7 +519,7 @@ export function prepareHostingerDeploy({
     packedHtaccessPath,
   ].filter(Boolean);
   const cspSync = verifyHtaccessCspSync(htaccessTargets, {
-    requireByteMatch: normalizedMode !== 'staging',
+    requireByteMatch: false,
   });
   if (!cspSync.ok) {
     throw new Error(`Divergência de CSP/.htaccess no empacotamento: ${cspSync.errors.join('; ')}`);
@@ -511,6 +539,8 @@ export function prepareHostingerDeploy({
     mode: normalizedMode,
     generatedAt: new Date().toISOString(),
     outputDir: resolvedOutputDir,
+    prodPrivateDir: validatedProdPrivateDir || null,
+    stagingPrivateDir: validatedStagingPrivateDir || null,
     htaccessCspSha256: cspSync.cspSha256,
     htaccessEntries: cspSync.entries,
     publicFileCount: countFiles(publicDest),
@@ -530,6 +560,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   console.log(`[${tag}] Pacote gerado em: ${result.outputDir}`);
   console.log(`[${tag}] public_html: ${result.publicFileCount} arquivos | ajn-carreiras-private: ${result.privateFileCount} arquivos | database: ${result.migrationCount} SQLs`);
   console.log(`[${tag}] Origem: ${result.canonicalOrigin} | Indexação: ${result.indexingAllowed} | HTML noindex: ${result.allPagesNoindex} (${result.htmlFileCount}) | Contato: ${result.contactEndpoint} | Turnstile no HTML: ${mode === 'staging' ? result.hasTurnstileSiteKey : result.turnstileEnabled}`);
+  if (mode === 'production' && result.prodPrivateDir) {
+    console.log(`[${tag}] SetEnv AJN_PRIVATE_DIR="${result.prodPrivateDir}" e maintenance.flag injetados apenas em output/hostinger-deploy/public_html/.htaccess`);
+  }
   console.log(`[${tag}] SHA-256 CSP (.htaccess sincronizado): ${result.htaccessCspSha256}`);
   if (!result.turnstileEnabled && mode === 'production') {
     console.warn(`[${tag}] AVISO: dist/ foi gerado sem PUBLIC_TURNSTILE_SITE_KEY; formulários públicos de carreiras exigirão rebuild com essa variável antes de aceitar envios em produção.`);

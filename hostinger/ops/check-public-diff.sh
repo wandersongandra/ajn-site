@@ -1,19 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+ENV_NAME=""
+ENV_FILE=""
 CURRENT_PUBLIC=""
 PACKAGE_PUBLIC=""
 
 for arg in "$@"; do
   case "$arg" in
+    --env-file=*)
+      ENV_FILE="${arg#*=}"
+      [ -n "$ENV_FILE" ] || { echo "ERRO: --env-file nao pode ser vazio." >&2; exit 1; }
+      ;;
+    --env=*)
+      ENV_NAME="${arg#*=}"
+      [ -n "$ENV_NAME" ] || { echo "ERRO: --env nao pode ser vazio." >&2; exit 1; }
+      ;;
     --current-public=*)
       CURRENT_PUBLIC="${arg#*=}"
+      [ -n "$CURRENT_PUBLIC" ] || { echo "ERRO: --current-public nao pode ser vazio." >&2; exit 1; }
       ;;
     --package-public=*)
       PACKAGE_PUBLIC="${arg#*=}"
+      [ -n "$PACKAGE_PUBLIC" ] || { echo "ERRO: --package-public nao pode ser vazio." >&2; exit 1; }
       ;;
     --help|-h)
-      echo "Uso: $0 --current-public=DIR --package-public=DIR"
+      echo "Uso: $0 [--env-file=PATH] [--env=staging|prod] --current-public=DIR --package-public=DIR"
       exit 0
       ;;
     *)
@@ -22,6 +34,26 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+if [ -n "$ENV_FILE" ]; then
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "ERRO: arquivo --env-file nao encontrado: $ENV_FILE" >&2
+    exit 1
+  fi
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+fi
+
+if [ -z "$CURRENT_PUBLIC" ] && [ -n "$ENV_NAME" ]; then
+  case "$ENV_NAME" in
+    prod) CURRENT_PUBLIC="${PROD_PUBLIC:-}" ;;
+    staging) CURRENT_PUBLIC="${STG_PUBLIC:-}" ;;
+    *)
+      echo "ERRO: --env invalido: $ENV_NAME" >&2
+      exit 1
+      ;;
+  esac
+fi
 
 if [ -z "$CURRENT_PUBLIC" ] || [ -z "$PACKAGE_PUBLIC" ]; then
   echo "Informe --current-public=... e --package-public=..." >&2

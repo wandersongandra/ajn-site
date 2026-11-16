@@ -30,7 +30,13 @@ echo "SELECT 1;"
 EOF
 cat > "$TMP_ROOT/bin/mysql" <<EOF
 #!/usr/bin/env bash
-cat > "$TMP_ROOT/mysql-restored.log"
+if printf '%s\n' "\$*" | grep -q -- '-N'; then
+  printf 'DROP TABLE IF EXISTS \`admin_login_locks\`;\n'
+  printf 'DROP TABLE IF EXISTS \`security_alert_queue\`;\n'
+  printf 'DROP TABLE IF EXISTS \`schema_migrations\`;\n'
+  exit 0
+fi
+cat >> "$TMP_ROOT/mysql-restored.log"
 EOF
 chmod +x "$TMP_ROOT/bin/mysqldump" "$TMP_ROOT/bin/mysql"
 export PATH="$TMP_ROOT/bin:$PATH"
@@ -120,6 +126,9 @@ printf 'Staging#Secret!2026\n' | "$OPS_DIR/rollback.sh" staging \
   --my-cnf="$MY_CNF" >/dev/null
 
 grep -q 'v1-staging' "$TMP_ROOT/staging/public_html/index.html"
+grep -q 'DROP TABLE IF EXISTS `schema_migrations`;' "$TMP_ROOT/mysql-restored.log"
+grep -q 'DROP TABLE IF EXISTS `admin_login_locks`;' "$TMP_ROOT/mysql-restored.log"
+grep -q 'DROP TABLE IF EXISTS `security_alert_queue`;' "$TMP_ROOT/mysql-restored.log"
 grep -q 'db_staging' "$TMP_ROOT/mysql-restored.log"
 
 printf 'Prod#Secret!2026\n' | "$OPS_DIR/rollback.sh" prod \
@@ -130,7 +139,48 @@ printf 'Prod#Secret!2026\n' | "$OPS_DIR/rollback.sh" prod \
 
 grep -q 'v1-prod' "$TMP_ROOT/prod/public_html/index.html"
 grep -q 'db_prod' "$TMP_ROOT/mysql-restored.log"
-echo "PASS: rollback atomic mv + validacao de ambiente/stamp"
+echo "PASS: rollback atomic mv + drop-all tables antes do dump + validacao de ambiente/stamp"
+
+# 3b. env.sh e validacao de variaveis vazias nos wrappers
+if grep -qE 'secret|password|token|PASSPHRASE|ENCRYPTION_KEY' "$OPS_DIR/env.sh"; then
+  echo "FAIL: env.sh nao pode conter segredos" >&2
+  exit 1
+fi
+
+bash -c "
+  set -euo pipefail
+  export PROD_PUBLIC='$TMP_ROOT/prod/public_html'
+  export STG_PUBLIC='$TMP_ROOT/staging/public_html'
+  export PROD_PRIVATE='$TMP_ROOT/prod/ajn-carreiras-private'
+  export STG_PRIVATE='$TMP_ROOT/staging/ajn-carreiras-private'
+  export STG_HTPASSWD='$TMP_ROOT/staging/.htpasswd-staging'
+  export PHP_BIN='$(command -v bash)'
+  source '$OPS_DIR/env.sh'
+  '$OPS_DIR/check-layout.sh' >/dev/null
+  '$OPS_DIR/check-public-diff.sh' --env=staging --package-public='$TMP_ROOT/staging/public_html' >/dev/null
+"
+
+for empty_var in PROD_PUBLIC STG_PUBLIC PROD_PRIVATE STG_PRIVATE STG_HTPASSWD PHP_BIN; do
+  assert_fail "env.sh aborta se ${empty_var} vier vazia" \
+    bash -c "
+      export PROD_PUBLIC='$TMP_ROOT/prod/public_html'
+      export STG_PUBLIC='$TMP_ROOT/staging/public_html'
+      export PROD_PRIVATE='$TMP_ROOT/prod/ajn-carreiras-private'
+      export STG_PRIVATE='$TMP_ROOT/staging/ajn-carreiras-private'
+      export STG_HTPASSWD='$TMP_ROOT/staging/.htpasswd-staging'
+      export PHP_BIN='$(command -v bash)'
+      export ${empty_var}=''
+      source '$OPS_DIR/env.sh'
+    "
+done
+
+assert_fail "check-layout rejeita --private-dir vazio" \
+  "$OPS_DIR/check-layout.sh" --prod-public="$TMP_ROOT/prod/public_html" --staging-public="$TMP_ROOT/staging/public_html" --private-dir=""
+assert_fail "backup rejeita --public-dir vazio" \
+  "$OPS_DIR/backup.sh" --env=staging --public-dir="" --private-dir="$TMP_ROOT/staging/ajn-carreiras-private" --skip-db
+assert_fail "rollback rejeita --stamp vazio" \
+  "$OPS_DIR/rollback.sh" staging --target-base="$TMP_ROOT/staging" --stamp="" --backups-dir="$TMP_ROOT/backups"
+echo "PASS: env.sh sem segredos + wrappers aceitam env.sh e abortam em variavel vazia"
 
 # 4. check-public-diff.sh
 mkdir -p "$TMP_ROOT/curr_pub/.well-known/acme-challenge" "$TMP_ROOT/curr_pub/subapp" "$TMP_ROOT/pkg_pub/.well-known"

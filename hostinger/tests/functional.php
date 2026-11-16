@@ -2116,6 +2116,106 @@ PHP,
         && $resumeKnownRejected === null
         && is_string($resumeSafeAccepted) && $resumeSafeAccepted !== '');
 
+    // Item 2 (Runbook PROD_PRIVATE_DIR): /admin/carreiras/ retorna 503 com maintenance.flag fora de ../ajn-carreiras-private via AJN_PRIVATE_DIR
+    $extDocRoot = $tmpRoot . DIRECTORY_SEPARATOR . 'ext-prod-domain' . DIRECTORY_SEPARATOR . 'public_html';
+    $extPrivateProd = $tmpRoot . DIRECTORY_SEPARATOR . 'ajn-private' . DIRECTORY_SEPARATOR . 'prod';
+    @mkdir($extDocRoot . DIRECTORY_SEPARATOR . 'api', 0700, true);
+    @mkdir($extDocRoot . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'carreiras', 0700, true);
+    @mkdir($extPrivateProd . DIRECTORY_SEPARATOR . 'resumes', 0700, true);
+    copy(dirname(__DIR__, 2) . '/public/api/index.php', $extDocRoot . '/api/index.php');
+    file_put_contents($extDocRoot . '/admin/carreiras/index.html', '<!doctype html><html><body>Admin Static OK</body></html>');
+    foreach (['bootstrap.php', 'app.php', 'admin.php', 'applications.php', 'lgpd.php'] as $rtFile) {
+        copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . $rtFile, $extPrivateProd . DIRECTORY_SEPARATOR . $rtFile);
+    }
+    file_put_contents($extPrivateProd . '/config.php', "<?php\nreturn " . var_export([
+        'environment' => 'production',
+        'app_url' => 'https://ajnengenharia.com.br',
+        'cors_allowed_origins' => ['https://ajnengenharia.com.br'],
+        'database' => ['dsn' => 'sqlite:' . $dbFile],
+        'resume_directory' => $extPrivateProd . '/resumes',
+        'encryption_key' => $encKey,
+        'turnstile_secret_key' => 'prod-real-secret-key-min-len-99999',
+        'security_alert_email' => 'faleconosco@ajnengenharia.com.br',
+    ], true) . ";\n");
+    $extRouterFile = $tmpRoot . DIRECTORY_SEPARATOR . 'ext-prod-router.php';
+    file_put_contents($extRouterFile, sprintf(<<<'PHP'
+<?php
+$docRoot = %s;
+$privDir = %s;
+$_SERVER['DOCUMENT_ROOT'] = $docRoot;
+$_SERVER['AJN_PRIVATE_DIR'] = $privDir;
+$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$flagFile = $privDir . '/maintenance.flag';
+if (is_file($flagFile) && preg_match('#^/(?:api|admin)(?:/|$)#', $path)) {
+    require $docRoot . '/api/index.php';
+    exit;
+}
+if (preg_match('#^/api(?:/|$)#', $path)) {
+    require $docRoot . '/api/index.php';
+    exit;
+}
+if ($path === '/admin/carreiras/' || $path === '/admin/carreiras') {
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+    readfile($docRoot . '/admin/carreiras/index.html');
+    exit;
+}
+http_response_code(404);
+PHP
+        , var_export($extDocRoot, true), var_export($extPrivateProd, true)));
+
+    $extSocket = stream_socket_server('tcp://127.0.0.1:0');
+    $extSockName = is_resource($extSocket) ? stream_socket_get_name($extSocket, false) : '';
+    if (is_resource($extSocket)) fclose($extSocket);
+    $extPort = (int) substr((string) strrchr((string) $extSockName, ':'), 1);
+    $extUrl = 'http://127.0.0.1:' . $extPort;
+    $extProc = proc_open([PHP_BINARY, '-d', 'extension=sodium', '-S', '127.0.0.1:' . $extPort, '-t', $extDocRoot, $extRouterFile],
+        [0 => ['pipe', 'r'], 1 => ['file', $tmpRoot . '/ext-srv.out.log', 'a'], 2 => ['file', $tmpRoot . '/ext-srv.err.log', 'a']],
+        $extPipes, $extDocRoot);
+    if (is_resource($extProc)) fclose($extPipes[0]);
+    try {
+        for ($i = 0; $i < 40; $i++) {
+            $probe = @file_get_contents($extUrl . '/api/health', false, stream_context_create(['http' => ['ignore_errors' => true, 'timeout' => 0.2]]));
+            if ($probe !== false) break;
+            usleep(100000);
+        }
+        $extAdminOff = fn_http($extUrl, 'GET', '/admin/carreiras/');
+        $extHealthOff = fn_http($extUrl, 'GET', '/api/health');
+        file_put_contents($extPrivateProd . '/maintenance.flag', '2026-11-16T00:00:00Z');
+        $extAdminOn = fn_http($extUrl, 'GET', '/admin/carreiras/');
+        $extHealthOn = fn_http($extUrl, 'GET', '/api/health');
+
+        $directApiCode = 'register_shutdown_function(static function () { fwrite(STDERR, "\nHTTP_CODE=" . http_response_code()); }); '
+            . '$_SERVER["DOCUMENT_ROOT"] = ' . var_export($extDocRoot, true) . '; '
+            . '$_SERVER["REQUEST_URI"] = "/admin/carreiras/"; $_SERVER["REQUEST_METHOD"] = "GET"; '
+            . 'require ' . var_export($extDocRoot . '/api/index.php', true) . ';';
+        $directProc = proc_open([PHP_BINARY, '-d', 'extension=sodium', '-r', $directApiCode],
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $dp, $extDocRoot, ['AJN_PRIVATE_DIR' => $extPrivateProd]);
+        fclose($dp[0]);
+        $directOut = (string) stream_get_contents($dp[1]);
+        $directErr = (string) stream_get_contents($dp[2]);
+        fclose($dp[1]);
+        fclose($dp[2]);
+        proc_close($directProc);
+        $directHttp = preg_match('/HTTP_CODE=(\d+)/', $directErr, $dm) ? (int) $dm[1] : 0;
+    } finally {
+        @unlink($extPrivateProd . '/maintenance.flag');
+        if (is_resource($extProc)) {
+            @proc_terminate($extProc);
+            @proc_close($extProc);
+        }
+    }
+    fn_check('PROD_PRIVATE_DIR fora de ../ajn-carreiras-private via AJN_PRIVATE_DIR devolve 503 + Retry-After em /admin/carreiras/',
+        !is_dir(dirname($extDocRoot) . '/ajn-carreiras-private')
+        && ($extHealthOff['status'] ?? 0) === 200
+        && ($extAdminOff['status'] ?? 0) === 200
+        && ($extAdminOn['status'] ?? 0) === 503
+        && ($extAdminOn['headers']['retry-after'][0] ?? '') === '300'
+        && str_contains($extAdminOn['body'] ?? '', 'Sistema em manuten')
+        && ($extHealthOn['status'] ?? 0) === 503
+        && $directHttp === 503
+        && str_contains($directOut, 'Sistema em manuten'));
+
     // 4.14q Item 7: Falhas em verify-audit-chain.php e purge-expired-data.php enfileiram alerta em security_alert_queue
     $alertDb = $migRoot . DIRECTORY_SEPARATOR . 'alerts-cron.sqlite';
     copy($dbFile, $alertDb);
