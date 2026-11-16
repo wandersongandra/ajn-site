@@ -12,18 +12,19 @@ function createFixtureTree(
     siteKey = '0x4AAAAAAABkMYinukE_real_prod_key',
     forbiddenInDist = null,
     indexing = true,
+    origin = 'https://ajnengenharia.com.br',
   } = {}
 ) {
   const robotsMeta = indexing ? 'index,follow' : 'noindex,nofollow,noarchive';
   const robotsTxt = indexing
-    ? 'User-agent: *\nAllow: /\nSitemap: https://ajnengenharia.com.br/sitemap-index.xml\n'
+    ? `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap-index.xml\n`
     : 'User-agent: *\nDisallow: /\n';
   const htaccessContent =
     'Options -Indexes\nHeader always set Content-Security-Policy "default-src \'self\'; style-src \'self\'"\n';
 
   const distFiles = {
     '.htaccess': htaccessContent,
-    'index.html': `<!doctype html><html><head><meta name="robots" content="${robotsMeta}"><link rel="canonical" href="https://ajnengenharia.com.br/"></head><body></body></html>`,
+    'index.html': `<!doctype html><html><head><meta name="robots" content="${robotsMeta}"><link rel="canonical" href="${origin}/"></head><body></body></html>`,
     'robots.txt': robotsTxt,
     'api/index.php': '<?php require dirname(__DIR__, 2) . "/ajn-carreiras-private/bootstrap.php";',
     'styles/global.css': 'body{}',
@@ -57,6 +58,7 @@ function createFixtureTree(
     'applications.php',
     'bootstrap.php',
     'lgpd.php',
+    'migrate.php',
     'provision-user-mfa.php',
     'seed-admin.php',
     'verify-audit-chain.php',
@@ -66,6 +68,12 @@ function createFixtureTree(
     'send-security-alerts.php',
     'config.example.php',
     'resumes-directory.htaccess',
+    'ops/backup.sh',
+    'ops/rollback.sh',
+    'ops/check-layout.sh',
+    'ops/check-public-diff.sh',
+    'ops/run-cron.sh',
+    'ops/seed-legacy-fixtures.php',
     'config.php',
     'tests/smoke.php',
     'migrations/001_initial.sql',
@@ -101,6 +109,8 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
       'tests',
       'migrations',
       'hostinger',
+      'ops',
+      'migrate.php',
       'seed-admin.php',
       'provision-user-mfa.php',
       'verify-audit-chain.php',
@@ -123,6 +133,14 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
     }
 
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/bootstrap.php')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/migrate.php')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/backup.sh')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/rollback.sh')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/check-layout.sh')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/check-public-diff.sh')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/run-cron.sh')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/seed-legacy-fixtures.php')), false);
+    assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/ops')), false);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/verify-audit-chain.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/purge-expired-data.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/unlock-admin.php')), true);
@@ -203,32 +221,88 @@ test('falha por padrão quando Indexação=false, Turnstile=false ou sitekey é 
   }
 });
 
-test('pack:hostinger:staging grava em output/hostinger-staging, exige noindex/Disallow, aceita test key e falha em divergência CSP', () => {
+test('pack:hostinger:staging grava em output/hostinger-staging, rejeita origem prod, injeta Basic Auth apenas no staging e valida CSP', () => {
   const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-staging-'));
+  const stagingOrigin = 'https://staging.ajnengenharia.com.br';
+  const validHtpasswd = '/home/u123456/domains/staging.ajnengenharia.com.br/.htpasswd-staging';
+  const validStagingPrivate = '/home/u123456/ajn-private/staging';
   try {
     createFixtureTree(root, {
       withTurnstile: true,
       siteKey: '1x00000000000000000000AA',
       indexing: false,
+      origin: stagingOrigin,
     });
-    const stagingSummary = prepareHostingerDeploy({ rootDir: root, mode: 'staging' });
+    const stagingSummary = prepareHostingerDeploy({
+      rootDir: root,
+      mode: 'staging',
+      stagingHtpasswdFile: validHtpasswd,
+      stagingPrivateDir: validStagingPrivate,
+    });
     assert.equal(stagingSummary.mode, 'staging');
+    assert.equal(stagingSummary.canonicalOrigin, stagingOrigin);
     assert.equal(stagingSummary.indexingAllowed, false);
     assert.equal(stagingSummary.allPagesNoindex, true);
     assert.equal(stagingSummary.robotsDisallowAll, true);
     assert.equal(stagingSummary.outputDir, join(root, 'output', 'hostinger-staging'));
-    assert.equal(existsSync(join(root, 'output', 'hostinger-staging', 'public_html', '.htaccess')), true);
+    const stagingHtaccessPath = join(root, 'output', 'hostinger-staging', 'public_html', '.htaccess');
+    assert.equal(existsSync(stagingHtaccessPath), true);
     assert.equal(existsSync(join(root, 'output', 'hostinger-deploy')), false);
+    assert.equal(existsSync(join(stagingSummary.outputDir, 'ops', 'seed-legacy-fixtures.php')), true);
     assert.equal(stagingSummary.htaccessEntries.length, 3);
     assert.equal(
       new Set(stagingSummary.htaccessEntries.map((entry) => entry.cspSha256)).size,
       1,
-      'public/.htaccess, dist/.htaccess e output/.../public_html/.htaccess devem ter o mesmo SHA-256 CSP'
+      'public/.htaccess, dist/.htaccess e output/hostinger-staging/public_html/.htaccess devem ter o mesmo SHA-256 CSP'
+    );
+
+    const stagingHtaccess = readFileSync(stagingHtaccessPath, 'utf8');
+    const sharedPublicHtaccess = readFileSync(join(root, 'public', '.htaccess'), 'utf8');
+    const sharedDistHtaccess = readFileSync(join(root, 'dist', '.htaccess'), 'utf8');
+    assert.match(stagingHtaccess, /AuthType Basic/);
+    assert.match(stagingHtaccess, new RegExp(validHtpasswd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(stagingHtaccess, new RegExp(validStagingPrivate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.equal(/\bAuthType\b/i.test(sharedPublicHtaccess), false);
+    assert.equal(/\bAuthType\b/i.test(sharedDistHtaccess), false);
+
+    // 6.a: staging REJEITA canonical pointing to production hosts
+    for (const prodOrigin of ['https://ajnengenharia.com.br', 'https://www.ajnengenharia.com.br']) {
+      createFixtureTree(root, {
+        withTurnstile: true,
+        siteKey: '1x00000000000000000000AA',
+        indexing: false,
+        origin: prodOrigin,
+      });
+      assert.throws(
+        () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', stagingHtpasswdFile: validHtpasswd }),
+        /domínio de produção/
+      );
+    }
+
+    // 6.b: staging exige STAGING_HTPASSWD_FILE valido e fora de public_html
+    createFixtureTree(root, {
+      withTurnstile: true,
+      siteKey: '1x00000000000000000000AA',
+      indexing: false,
+      origin: stagingOrigin,
+    });
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', stagingHtpasswdFile: '' }),
+      /STAGING_HTPASSWD_FILE/
+    );
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', stagingHtpasswdFile: '/home/u123/public_html/.htpasswd' }),
+      /dentro de webroot público/
     );
 
     // Proibido gravar staging dentro da pasta de producao
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', outputDir: join(root, 'output', 'hostinger-deploy') }),
+      () => prepareHostingerDeploy({
+        rootDir: root,
+        mode: 'staging',
+        outputDir: join(root, 'output', 'hostinger-deploy'),
+        stagingHtpasswdFile: validHtpasswd,
+      }),
       /não pode gravar na pasta de produção/
     );
 
@@ -239,26 +313,53 @@ test('pack:hostinger:staging grava em output/hostinger-staging, exige noindex/Di
       'utf8'
     );
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging' }),
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', stagingHtpasswdFile: validHtpasswd }),
       /páginas sem meta noindex: contato\/index\.html/
     );
 
     // Staging falha se indexacao estiver ativa (index,follow + Allow: /)
-    createFixtureTree(root, { withTurnstile: true, siteKey: '1x00000000000000000000AA', indexing: true });
+    createFixtureTree(root, {
+      withTurnstile: true,
+      siteKey: '1x00000000000000000000AA',
+      indexing: true,
+      origin: stagingOrigin,
+    });
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging' }),
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', stagingHtpasswdFile: validHtpasswd }),
       /Indexação está em true/
     );
 
+    // Producao falha se .htaccess tiver AuthType Basic/AuthUserFile
+    createFixtureTree(root, {
+      withTurnstile: true,
+      siteKey: '0x4AAAAAAABkMYinukE_real_prod_key',
+      indexing: true,
+      origin: 'https://ajnengenharia.com.br',
+    });
+    writeFileSync(
+      join(root, 'public', '.htaccess'),
+      'Options -Indexes\nAuthType Basic\nAuthUserFile /home/u/.htpasswd\nHeader always set Content-Security-Policy "default-src \'self\'"\n',
+      'utf8'
+    );
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'production' }),
+      /AuthType\/AuthUserFile/
+    );
+
     // Staging + Producao falham se public/.htaccess divergir de dist/.htaccess
-    createFixtureTree(root, { withTurnstile: true, siteKey: '1x00000000000000000000AA', indexing: false });
+    createFixtureTree(root, {
+      withTurnstile: true,
+      siteKey: '1x00000000000000000000AA',
+      indexing: false,
+      origin: stagingOrigin,
+    });
     writeFileSync(
       join(root, 'dist', '.htaccess'),
       'Options -Indexes\nHeader always set Content-Security-Policy "default-src \'none\'"\n',
       'utf8'
     );
     assert.throws(
-      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging' }),
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', stagingHtpasswdFile: validHtpasswd }),
       /Divergência de CSP\/\.htaccess/
     );
   } finally {

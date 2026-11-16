@@ -32,13 +32,16 @@ function isCredentialCliFlag(arg) {
 
 export function parseLiveAuditConfig(argv = process.argv, env = process.env) {
   let rawBaseUrl = '';
+  let expectBasicAuth = false;
   for (const arg of argv.slice(2)) {
     if (isCredentialCliFlag(arg)) {
       throw new Error(
         'Credenciais Basic Auth não podem ser passadas em argumentos de linha de comando; use LIVE_AUDIT_BASIC_USER e LIVE_AUDIT_BASIC_PASS (ou LIVE_AUDIT_BASIC_AUTH) no ambiente.'
       );
     }
-    if (arg.startsWith('--url=')) {
+    if (arg === '--expect-basic-auth') {
+      expectBasicAuth = true;
+    } else if (arg.startsWith('--url=')) {
       rawBaseUrl = arg.slice('--url='.length).trim();
     } else if (!arg.startsWith('--')) {
       rawBaseUrl = arg.trim();
@@ -75,7 +78,7 @@ export function parseLiveAuditConfig(argv = process.argv, env = process.env) {
     };
   }
 
-  return { rawBaseUrl, basicAuth };
+  return { rawBaseUrl, basicAuth, expectBasicAuth };
 }
 
 function buildBasicAuthHeaders(basicAuth) {
@@ -84,7 +87,10 @@ function buildBasicAuthHeaders(basicAuth) {
   return { Authorization: `Basic ${token}` };
 }
 
-export async function runLiveHardeningAudit(rawBaseUrl, { env = process.env, basicAuth = null } = {}) {
+export async function runLiveHardeningAudit(
+  rawBaseUrl,
+  { env = process.env, basicAuth = null, expectBasicAuth = false } = {}
+) {
   if (!rawBaseUrl) {
     throw new Error('Uso: node scripts/audit-live-hardening.mjs --url=https://staging.ajnengenharia.com.br');
   }
@@ -107,6 +113,16 @@ export async function runLiveHardeningAudit(rawBaseUrl, { env = process.env, bas
       failures.push(`${name}: ${detail}`);
     }
   };
+
+  if (resolvedBasicAuth || expectBasicAuth) {
+    const unauthRes = await fetch(`${baseUrl}/`, { redirect: 'manual' });
+    const wwwAuth = unauthRes.headers.get('www-authenticate') || '';
+    record(
+      'GET / sem credenciais = 401 Basic Auth',
+      unauthRes.status === 401,
+      `status=${unauthRes.status} www-authenticate=${wwwAuth || '(ausente)'}`
+    );
+  }
 
   // 1. /api/health = 200 + headers de segurança
   const healthRes = await fetch(`${baseUrl}/api/health`, {
@@ -240,11 +256,11 @@ export async function runLiveHardeningAudit(rawBaseUrl, { env = process.env, bas
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
-    const { rawBaseUrl, basicAuth } = parseLiveAuditConfig(process.argv, process.env);
+    const { rawBaseUrl, basicAuth, expectBasicAuth } = parseLiveAuditConfig(process.argv, process.env);
     if (basicAuth) {
       console.log('[live-audit] Basic Auth configurada por variável de ambiente (credenciais omitidas).');
     }
-    const result = await runLiveHardeningAudit(rawBaseUrl, { basicAuth });
+    const result = await runLiveHardeningAudit(rawBaseUrl, { basicAuth, expectBasicAuth });
     for (const item of result.checks) {
       console.log(`[live-audit][${item.ok ? 'PASS' : 'FAIL'}] ${item.name} (${item.detail})`);
     }

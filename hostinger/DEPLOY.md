@@ -2,147 +2,175 @@
 
 Este documento define o procedimento oficial de publicação segura em **duas partes sequenciais e bloqueantes**:
 
-- **PARTE A — STAGING:** subdomínio isolado (ex.: `https://staging.ajnengenharia.com.br`), banco MySQL próprio e **zero dados reais**. A Parte B é **proibida** enquanto qualquer item da Parte A falhar.
-- **PARTE B — PRODUÇÃO:** domínio principal (`https://ajnengenharia.com.br`). Só inicia após **100% da Parte A verde** com a saída completa do `audit-live-hardening` de staging colada no registro de homologação.
+- **PARTE A — STAGING:** subdomínio isolado (`https://staging.ajnengenharia.com.br`), raiz web separada do `public_html` de produção, pasta privada isolada, banco MySQL próprio e **zero dados reais**. A Parte B é **proibida** enquanto qualquer item da Parte A falhar.
+- **PARTE B — PRODUÇÃO:** domínio principal (`https://ajnengenharia.com.br`). Só inicia após **100% da Parte A verde** com a saída completa do `audit-live-hardening` (incluindo `GET / sem credenciais = 401`) colada no gate de passagem.
 
 ---
 
-## Mapa de Variáveis e Chaves (Build vs Servidor Privado)
+## Mapa de Variáveis, Caminhos Privados e Menor Privilégio
 
 1. **`PUBLIC_TURNSTILE_SITE_KEY` (variável pública de build Astro, local/CI antes do `npm run build`):**
    - Entra no HTML dos formulários de carreiras (`/carreiras/`, `/carreiras/vaga/`, `/carreiras/talentos/`, `/carreiras/acompanhamento/`).
-   - **Staging:** use `PUBLIC_ALLOW_INDEXING=false` e a sitekey de teste oficial Cloudflare (`1x00000000000000000000AA`) ou a sitekey específica do hostname de staging.
-   - **Produção:** exige `PUBLIC_ALLOW_INDEXING=true` e a `PUBLIC_TURNSTILE_SITE_KEY` real de produção (`npm run build` e `npm run pack:hostinger` falham fechados se vazia ou `1x`/`2x`/`3x`).
-2. **`turnstile_secret_key` (segredo privado no servidor — `<DOMINIO_PRIVADO>/config.php`, chmod `0600`):**
+   - **Staging:** use `PUBLIC_ALLOW_INDEXING=false`, `PUBLIC_SITE_ORIGIN=https://staging.ajnengenharia.com.br` e sitekey de teste Cloudflare (`1x00000000000000000000AA`) ou sitekey exclusiva de staging.
+   - **Produção:** exige `PUBLIC_ALLOW_INDEXING=true`, `PUBLIC_SITE_ORIGIN=https://ajnengenharia.com.br` e `PUBLIC_TURNSTILE_SITE_KEY` real de produção (`npm run build` e `npm run pack:hostinger` falham fechados se vazia ou `1x`/`2x`/`3x`).
+2. **`turnstile_secret_key` (segredo privado no servidor — `<PRIVATE_DIR>/config.php`, chmod `0600`):**
    - Nome exato lido por `bootstrap.php`: **`turnstile_secret_key`** (nunca `turnstile_secret`; nome divergente retorna HTTP **503** fail-closed em `production`).
-   - Em `environment => 'production'`, chave ausente, curta ou `1x`/`2x`/`3x` faz os endpoints públicos responderem **HTTP 503**.
-3. **`security_alert_email` (unificado com `public/.well-known/security.txt`):**
-   - Use **`faleconosco@ajnengenharia.com.br`** (mesmo endereço divulgado em `public/.well-known/security.txt` e `SECURITY.md`) em `config.php`, salvo criação formal de caixa dedicada.
-4. **`AJN_CONFIG_PATH`:**
-   - Aceito **exclusivamente quando `PHP_SAPI === 'cli'`** (via `ajn_cli_config_path()`). Requisições web/HTTP sempre ignoram `AJN_CONFIG_PATH` e usam apenas o `config.php` irmão de `bootstrap.php`.
+3. **`STAGING_HTPASSWD_FILE` e `STAGING_PRIVATE_DIR` (empacotamento `pack:hostinger:staging`):**
+   - `STAGING_HTPASSWD_FILE` informa o caminho absoluto fora de webroot do `.htpasswd-staging` no servidor; o empacotador injeta `AuthType Basic` + `AuthUserFile` **apenas** em `output/hostinger-staging/public_html/.htaccess`, mantendo `public/.htaccess` e `dist/.htaccess` limpos para produção (onde `AuthType`/`AuthUserFile` é bloqueado pelo `pack:hostinger`).
+   - `STAGING_PRIVATE_DIR` (opcional no build, recomendado) injeta `SetEnv AJN_PRIVATE_DIR` e a condição extra de `maintenance.flag` no `.htaccess` de staging.
+4. **Separação de diretórios privados e `known_webroots` (`api/index.php` e `bootstrap.php`):**
+   - Recomendado: `$HOME/ajn-private/staging` e `$HOME/ajn-private/prod` (fora de **todas** as raízes web), configurando `AJN_PRIVATE_DIR` no ambiente/Apache (`SetEnv`) ou mantendo pasta irmã `../ajn-carreiras-private`.
+   - Tanto `public/api/index.php` quanto `ajn_private_resume_dir()` em `bootstrap.php` bloqueiam qualquer caminho dentro de `DOCUMENT_ROOT`, `AJN_KNOWN_WEBROOTS`, `config['known_webroots']` ou diretórios contendo segmentos de webroot (`public_html`, `htdocs`, `httpdocs`, `www`).
+5. **Banco de dados e menor privilégio (usuários separados no hPanel):**
+   - **`u000_ajn_migrator` (temporário / somente SSH via `$HOME/.my-migrator*.cnf`):** recebe `SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP` no hPanel apenas para rodar `migrate.php`. Nunca vai em `config.php`.
+   - **`u000_ajn_app_rw` (runtime em `config.php`):** restrito no **hPanel** exclusivamente a `SELECT, INSERT, UPDATE, DELETE` nas tabelas de carreiras (sem `DROP`, `ALTER`, `CREATE`, `TRUNCATE`, `GRANT OPTION` ou `ALL PRIVILEGES`).
+   - A migration `003_least_privilege.sql` aplica restrições internas de permissão (`DELETE FROM admin_permissions`) e **não contém SQL `GRANT`/`REVOKE`**; qualquer migration futura contendo `GRANT` ou `REVOKE` é bloqueada automaticamente pelo `migrate.php` e deve ser executada pelo **hPanel**. Sempre que o `migrate.php` conecta ao MySQL, ele consulta `SHOW GRANTS FOR CURRENT_USER()` no usuário de runtime e emite `[AVISO]` se detectar `DROP`, `ALTER`, `CREATE` ou `ALL PRIVILEGES`.
+6. **`security_alert_email` e `AJN_CONFIG_PATH`:**
+   - `security_alert_email` = **`faleconosco@ajnengenharia.com.br`** (alinhado com `public/.well-known/security.txt`).
+   - `AJN_CONFIG_PATH` é aceito **exclusivamente quando `PHP_SAPI === 'cli'`**.
+
+---
+
+## Etapa 0 — Layout Obrigatório de Webroots e Diretórios Privados (`check-layout.sh`)
+
+Antes de gerar builds, enviar arquivos ou configurar staging/produção, confira **por `realpath`** onde o hPanel aponta o `public_html` de produção e o webroot do subdomínio de staging.
+
+**REGRA BLOQUEANTE:** na Hostinger compartilhada, alguns subdomínios antigos são criados como subpasta dentro do `public_html` principal (`.../domains/ajnengenharia.com.br/public_html/staging`). **Isso é proibido**, pois exporia o staging sem proteção pelo `.htaccess`/rotas de produção e violaria o isolamento. Se acontecer, altere a raiz do subdomínio no **hPanel -> Domínios/Subdomínios -> Pasta raiz** para `$HOME/domains/staging.ajnengenharia.com.br/public_html` **antes** de continuar.
+
+Envie primeiro `hostinger/ops/` para `$HOME/ajn-ops` (`chmod +x $HOME/ajn-ops/*.sh`) e execute o validador:
+
+```bash
+chmod +x "$HOME/ajn-ops/"*.sh
+
+export PROD_PUBLIC="$HOME/domains/ajnengenharia.com.br/public_html"
+export STG_PUBLIC="$HOME/domains/staging.ajnengenharia.com.br/public_html"
+export PROD_PRIVATE="$HOME/ajn-private/prod"
+export STG_PRIVATE="$HOME/ajn-private/staging"
+
+"$HOME/ajn-ops/check-layout.sh" \
+  --prod-public="$PROD_PUBLIC" \
+  --staging-public="$STG_PUBLIC" \
+  --private-dir="$PROD_PRIVATE" \
+  --private-dir="$STG_PRIVATE"
+```
+
+Se `check-layout.sh` retornar `exit != 0` (**ABORTAR**), ajuste os diretórios no hPanel antes de prosseguir.
 
 ---
 
 ## PARTE A — STAGING
 
-Alvo padrão na Hostinger (subdomínio dedicado):
-- Diretório base do subdomínio: `$SUB_BASE="$HOME/domains/staging.ajnengenharia.com.br"`
-- Webroot público: `$SUB_BASE/public_html`
-- Diretório privado (fora do webroot, irmão de `public_html`): `$SUB_BASE/ajn-carreiras-private`
-- Flag de manutenção (fora do webroot): `$SUB_BASE/ajn-carreiras-private/maintenance.flag`
+Caminhos padrão recomendados:
+- Webroot staging: `$STG_PUBLIC="$HOME/domains/staging.ajnengenharia.com.br/public_html"`
+- Diretório privado staging (fora de webroots): `$STG_PRIVATE="$HOME/ajn-private/staging"`
+- `.htpasswd` staging (fora de webroots): `$STG_HTPASSWD="$HOME/domains/staging.ajnengenharia.com.br/.htpasswd-staging"`
+- Logs de cron (fora de webroots): `$HOME/ajn-logs/staging`
 
-### Etapa A.0 — Pré-checagens no servidor (PHP CLI, extensões, binário de cron e disco)
-
-Execute via SSH antes de mover qualquer arquivo:
+### Etapa A.0 — Pré-checagens no servidor (PHP CLI, extensões, layout e disco)
 
 ```bash
-export SUB_BASE="$HOME/domains/staging.ajnengenharia.com.br"
-mkdir -p "$HOME/backups" "$HOME/deploy-stage/staging"
+mkdir -p "$HOME/backups" "$HOME/deploy-stage/staging" "$HOME/ajn-ops" "$HOME/ajn-logs/staging" "$STG_PRIVATE/resumes"
+chmod 700 "$HOME/backups" "$HOME/ajn-ops" "$HOME/ajn-logs" "$HOME/ajn-logs/staging" "$STG_PRIVATE" "$STG_PRIVATE/resumes"
 
-# 1. Versao e modulos do PHP CLI (comparar com versao selecionada no hPanel para a web)
 PHP_BIN="$(command -v php)"
 echo "PHP_BIN=$PHP_BIN"
 "$PHP_BIN" -v
 "$PHP_BIN" -m | grep -E '^(sodium|pdo_mysql|openssl|mbstring|json|curl)$'
-
-# Confirme manualmente que sodium, pdo_mysql e openssl foram listados e que a
-# versao principal (ex.: PHP 8.2 / 8.3) coincide com a versao web do subdominio.
 "$PHP_BIN" -r 'foreach (["sodium","pdo_mysql","openssl"] as $ext) { if (!extension_loaded($ext)) { fwrite(STDERR, "Falta extensao: $ext\n"); exit(1); } } echo "CLI extensions OK\n";'
-
-# 2. Espaco em disco disponivel (exigir margem segura antes de dump e upload)
 df -h "$HOME"
+
+"$HOME/ajn-ops/check-layout.sh" \
+  --prod-public="$PROD_PUBLIC" \
+  --staging-public="$STG_PUBLIC" \
+  --private-dir="$STG_PRIVATE"
 ```
 
-### Etapa A.1 — Geração local e upload do pacote para `~/deploy-stage/staging`
+### Etapa A.1 — `.htpasswd-staging`, Build local e Upload de `output/hostinger-staging`
 
-Na sua máquina local (a partir de `astro-site/`):
+1. No servidor SSH, crie o `.htpasswd-staging` **fora** de qualquer `public_html` (nunca grave a senha no repositório ou comando em log permanente; leia a senha via stdin se preferir):
 
 ```bash
-# Build explicito de STAGING (noindex em 100% das paginas, robots Disallow: /, sitekey de teste)
+printf 'Senha staging_user: ' && IFS= read -r -s STG_PASS && echo
+"$PHP_BIN" -r '$u="staging_user"; $p=stream_get_contents(STDIN); $p=rtrim($p,"\r\n"); echo $u . ":" . password_hash($p, PASSWORD_BCRYPT) . "\n";' <<< "$STG_PASS" > "$STG_HTPASSWD"
+unset STG_PASS
+chmod 640 "$STG_HTPASSWD"
+```
+
+2. Na máquina local (dentro de `astro-site/`), gere o build de **staging** e o pacote com `AuthType Basic` injetado **exclusivamente** no `.htaccess` de `output/hostinger-staging/public_html/`:
+
+```bash
 PUBLIC_SITE_ORIGIN="https://staging.ajnengenharia.com.br" \
 PUBLIC_ALLOW_INDEXING="false" \
 PUBLIC_CONTACT_ENDPOINT="https://api.opengscgandra.tech/contact" \
 PUBLIC_TURNSTILE_SITE_KEY="1x00000000000000000000AA" \
 npm run build
 
-# Gera pacote exclusivamente em output/hostinger-staging (nunca toca output/hostinger-deploy)
+STAGING_HTPASSWD_FILE="/home/USUARIO_HOSTINGER/domains/staging.ajnengenharia.com.br/.htpasswd-staging" \
+STAGING_PRIVATE_DIR="/home/USUARIO_HOSTINGER/ajn-private/staging" \
 npm run pack:hostinger:staging
 ```
 
-Verifique na saída do comando:
-- `Modo: staging`
-- `Indexação: false` e `HTML noindex: true (182)`
-- `Turnstile no HTML: true`
-- `SHA-256 CSP (.htaccess sincronizado): <hash>`
+Confirme na saída:
+- `[pack:hostinger:staging] Modo: staging | Origem: https://staging.ajnengenharia.com.br | Indexação: false | ... | Turnstile no HTML: true`
+- `[pack:hostinger:staging] AuthType Basic injetado apenas em output/hostinger-staging/public_html/.htaccess`
+- Mesmo SHA-256 CSP entre `public/.htaccess`, `dist/.htaccess` e `output/hostinger-staging/public_html/.htaccess`.
 
-Envie o pacote gerado (`output/hostinger-staging/`) para **`~/deploy-stage/staging`** via SSH/`rsync`:
+3. Envie o pacote completo para `~/deploy-stage/staging/` (inclui `public_html/`, `ajn-carreiras-private/`, `database/`, `ops/`):
 
 ```bash
 rsync -avz --delete output/hostinger-staging/ USUARIO@HOST_SSH:~/deploy-stage/staging/
 ```
 
-No servidor, confira que `$HOME/deploy-stage/staging` contém exatamente `public_html/`, `ajn-carreiras-private/`, `database/` e `DEPLOY-CHECKLIST.md`.
-
-### Etapa A.2 — Ligar Modo Manutenção (`503` + `Retry-After` em `/api/*` e `/admin/*`)
-
-Se staging já estiver publicado, ative o arquivo-flag **fora do webroot** antes de alterar banco ou código:
+No servidor, sincronize `$HOME/ajn-ops/`:
 
 ```bash
-mkdir -p "$SUB_BASE/ajn-carreiras-private"
-date -u +"%Y-%m-%dT%H:%M:%SZ" > "$SUB_BASE/ajn-carreiras-private/maintenance.flag"
-chmod 640 "$SUB_BASE/ajn-carreiras-private/maintenance.flag"
+cp -f "$HOME/deploy-stage/staging/ops/"* "$HOME/ajn-ops/"
+chmod +x "$HOME/ajn-ops/"*.sh
 ```
 
-Se `.htaccess` e `api/index.php` já estiverem no ar, valide que `/api/*` e `/admin/*` devolvem **503** com `Retry-After` enquanto páginas institucionais seguem em **200** (ou após configurar `.htpasswd` no subdomínio):
+### Etapa A.2 — Modo Manutenção (`503` + `Retry-After`) — 1ª Implantação ou Redeploy
+
+Escolha **um** dos dois caminhos abaixo antes de tocar banco ou código:
+
+- **Caminho 1 — Primeira implantação (staging novo ainda sem `public_html` publicado):**
+  Publique um `.htaccess` mínimo de bloqueio temporário em `$STG_PUBLIC/.htaccess` (com Basic Auth se já ativo) antes de enviar/migrar o banco; esse arquivo será substituído ao final pelo `.htaccess` definitivo do pacote:
+
+```apacheconf
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(api|admin)(/|$) - [R=503,L]
+</IfModule>
+<IfModule mod_headers.c>
+  Header always set Retry-After "300" "expr=%{REQUEST_STATUS} == 503"
+</IfModule>
+```
+
+- **Caminho 2 — Staging já implantado (redeploy):**
+  Ative o arquivo-flag fora do webroot:
 
 ```bash
-curl -isS -u "staging_user:SENHA_STAGING" https://staging.ajnengenharia.com.br/api/health | head -n 15
-curl -isS -u "staging_user:SENHA_STAGING" https://staging.ajnengenharia.com.br/admin/carreiras/ | head -n 15
-curl -isS -u "staging_user:SENHA_STAGING" https://staging.ajnengenharia.com.br/ | head -n 8
+date -u +"%Y-%m-%dT%H:%M:%SZ" > "$STG_PRIVATE/maintenance.flag"
+chmod 640 "$STG_PRIVATE/maintenance.flag"
 ```
 
-### Etapa A.3 — Backup cifrado e cópia fora do servidor (Staging)
-
-Execute o backup completo com `set -euo pipefail`, gravação do marcador em `~/backups/LAST_STAMP` e teste obrigatório de decifragem + descompactação antes de prosseguir:
+Valide com `--netrc-file` (`chmod 600`, nunca passe usuário e senha em linha de comando) que `/api/health` e `/admin/carreiras/` devolvem `503` + `Retry-After` (o mesmo comando valida ambos os caminhos):
 
 ```bash
-bash -euo pipefail -c '
-  SUB_BASE="$HOME/domains/staging.ajnengenharia.com.br"
-  STAMP="staging-$(date -u +%Y%m%dT%H%M%SZ)"
-  mkdir -p "$HOME/backups"
-  printf "%s\n" "$STAMP" > "$HOME/backups/LAST_STAMP"
+install -m 600 /dev/null "$HOME/.netrc-staging"
+cat <<'EOF' > "$HOME/.netrc-staging"
+machine staging.ajnengenharia.com.br
+login staging_user
+password SENHA_DO_STAGING
+EOF
 
-  # Backup de arquivos atuais do subdominio (se existentes)
-  if [ -d "$SUB_BASE/public_html" ]; then
-    tar -czf - -C "$SUB_BASE" public_html ajn-carreiras-private 2>/dev/null \
-      | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -out "$HOME/backups/files-$STAMP.tar.gz.enc"
-    test -s "$HOME/backups/files-$STAMP.tar.gz.enc"
-    openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "$HOME/backups/files-$STAMP.tar.gz.enc" | gzip -t
-  fi
-
-  # Backup do banco de staging (se ja existir schema populado)
-  mysqldump --defaults-extra-file="$HOME/.my-migrator.cnf" --single-transaction --routines --triggers DB_STAGING \
-    | gzip -9 \
-    | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -out "$HOME/backups/db-$STAMP.sql.gz.enc"
-  test -s "$HOME/backups/db-$STAMP.sql.gz.enc"
-  openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "$HOME/backups/db-$STAMP.sql.gz.enc" | gzip -t
-  echo "BACKUP STAGING VERIFICADO: STAMP=$STAMP"
-'
+curl -isS --netrc-file "$HOME/.netrc-staging" https://staging.ajnengenharia.com.br/api/health | head -n 15
+curl -isS --netrc-file "$HOME/.netrc-staging" https://staging.ajnengenharia.com.br/admin/carreiras/ | head -n 15
+curl -isS --netrc-file "$HOME/.netrc-staging" https://staging.ajnengenharia.com.br/ | head -n 8
 ```
 
-**Obrigatório — cópia fora do servidor antes da etapa seguinte:**
+### Etapa A.3 — Credenciais Temporárias (`$HOME/.my-migrator.cnf`) e Backup Cifrado (`backup.sh`)
 
-Na máquina local de operação, copie os artefatos cifrados para cofre/armazenamento offline:
-
-```bash
-mkdir -p ./backups-offsite/staging
-scp USUARIO@HOST_SSH:~/backups/*-"$(ssh USUARIO@HOST_SSH cat ~/backups/LAST_STAMP)".* ./backups-offsite/staging/
-ls -lh ./backups-offsite/staging/
-```
-
-### Etapa A.4 — Credenciais do `migrator` em arquivo separado (`$HOME/.my-migrator.cnf`)
-
-Crie `$HOME/.my-migrator.cnf` **sempre usando `$HOME`** (evita falha de expansão literal de `~` em opções `--defaults-extra-file`) e com permissão `600`:
+1. Crie `$HOME/.my-migrator.cnf` (`chmod 600`) com o usuário migrator do banco de staging:
 
 ```bash
 install -m 600 /dev/null "$HOME/.my-migrator.cnf"
@@ -153,146 +181,206 @@ port=3306
 user=u000000000_stg_mig
 password=SENHA_DO_MIGRATOR_STAGING
 EOF
-chmod 600 "$HOME/.my-migrator.cnf"
 ```
 
-### Etapa A.5 — Configuração privada, proteções do staging (`.htpasswd` + `robots`), migrations, MFA, upload e auditoria
-
-1. **Proteção do subdomínio de staging com HTTP Basic Auth fora do webroot + `robots.txt`:**
-   - Crie o arquivo `.htpasswd-staging` **fora de `public_html`** (use `htpasswd` ou `"$PHP_BIN" -r` para gerar hash bcrypt):
+2. Execute o script versionado `hostinger/ops/backup.sh` (`--env=staging`). Se já houver publicação anterior de staging, o script cifra `public_html`, `$STG_PRIVATE` e dump MySQL com OpenSSL AES-256-CBC PBKDF2 (`-iter 600000`), valida `gzip -t` e grava **`$HOME/backups/LAST_STAMP.staging`** sem gravar a senha em disco (você digita a senha **uma vez** via prompt `read -s` e guarda apenas no seu gerenciador de senhas; passe `--skip-db` apenas na primeira criação antes do schema inicial):
 
 ```bash
-"$PHP_BIN" -r '$u="staging_user"; $p=getenv("STG_PASS"); echo $u . ":" . password_hash($p, PASSWORD_BCRYPT) . "\n";' > "$SUB_BASE/.htpasswd-staging"
-chmod 640 "$SUB_BASE/.htpasswd-staging"
+"$HOME/ajn-ops/backup.sh" \
+  --env=staging \
+  --public-dir="$STG_PUBLIC" \
+  --private-dir="$STG_PRIVATE" \
+  --db-name=DB_STAGING \
+  --my-cnf="$HOME/.my-migrator.cnf"
 ```
 
-   - Confirme que `dist/robots.txt` (`public_html/robots.txt`) contém exatamente `User-agent: *` + `Disallow: /` e **não** contém `Allow: /`.
-   - Ative **"Diretórios protegidos por senha"** no hPanel apontando para `/` do subdomínio `staging.ajnengenharia.com.br` (ou adicione o bloco `AuthType Basic` com `AuthUserFile /home/USUARIO/domains/staging.ajnengenharia.com.br/.htpasswd-staging` diretamente no `public_html/.htaccess` do servidor de staging logo após o upload do `.htaccess`). **Nunca comite `AuthUserFile` no `public/.htaccess` compartilhado do repositório.**
-
-2. **Publicar código privado e `public_html` a partir de `$HOME/deploy-stage/staging`:**
+3. **Cópia obrigatória fora do servidor (offsite):**
 
 ```bash
-mkdir -p "$SUB_BASE/public_html" "$SUB_BASE/ajn-carreiras-private/resumes"
-chmod 700 "$SUB_BASE/ajn-carreiras-private" "$SUB_BASE/ajn-carreiras-private/resumes"
+mkdir -p ./backups-offsite/staging
+scp USUARIO@HOST_SSH:~/backups/*-"$(ssh USUARIO@HOST_SSH cat ~/backups/LAST_STAMP.staging)".* ./backups-offsite/staging/
+ls -lh ./backups-offsite/staging/
+```
 
-# Preservar config.php e maintenance.flag existentes ao atualizar codigo privado
+### Etapa A.4 — Publicar Código Privado, `config.php` (`chmod 600`) e `public_html`
+
+```bash
 rsync -av --exclude='config.php' --exclude='maintenance.flag' --exclude='php-errors.log' --exclude='resumes/' \
-  "$HOME/deploy-stage/staging/ajn-carreiras-private/" "$SUB_BASE/ajn-carreiras-private/"
-cp -f "$HOME/deploy-stage/staging/ajn-carreiras-private/resumes/.htaccess" "$SUB_BASE/ajn-carreiras-private/resumes/.htaccess"
+  "$HOME/deploy-stage/staging/ajn-carreiras-private/" "$STG_PRIVATE/"
+cp -f "$HOME/deploy-stage/staging/ajn-carreiras-private/resumes/.htaccess" "$STG_PRIVATE/resumes/.htaccess"
 
-rsync -av --delete "$HOME/deploy-stage/staging/public_html/" "$SUB_BASE/public_html/"
+rsync -av --delete "$HOME/deploy-stage/staging/public_html/" "$STG_PUBLIC/"
 ```
 
-3. **Instalar/conferir `config.php` de staging (`chmod 600`) fora do webroot:**
-
-Copie `config.example.php` para `$SUB_BASE/ajn-carreiras-private/config.php` com `chmod 600`, ajustando:
+Crie/confira `$STG_PRIVATE/config.php` (`chmod 600`) a partir de `config.example.php`:
 - `'environment' => 'staging'`
 - `'app_url' => 'https://staging.ajnengenharia.com.br'`
 - `'allowed_origins' => ['https://staging.ajnengenharia.com.br']`
-- `'encryption_key'` exclusiva de staging (64 hex chars via `php -r 'echo bin2hex(random_bytes(32)), PHP_EOL;'`)
+- `'known_webroots' => ['/home/USUARIO_HOSTINGER/domains/ajnengenharia.com.br/public_html', '/home/USUARIO_HOSTINGER/domains/staging.ajnengenharia.com.br/public_html']`
+- `'encryption_key'` exclusiva de staging (`64` hex chars CSPRNG)
 - `'resume_directory' => __DIR__ . '/resumes'`
 - `'error_log_path' => __DIR__ . '/php-errors.log'`
 - `'maintenance_flag_path' => __DIR__ . '/maintenance.flag'`
 - `'security_alert_email' => 'faleconosco@ajnengenharia.com.br'`
-- `'turnstile_secret_key' => '1x0000000000000000000000000000000AA'` (ou secret do widget de staging)
-- `'database'` apontando exclusivamente para o banco e usuário runtime de staging (`u000000000_stg_app`, somente `SELECT, INSERT, UPDATE, DELETE`)
+- `'turnstile_secret_key' => '1x0000000000000000000000000000000AA'`
+- `'database'` apontando exclusivamente para `DB_STAGING` + usuário runtime restrito (`u000000000_stg_app`: apenas `SELECT, INSERT, UPDATE, DELETE` configurados no hPanel).
 
-4. **Aplicar migrations SQL (`001` -> `006`) e validar dados legados (`dry-run -> real -> dry-run`):**
+### Etapa A.5 — Dois Ciclos Obrigatórios de Teste de Banco no Staging
+
+No staging, valide obrigatoriamente os **dois cenários** antes de homologar:
+
+#### Ciclo A.1 — Banco Novo (`migrate.php` de 001 a 006)
 
 ```bash
-for sql in \
-  "$HOME/deploy-stage/staging/database/001_initial.sql" \
-  "$HOME/deploy-stage/staging/database/002_hardening.sql" \
-  "$HOME/deploy-stage/staging/database/003_least_privilege.sql" \
-  "$HOME/deploy-stage/staging/database/004_indexes.sql" \
-  "$HOME/deploy-stage/staging/database/005_security_hardening.sql" \
-  "$HOME/deploy-stage/staging/database/006_security_alerts_and_ip_locks.sql"; do
-  mysql --defaults-extra-file="$HOME/.my-migrator.cnf" DB_STAGING < "$sql"
-done
+# 1. Dry-run mostra exatamente 001..006 pendentes e consulta SHOW GRANTS do usuario de runtime
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_STAGING \
+  --dry-run
 
-"$PHP_BIN" -d extension=sodium "$SUB_BASE/ajn-carreiras-private/migrate-legacy-data.php" --dry-run
-"$PHP_BIN" -d extension=sodium "$SUB_BASE/ajn-carreiras-private/migrate-legacy-data.php"
-"$PHP_BIN" -d extension=sodium "$SUB_BASE/ajn-carreiras-private/migrate-legacy-data.php" --dry-run
+# 2. Aplicar migrations em ordem com registro de SHA-256 em schema_migrations
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_STAGING
+
+# 3. Conferir status e reexecucao idempotente (0 aplicadas na segunda passada)
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_STAGING \
+  --status
+
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_STAGING
 ```
 
-Confirme no segundo `--dry-run` que `mfa_recifrados=0, telefones_cifrados=0, tracking_migrados=0` e nenhum admin ativo está listado em `ADMIN_WITHOUT_MFA`.
+#### Ciclo A.2 — Banco Existente no Estado 004 + Fixtures Legadas -> Upgrade `005..006` + `migrate-legacy-data.php`
 
-5. **Provisionar `super_admin` e MFA via SSH (nunca senha na linha de comando):**
+Em um segundo banco de staging (`DB_STAGING_UPG`, isolado do banco de E2E), aplique apenas `001`..`004` via `migrate.php`, simule o estado pré-migrator (`DROP TABLE schema_migrations`), gere fixtures artificiais legadas (AES-GCM TOTP, admin sem MFA, telefone em texto claro e protocolo 40 bits), valide `--baseline=004`, aplique `005..006` e execute `migrate-legacy-data.php`:
+
+```bash
+mkdir -p "$HOME/deploy-stage/sql-004"
+cp "$HOME/deploy-stage/staging/database"/00[1-4]_*.sql "$HOME/deploy-stage/sql-004/"
+
+# Config temporario (CLI-only via AJN_CONFIG_PATH) apontando para DB_STAGING_UPG
+"$PHP_BIN" -r '
+  $cfg = require $argv[1];
+  $cfg["environment"] = "staging";
+  $cfg["database"]["name"] = "DB_STAGING_UPG";
+  file_put_contents($argv[2], "<?php\nreturn " . var_export($cfg, true) . ";\n");
+  chmod($argv[2], 0600);
+' "$STG_PRIVATE/config.php" "$HOME/deploy-stage/stg-upg.config.php"
+
+AJN_CONFIG_PATH="$HOME/deploy-stage/stg-upg.config.php" \
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_STAGING_UPG \
+  --migrations-dir="$HOME/deploy-stage/sql-004"
+
+# Simular banco herdado na versao 004 (sem tabela schema_migrations)
+mysql --defaults-extra-file="$HOME/.my-migrator.cnf" DB_STAGING_UPG -e "DROP TABLE schema_migrations;"
+
+# Popular fixtures sinteticas (script bloqueado em production e bloqueado se schema >= 005)
+AJN_CONFIG_PATH="$HOME/deploy-stage/stg-upg.config.php" \
+"$PHP_BIN" -d extension=sodium "$HOME/ajn-ops/seed-legacy-fixtures.php"
+
+# Baseline 004 verifica todas as tabelas/indices esperados, depois aplica somente 005 e 006
+AJN_CONFIG_PATH="$HOME/deploy-stage/stg-upg.config.php" \
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_STAGING_UPG \
+  --baseline=004
+
+AJN_CONFIG_PATH="$HOME/deploy-stage/stg-upg.config.php" \
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_STAGING_UPG
+
+# Migrar dados legados (dry-run -> real -> dry-run confirmando 0 pendencias)
+AJN_CONFIG_PATH="$HOME/deploy-stage/stg-upg.config.php" \
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate-legacy-data.php" --dry-run
+AJN_CONFIG_PATH="$HOME/deploy-stage/stg-upg.config.php" \
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate-legacy-data.php"
+AJN_CONFIG_PATH="$HOME/deploy-stage/stg-upg.config.php" \
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/migrate-legacy-data.php" --dry-run
+
+rm -rf "$HOME/deploy-stage/sql-004" "$HOME/deploy-stage/stg-upg.config.php"
+```
+
+Após validar o Ciclo A.2, aponte `config.php` de volta para o banco limpo do Ciclo A.1 e provisione o superadmin de staging:
 
 ```bash
 AJN_ADMIN_EMAIL="admin@ajnengenharia.com.br" \
 AJN_ADMIN_NAME="Administrador Staging" \
-"$PHP_BIN" -d extension=sodium "$SUB_BASE/ajn-carreiras-private/seed-admin.php"
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/seed-admin.php"
 
-"$PHP_BIN" -d extension=sodium "$SUB_BASE/ajn-carreiras-private/verify-audit-chain.php"
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/verify-audit-chain.php"
 ```
 
-### Etapa A.6 — Auditoria com manutenção desligada e limpeza de `.my-migrator.cnf`
-
-Só remova `maintenance.flag` quando migrations, `migrate-legacy-data`, `seed-admin` e `verify-audit-chain` estiverem verdes. Em seguida rode o `audit-live-hardening` passando a Basic Auth **exclusivamente via variável de ambiente** (nunca por argumento CLI ou na URL):
+### Etapa A.6 — Desligar Manutenção, Limpar Temporários e Rodar `audit-live-hardening`
 
 ```bash
-# Remova modo manutencao e credencial temporaria de migrator
-rm -f "$SUB_BASE/ajn-carreiras-private/maintenance.flag" "$HOME/.my-migrator.cnf"
+rm -f "$STG_PRIVATE/maintenance.flag" "$HOME/.my-migrator.cnf" "$HOME/.netrc-staging"
 ```
 
-Na máquina local (passando credenciais Basic Auth **apenas** via variáveis de ambiente):
+Na máquina local, execute a auditoria live passando credenciais exclusivamente por variáveis de ambiente:
 
 ```bash
 export LIVE_AUDIT_BASIC_USER="staging_user"
-export LIVE_AUDIT_BASIC_PASS="SENHA_STAGING"
-node scripts/audit-live-hardening.mjs --url=https://staging.ajnengenharia.com.br
+export LIVE_AUDIT_BASIC_PASS="SENHA_DO_STAGING"
+node scripts/audit-live-hardening.mjs --url=https://staging.ajnengenharia.com.br --expect-basic-auth
 unset LIVE_AUDIT_BASIC_USER LIVE_AUDIT_BASIC_PASS
 ```
 
-Verifique também proteção externa sem credenciais (`HTTP 401`), `robots.txt` (`Disallow: /`), meta `noindex`, e fluxo E2E no navegador (login + TOTP, step-up, vaga, candidatura com PDF, download privado, recuperação de protocolo e exclusão LGPD).
+Confirme:
+- **`[live-audit] PASS: 25/25 controles verificados`** (inclui explicitamente `GET / sem credenciais = 401 Basic Auth`).
+- Fluxo E2E completo validado no navegador (login + TOTP, step-up, vaga, candidatura com PDF, download privado, recuperação e LGPD).
 
-**PORTÃO OBRIGATÓRIO:** se qualquer item de `audit-live-hardening.mjs` ou E2E em staging falhar, **ABORTE** e corrija antes de tocar produção. Se o rollback for necessário em staging, siga o procedimento da seção **ROLLBACK Seguro por Troca Atômica (`mv`)**.
+**PORTÃO OBRIGATÓRIO:** se qualquer item falhar, **ABORTE** ou execute `rollback.sh staging`. Nunca avance para Produção com pendência em Staging.
 
-### Etapa A.7 — Crons de staging + envio e confirmação de alerta de teste
+### Etapa A.7 — 3 Crons de Staging com Wrapper de Log (Sem `/dev/null`) + Alerta de Teste
 
-No hPanel (ou `crontab`), cadastre usando o **`PHP_BIN` real obtido na Etapa A.0** (ex.: `/opt/alt/php82/usr/bin/php` ou `/usr/bin/php` retornado por `command -v php`):
+Cadastre no hPanel os **3 jobs** usando `$HOME/ajn-ops/run-cron.sh` e logs fora do webroot (`$HOME/ajn-logs/staging/`, rotação automática):
 
-- Fila de alertas (a cada 2 minutos):
-  `*/2 * * * * /CAMINHO/REAL/DO/php -d extension=sodium $HOME/domains/staging.ajnengenharia.com.br/ajn-carreiras-private/send-security-alerts.php >/dev/null 2>&1`
-- Expurgo LGPD (diário 03:30):
-  `30 3 * * * /CAMINHO/REAL/DO/php -d extension=sodium $HOME/domains/staging.ajnengenharia.com.br/ajn-carreiras-private/purge-expired-data.php >/dev/null 2>&1`
+- Envio da fila de alertas (a cada 2 minutos):
+  `*/2 * * * * /home/USUARIO/ajn-ops/run-cron.sh --log-dir=/home/USUARIO/ajn-logs/staging --name=alerts -- /CAMINHO/REAL/DO/php -d extension=sodium /home/USUARIO/ajn-private/staging/send-security-alerts.php`
+- Expurgo diário LGPD (03:30 — falha enfileira `DATA_RETENTION_PURGE_FAILED` e sai != 0):
+  `30 3 * * * /home/USUARIO/ajn-ops/run-cron.sh --log-dir=/home/USUARIO/ajn-logs/staging --name=purge -- /CAMINHO/REAL/DO/php -d extension=sodium /home/USUARIO/ajn-private/staging/purge-expired-data.php`
+- Verificação diária da cadeia de auditoria (04:00 — falha enfileira `AUDIT_CHAIN_INTEGRITY_FAILED` e sai != 0):
+  `0 4 * * * /home/USUARIO/ajn-ops/run-cron.sh --log-dir=/home/USUARIO/ajn-logs/staging --name=audit-chain -- /CAMINHO/REAL/DO/php -d extension=sodium /home/USUARIO/ajn-private/staging/verify-audit-chain.php`
 
-Execute agora o **alerta de teste operacional** e confirme o recebimento real na caixa **`faleconosco@ajnengenharia.com.br`** (e no log `audit_logs` como `SECURITY_ALERT` / `DEPLOY_TEST_ALERT`):
+Dispare e confirme o recebimento real do alerta operacional de teste em `faleconosco@ajnengenharia.com.br`:
 
 ```bash
-"$PHP_BIN" -d extension=sodium "$SUB_BASE/ajn-carreiras-private/send-security-alerts.php" --test-alert
+"$PHP_BIN" -d extension=sodium "$STG_PRIVATE/send-security-alerts.php" --test-alert
 ```
-
-Confirme `"ok":true,"testAlert":true,"recipient":"faleconosco@ajnengenharia.com.br","sent":1,"failed":0` e abra a caixa `faleconosco@ajnengenharia.com.br` para confirmar recebimento do e-mail `[ALERTA DE SEGURANCA AJN] DEPLOY_TEST_ALERT`.
 
 ---
 
 ## GATE DE PASSAGEM — SAÍDA DE STAGING OBRIGATÓRIA ANTES DE PRODUÇÃO
 
-A **PARTE B — PRODUÇÃO** só pode ser executada após registrar abaixo a saída **24/24 PASS** do `audit-live-hardening` obtida na Parte A:
+A **PARTE B — PRODUÇÃO** só pode ser iniciada após colar abaixo a saída integral de staging com **`25/25`** (incluindo `GET / sem credenciais = 401 Basic Auth`):
 
 ```text
 PENDENTE: cole aqui a saida integral de:
-node scripts/audit-live-hardening.mjs --url=https://staging.ajnengenharia.com.br
-com resultado "[live-audit] PASS: 24/24 controles verificados..." antes de iniciar a Parte B.
+node scripts/audit-live-hardening.mjs --url=https://staging.ajnengenharia.com.br --expect-basic-auth
+com resultado "[live-audit] PASS: 25/25 controles verificados..." antes de iniciar a Parte B.
 ```
 
 ---
 
 ## PARTE B — PRODUÇÃO
 
-Alvo oficial na Hostinger (`ajnengenharia.com.br`):
-- Diretório base: `$PROD_BASE="$HOME/domains/ajnengenharia.com.br"` (confirme se seu domínio raiz usa `$HOME/domains/ajnengenharia.com.br/public_html` ou `$HOME/public_html`; **jamais** misture caminhos com staging)
-- Webroot público: `$PROD_BASE/public_html`
-- Diretório privado (fora do webroot, irmão de `public_html`): `$PROD_BASE/ajn-carreiras-private`
-- Flag de manutenção (fora do webroot): `$PROD_BASE/ajn-carreiras-private/maintenance.flag`
+Caminhos padrão de produção:
+- Webroot produção: `$PROD_PUBLIC="$HOME/domains/ajnengenharia.com.br/public_html"`
+- Diretório privado produção (fora de todas as raízes web): `$PROD_PRIVATE="$HOME/ajn-private/prod"`
+- Logs de cron produção: `$HOME/ajn-logs/prod`
 
-### Etapa B.0 — Pré-checagens no servidor de produção
+### Etapa B.0 — Pré-checagens e Isolamento de Diretórios em Produção
 
 ```bash
-export PROD_BASE="$HOME/domains/ajnengenharia.com.br"
-mkdir -p "$HOME/backups" "$HOME/deploy-stage/prod"
+mkdir -p "$HOME/backups" "$HOME/deploy-stage/prod" "$HOME/ajn-ops" "$HOME/ajn-logs/prod" "$PROD_PRIVATE/resumes"
+chmod 700 "$HOME/backups" "$HOME/ajn-ops" "$HOME/ajn-logs" "$HOME/ajn-logs/prod" "$PROD_PRIVATE" "$PROD_PRIVATE/resumes"
 
 PHP_BIN="$(command -v php)"
 echo "PHP_BIN=$PHP_BIN"
@@ -300,11 +388,17 @@ echo "PHP_BIN=$PHP_BIN"
 "$PHP_BIN" -m | grep -E '^(sodium|pdo_mysql|openssl|mbstring|json|curl)$'
 "$PHP_BIN" -r 'foreach (["sodium","pdo_mysql","openssl"] as $ext) { if (!extension_loaded($ext)) { fwrite(STDERR, "Falta extensao: $ext\n"); exit(1); } } echo "CLI extensions OK\n";'
 df -h "$HOME"
+
+"$HOME/ajn-ops/check-layout.sh" \
+  --prod-public="$PROD_PUBLIC" \
+  --staging-public="$STG_PUBLIC" \
+  --private-dir="$PROD_PRIVATE" \
+  --private-dir="$STG_PRIVATE"
 ```
 
-### Etapa B.1 — Geração local do pacote de produção e upload para `~/deploy-stage/prod`
+### Etapa B.1 — Geração do Pacote de Produção e Upload para `~/deploy-stage/prod`
 
-Somente após o usuário fornecer a `PUBLIC_TURNSTILE_SITE_KEY` real de produção (`0x4...`, nunca `1x`/`2x`/`3x`):
+Somente após receber a `PUBLIC_TURNSTILE_SITE_KEY` real de produção (`0x4...`, nunca `1x`/`2x`/`3x`):
 
 ```bash
 PUBLIC_SITE_ORIGIN="https://ajnengenharia.com.br" \
@@ -314,66 +408,37 @@ PUBLIC_TURNSTILE_SITE_KEY="COLE_AQUI_SITE_KEY_REAL_TURNSTILE" \
 npm run validate
 
 npm run pack:hostinger
-```
-
-Envie o pacote gerado (`output/hostinger-deploy/`) exclusivamente para **`~/deploy-stage/prod`**:
-
-```bash
 rsync -avz --delete output/hostinger-deploy/ USUARIO@HOST_SSH:~/deploy-stage/prod/
 ```
 
-### Etapa B.2 — Ligar Modo Manutenção em Produção (`503` + `Retry-After`)
-
-Antes de backup final, migrations ou troca de arquivos, ative o arquivo-flag fora do webroot:
+No servidor, atualize os scripts operacionais:
 
 ```bash
-mkdir -p "$PROD_BASE/ajn-carreiras-private"
-date -u +"%Y-%m-%dT%H:%M:%SZ" > "$PROD_BASE/ajn-carreiras-private/maintenance.flag"
-chmod 640 "$PROD_BASE/ajn-carreiras-private/maintenance.flag"
+cp -f "$HOME/deploy-stage/prod/ops/"* "$HOME/ajn-ops/"
+chmod +x "$HOME/ajn-ops/"*.sh
+```
 
-# Valide que /api/* e /admin/* devolvem 503 + Retry-After e a home / segue em 200
+### Etapa B.2 — Ligar Modo Manutenção em Produção (`503` + `Retry-After`) — ANTES do Backup Final
+
+- **Caminho 1 — Primeira implantação em `public_html` novo:** aplique o bloco temporário `.htaccess` de 503 em `/api/*` e `/admin/*` antes de migrar banco/arquivos.
+- **Caminho 2 — Produção já no ar:** crie a flag fora do webroot:
+
+```bash
+date -u +"%Y-%m-%dT%H:%M:%SZ" > "$PROD_PRIVATE/maintenance.flag"
+chmod 640 "$PROD_PRIVATE/maintenance.flag"
+```
+
+Valide ambos com os mesmos comandos de checagem `503` + `Retry-After`:
+
+```bash
 curl -isS https://ajnengenharia.com.br/api/health | head -n 15
 curl -isS https://ajnengenharia.com.br/admin/carreiras/ | head -n 15
 curl -isS https://ajnengenharia.com.br/ | head -n 8
 ```
 
-### Etapa B.3 — Backup cifrado em Produção (`set -euo pipefail`, `LAST_STAMP`, verificação e cópia externa)
+### Etapa B.3 — Credenciais Temporárias + Backup Cifrado em Produção (`backup.sh --env=prod`)
 
-Crie `$HOME/.my-migrator.cnf` temporário (ou use usuário com permissão de dump) antes de executar:
-
-```bash
-bash -euo pipefail -c '
-  PROD_BASE="$HOME/domains/ajnengenharia.com.br"
-  STAMP="prod-$(date -u +%Y%m%dT%H%M%SZ)"
-  mkdir -p "$HOME/backups"
-  printf "%s\n" "$STAMP" > "$HOME/backups/LAST_STAMP"
-
-  # 1. Backup completo dos arquivos de public_html e pasta privada
-  tar -czf - -C "$PROD_BASE" public_html ajn-carreiras-private \
-    | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -out "$HOME/backups/files-$STAMP.tar.gz.enc"
-  test -s "$HOME/backups/files-$STAMP.tar.gz.enc"
-  openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "$HOME/backups/files-$STAMP.tar.gz.enc" | gzip -t
-
-  # 2. Backup cifrado do banco MySQL
-  mysqldump --defaults-extra-file="$HOME/.my-migrator.cnf" --single-transaction --routines --triggers DB_PRODUCAO \
-    | gzip -9 \
-    | openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -out "$HOME/backups/db-$STAMP.sql.gz.enc"
-  test -s "$HOME/backups/db-$STAMP.sql.gz.enc"
-  openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "$HOME/backups/db-$STAMP.sql.gz.enc" | gzip -t
-
-  echo "BACKUP PRODUCAO VERIFICADO: STAMP=$STAMP"
-'
-```
-
-**Obrigatório — copiar os backups cifrados para fora do servidor antes de continuar:**
-
-```bash
-mkdir -p ./backups-offsite/prod
-scp USUARIO@HOST_SSH:~/backups/*-"$(ssh USUARIO@HOST_SSH cat ~/backups/LAST_STAMP)".* ./backups-offsite/prod/
-ls -lh ./backups-offsite/prod/
-```
-
-### Etapa B.4 — Credenciais do `migrator` em arquivo separado (`$HOME/.my-migrator.cnf`)
+1. Crie `$HOME/.my-migrator.cnf` (`chmod 600`):
 
 ```bash
 install -m 600 /dev/null "$HOME/.my-migrator.cnf"
@@ -384,183 +449,194 @@ port=3306
 user=u000000000_ajn_migrator
 password=SENHA_EXCLUSIVA_DO_MIGRATOR_PRODUCAO
 EOF
-chmod 600 "$HOME/.my-migrator.cnf"
 ```
 
-### Etapa B.5 — `config.php`, migrations, `migrate-legacy-data`, MFA, upload e verificação
+2. Execute `backup.sh --env=prod` (lê a senha via `read -s` sem salvá-la no servidor e grava **`$HOME/backups/LAST_STAMP.prod`**; na primeira criação sem schema, use `--skip-db`):
 
-1. **Configurar `$PROD_BASE/ajn-carreiras-private/config.php` (`chmod 600`)** a partir de `config.example.php`:
+```bash
+"$HOME/ajn-ops/backup.sh" \
+  --env=prod \
+  --public-dir="$PROD_PUBLIC" \
+  --private-dir="$PROD_PRIVATE" \
+  --db-name=DB_PRODUCAO \
+  --my-cnf="$HOME/.my-migrator.cnf"
+```
+
+3. **Cópia obrigatória fora do servidor antes da troca:**
+
+```bash
+mkdir -p ./backups-offsite/prod
+scp USUARIO@HOST_SSH:~/backups/*-"$(ssh USUARIO@HOST_SSH cat ~/backups/LAST_STAMP.prod)".* ./backups-offsite/prod/
+ls -lh ./backups-offsite/prod/
+```
+
+### Etapa B.4 — Auditoria de Diferença em `public_html` (OBRIGATÓRIA ANTES DO `mv`)
+
+**REGRA INVIOLÁVEL:** o `public_html` atual pode conter arquivos de verificação DNS/Search Console/Meta, `.well-known/acme-challenge/*` de SSL ou pastas de subdomínios/sistemas legados que **não** estão no pacote. Rode `check-public-diff.sh` antes de preparar a troca:
+
+```bash
+"$HOME/ajn-ops/check-public-diff.sh" \
+  --current-public="$PROD_PUBLIC" \
+  --package-public="$HOME/deploy-stage/prod/public_html"
+```
+
+- Se sair com código `2` (há itens extras no servidor), **PARE IMEDIATAMENTE**, apresente a lista ao responsável e confirme explicitamente o que deve ser copiado para `"${PROD_PUBLIC}.next"` antes do `mv`. **Nunca descarte itens silenciosamente.**
+
+### Etapa B.5 — `config.php`, Troca Atômica (`mv`), Migrations (`migrate.php`) e MFA
+
+1. Atualize `$PROD_PRIVATE` mantendo `config.php`, `maintenance.flag` e `resumes/`:
+
+```bash
+rsync -av --exclude='config.php' --exclude='maintenance.flag' --exclude='php-errors.log' --exclude='resumes/' \
+  "$HOME/deploy-stage/prod/ajn-carreiras-private/" "$PROD_PRIVATE/"
+cp -f "$HOME/deploy-stage/prod/ajn-carreiras-private/resumes/.htaccess" "$PROD_PRIVATE/resumes/.htaccess"
+```
+
+2. Confira `$PROD_PRIVATE/config.php` (`chmod 600`):
    - `'environment' => 'production'`
    - `'app_url' => 'https://ajnengenharia.com.br'`
    - `'allowed_origins' => ['https://ajnengenharia.com.br', 'https://www.ajnengenharia.com.br']`
-   - `'encryption_key'`: nova chave de **produção** (64 hex chars CSPRNG, diferente da usada em staging)
-   - `'previous_encryption_keys'`: preencher apenas durante rotação de chave
+   - `'known_webroots' => ['/home/USUARIO_HOSTINGER/domains/ajnengenharia.com.br/public_html', '/home/USUARIO_HOSTINGER/domains/staging.ajnengenharia.com.br/public_html']`
+   - `'encryption_key'` exclusiva de produção (`64` hex chars CSPRNG, diferente da de staging)
+   - `'previous_encryption_keys'` apenas durante rotação de chave
    - `'resume_directory' => __DIR__ . '/resumes'`
    - `'error_log_path' => __DIR__ . '/php-errors.log'`
    - `'maintenance_flag_path' => __DIR__ . '/maintenance.flag'`
    - `'security_alert_email' => 'faleconosco@ajnengenharia.com.br'`
    - `'turnstile_secret_key' => '<SECRET_KEY_REAL_DO_PAR_TURNSTILE_DE_PRODUCAO>'`
-   - `'database'`: banco de produção e usuário runtime restrito (`u000000000_ajn_app_rw`: apenas `SELECT, INSERT, UPDATE, DELETE`)
-   - `'smtp'`: credenciais SMTP reais
+   - `'database'`: banco e usuário runtime `u000000000_ajn_app_rw` (configurado no **hPanel** apenas com `SELECT, INSERT, UPDATE, DELETE`)
 
-2. **Publicar arquivos privados e `public_html` com troca segura a partir de `~/deploy-stage/prod`:**
+3. Prepare `"${PROD_PUBLIC}.next"`, copie **somente os extras aprovados na Etapa B.4**, garanta `SetEnv AJN_PRIVATE_DIR` (se usando `$HOME/ajn-private/prod` em vez de `../ajn-carreiras-private`), e realize a troca atômica:
 
 ```bash
-mkdir -p "$PROD_BASE/ajn-carreiras-private/resumes"
-chmod 700 "$PROD_BASE/ajn-carreiras-private" "$PROD_BASE/ajn-carreiras-private/resumes"
+rm -rf "${PROD_PUBLIC}.next"
+cp -a "$HOME/deploy-stage/prod/public_html" "${PROD_PUBLIC}.next"
+# Exemplo caso existam itens aprovados na Etapa B.4:
+# cp -a "$PROD_PUBLIC/googleXXXXXXXX.html" "${PROD_PUBLIC}.next/"
 
-rsync -av --exclude='config.php' --exclude='maintenance.flag' --exclude='php-errors.log' --exclude='resumes/' \
-  "$HOME/deploy-stage/prod/ajn-carreiras-private/" "$PROD_BASE/ajn-carreiras-private/"
-cp -f "$HOME/deploy-stage/prod/ajn-carreiras-private/resumes/.htaccess" "$PROD_BASE/ajn-carreiras-private/resumes/.htaccess"
-
-# Staging de public_html antes do mv atomico (mantendo maintenance.flag ativa)
-rm -rf "$PROD_BASE/public_html.next"
-cp -a "$HOME/deploy-stage/prod/public_html" "$PROD_BASE/public_html.next"
-if [ -d "$PROD_BASE/public_html" ]; then
-  mv "$PROD_BASE/public_html" "$PROD_BASE/public_html.prev"
+if [ -d "$PROD_PUBLIC" ]; then
+  mv "$PROD_PUBLIC" "${PROD_PUBLIC}.prev"
 fi
-mv "$PROD_BASE/public_html.next" "$PROD_BASE/public_html"
+mv "${PROD_PUBLIC}.next" "$PROD_PUBLIC"
 ```
 
-3. **Aplicar migrations SQL e migrar dados legados (`dry-run -> real -> dry-run`):**
+4. Aplique migrations de forma rastreável com `migrate.php`:
+   - **Se o banco de produção já existir sem `schema_migrations` (no estado 004):** valide e registre o baseline primeiro, depois aplique somente `005` e `006`:
 
 ```bash
-for sql in \
-  "$HOME/deploy-stage/prod/database/001_initial.sql" \
-  "$HOME/deploy-stage/prod/database/002_hardening.sql" \
-  "$HOME/deploy-stage/prod/database/003_least_privilege.sql" \
-  "$HOME/deploy-stage/prod/database/004_indexes.sql" \
-  "$HOME/deploy-stage/prod/database/005_security_hardening.sql" \
-  "$HOME/deploy-stage/prod/database/006_security_alerts_and_ip_locks.sql"; do
-  mysql --defaults-extra-file="$HOME/.my-migrator.cnf" DB_PRODUCAO < "$sql"
-done
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_PRODUCAO \
+  --baseline=004
 
-"$PHP_BIN" -d extension=sodium "$PROD_BASE/ajn-carreiras-private/migrate-legacy-data.php" --dry-run
-"$PHP_BIN" -d extension=sodium "$PROD_BASE/ajn-carreiras-private/migrate-legacy-data.php"
-"$PHP_BIN" -d extension=sodium "$PROD_BASE/ajn-carreiras-private/migrate-legacy-data.php" --dry-run
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_PRODUCAO
 ```
 
-Se `migrate-legacy-data.php` reportar qualquer `ADMIN_WITHOUT_MFA`, provisione todos via SSH antes de liberar o painel:
+   - **Se for banco novo (primeira implantação):**
 
 ```bash
-AJN_ADMIN_EMAIL="operador@ajnengenharia.com.br" "$PHP_BIN" -d extension=sodium "$PROD_BASE/ajn-carreiras-private/provision-user-mfa.php"
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_PRODUCAO \
+  --dry-run
+
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_PRODUCAO
 ```
 
-Se for primeira implantação sem administradores, crie o `super_admin`:
+   - Confira que o `[AVISO]` de privilégios excessivos em runtime **não** foi emitido (`u000_ajn_app_rw` só tem `SELECT, INSERT, UPDATE, DELETE`) e finalize migração de dados legados + MFA + cadeia de auditoria:
+
+```bash
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate.php" \
+  --defaults-file="$HOME/.my-migrator.cnf" \
+  --database=DB_PRODUCAO \
+  --status
+
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate-legacy-data.php" --dry-run
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate-legacy-data.php"
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/migrate-legacy-data.php" --dry-run
+```
+
+   - Se houver qualquer `ADMIN_WITHOUT_MFA`, provisione via SSH (`provision-user-mfa.php`), ou em primeira implantação crie o `super_admin` (`seed-admin.php`):
 
 ```bash
 AJN_ADMIN_EMAIL="admin@ajnengenharia.com.br" \
 AJN_ADMIN_NAME="Administrador AJN" \
-"$PHP_BIN" -d extension=sodium "$PROD_BASE/ajn-carreiras-private/seed-admin.php"
-```
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/seed-admin.php"
 
-Valide a cadeia de auditoria e remova imediatamente o `.my-migrator.cnf`:
-
-```bash
-"$PHP_BIN" -d extension=sodium "$PROD_BASE/ajn-carreiras-private/verify-audit-chain.php"
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/verify-audit-chain.php"
 rm -f "$HOME/.my-migrator.cnf"
 ```
 
-### Etapa B.6 — Desligar Modo Manutenção e validar `audit-live-hardening` em Produção
-
-1. Desligue o modo manutenção removendo o arquivo-flag fora do webroot:
+### Etapa B.6 — Desligar Manutenção e Validar Produção
 
 ```bash
-rm -f "$PROD_BASE/ajn-carreiras-private/maintenance.flag"
+rm -f "$PROD_PRIVATE/maintenance.flag"
 ```
 
-2. Execute imediatamente a auditoria live contra produção:
+Na máquina local:
 
 ```bash
 node scripts/audit-live-hardening.mjs --url=https://ajnengenharia.com.br
+npm run audit:live-security
 ```
 
 Confirme:
 - `[live-audit] PASS: 24/24 controles verificados em https://ajnengenharia.com.br.`
-- `GET /api/health` responde `200` com `{"status":"ok",...}` **sem** campo `environment`.
-- `npm run audit:live-security` retorna PASS (HSTS + CSP restrita enforced sem `unsafe-inline` / sem `Report-Only` obsoleta + redirecionamentos `www` e HTTP -> HTTPS `301`).
-- Após estabilidade confirmada, remova a cópia antiga `rm -rf "$PROD_BASE/public_html.prev"`.
+- `GET /api/health` responde `200` sem expor `environment`.
+- Após validar estabilidade, arquive/remova `"${PROD_PUBLIC}.prev"`.
 
-### Etapa B.7 — Crons de Produção e confirmação do alerta de teste
+### Etapa B.7 — 3 Crons de Produção com Wrapper de Log (Sem `/dev/null`) + Alerta de Teste
 
-No hPanel (ou `crontab`), configure usando o **`PHP_BIN` real da Etapa B.0**:
+Cadastre no hPanel (ou `crontab`) usando o **`PHP_BIN` real da Etapa B.0** e logs rotacionados **fora de webroot** (`$HOME/ajn-logs/prod`):
 
 - Fila de alertas de segurança (a cada 2 minutos):
-  `*/2 * * * * /CAMINHO/REAL/DO/php -d extension=sodium $HOME/domains/ajnengenharia.com.br/ajn-carreiras-private/send-security-alerts.php >/dev/null 2>&1`
-- Expurgo diário de retenção LGPD (03:30):
-  `30 3 * * * /CAMINHO/REAL/DO/php -d extension=sodium $HOME/domains/ajnengenharia.com.br/ajn-carreiras-private/purge-expired-data.php >/dev/null 2>&1`
+  `*/2 * * * * /home/USUARIO/ajn-ops/run-cron.sh --log-dir=/home/USUARIO/ajn-logs/prod --name=alerts -- /CAMINHO/REAL/DO/php -d extension=sodium /home/USUARIO/ajn-private/prod/send-security-alerts.php`
+- Expurgo diário de retenção LGPD (03:30 — falha sai != 0 e enfileira `DATA_RETENTION_PURGE_FAILED`):
+  `30 3 * * * /home/USUARIO/ajn-ops/run-cron.sh --log-dir=/home/USUARIO/ajn-logs/prod --name=purge -- /CAMINHO/REAL/DO/php -d extension=sodium /home/USUARIO/ajn-private/prod/purge-expired-data.php`
+- Verificação diária de integridade da cadeia de auditoria (04:00 — falha sai != 0 e enfileira `AUDIT_CHAIN_INTEGRITY_FAILED`):
+  `0 4 * * * /home/USUARIO/ajn-ops/run-cron.sh --log-dir=/home/USUARIO/ajn-logs/prod --name=audit-chain -- /CAMINHO/REAL/DO/php -d extension=sodium /home/USUARIO/ajn-private/prod/verify-audit-chain.php`
 
-Envie um alerta de teste operacional e **confirme o recebimento na caixa `faleconosco@ajnengenharia.com.br`** (mesmo endereço do `public/.well-known/security.txt`):
+Dispare o teste operacional e **confirme a chegada real** do e-mail `[ALERTA DE SEGURANCA AJN] DEPLOY_TEST_ALERT` em **`faleconosco@ajnengenharia.com.br`**:
 
 ```bash
-"$PHP_BIN" -d extension=sodium "$PROD_BASE/ajn-carreiras-private/send-security-alerts.php" --test-alert
+"$PHP_BIN" -d extension=sodium "$PROD_PRIVATE/send-security-alerts.php" --test-alert
 ```
-
-Confirme a chegada do e-mail `[ALERTA DE SEGURANCA AJN] DEPLOY_TEST_ALERT` em `faleconosco@ajnengenharia.com.br` antes de encerrar a janela de deploy.
 
 ---
 
-## ROLLBACK Seguro por Troca Atômica (`mv`)
+## ROLLBACK Seguro por Script Versionado (`hostinger/ops/rollback.sh`)
 
-**REGRA INVIOLÁVEL:** **NUNCA** execute `rm -rf public_html` antes de extrair e validar integralmente o backup em diretório temporário.
+**REGRA INVIOLÁVEL:** **NUNCA** apague o diretório ativo antes de extrair, validar e conferir o ambiente. O script `hostinger/ops/rollback.sh` lê **`LAST_STAMP.<staging|prod>`** específico do ambiente, **ABORTA** se o prefixo do `STAMP` ou os caminhos não baterem com o ambiente informado, pede a passphrase via `read -s`, extrai/verifica em diretório temporário e realiza troca atômica por `mv`.
 
-1. Religue o modo manutenção imediatamente e identifique o `STAMP` em `~/backups/LAST_STAMP`:
-
-```bash
-export TARGET_BASE="$HOME/domains/ajnengenharia.com.br" # ou subdominio de staging
-date -u +"%Y-%m-%dT%H:%M:%SZ" > "$TARGET_BASE/ajn-carreiras-private/maintenance.flag"
-STAMP="$(cat "$HOME/backups/LAST_STAMP")"
-echo "Usando STAMP=$STAMP"
-```
-
-2. Extraia e valide o backup de arquivos em diretório temporário **antes** de tocar no diretório ativo:
+Exemplo para **Produção**:
 
 ```bash
-bash -euo pipefail -c '
-  STAMP="$(cat "$HOME/backups/LAST_STAMP")"
-  RESTORE_TMP="$HOME/restore-$STAMP"
-  rm -rf "$RESTORE_TMP"
-  mkdir -p "$RESTORE_TMP"
+# Crie $HOME/.my-migrator.cnf temporariamente se for restaurar tambem o dump MySQL
+"$HOME/ajn-ops/rollback.sh" prod \
+  --public-dir="$PROD_PUBLIC" \
+  --private-dir="$PROD_PRIVATE" \
+  --backups-dir="$HOME/backups" \
+  --db-name=DB_PRODUCAO \
+  --my-cnf="$HOME/.my-migrator.cnf"
 
-  # 1. Decifrar, extrair em diretorio temporario e conferir estrutura basica
-  openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "$HOME/backups/files-$STAMP.tar.gz.enc" \
-    | tar -xzf - -C "$RESTORE_TMP"
-
-  test -f "$RESTORE_TMP/public_html/.htaccess"
-  test -f "$RESTORE_TMP/public_html/index.html"
-  test -f "$RESTORE_TMP/public_html/api/index.php"
-  test -f "$RESTORE_TMP/ajn-carreiras-private/bootstrap.php"
-  echo "Arquivos restaurados verificados em $RESTORE_TMP"
-'
+rm -f "$HOME/.my-migrator.cnf"
 ```
 
-3. Realize a troca **atômica por `mv`** (nunca `rm -rf` antecipado):
+Exemplo para **Staging**:
 
 ```bash
-STAMP="$(cat "$HOME/backups/LAST_STAMP")"
-RESTORE_TMP="$HOME/restore-$STAMP"
+"$HOME/ajn-ops/rollback.sh" staging \
+  --public-dir="$STG_PUBLIC" \
+  --private-dir="$STG_PRIVATE" \
+  --backups-dir="$HOME/backups" \
+  --db-name=DB_STAGING \
+  --my-cnf="$HOME/.my-migrator.cnf"
 
-mv "$TARGET_BASE/public_html" "$TARGET_BASE/public_html.failed.$STAMP"
-mv "$RESTORE_TMP/public_html" "$TARGET_BASE/public_html"
-
-mv "$TARGET_BASE/ajn-carreiras-private" "$TARGET_BASE/ajn-carreiras-private.failed.$STAMP"
-mv "$RESTORE_TMP/ajn-carreiras-private" "$TARGET_BASE/ajn-carreiras-private"
-
-rm -rf "$RESTORE_TMP"
+rm -f "$HOME/.my-migrator.cnf"
 ```
 
-4. Se o schema/banco precisar ser revertido, decifre o dump e restaure com `$HOME/.my-migrator.cnf`, verificando em seguida:
-
-```bash
-bash -euo pipefail -c '
-  STAMP="$(cat "$HOME/backups/LAST_STAMP")"
-  test -s "$HOME/backups/db-$STAMP.sql.gz.enc"
-  openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "$HOME/backups/db-$STAMP.sql.gz.enc" | gzip -t
-  openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "$HOME/backups/db-$STAMP.sql.gz.enc" \
-    | gunzip \
-    | mysql --defaults-extra-file="$HOME/.my-migrator.cnf" DB_ALVO
-'
-rm -f "$HOME/.my-migrator.cnf" "$TARGET_BASE/ajn-carreiras-private/maintenance.flag"
-```
-
-5. Rode `audit-live-hardening.mjs` contra a URL restaurada e, apenas após confirmar estabilidade e preservação de evidências forenses se necessário, arquive ou remova `public_html.failed.$STAMP` e `ajn-carreiras-private.failed.$STAMP`.
+Após o rollback, execute `audit-live-hardening.mjs` contra a URL restaurada e, somente após confirmar estabilidade e preservar evidências se necessário, remova `public_html.failed.*` e `prod.failed.*`/`staging.failed.*`.

@@ -9,6 +9,7 @@ const PRIVATE_RUNTIME_FILES = [
   'applications.php',
   'bootstrap.php',
   'lgpd.php',
+  'migrate.php',
   'provision-user-mfa.php',
   'seed-admin.php',
   'verify-audit-chain.php',
@@ -17,6 +18,18 @@ const PRIVATE_RUNTIME_FILES = [
   'unlock-admin.php',
   'send-security-alerts.php',
   'config.example.php',
+];
+
+const OPS_SHARED_FILES = [
+  'check-layout.sh',
+  'backup.sh',
+  'rollback.sh',
+  'check-public-diff.sh',
+  'run-cron.sh',
+];
+
+const OPS_STAGING_ONLY_FILES = [
+  'seed-legacy-fixtures.php',
 ];
 
 const MIGRATION_FILES = [
@@ -28,19 +41,32 @@ const MIGRATION_FILES = [
   '006_security_alerts_and_ip_locks.sql',
 ];
 
+const PRODUCTION_HOSTS = new Set([
+  'ajnengenharia.com.br',
+  'www.ajnengenharia.com.br',
+]);
+
 const FORBIDDEN_IN_PUBLIC_HTML = [
   'config.php',
   'config.example.php',
   'hostinger',
   'migrations',
+  'ops',
   'tests',
+  'migrate.php',
   'seed-admin.php',
+  'seed-legacy-fixtures.php',
   'provision-user-mfa.php',
   'verify-audit-chain.php',
   'purge-expired-data.php',
   'migrate-legacy-data.php',
   'unlock-admin.php',
   'send-security-alerts.php',
+  'backup.sh',
+  'rollback.sh',
+  'check-layout.sh',
+  'check-public-diff.sh',
+  'run-cron.sh',
   'bootstrap.php',
   'admin.php',
   'applications.php',
@@ -172,21 +198,17 @@ ${blockers.length ? `## Alertas deste pacote\n\n${blockers.join('\n')}\n` : '## 
 ## 1. Estrutura gerada
 
 - \`public_html/\` (${summary.publicFileCount} arquivos): enviar para a raiz web \`public_html/\` do domínio na Hostinger (inclui \`.htaccess\`, \`.well-known/security.txt\` e \`api/index.php\`).
-- \`ajn-carreiras-private/\` (${summary.privateFileCount} arquivos): enviar para **fora** de \`public_html/\`, como pasta irmã (\`../ajn-carreiras-private/\`). **Nunca colocar dentro de \`public_html/\`.**
-- \`database/\` (${summary.migrationCount} migrations SQL): importar no banco MySQL/MariaDB dedicado ao módulo de carreiras, na ordem numérica \`001\` -> \`002\` -> \`003\` -> \`004\` -> \`005\` -> \`006\`. **Não enviar para \`public_html/\`.**
+- \`ajn-carreiras-private/\` (${summary.privateFileCount} arquivos): enviar para **fora** de todas as raizes web (ex.: \`$HOME/ajn-private/staging\` ou \`$HOME/ajn-private/prod\`). **Nunca colocar dentro de \`public_html/\`.**
+- \`database/\` (${summary.migrationCount} migrations SQL) e \`ajn-carreiras-private/migrate.php\`: aplicar no banco MySQL/MariaDB dedicado usando \`php migrate.php\` (ou \`php migrate.php --baseline=004\` em banco existente). **Não enviar para \`public_html/\`.**
 
 ## 2. Banco de dados e menor privilégio (usuário de migration vs runtime)
 
 1. Crie um banco MySQL/MariaDB exclusivo para carreiras e **dois usuários distintos** no hPanel (ou via DBA):
-   - \`u000_ajn_migrator\`: usado apenas para importar \`001_initial.sql\`, \`002_hardening.sql\`, \`003_least_privilege.sql\`, \`004_indexes.sql\`, \`005_security_hardening.sql\` e \`006_security_alerts_and_ip_locks.sql\`.
-   - \`u000_ajn_app_rw\`: usuário de runtime em \`config.php\`, restrito exclusivamente a \`SELECT, INSERT, UPDATE, DELETE\` nas tabelas do sistema (sem \`DROP\`, \`ALTER\`, \`CREATE\` ou \`TRUNCATE\`).
-2. Importe via CLI (consulte \`hostinger/DEPLOY.md\`) nesta ordem exata:
-   - \`database/001_initial.sql\`
-   - \`database/002_hardening.sql\`
-   - \`database/003_least_privilege.sql\`
-   - \`database/004_indexes.sql\`
-   - \`database/005_security_hardening.sql\`
-   - \`database/006_security_alerts_and_ip_locks.sql\`
+   - \`u000_ajn_migrator\`: usado apenas para aplicar migrations (\`SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP\`, nunca em \`config.php\`).
+   - \`u000_ajn_app_rw\`: usuário de runtime em \`config.php\`, restrito exclusivamente a \`SELECT, INSERT, UPDATE, DELETE\` nas tabelas do sistema (configurar privilégios no hPanel; \`migrate.php\` valida \`SHOW GRANTS FOR CURRENT_USER()\`).
+2. Execute via SSH com \`--defaults-file="$HOME/.my-migrator.cnf"\` (veja \`hostinger/DEPLOY.md\`) sobre \`database/\` (\`001_initial.sql\`, \`002_hardening.sql\`, \`003_least_privilege.sql\`, \`004_indexes.sql\`, \`005_security_hardening.sql\`, \`006_security_alerts_and_ip_locks.sql\`):
+   - Banco novo: \`php migrate.php --dry-run\` e depois \`php migrate.php\`
+   - Banco existente em 004: \`php migrate.php --baseline=004\` e depois \`php migrate.php\` + \`php migrate-legacy-data.php --dry-run\` / execução real.
 
 ## 3. Configuração privada no servidor (\`ajn-carreiras-private/\`)
 
@@ -260,12 +282,53 @@ php verify-audit-chain.php
 `;
 }
 
+function validateSafeServerPosixPath(rawValue, label) {
+  const val = String(rawValue ?? '').trim();
+  if (!val) {
+    throw new Error(`${label} é obrigatório neste modo e deve apontar para caminho absoluto fora de public_html.`);
+  }
+  if (!val.startsWith('/')) {
+    throw new Error(`${label} inválido ("${val}"): informe caminho absoluto POSIX iniciado em "/".`);
+  }
+  if (/[\r\n\0"']/.test(val) || /(?:^|\/)\.\.(?:\/|$)/.test(val)) {
+    throw new Error(`${label} inválido ("${val}"): contém caracteres ou travessia não permitidos.`);
+  }
+  if (/(?:^|\/)(?:public_html|htdocs|httpdocs|www)(?:\/|$)/i.test(val)) {
+    throw new Error(`${label} inseguro ("${val}"): não pode ficar dentro de webroot público.`);
+  }
+  return val.replace(/\/+$/, '') || '/';
+}
+
+function buildStagingAuthHtaccessBlock(htpasswdFile, stagingPrivateDir = '') {
+  const lines = [
+    '# BEGIN AJN_STAGING_BASIC_AUTH (injetado exclusivamente em output/hostinger-staging)',
+    'AuthType Basic',
+    'AuthName "AJN Staging - Acesso Restrito"',
+    `AuthUserFile "${htpasswdFile}"`,
+    'Require valid-user',
+    '# END AJN_STAGING_BASIC_AUTH',
+  ];
+  if (stagingPrivateDir) {
+    lines.push(
+      '<IfModule mod_env.c>',
+      `  SetEnv AJN_PRIVATE_DIR "${stagingPrivateDir}"`,
+      '</IfModule>',
+      '<IfModule mod_setenvif.c>',
+      `  SetEnvIf Request_URI "^" AJN_PRIVATE_DIR=${stagingPrivateDir}`,
+      '</IfModule>'
+    );
+  }
+  return `${lines.join('\n')}\n\n`;
+}
+
 export function prepareHostingerDeploy({
   rootDir = process.cwd(),
   mode = 'production',
   outputDir = null,
   requireIndexing = mode !== 'staging',
   requireTurnstile = mode !== 'staging',
+  stagingHtpasswdFile = process.env.STAGING_HTPASSWD_FILE ?? null,
+  stagingPrivateDir = process.env.STAGING_PRIVATE_DIR ?? process.env.AJN_PRIVATE_DIR ?? '',
 } = {}) {
   const normalizedMode = mode === 'staging' ? 'staging' : 'production';
   const productionDir = resolve(rootDir, 'output', 'hostinger-deploy');
@@ -288,7 +351,23 @@ export function prepareHostingerDeploy({
   console.log(
     `[${tag}] Modo: ${normalizedMode} | Origem: ${buildSummary.canonicalOrigin} | Indexação: ${buildSummary.indexingAllowed} | Contato: ${buildSummary.contactEndpoint} | Turnstile no HTML: ${normalizedMode === 'staging' ? buildSummary.hasTurnstileSiteKey : buildSummary.turnstileEnabled}`
   );
+  let validatedHtpasswdFile = '';
+  let validatedStagingPrivateDir = '';
   if (normalizedMode === 'staging') {
+    if (!buildSummary.canonicalOrigin) {
+      throw new Error('Pacote de staging rejeitado: PUBLIC_SITE_ORIGIN ausente no HTML compilado.');
+    }
+    let parsedOrigin;
+    try {
+      parsedOrigin = new URL(buildSummary.canonicalOrigin);
+    } catch {
+      throw new Error(`Pacote de staging rejeitado: PUBLIC_SITE_ORIGIN inválido (${buildSummary.canonicalOrigin}).`);
+    }
+    if (PRODUCTION_HOSTS.has(parsedOrigin.hostname.toLowerCase())) {
+      throw new Error(
+        `Pacote de staging rejeitado: PUBLIC_SITE_ORIGIN (${buildSummary.canonicalOrigin}) aponta para o domínio de produção.`
+      );
+    }
     if (buildSummary.indexingAllowed) {
       throw new Error('Pacote de staging rejeitado: Indexação está em true (staging exige PUBLIC_ALLOW_INDEXING=false).');
     }
@@ -302,6 +381,10 @@ export function prepareHostingerDeploy({
     }
     if (!buildSummary.hasTurnstileSiteKey) {
       throw new Error('Pacote de staging rejeitado: Turnstile ausente no HTML (aceita chave de teste 1x ou real).');
+    }
+    validatedHtpasswdFile = validateSafeServerPosixPath(stagingHtpasswdFile, 'STAGING_HTPASSWD_FILE');
+    if (String(stagingPrivateDir || '').trim() !== '') {
+      validatedStagingPrivateDir = validateSafeServerPosixPath(stagingPrivateDir, 'STAGING_PRIVATE_DIR');
     }
   } else {
     if (requireIndexing && !buildSummary.indexingAllowed) {
@@ -317,6 +400,15 @@ export function prepareHostingerDeploy({
   assertRequiredFiles(hostingerDir, [...PRIVATE_RUNTIME_FILES, 'resumes-directory.htaccess'], 'hostinger');
   assertRequiredFiles(migrationsDir, MIGRATION_FILES, 'hostinger/migrations');
 
+  for (const candidateHtaccess of [publicHtaccessPath, distHtaccessPath]) {
+    if (existsSync(candidateHtaccess)) {
+      const htRaw = readFileSync(candidateHtaccess, 'utf8');
+      if (/\b(?:AuthType|AuthUserFile)\b/i.test(htRaw)) {
+        throw new Error(`Arquivo .htaccess compartilhado não pode conter AuthType/AuthUserFile (${candidateHtaccess}).`);
+      }
+    }
+  }
+
   for (const forbidden of FORBIDDEN_IN_PUBLIC_HTML) {
     if (existsSync(join(distDir, forbidden))) {
       throw new Error(`Conteúdo privado/proibido detectado dentro de dist/: ${forbidden}`);
@@ -328,6 +420,7 @@ export function prepareHostingerDeploy({
   const privateDest = join(resolvedOutputDir, 'ajn-carreiras-private');
   const resumesDest = join(privateDest, 'resumes');
   const databaseDest = join(resolvedOutputDir, 'database');
+  const opsDest = join(resolvedOutputDir, 'ops');
 
   mkdirSync(publicDest, { recursive: true });
   mkdirSync(resumesDest, { recursive: true });
@@ -350,12 +443,56 @@ export function prepareHostingerDeploy({
     cpSync(join(migrationsDir, migration), join(databaseDest, migration));
   }
 
+  const hostingerOpsDir = join(hostingerDir, 'ops');
+  if (existsSync(hostingerOpsDir)) {
+    mkdirSync(opsDest, { recursive: true });
+    for (const opFile of OPS_SHARED_FILES) {
+      if (existsSync(join(hostingerOpsDir, opFile))) {
+        cpSync(join(hostingerOpsDir, opFile), join(opsDest, opFile));
+      }
+    }
+    if (normalizedMode === 'staging') {
+      for (const stagingOp of OPS_STAGING_ONLY_FILES) {
+        if (existsSync(join(hostingerOpsDir, stagingOp))) {
+          cpSync(join(hostingerOpsDir, stagingOp), join(opsDest, stagingOp));
+        }
+      }
+    }
+  }
+
+  const packedHtaccessPath = join(publicDest, '.htaccess');
+  if (normalizedMode === 'staging') {
+    const baseSync = verifyHtaccessCspSync(
+      [existsSync(publicHtaccessPath) ? publicHtaccessPath : null, distHtaccessPath],
+      { requireByteMatch: true }
+    );
+    if (!baseSync.ok) {
+      throw new Error(`Divergência de CSP/.htaccess no empacotamento: ${baseSync.errors.join('; ')}`);
+    }
+    const existingHtaccess = readFileSync(packedHtaccessPath, 'utf8');
+    let stagingHtaccess = buildStagingAuthHtaccessBlock(validatedHtpasswdFile, validatedStagingPrivateDir) + existingHtaccess;
+    if (validatedStagingPrivateDir) {
+      stagingHtaccess = stagingHtaccess.replace(
+        'RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f [OR]',
+        `RewriteCond "${validatedStagingPrivateDir}/maintenance.flag" -f [OR]\n  RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f [OR]`
+      );
+    }
+    writeFileSync(packedHtaccessPath, stagingHtaccess, 'utf8');
+  } else {
+    const prodHtRaw = readFileSync(packedHtaccessPath, 'utf8');
+    if (/\b(?:AuthType|AuthUserFile)\b/i.test(prodHtRaw)) {
+      throw new Error('Pacote de produção rejeitado: public_html/.htaccess contém AuthType/AuthUserFile.');
+    }
+  }
+
   const htaccessTargets = [
     existsSync(publicHtaccessPath) ? publicHtaccessPath : null,
     distHtaccessPath,
-    join(publicDest, '.htaccess'),
+    packedHtaccessPath,
   ].filter(Boolean);
-  const cspSync = verifyHtaccessCspSync(htaccessTargets);
+  const cspSync = verifyHtaccessCspSync(htaccessTargets, {
+    requireByteMatch: normalizedMode !== 'staging',
+  });
   if (!cspSync.ok) {
     throw new Error(`Divergência de CSP/.htaccess no empacotamento: ${cspSync.errors.join('; ')}`);
   }

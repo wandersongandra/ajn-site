@@ -168,16 +168,50 @@ test('audit-live-hardening recusa credenciais em CLI/URL e envia Basic Auth some
 		const unauthResult = await runLiveHardeningAudit(serverUrl, { env: {} });
 		assert.equal(unauthResult.ok, false);
 
-		// Com LIVE_AUDIT_BASIC_USER / LIVE_AUDIT_BASIC_PASS -> 24/24 PASS sem vazar segredo em detalhes
+		// Com LIVE_AUDIT_BASIC_USER / LIVE_AUDIT_BASIC_PASS -> checa GET / unauth = 401 + 24 controles autenticados (25/25)
 		const okResult = await runLiveHardeningAudit(serverUrl, {
 			env: { LIVE_AUDIT_BASIC_USER: 'staging_user', LIVE_AUDIT_BASIC_PASS: 'S3gUr0#2026:colon' },
 		});
 		assert.equal(okResult.ok, true, okResult.failures.join('\n'));
-		assert.equal(okResult.checks.length, 24);
+		assert.equal(okResult.checks.length, 25);
+		assert.equal(okResult.checks[0].name, 'GET / sem credenciais = 401 Basic Auth');
+		assert.equal(okResult.checks[0].ok, true);
 		assert.equal(okResult.basicAuthEnabled, true);
 		assert.ok(seenAuthHeaders.some((h) => h === expectedAuth));
 		assert.equal(JSON.stringify(okResult.checks).includes('S3gUr0#2026'), false);
 	} finally {
 		await new Promise((resolve) => server.close(resolve));
+	}
+
+	// Se o servidor de staging devolver 200 sem Basic Auth -> DEVE falhar mesmo com --expect-basic-auth / basicAuth
+	const leakyServer = http.createServer((req, res) => {
+		const secHeaders = {
+			'Strict-Transport-Security': 'max-age=300',
+			'Content-Security-Policy': "default-src 'self'",
+			'X-Content-Type-Options': 'nosniff',
+			'Cross-Origin-Opener-Policy': 'same-origin',
+			'Cross-Origin-Resource-Policy': 'same-origin',
+			'Referrer-Policy': 'strict-origin-when-cross-origin',
+		};
+		if (req.url === '/') {
+			res.writeHead(200, { ...secHeaders, 'Content-Type': 'text/html' });
+			res.end('<!doctype html><html><body>leaky</body></html>');
+			return;
+		}
+		res.writeHead(404, secHeaders);
+		res.end('Not Found');
+	});
+	await new Promise((resolve) => leakyServer.listen(0, '127.0.0.1', resolve));
+	try {
+		const { port } = leakyServer.address();
+		const leakyResult = await runLiveHardeningAudit(`http://127.0.0.1:${port}`, {
+			env: {},
+			expectBasicAuth: true,
+		});
+		assert.equal(leakyResult.ok, false);
+		assert.equal(leakyResult.checks[0].name, 'GET / sem credenciais = 401 Basic Auth');
+		assert.equal(leakyResult.checks[0].ok, false);
+	} finally {
+		await new Promise((resolve) => leakyServer.close(resolve));
 	}
 });

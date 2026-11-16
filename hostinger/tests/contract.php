@@ -93,10 +93,12 @@ $sendSecurityAlerts = source_contract($root . '/send-security-alerts.php');
 $migrateLegacyData = source_contract($root . '/migrate-legacy-data.php');
 $configExample = source_contract($root . '/config.example.php');
 $deployDoc = source_contract($root . '/DEPLOY.md');
+$migrateRunner = source_contract($root . '/migrate.php');
+$seedLegacyFixtures = source_contract($root . '/ops/seed-legacy-fixtures.php');
 $schemaIndexes = source_contract($root . '/migrations/004_indexes.sql');
 $schema006 = source_contract($root . '/migrations/006_security_alerts_and_ip_locks.sql');
 
-$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional, $seedAdmin, $provisionMfa, $unlockAdmin, $sendSecurityAlerts, $migrateLegacyData, $purgeExpiredData, $verifyAuditChain];
+$phpFilesToParse = [$bootstrap, $app, $applications, $admin, $lgpd, $api, $smoke, $functional, $seedAdmin, $provisionMfa, $unlockAdmin, $sendSecurityAlerts, $migrateLegacyData, $purgeExpiredData, $verifyAuditChain, $migrateRunner, $seedLegacyFixtures];
 $allPhpValid = true;
 foreach ($phpFilesToParse as $phpSource) {
     try {
@@ -134,7 +136,7 @@ check_contract('Apache/LiteSpeed desativa listagem e bloqueia dotfiles fora .wel
 check_contract('token de reset é removido da barra de endereço imediatamente após leitura',
     str_contains($adminScript, 'window.history.replaceState({}, document.title, window.location.pathname)'));
 check_contract('módulo sem travessão ou reticência tipográfica', !preg_match('/[\x{2013}\x{2014}\x{2026}]/u',
-    $bootstrap . $app . $admin . $applications . $lgpd . $functional . $seedAdmin . $provisionMfa . $careerScript . $adminScript));
+    $bootstrap . $app . $admin . $applications . $lgpd . $functional . $seedAdmin . $provisionMfa . $migrateRunner . $seedLegacyFixtures . $careerScript . $adminScript));
 
 $beginIndex = strpos($applications, '$db->beginTransaction();');
 $demoteIndex = strpos($applications, 'UPDATE resumes SET is_current=0 WHERE candidate_id=? AND is_current=1');
@@ -188,14 +190,16 @@ check_contract('RBAC centralizado deny-by-default, CSRF por sessao e validacao S
     && str_contains($app, 'ajn_enforce_central_gate')
     && str_contains($bootstrap, 'ajn_require_csrf')
     && str_contains($bootstrap, 'HTTP_SEC_FETCH_SITE'));
-check_contract('scripts CLI (todos os 7 scripts) exigem PHP_SAPI === cli',
+check_contract('scripts CLI (incluindo migrate.php e seed-legacy-fixtures.php) exigem PHP_SAPI === cli',
     str_contains($seedAdmin, "PHP_SAPI !== 'cli'")
     && str_contains($provisionMfa, "PHP_SAPI !== 'cli'")
     && str_contains($verifyAuditChain, "PHP_SAPI !== 'cli'")
     && str_contains($purgeExpiredData, "PHP_SAPI !== 'cli'")
     && str_contains($migrateLegacyData, "PHP_SAPI !== 'cli'")
     && str_contains($unlockAdmin, "PHP_SAPI !== 'cli'")
-    && str_contains($sendSecurityAlerts, "PHP_SAPI !== 'cli'"));
+    && str_contains($sendSecurityAlerts, "PHP_SAPI !== 'cli'")
+    && str_contains($migrateRunner, "PHP_SAPI !== 'cli'")
+    && str_contains($seedLegacyFixtures, "PHP_SAPI !== 'cli'"));
 
 check_contract('migration 006 cria admin_login_locks e security_alert_queue sem IF NOT EXISTS em indices',
     str_contains($schema006, 'admin_login_locks')
@@ -245,6 +249,28 @@ check_contract('modo manutenção por flag fora do webroot no .htaccess/PHP e e-
     && str_contains($configExample, 'faleconosco@ajnengenharia.com.br')
     && !str_contains($configExample . $deployDoc, 'seguranca@ajnengenharia.com.br')
     && !str_contains($configExample . $functional, 'security@ajnengenharia.com.br'));
+
+check_contract('runbook, wrappers ops/*.sh e crons usam migrate.php, backup/rollback separados, check-layout, check-public-diff, netrc e alertas em falha',
+    is_file($root . '/ops/backup.sh')
+    && is_file($root . '/ops/rollback.sh')
+    && is_file($root . '/ops/check-layout.sh')
+    && is_file($root . '/ops/check-public-diff.sh')
+    && is_file($root . '/ops/run-cron.sh')
+    && str_contains($verifyAuditChain, 'AUDIT_CHAIN_INTEGRITY_FAILED')
+    && str_contains($purgeExpiredData, 'DATA_RETENTION_PURGE_FAILED')
+    && !str_contains($schema006, 'GRANT ')
+    && str_contains($deployDoc, 'migrate.php')
+    && str_contains($deployDoc, 'backup.sh')
+    && str_contains($deployDoc, 'rollback.sh')
+    && str_contains($deployDoc, 'check-layout.sh')
+    && str_contains($deployDoc, 'check-public-diff.sh')
+    && str_contains($deployDoc, 'run-cron.sh')
+    && str_contains($deployDoc, '--netrc-file')
+    && str_contains($deployDoc, 'verify-audit-chain.php')
+    && !str_contains($deployDoc, 'for sql in')
+    && !str_contains($deployDoc, 'curl -u')
+    && !str_contains($deployDoc, 'curl -isS -u')
+    && !str_contains($deployDoc, '>/dev/null'));
 
 foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);

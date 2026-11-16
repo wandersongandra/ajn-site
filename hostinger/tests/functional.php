@@ -1911,6 +1911,255 @@ PHP,
         $liveAuditCode === 0 && str_contains($liveAuditOut, '[live-audit] PASS:'),
         trim($liveAuditErr !== '' ? $liveAuditErr : $liveAuditOut));
 
+    // 4.14n Item 2: Runner de migrations hostinger/migrate.php (banco novo, baseline=004, erro no meio, drift, idempotencia e GRANTs)
+    $schemaMigrateScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'migrate.php';
+    $migRoot = $tmpRoot . DIRECTORY_SEPARATOR . 'mig-suite';
+    @mkdir($migRoot, 0700, true);
+    $writeMigConfig = static function (string $cfgPath, string $dbPath, string $envName = 'staging') use ($tmpRoot, $encKey): void {
+        $cfg = [
+            'environment' => $envName,
+            'app_url' => 'https://staging.ajnengenharia.com.br',
+            'database' => ['dsn' => 'sqlite:' . $dbPath],
+            'resume_directory' => $tmpRoot . DIRECTORY_SEPARATOR . 'resumes',
+            'encryption_key' => $encKey,
+            'turnstile_secret_key' => '1x0000000000000000000000000000000AA',
+            'security_alert_email' => 'faleconosco@ajnengenharia.com.br',
+            'test_bypass_network' => true,
+        ];
+        file_put_contents($cfgPath, "<?php\nreturn " . var_export($cfg, true) . ";\n");
+    };
+
+    $freshDb = $migRoot . DIRECTORY_SEPARATOR . 'fresh.sqlite';
+    $freshCfg = $migRoot . DIRECTORY_SEPARATOR . 'fresh.config.php';
+    $writeMigConfig($freshCfg, $freshDb, 'staging');
+    $migDry = $runCliScript($schemaMigrateScript, ['--dry-run'], ['AJN_CONFIG_PATH' => $freshCfg]);
+    $migRun1 = $runCliScript($schemaMigrateScript, [], ['AJN_CONFIG_PATH' => $freshCfg]);
+    $migStatus = $runCliScript($schemaMigrateScript, ['--status'], ['AJN_CONFIG_PATH' => $freshCfg]);
+    $migRun2 = $runCliScript($schemaMigrateScript, [], ['AJN_CONFIG_PATH' => $freshCfg]);
+    $freshPdo = new PDO('sqlite:' . $freshDb);
+    $appliedRows = $freshPdo->query('SELECT name, checksum FROM schema_migrations ORDER BY name ASC')->fetchAll(PDO::FETCH_ASSOC);
+    $freshPdo = null;
+
+    // Erro no meio da migration para imediatamente sem gravar proxima; checksum alterado recusa execucao e status
+    $errDir = $migRoot . DIRECTORY_SEPARATOR . 'sql-err';
+    @mkdir($errDir, 0700, true);
+    copy(dirname(__DIR__) . '/migrations/001_initial.sql', $errDir . '/001_initial.sql');
+    file_put_contents($errDir . '/002_broken.sql', "CREATE TABLE t_ok (id INTEGER);\nSELECT * FROM tabela_que_nao_existe_123;\n");
+    file_put_contents($errDir . '/003_after.sql', "CREATE TABLE t_after (id INTEGER);\n");
+    $errDb = $migRoot . DIRECTORY_SEPARATOR . 'err.sqlite';
+    $errCfg = $migRoot . DIRECTORY_SEPARATOR . 'err.config.php';
+    $writeMigConfig($errCfg, $errDb, 'staging');
+    $migBroken = $runCliScript($schemaMigrateScript, ['--migrations-dir=' . $errDir], ['AJN_CONFIG_PATH' => $errCfg]);
+    $errPdo = new PDO('sqlite:' . $errDb);
+    $errApplied = $errPdo->query('SELECT name FROM schema_migrations')->fetchAll(PDO::FETCH_COLUMN);
+    $afterExists = $errPdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='t_after'")->fetchColumn();
+    $errPdo = null;
+
+    $driftDir = $migRoot . DIRECTORY_SEPARATOR . 'sql-drift';
+    @mkdir($driftDir, 0700, true);
+    foreach (glob(dirname(__DIR__) . '/migrations/*.sql') ?: [] as $sqlFile) {
+        copy($sqlFile, $driftDir . DIRECTORY_SEPARATOR . basename($sqlFile));
+    }
+    file_put_contents($driftDir . '/001_initial.sql', "\n-- tampered checksum\n", FILE_APPEND);
+    $migDriftRun = $runCliScript($schemaMigrateScript, ['--migrations-dir=' . $driftDir], ['AJN_CONFIG_PATH' => $freshCfg]);
+    $migDriftStatus = $runCliScript($schemaMigrateScript, ['--status', '--migrations-dir=' . $driftDir], ['AJN_CONFIG_PATH' => $freshCfg]);
+
+    // Teste GRANT bloqueado em arquivo SQL + analise de SHOW GRANTS
+    $grantDir = $migRoot . DIRECTORY_SEPARATOR . 'sql-grant';
+    @mkdir($grantDir, 0700, true);
+    file_put_contents($grantDir . '/001_bad_grant.sql', "GRANT DROP ON ajn_db.* TO 'u'@'localhost';\n");
+    $grantDb = $migRoot . DIRECTORY_SEPARATOR . 'grant.sqlite';
+    $grantCfg = $migRoot . DIRECTORY_SEPARATOR . 'grant.config.php';
+    $writeMigConfig($grantCfg, $grantDb, 'staging');
+    $migGrantBlocked = $runCliScript($schemaMigrateScript, ['--migrations-dir=' . $grantDir], ['AJN_CONFIG_PATH' => $grantCfg]);
+
+    if (!defined('AJN_MIGRATE_LIB_ONLY')) {
+        define('AJN_MIGRATE_LIB_ONLY', true);
+    }
+    require_once $schemaMigrateScript;
+    $grantsSafe = ajn_migrate_analyze_grants([
+        "GRANT USAGE ON *.* TO 'u_app'@'%'",
+        "GRANT SELECT, INSERT, UPDATE, DELETE ON `ajn_carreiras`.* TO 'u_app'@'%'",
+    ]);
+    $grantsDangerous = ajn_migrate_analyze_grants([
+        "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP ON `ajn_carreiras`.* TO 'u_app'@'%'",
+    ]);
+    $grantsAll = ajn_migrate_analyze_grants(["GRANT ALL PRIVILEGES ON `ajn_carreiras`.* TO 'u_app'@'%'"]);
+
+    // Baseline=004 falha se faltar indice da 004, passa quando integro e aplica somente 005..006
+    $baseDb = $migRoot . DIRECTORY_SEPARATOR . 'base004.sqlite';
+    $baseCfg = $migRoot . DIRECTORY_SEPARATOR . 'base004.config.php';
+    $writeMigConfig($baseCfg, $baseDb, 'staging');
+    $migBasePre = $runCliScript($schemaMigrateScript, [], ['AJN_CONFIG_PATH' => $baseCfg]);
+    $basePdo = new PDO('sqlite:' . $baseDb);
+    $basePdo->exec('DROP TABLE schema_migrations');
+    $basePdo->exec('DROP INDEX idx_jobs_status_published');
+    $basePdo = null;
+    $migBaseMissing = $runCliScript($schemaMigrateScript, ['--baseline=004'], ['AJN_CONFIG_PATH' => $baseCfg]);
+
+    // Recria DB apenas com 001..004, valida baseline=004 e depois aplica 005..006
+    $mig004Dir = $migRoot . DIRECTORY_SEPARATOR . 'sql-004';
+    @mkdir($mig004Dir, 0700, true);
+    foreach (['001_initial.sql', '002_hardening.sql', '003_least_privilege.sql', '004_indexes.sql'] as $m4) {
+        copy(dirname(__DIR__) . '/migrations/' . $m4, $mig004Dir . '/' . $m4);
+    }
+    $upgDb = $migRoot . DIRECTORY_SEPARATOR . 'upg004.sqlite';
+    $upgCfg = $migRoot . DIRECTORY_SEPARATOR . 'upg004.config.php';
+    $writeMigConfig($upgCfg, $upgDb, 'staging');
+    $upgSeed004 = $runCliScript($schemaMigrateScript, ['--migrations-dir=' . $mig004Dir], ['AJN_CONFIG_PATH' => $upgCfg]);
+    $upgPdo = new PDO('sqlite:' . $upgDb);
+    $upgPdo->exec('DROP TABLE schema_migrations');
+    $upgPdo = null;
+    $migBaseOk = $runCliScript($schemaMigrateScript, ['--baseline=004'], ['AJN_CONFIG_PATH' => $upgCfg]);
+    $migAfterBase = $runCliScript($schemaMigrateScript, [], ['AJN_CONFIG_PATH' => $upgCfg]);
+
+    fn_check('CLI migrate.php: banco novo, idempotencia, erro para execucao, drift de checksum, --baseline=004 e bloqueio/alerta de GRANT',
+        $migDry['code'] === 0 && str_contains($migDry['out'], '001_initial.sql')
+        && $migRun1['code'] === 0 && str_contains($migRun1['out'], 'aplicadas=6') && count($appliedRows) === 6
+        && $migStatus['code'] === 0 && str_contains($migStatus['out'], "APPLIED\t006_security_alerts_and_ip_locks.sql")
+        && $migRun2['code'] === 0 && str_contains($migRun2['out'], 'Nenhuma migration pendente')
+        && $migBroken['code'] === 1 && $errApplied === ['001_initial.sql'] && $afterExists === false
+        && $migDriftRun['code'] === 1 && $migDriftStatus['code'] === 1
+        && $migGrantBlocked['code'] === 1 && str_contains($migGrantBlocked['err'], 'BLOQUEADO')
+        && $grantsSafe['ok'] === true && $grantsDangerous['ok'] === false && in_array('DROP', $grantsDangerous['dangerous'], true)
+        && $grantsAll['ok'] === false && in_array('ALL PRIVILEGES', $grantsAll['dangerous'], true)
+        && $migBasePre['code'] === 0
+        && $migBaseMissing['code'] === 1 && str_contains($migBaseMissing['err'], 'idx_jobs_status_published')
+        && $upgSeed004['code'] === 0
+        && $migBaseOk['code'] === 0 && str_contains($migBaseOk['out'], 'marcadas=4')
+        && $migAfterBase['code'] === 0 && str_contains($migAfterBase['out'], 'aplicadas=2'));
+
+    // 4.14o Item 6.d: seed-legacy-fixtures.php recusa prod/005+, popula 004 em staging e conclui upgrade 004->006 + migrate-legacy-data.php
+    $seedLegacyScript = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'ops' . DIRECTORY_SEPARATOR . 'seed-legacy-fixtures.php';
+    $upgProdCfg = $migRoot . DIRECTORY_SEPARATOR . 'upg004-prod.config.php';
+    $writeMigConfig($upgProdCfg, $upgDb, 'production');
+    $cycle004Db = $migRoot . DIRECTORY_SEPARATOR . 'cycle004.sqlite';
+    $cycle004Cfg = $migRoot . DIRECTORY_SEPARATOR . 'cycle004.config.php';
+    $writeMigConfig($cycle004Cfg, $cycle004Db, 'staging');
+    $cycleInit004 = $runCliScript($schemaMigrateScript, ['--migrations-dir=' . $mig004Dir], ['AJN_CONFIG_PATH' => $cycle004Cfg]);
+    $cyclePdo = new PDO('sqlite:' . $cycle004Db);
+    $cyclePdo->exec('DROP TABLE schema_migrations');
+    $cyclePdo = null;
+
+    $seedProdRefused = $runCliScript($seedLegacyScript, [], ['AJN_CONFIG_PATH' => $upgProdCfg]);
+    $seed004Ok = $runCliScript($seedLegacyScript, [], ['AJN_CONFIG_PATH' => $cycle004Cfg]);
+    $cycleBase = $runCliScript($schemaMigrateScript, ['--baseline=004'], ['AJN_CONFIG_PATH' => $cycle004Cfg]);
+    $cycleUp = $runCliScript($schemaMigrateScript, [], ['AJN_CONFIG_PATH' => $cycle004Cfg]);
+    $seedAfter005Refused = $runCliScript($seedLegacyScript, [], ['AJN_CONFIG_PATH' => $cycle004Cfg]);
+    $cycleDataMig = $runCliScript($migrateScript, [], ['AJN_CONFIG_PATH' => $cycle004Cfg]);
+    $cyclePdoCheck = new PDO('sqlite:' . $cycle004Db);
+    $cycTotp = (string) ($cyclePdoCheck->query("SELECT mfa_secret FROM admin_users WHERE email='legacy.aesgcm@example.invalid'")->fetchColumn() ?: '');
+    $cycPhone = (string) ($cyclePdoCheck->query("SELECT phone FROM candidates WHERE email='legacy.candidato@example.invalid'")->fetchColumn() ?: '');
+    $cycPhoneEnc = (string) ($cyclePdoCheck->query("SELECT phone_encrypted FROM candidates WHERE email='legacy.candidato@example.invalid'")->fetchColumn() ?: '');
+    $cycExp = (int) ($cyclePdoCheck->query("SELECT tracking_expires_at FROM job_applications WHERE id='00000000-0000-4000-8000-000000000405'")->fetchColumn() ?: 0);
+    $cyclePdoCheck = null;
+
+    fn_check('CLI ops/seed-legacy-fixtures.php (recusa prod/005+, popula 004 em staging e completa upgrade 004->006 + migrate-legacy-data)',
+        $cycleInit004['code'] === 0
+        && $seedProdRefused['code'] === 1 && str_contains($seedProdRefused['err'], 'environment=production')
+        && $seed004Ok['code'] === 0 && str_contains($seed004Ok['out'], '"ok":true')
+        && $cycleBase['code'] === 0 && $cycleUp['code'] === 0
+        && $seedAfter005Refused['code'] === 1 && str_contains($seedAfter005Refused['err'], 'migration 005')
+        && $cycleDataMig['code'] === 0
+        && str_contains($cycleDataMig['out'], '[APPLIED] mfa_recifrados=1, telefones_cifrados=1, tracking_migrados=1')
+        && str_contains($cycleDataMig['out'], 'legacy.nomfa@example.invalid')
+        && str_starts_with($cycTotp, 's1:')
+        && $cycPhone === '(**) *****-7766'
+        && str_starts_with($cycPhoneEnc, 's1:')
+        && $cycExp === 1);
+
+    // 4.14p Item 4.b: public/api/index.php e ajn_private_resume_dir recusam qualquer caminho dentro de webroots conhecidos
+    $secondWebroot = $tmpRoot . DIRECTORY_SEPARATOR . 'staging-sub' . DIRECTORY_SEPARATOR . 'public_html';
+    $badPrivateInsideDoc = $tmpRoot . DIRECTORY_SEPARATOR . 'public_doc' . DIRECTORY_SEPARATOR . 'private_leak';
+    $badPrivateInsideKnown = $secondWebroot . DIRECTORY_SEPARATOR . 'private_leak';
+    $safeResumesOut = $tmpRoot . DIRECTORY_SEPARATOR . 'ajn-private-outside' . DIRECTORY_SEPARATOR . 'resumes';
+    @mkdir($tmpRoot . DIRECTORY_SEPARATOR . 'public_doc' . DIRECTORY_SEPARATOR . 'api', 0700, true);
+    @mkdir($badPrivateInsideDoc, 0700, true);
+    @mkdir($badPrivateInsideKnown, 0700, true);
+    @mkdir($safeResumesOut, 0700, true);
+    copy(dirname(__DIR__, 2) . '/public/api/index.php', $tmpRoot . DIRECTORY_SEPARATOR . 'public_doc' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'index.php');
+    file_put_contents($badPrivateInsideDoc . '/bootstrap.php', "<?php file_put_contents(__DIR__ . '/EXECUTED', '1'); echo 'LEAKED';\n");
+    file_put_contents($badPrivateInsideKnown . '/bootstrap.php', "<?php file_put_contents(__DIR__ . '/EXECUTED', '1'); echo 'LEAKED';\n");
+
+    $runApiEntry = static function (array $env) use ($tmpRoot): array {
+        $doc = $tmpRoot . DIRECTORY_SEPARATOR . 'public_doc';
+        $code = 'register_shutdown_function(static function () { fwrite(STDERR, "\nHTTP_CODE=" . http_response_code()); }); '
+            . '$_SERVER["DOCUMENT_ROOT"] = ' . var_export($doc, true) . '; '
+            . '$_SERVER["REQUEST_URI"] = "/api/health"; $_SERVER["REQUEST_METHOD"] = "GET"; '
+            . 'require ' . var_export($doc . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'index.php', true) . ';';
+        $proc = proc_open([PHP_BINARY, '-d', 'extension=sodium', '-r', $code], [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $p, $doc, $env);
+        fclose($p[0]);
+        $out = (string) stream_get_contents($p[1]);
+        $err = (string) stream_get_contents($p[2]);
+        fclose($p[1]);
+        fclose($p[2]);
+        $rc = proc_close($proc);
+        $httpCode = 0;
+        if (preg_match('/HTTP_CODE=(\d+)/', $err, $m)) {
+            $httpCode = (int) $m[1];
+        }
+        return ['code' => $rc, 'http' => $httpCode, 'out' => $out, 'err' => $err];
+    };
+    $apiDocLeak = $runApiEntry(['AJN_PRIVATE_DIR' => $badPrivateInsideDoc]);
+    $apiKnownLeak = $runApiEntry(['AJN_PRIVATE_DIR' => $badPrivateInsideKnown, 'AJN_KNOWN_WEBROOTS' => $secondWebroot]);
+    $resumeKnownRejected = ajn_private_resume_dir([
+        'resume_directory' => $secondWebroot . DIRECTORY_SEPARATOR . 'resumes',
+        'known_webroots' => [$secondWebroot],
+    ], false);
+    $resumeSafeAccepted = ajn_private_resume_dir([
+        'resume_directory' => $safeResumesOut,
+        'known_webroots' => [$secondWebroot],
+    ], false);
+    fn_check('Webroot guard: api/index.php (503 fail-closed sem incluir bootstrap) e ajn_private_resume_dir recusam qualquer caminho dentro de webroots',
+        $apiDocLeak['http'] === 503 && !is_file($badPrivateInsideDoc . '/EXECUTED')
+        && $apiKnownLeak['http'] === 503 && !is_file($badPrivateInsideKnown . '/EXECUTED')
+        && $resumeKnownRejected === null
+        && is_string($resumeSafeAccepted) && $resumeSafeAccepted !== '');
+
+    // 4.14q Item 7: Falhas em verify-audit-chain.php e purge-expired-data.php enfileiram alerta em security_alert_queue
+    $alertDb = $migRoot . DIRECTORY_SEPARATOR . 'alerts-cron.sqlite';
+    copy($dbFile, $alertDb);
+    $alertCfg = $migRoot . DIRECTORY_SEPARATOR . 'alerts-cron.config.php';
+    $writeMigConfig($alertCfg, $alertDb, 'production');
+    $aPdo = new PDO('sqlite:' . $alertDb);
+    $aPdo->exec("UPDATE audit_logs SET details_json='{\"tampered\":true}' WHERE id = (SELECT id FROM audit_logs ORDER BY timestamp ASC LIMIT 1)");
+    $aPdo = null;
+    $verifyScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'verify-audit-chain.php';
+    $verifyFailAlert = $runCliScript($verifyScript, [], ['AJN_CONFIG_PATH' => $alertCfg]);
+
+    $aPdo2 = new PDO('sqlite:' . $alertDb);
+    $auditAlertRow = $aPdo2->query("SELECT event_type, status FROM security_alert_queue WHERE event_type='AUDIT_CHAIN_INTEGRITY_FAILED' ORDER BY created_at DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    $expCandAlertId = ajn_uuid();
+    $oldTs = time() - (400 * 86400);
+    $aPdo2->prepare('INSERT INTO candidates (id,full_name,email,phone,city,state,is_talent_pool,created_at,updated_at) VALUES (?,?,?,?,?,?,0,?,?)')
+        ->execute([$expCandAlertId, 'Exp Cron Fail', 'exp.cron@example.invalid', '(**) *****-0000', 'BH', 'MG', $oldTs, $oldTs]);
+    $resUuid = ajn_uuid();
+    $aPdo2->prepare('INSERT INTO resumes (id,candidate_id,file_key,original_filename,mime_type,file_size_bytes,file_sha256,is_current,uploaded_at) VALUES (?,?,?,?,?,?,?,1,?)')
+        ->execute([$resUuid, $expCandAlertId, $resUuid . '.pdf', 'cv.pdf', 'application/pdf', 123, str_repeat('a', 64), $oldTs]);
+    $aPdo2 = null;
+    $badResumesDir = $tmpRoot . DIRECTORY_SEPARATOR . 'public_html' . DIRECTORY_SEPARATOR . 'bad-resumes';
+    @mkdir($badResumesDir, 0700, true);
+    $badPurgeCfg = $migRoot . DIRECTORY_SEPARATOR . 'alerts-purge-bad.config.php';
+    file_put_contents($badPurgeCfg, "<?php\nreturn " . var_export([
+        'environment' => 'production',
+        'app_url' => 'https://ajnengenharia.com.br',
+        'database' => ['dsn' => 'sqlite:' . $alertDb],
+        'resume_directory' => $badResumesDir,
+        'encryption_key' => $encKey,
+        'turnstile_secret_key' => 'prod-real-secret-key-min-len-99999',
+        'security_alert_email' => 'faleconosco@ajnengenharia.com.br',
+    ], true) . ";\n");
+    $purgeFailAlert = $runCliScript($purgeScript, [], ['AJN_CONFIG_PATH' => $badPurgeCfg]);
+    $aPdo3 = new PDO('sqlite:' . $alertDb);
+    $purgeAlertRow = $aPdo3->query("SELECT event_type, status FROM security_alert_queue WHERE event_type='DATA_RETENTION_PURGE_FAILED' ORDER BY created_at DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    $aPdo3 = null;
+
+    fn_check('Crons verify-audit-chain.php e purge-expired-data.php em falha saem != 0 e enfileiram alerta na security_alert_queue',
+        $verifyFailAlert['code'] !== 0
+        && ($auditAlertRow['event_type'] ?? '') === 'AUDIT_CHAIN_INTEGRITY_FAILED'
+        && $purgeFailAlert['code'] !== 0
+        && ($purgeAlertRow['event_type'] ?? '') === 'DATA_RETENTION_PURGE_FAILED');
+
     // 4.15 Logout limpa dados e invalida cookie de sessao
     $logout = fn_http($baseUrl, 'POST', '/api/admin/auth/logout', [
         'headers' => ['Origin: ' . $appUrl],

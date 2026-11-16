@@ -240,7 +240,7 @@ export function extractCspHeaderFromHtaccess(htaccessPath) {
   };
 }
 
-export function verifyHtaccessCspSync(htaccessPaths) {
+export function verifyHtaccessCspSync(htaccessPaths, { requireByteMatch = true } = {}) {
   const resolved = htaccessPaths.filter(Boolean);
   if (resolved.length < 2) {
     throw new Error('verifyHtaccessCspSync exige ao menos 2 arquivos .htaccess.');
@@ -276,7 +276,7 @@ export function verifyHtaccessCspSync(htaccessPaths) {
           `CSP divergiu entre ${baseline.path} (${baseline.cspSha256}) e ${entry.path} (${entry.cspSha256})`
         );
       }
-      if (entry.fileSha256 !== baseline.fileSha256) {
+      if (requireByteMatch && entry.fileSha256 !== baseline.fileSha256) {
         errors.push(
           `Conteúdo .htaccess divergiu entre ${baseline.path} (${entry.fileSha256}) e ${entry.path} (${entry.fileSha256})`
         );
