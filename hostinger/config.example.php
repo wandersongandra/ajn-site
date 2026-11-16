@@ -22,6 +22,8 @@ return [
     // Chaves anteriores para rotacao sem perda de leitura (opcional):
     'previous_encryption_keys' => [],
     'resume_directory' => __DIR__ . '/resumes',
+    // Diretorios publicos conhecidos (producao + staging) fora dos quais o privado/curriculos devem permanecer
+    'known_webroots' => [],
     'error_log_path' => __DIR__ . '/php-errors.log',
     // Arquivo-flag fora do webroot para modo manutencao (503 + Retry-After em /api/* e /admin/*)
     'maintenance_flag_path' => __DIR__ . '/maintenance.flag',

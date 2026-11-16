@@ -149,22 +149,78 @@ function ajn_optional_http_url(mixed $value, int $max = 500): ?string
     return $url;
 }
 
+function ajn_normalize_fs_path(string $path): string
+{
+    $normalized = rtrim(str_replace('\\', '/', $path), '/');
+    return DIRECTORY_SEPARATOR === '\\' ? strtolower($normalized) : $normalized;
+}
+
+function ajn_known_webroots(array $config = []): array
+{
+    $candidates = [];
+    if (!empty($_SERVER['DOCUMENT_ROOT']) && is_string($_SERVER['DOCUMENT_ROOT'])) {
+        $candidates[] = $_SERVER['DOCUMENT_ROOT'];
+    }
+    foreach ([$_SERVER['AJN_KNOWN_WEBROOTS'] ?? null, getenv('AJN_KNOWN_WEBROOTS')] as $envRoots) {
+        if (is_string($envRoots) && trim($envRoots) !== '') {
+            foreach (preg_split('/[' . preg_quote(PATH_SEPARATOR, '/') . ',;]/', $envRoots) ?: [] as $item) {
+                $candidates[] = $item;
+            }
+        }
+    }
+    $cfgRoots = $config['known_webroots'] ?? [];
+    if (is_string($cfgRoots)) {
+        $cfgRoots = preg_split('/[' . preg_quote(PATH_SEPARATOR, '/') . ',;]/', $cfgRoots) ?: [];
+    }
+    if (is_array($cfgRoots)) {
+        foreach ($cfgRoots as $item) {
+            if (is_string($item)) {
+                $candidates[] = $item;
+            }
+        }
+    }
+
+    $roots = [];
+    foreach ($candidates as $raw) {
+        $trimmed = trim((string) $raw);
+        if ($trimmed === '') {
+            continue;
+        }
+        $real = realpath($trimmed);
+        if ($real !== false && is_dir($real)) {
+            $norm = ajn_normalize_fs_path($real);
+            $roots[$norm] = $real;
+        }
+    }
+    return $roots;
+}
+
+function ajn_path_is_inside_webroot(string $pathReal, array $knownWebroots): bool
+{
+    $normPath = ajn_normalize_fs_path($pathReal);
+    if ($normPath === '') {
+        return true;
+    }
+    if (preg_match('/(?:^|\/)(?:public_html|htdocs|httpdocs|www)(?:\/|$)/i', $normPath) === 1) {
+        return true;
+    }
+    foreach ($knownWebroots as $normRoot => $_raw) {
+        if ($normPath === $normRoot || str_starts_with($normPath . '/', $normRoot . '/')) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function ajn_private_resume_dir(array $config, bool $requireWritable = false): ?string
 {
     $privateRaw = trim((string) ($config['resume_directory'] ?? ''));
-    $publicRaw = trim((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''));
     $privateDirectory = $privateRaw !== '' ? realpath($privateRaw) : false;
-    $publicRoot = $publicRaw !== '' ? realpath($publicRaw) : false;
-    if (!$privateDirectory || !is_dir($privateDirectory) || ($requireWritable && !is_writable($privateDirectory)) || !$publicRoot || !is_dir($publicRoot)) {
+    $webroots = ajn_known_webroots($config);
+    if (!$privateDirectory || !is_dir($privateDirectory) || ($requireWritable && !is_writable($privateDirectory)) || $webroots === []) {
         return null;
     }
-    $normPrivate = rtrim(str_replace('\\', '/', $privateDirectory), '/');
-    $normPublic = rtrim(str_replace('\\', '/', $publicRoot), '/');
-    if (DIRECTORY_SEPARATOR === '\\') {
-        $normPrivate = strtolower($normPrivate);
-        $normPublic = strtolower($normPublic);
-    }
-    if ($normPrivate === $normPublic || str_starts_with($normPrivate . '/', $normPublic . '/')) {
+    if (ajn_path_is_inside_webroot($privateDirectory, $webroots)) {
         return null;
     }
     return $privateDirectory;
