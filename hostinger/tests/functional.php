@@ -2260,6 +2260,112 @@ PHP
         && $purgeFailAlert['code'] !== 0
         && ($purgeAlertRow['event_type'] ?? '') === 'DATA_RETENTION_PURGE_FAILED');
 
+    // 4.14r ops/init-config.php sob disable_functions gera config.php valido, chmod 600, sem imprimir segredos e recusa sobrescrever
+    $initCfgScript = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'ops' . DIRECTORY_SEPARATOR . 'init-config.php';
+    $exampleCfgPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config.example.php';
+    $initRoot = $tmpRoot . DIRECTORY_SEPARATOR . 'init-cfg-test';
+    $initPrivDir = $initRoot . DIRECTORY_SEPARATOR . 'private-staging';
+    $initPubDir = $initRoot . DIRECTORY_SEPARATOR . 'public_html';
+    @mkdir($initPrivDir, 0700, true);
+    @mkdir($initPubDir, 0700, true);
+    $runInitCfg = static function (array $args, string $stdinData) use ($initCfgScript): array {
+        $cmd = array_merge([
+            PHP_BINARY,
+            '-d', 'extension=sodium',
+            '-d', 'disable_functions=exec,shell_exec,system,passthru,proc_open,popen,parse_ini_file,show_source',
+            $initCfgScript,
+        ], $args);
+        $proc = proc_open($cmd, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+        if (!is_resource($proc)) {
+            return ['code' => -1, 'stdout' => '', 'stderr' => 'proc_open failed'];
+        }
+        fwrite($pipes[0], $stdinData);
+        fclose($pipes[0]);
+        $out = (string) stream_get_contents($pipes[1]);
+        $err = (string) stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $rc = proc_close($proc);
+        return ['code' => $rc, 'stdout' => $out, 'stderr' => $err];
+    };
+
+    $dbPassInit = 'DbRuntime#Secret!2026';
+    $turnstileStgInit = '1x0000000000000000000000000000000AA';
+    $smtpPassInit = 'SmtpMailer#Secret!2026';
+    $initInputsStg = implode("\n", [
+        'staging',
+        'https://staging.ajnengenharia.com.br',
+        'https://staging.ajnengenharia.com.br',
+        $initPubDir,
+        'faleconosco@ajnengenharia.com.br',
+        '127.0.0.1',
+        '3306',
+        'u123456_ajn_stg',
+        'u123456_stg_app',
+        $dbPassInit,
+        $turnstileStgInit,
+        'smtp.hostinger.com',
+        '465',
+        'ssl',
+        'carreiras@ajnengenharia.com.br',
+        'carreiras@ajnengenharia.com.br',
+        $smtpPassInit,
+    ]) . "\n";
+
+    $targetInitCfg = $initPrivDir . DIRECTORY_SEPARATOR . 'config.php';
+    $initOk = $runInitCfg(['--target=' . $targetInitCfg, '--example=' . $exampleCfgPath, '--env=staging'], $initInputsStg);
+    $loadedInitCfg = is_file($targetInitCfg) ? (require $targetInitCfg) : null;
+    $initCombinedOut = $initOk['stdout'] . "\n" . $initOk['stderr'];
+
+    $initOverwrite = $runInitCfg(['--target=' . $targetInitCfg, '--example=' . $exampleCfgPath], $initInputsStg);
+    $loadedAfterOverwrite = is_file($targetInitCfg) ? (require $targetInitCfg) : null;
+
+    $initWebrootRefusal = $runInitCfg(['--target=' . $initPubDir . DIRECTORY_SEPARATOR . 'config.php', '--example=' . $exampleCfgPath], $initInputsStg);
+
+    $prodTargetInit = $initPrivDir . DIRECTORY_SEPARATOR . 'prod.config.php';
+    $initProdInputsBadTs = implode("\n", [
+        'production',
+        'https://ajnengenharia.com.br',
+        'https://ajnengenharia.com.br,https://www.ajnengenharia.com.br',
+        $initPubDir,
+        'faleconosco@ajnengenharia.com.br',
+        '127.0.0.1',
+        '3306',
+        'u123456_ajn_prod',
+        'u123456_prod_app',
+        $dbPassInit,
+        $turnstileStgInit,
+        'smtp.hostinger.com',
+        '465',
+        'ssl',
+        'carreiras@ajnengenharia.com.br',
+        'carreiras@ajnengenharia.com.br',
+        $smtpPassInit,
+    ]) . "\n";
+    $initProdBadTs = $runInitCfg(['--target=' . $prodTargetInit, '--example=' . $exampleCfgPath, '--env=production'], $initProdInputsBadTs);
+
+    fn_check('ops/init-config.php sob disable_functions gera config.php valido com random_bytes, sem vazar segredos e recusa sobrescrita/webroot/1x em prod',
+        $initOk['code'] === 0
+        && is_array($loadedInitCfg)
+        && ($loadedInitCfg['environment'] ?? '') === 'staging'
+        && ($loadedInitCfg['database']['name'] ?? '') === 'u123456_ajn_stg'
+        && ($loadedInitCfg['database']['password'] ?? '') === $dbPassInit
+        && ($loadedInitCfg['smtp']['password'] ?? '') === $smtpPassInit
+        && ($loadedInitCfg['turnstile_secret_key'] ?? '') === $turnstileStgInit
+        && strlen((string) ($loadedInitCfg['encryption_key'] ?? '')) === 64
+        && ctype_xdigit((string) ($loadedInitCfg['encryption_key'] ?? ''))
+        && ($loadedInitCfg['resume_directory'] ?? '') === ($initPrivDir . '/resumes')
+        && !str_contains($initCombinedOut, $dbPassInit)
+        && !str_contains($initCombinedOut, $smtpPassInit)
+        && !str_contains($initCombinedOut, $turnstileStgInit)
+        && !str_contains($initCombinedOut, (string) ($loadedInitCfg['encryption_key'] ?? 'never'))
+        && $initOverwrite['code'] !== 0
+        && is_array($loadedAfterOverwrite)
+        && ($loadedAfterOverwrite['encryption_key'] ?? '') === ($loadedInitCfg['encryption_key'] ?? '')
+        && $initWebrootRefusal['code'] !== 0
+        && $initProdBadTs['code'] !== 0
+        && !is_file($prodTargetInit));
+
     // 4.15 Logout limpa dados e invalida cookie de sessao
     $logout = fn_http($baseUrl, 'POST', '/api/admin/auth/logout', [
         'headers' => ['Origin: ' . $appUrl],

@@ -284,6 +284,37 @@ check_contract('runbook, wrappers ops/*.sh, env.sh e crons usam migrate.php, bac
     && !str_contains($deployDoc, 'curl -isS -u')
     && !str_contains($deployDoc, '>/dev/null'));
 
+$checklistDoc = source_contract($root . '/CHECKLIST-STAGING.md');
+$initConfigPhp = source_contract($root . '/ops/init-config.php');
+check_contract('ops/init-config.php e runbook/checklist com PowerShell + alias SSH, init-config antes de migrate, rollback_drill_marker, roteiro navegador, logs cron e database.name',
+    str_contains($initConfigPhp, "PHP_SAPI !== 'cli'")
+    && str_contains($initConfigPhp, 'random_bytes(32)')
+    && str_contains($initConfigPhp, '0600')
+    && str_contains($initConfigPhp, 'disable_functions')
+    && str_contains($initConfigPhp, 'file_exists($targetPath)')
+    && str_contains($deployDoc, 'ajn-hostinger')
+    && str_contains($deployDoc, '.ssh\\config')
+    && str_contains($deployDoc, '$env:PUBLIC_TURNSTILE_SITE_KEY')
+    && str_contains($deployDoc, 'Remove-Item Env:')
+    && str_contains($deployDoc, 'init-config.php')
+    && str_contains($deployDoc, 'rollback_drill_marker')
+    && str_contains($deployDoc, '999_rollback_drill.sql')
+    && str_contains($deployDoc, 'ajn-logs/staging')
+    && str_contains($deployDoc, '$cfg["database"]["name"]')
+    && str_contains($checklistDoc, 'ajn-hostinger')
+    && str_contains($checklistDoc, '.ssh\\config')
+    && str_contains($checklistDoc, '$env:PUBLIC_TURNSTILE_SITE_KEY')
+    && str_contains($checklistDoc, 'Remove-Item Env:')
+    && str_contains($checklistDoc, 'scp -r')
+    && str_contains($checklistDoc, 'init-config.php')
+    && str_contains($checklistDoc, 'rollback_drill_marker')
+    && str_contains($checklistDoc, '999_rollback_drill.sql')
+    && str_contains($checklistDoc, 'Login + TOTP')
+    && str_contains($checklistDoc, 'Pedido LGPD')
+    && str_contains($checklistDoc, 'ajn-logs/staging')
+    && str_contains($checklistDoc, '$cfg["database"]["name"]')
+    && !str_contains($checklistDoc, 'USUARIO@HOST_SSH'));
+
 foreach ($checks as $label => $pass) fwrite($pass ? STDOUT : STDERR, ($pass ? 'PASS' : 'FAIL') . ' - ' . $label . "\n");
 if (in_array(false, $checks, true)) exit(1);
 fwrite(STDOUT, count($checks) . " contratos PHP/Hostinger PASS. Não substitui banco, SMTP, navegador ou staging real.\n");

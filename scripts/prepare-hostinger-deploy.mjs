@@ -22,6 +22,7 @@ const PRIVATE_RUNTIME_FILES = [
 
 const OPS_SHARED_FILES = [
   'env.sh',
+  'init-config.php',
   'check-layout.sh',
   'backup.sh',
   'rollback.sh',
@@ -57,6 +58,7 @@ const FORBIDDEN_IN_PUBLIC_HTML = [
   'migrate.php',
   'seed-admin.php',
   'seed-legacy-fixtures.php',
+  'init-config.php',
   'provision-user-mfa.php',
   'verify-audit-chain.php',
   'purge-expired-data.php',

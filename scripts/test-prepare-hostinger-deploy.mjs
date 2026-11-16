@@ -78,6 +78,7 @@ function createFixtureTree(
     'config.example.php',
     'resumes-directory.htaccess',
     'ops/env.sh',
+    'ops/init-config.php',
     'ops/backup.sh',
     'ops/rollback.sh',
     'ops/check-layout.sh',
@@ -162,6 +163,7 @@ test('prepara pacote Hostinger separando public_html, ajn-carreiras-private sem 
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/bootstrap.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ajn-carreiras-private/migrate.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ops/env.sh')), true);
+    assert.equal(existsSync(join(summary.outputDir, 'ops/init-config.php')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ops/backup.sh')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ops/rollback.sh')), true);
     assert.equal(existsSync(join(summary.outputDir, 'ops/check-layout.sh')), true);

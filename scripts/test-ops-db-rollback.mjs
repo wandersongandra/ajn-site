@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -12,6 +12,8 @@ const HOSTINGER_DIR = join(ROOT_DIR, 'hostinger');
 const MIGRATE_SCRIPT = join(HOSTINGER_DIR, 'migrate.php');
 const BACKUP_SH = join(HOSTINGER_DIR, 'ops', 'backup.sh');
 const ROLLBACK_SH = join(HOSTINGER_DIR, 'ops', 'rollback.sh');
+const INIT_CONFIG_PHP = join(HOSTINGER_DIR, 'ops', 'init-config.php');
+const CONFIG_EXAMPLE = join(HOSTINGER_DIR, 'config.example.php');
 
 function toBashPath(winOrPosixPath) {
   if (process.platform === 'win32') {
@@ -199,6 +201,259 @@ test('Item 3.b: backup real em 004 -> migra 006 -> rollback.sh remove tabelas 00
     assert.equal(stateAfterRemigrate.columns.candidates.some((c) => c.startsWith('phone_encrypted:')), true);
     assert.deepEqual(stateAfterRemigrate.jobs, stateAt004.jobs);
     assert.deepEqual(stateAfterRemigrate.candidates, stateAt004.candidates);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('Item 3 (Ensaio de rollback real): drill cria tabela rollback_drill_marker, linha falsa em schema_migrations e marcador em robots.txt -> rollback reverte tudo', () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'ajn-real-drill-rollback-'));
+  try {
+    const publicDir = join(tmp, 'staging-site', 'public_html');
+    const privateDir = join(tmp, 'ajn-private-staging');
+    const backupsDir = join(tmp, 'backups');
+    const dbPath = join(tmp, 'staging-006.sqlite');
+    const configPath = join(tmp, 'staging.config.php');
+
+    mkdirSync(join(publicDir, 'api'), { recursive: true });
+    mkdirSync(privateDir, { recursive: true });
+    mkdirSync(backupsDir, { recursive: true });
+
+    writeFileSync(join(publicDir, '.htaccess'), 'Options -Indexes\n', 'utf8');
+    writeFileSync(join(publicDir, 'index.html'), '<html><body>v006-staging</body></html>\n', 'utf8');
+    writeFileSync(join(publicDir, 'robots.txt'), 'User-agent: *\nDisallow: /\n', 'utf8');
+    writeFileSync(join(publicDir, 'api', 'index.php'), '<?php // api\n', 'utf8');
+    writeFileSync(join(privateDir, 'bootstrap.php'), '<?php // bootstrap\n', 'utf8');
+
+    execFileSync(
+      'php',
+      [
+        '-r',
+        `file_put_contents($argv[1], "<?php\\nreturn " . var_export([
+          'environment' => 'staging',
+          'app_url' => 'https://staging.ajnengenharia.com.br',
+          'database' => ['dsn' => 'sqlite:' . $argv[2]],
+          'resume_directory' => $argv[3],
+          'encryption_key' => str_repeat('b', 64),
+          'turnstile_secret_key' => '1x0000000000000000000000000000000AA',
+          'security_alert_email' => 'faleconosco@ajnengenharia.com.br',
+        ], true) . ";\\n");`,
+        configPath,
+        dbPath,
+        join(tmp, 'resumes'),
+      ],
+      { encoding: 'utf8' }
+    );
+
+    const migOut = runPhpMigrate(configPath);
+    assert.match(migOut, /aplicadas=6/);
+
+    const migrationsBefore = JSON.parse(
+      execFileSync(
+        'php',
+        ['-r', '$pdo=new PDO("sqlite:".$argv[1]); echo json_encode($pdo->query("SELECT name FROM schema_migrations ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN));', dbPath],
+        { encoding: 'utf8' }
+      )
+    );
+    assert.equal(migrationsBefore.length, 6);
+
+    const shBackup = toBashPath(BACKUP_SH);
+    const shRollback = toBashPath(ROLLBACK_SH);
+    const shPublic = toBashPath(publicDir);
+    const shPrivate = toBashPath(privateDir);
+    const shBackups = toBashPath(backupsDir);
+    const shDb = toBashPath(dbPath);
+
+    runBash(
+      `"${shBackup}" --env=staging --public-dir="${shPublic}" --private-dir="${shPrivate}" --backups-dir="${shBackups}" --db-driver=sqlite --db-name="${shDb}"`,
+      { BACKUP_PASSPHRASE: 'DrillRollback#Pass2026!' }
+    );
+
+    const stamp = readFileSync(join(backupsDir, 'LAST_STAMP.staging'), 'utf8').trim();
+    writeFileSync(join(publicDir, 'robots.txt'), `User-agent: *\nDisallow: /\n<!-- rollback-drill-${stamp} -->\n`, 'utf8');
+    execFileSync(
+      'php',
+      [
+        '-r',
+        `
+        $pdo = new PDO('sqlite:' . $argv[1], null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+        $pdo->exec("CREATE TABLE rollback_drill_marker (id INTEGER PRIMARY KEY, stamp TEXT NOT NULL)");
+        $pdo->prepare("INSERT INTO rollback_drill_marker (id, stamp) VALUES (1, ?)")->execute([$argv[2]]);
+        $pdo->prepare("INSERT INTO schema_migrations (name, checksum, applied_at) VALUES (?, ?, ?)")->execute(['999_rollback_drill.sql', str_repeat('0', 64), time()]);
+        `,
+        dbPath,
+        stamp,
+      ],
+      { encoding: 'utf8' }
+    );
+
+    const dirtyMigrations = JSON.parse(
+      execFileSync(
+        'php',
+        ['-r', '$pdo=new PDO("sqlite:".$argv[1]); echo json_encode($pdo->query("SELECT name FROM schema_migrations ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN));', dbPath],
+        { encoding: 'utf8' }
+      )
+    );
+    assert.equal(dirtyMigrations.includes('999_rollback_drill.sql'), true);
+
+    const rollbackOut = runBash(
+      `"${shRollback}" staging --public-dir="${shPublic}" --private-dir="${shPrivate}" --backups-dir="${shBackups}" --db-driver=sqlite --db-name="${shDb}"`,
+      { BACKUP_PASSPHRASE: 'DrillRollback#Pass2026!' }
+    );
+    assert.match(rollbackOut, /ROLLBACK CONCLUIDO \(staging\)/);
+
+    const verifyAfter = JSON.parse(
+      execFileSync(
+        'php',
+        [
+          '-r',
+          `
+          $pdo = new PDO('sqlite:' . $argv[1], null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+          $hasDrillTbl = (int) $pdo->query("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='rollback_drill_marker'")->fetchColumn();
+          $migs = $pdo->query("SELECT name FROM schema_migrations ORDER BY name ASC")->fetchAll(PDO::FETCH_COLUMN);
+          echo json_encode(['hasDrillTbl' => $hasDrillTbl, 'migs' => $migs]);
+          `,
+          dbPath,
+        ],
+        { encoding: 'utf8' }
+      )
+    );
+    assert.equal(verifyAfter.hasDrillTbl, 0);
+    assert.deepEqual(verifyAfter.migs, migrationsBefore);
+    assert.equal(readFileSync(join(publicDir, 'robots.txt'), 'utf8'), 'User-agent: *\nDisallow: /\n');
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('Item 2 (disable_functions + somente CLI + sem vazar segredos + recusa sobrescrever + chmod 0600 em POSIX): init-config.php', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'ajn-init-cfg-test-'));
+  try {
+    const privDir = join(tmp, 'ajn-private-staging');
+    mkdirSync(privDir, { recursive: true });
+    copyFileSync(CONFIG_EXAMPLE, join(privDir, 'config.example.php'));
+    const targetCfg = join(privDir, 'config.php');
+    const exampleCfg = join(privDir, 'config.example.php');
+    const pubRef = join(tmp, 'domains', 'staging.ajnengenharia.com.br', 'public_html').replaceAll('\\', '/');
+
+    const dbPass = 'InitCfgDb#Secret!2026';
+    const tsSecret = '1x0000000000000000000000000000000AA';
+    const smtpPass = 'InitCfgSmtp#Secret!2026';
+
+    const answers = [
+      'staging',
+      'https://staging.ajnengenharia.com.br',
+      'https://staging.ajnengenharia.com.br',
+      pubRef.startsWith('/') ? pubRef : `/${pubRef}`,
+      'faleconosco@ajnengenharia.com.br',
+      '127.0.0.1',
+      '3306',
+      'u999_stg_db',
+      'u999_stg_app',
+      dbPass,
+      tsSecret,
+      'smtp.hostinger.com',
+      '465',
+      'ssl',
+      'carreiras@ajnengenharia.com.br',
+      'carreiras@ajnengenharia.com.br',
+      smtpPass,
+    ];
+
+    const runRes = spawnSync(
+      'php',
+      [
+        '-d', 'extension=sodium',
+        '-d', 'disable_functions=exec,shell_exec,system,passthru,proc_open,popen,parse_ini_file,show_source',
+        INIT_CONFIG_PHP,
+        `--target=${targetCfg}`,
+        `--example=${exampleCfg}`,
+        '--env=staging',
+      ],
+      {
+        input: `${answers.join('\n')}\n`,
+        encoding: 'utf8',
+      }
+    );
+    assert.equal(runRes.status, 0, `init-config.php deveria sair 0 sob disable_functions: ${runRes.stderr}`);
+    const outCombined = `${runRes.stdout}\n${runRes.stderr}`;
+    assert.equal(outCombined.includes(dbPass), false);
+    assert.equal(outCombined.includes(smtpPass), false);
+    assert.equal(outCombined.includes(tsSecret), false);
+
+    const parsedOut = JSON.parse(runRes.stdout.trim().split(/\r?\n/).pop());
+    assert.equal(parsedOut.ok, true);
+    assert.equal(parsedOut.environment, 'staging');
+    assert.equal(parsedOut.database_name, 'u999_stg_db');
+    assert.equal(parsedOut.encryption_key_generated, true);
+    assert.equal(parsedOut.encryption_key_bytes, 32);
+
+    const cfgCheck = JSON.parse(
+      execFileSync(
+        'php',
+        [
+          '-r',
+          '$c = require $argv[1]; echo json_encode(["env"=>$c["environment"],"db"=>$c["database"]["name"],"keyLen"=>strlen($c["encryption_key"]),"keyHex"=>ctype_xdigit($c["encryption_key"])]);',
+          targetCfg,
+        ],
+        { encoding: 'utf8' }
+      ).trim()
+    );
+    assert.equal(cfgCheck.env, 'staging');
+    assert.equal(cfgCheck.db, 'u999_stg_db');
+    assert.equal(cfgCheck.keyLen, 64);
+    assert.equal(cfgCheck.keyHex, true);
+
+    // Recusa sobrescrever config.php existente
+    const overwriteRes = spawnSync(
+      'php',
+      [
+        '-d', 'disable_functions=exec,shell_exec,system,passthru,proc_open,popen',
+        INIT_CONFIG_PHP,
+        `--target=${targetCfg}`,
+        `--example=${exampleCfg}`,
+      ],
+      {
+        input: `${answers.join('\n')}\n`,
+        encoding: 'utf8',
+      }
+    );
+    assert.notEqual(overwriteRes.status, 0);
+
+    // Em POSIX nativo (CI/Linux), valida PTY interativo real e chmod 0600
+    if (process.platform !== 'win32') {
+      const { statSync } = await import('node:fs');
+      assert.equal(statSync(targetCfg).mode & 0o777, 0o600);
+    }
+
+    // Valida guarda CLI-only via servidor HTTP real (404)
+    const { createServer } = await import('node:net');
+    const port = await new Promise((resolvePort, rejectPort) => {
+      const srv = createServer();
+      srv.listen(0, '127.0.0.1', () => {
+        const addr = srv.address();
+        srv.close(() => resolvePort(addr.port));
+      });
+      srv.on('error', rejectPort);
+    });
+    const httpSrv = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', join(HOSTINGER_DIR, 'ops')], {
+      stdio: 'ignore',
+    });
+    try {
+      let status = 0;
+      for (let i = 0; i < 20; i++) {
+        try {
+          const resp = await fetch(`http://127.0.0.1:${port}/init-config.php`);
+          status = resp.status;
+          break;
+        } catch {
+          await new Promise((r) => setTimeout(r, 100));
+        }
+      }
+      assert.equal(status, 404);
+    } finally {
+      httpSrv.kill();
+    }
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }
