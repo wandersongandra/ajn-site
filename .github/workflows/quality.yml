@@ -191,4 +191,7 @@ jobs:
           npm run audit:sst-seo
 
       - name: Local intent and conversion SEO regression tests
+        env:
+          PUBLIC_SITE_ORIGIN: https://ajnengenharia.com.br
+          PUBLIC_ALLOW_INDEXING: 'true'
         run: npm run test:seo-leads
