@@ -411,3 +411,38 @@ test('pack:hostinger:staging grava em output/hostinger-staging, rejeita origem p
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('pack:hostinger e pack:hostinger:staging recusam empacotar quando dist/.ajn-non-deployable existe', () => {
+  const root = mkdtempSync(join(tmpdir(), 'ajn-deploy-non-deployable-'));
+  const validProdPrivate = '/home/u123456/ajn-private/prod';
+  const validHtpasswd = '/home/u123456/domains/staging.ajnengenharia.com.br/.htpasswd-staging';
+  try {
+    createFixtureTree(root, {
+      withTurnstile: true,
+      siteKey: '0x4AAAAAAABkMYinukE_real_prod_key',
+      indexing: true,
+      origin: 'https://ajnengenharia.com.br',
+      forbiddenInDist: '.ajn-non-deployable',
+    });
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'production', prodPrivateDir: validProdPrivate }),
+      /\.ajn-non-deployable/
+    );
+    assert.equal(existsSync(join(root, 'output', 'hostinger-deploy', 'public_html', '.ajn-non-deployable')), false);
+
+    createFixtureTree(root, {
+      withTurnstile: true,
+      siteKey: '1x00000000000000000000AA',
+      indexing: false,
+      origin: 'https://staging.ajnengenharia.com.br',
+      forbiddenInDist: '.ajn-non-deployable',
+    });
+    assert.throws(
+      () => prepareHostingerDeploy({ rootDir: root, mode: 'staging', stagingHtpasswdFile: validHtpasswd }),
+      /\.ajn-non-deployable/
+    );
+    assert.equal(existsSync(join(root, 'output', 'hostinger-staging', 'public_html', '.ajn-non-deployable')), false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

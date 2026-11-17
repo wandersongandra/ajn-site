@@ -2,6 +2,9 @@ import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, write
 import { join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { verifyHtaccessCspSync } from './sync-csp-style-hashes.mjs';
+import { NON_DEPLOYABLE_MARKER } from '../src/utils/ci-seo-smoke.mjs';
+
+export { NON_DEPLOYABLE_MARKER };
 
 const PRIVATE_RUNTIME_FILES = [
   'admin.php',
@@ -49,6 +52,7 @@ const PRODUCTION_HOSTS = new Set([
 ]);
 
 const FORBIDDEN_IN_PUBLIC_HTML = [
+  NON_DEPLOYABLE_MARKER,
   'config.php',
   'config.example.php',
   'hostinger',
@@ -374,9 +378,15 @@ export function prepareHostingerDeploy({
   const migrationsDir = join(hostingerDir, 'migrations');
   const publicHtaccessPath = resolve(rootDir, 'public', '.htaccess');
   const distHtaccessPath = join(distDir, '.htaccess');
+  const tag = normalizedMode === 'staging' ? 'pack:hostinger:staging' : 'pack:hostinger';
+
+  if (existsSync(join(distDir, NON_DEPLOYABLE_MARKER))) {
+    throw new Error(
+      `[${tag}] Pacote rejeitado: marcador ${NON_DEPLOYABLE_MARKER} encontrado em dist/. Builds gerados com AJN_CI_SEO_SMOKE=1 não podem ser empacotados nem publicados.`
+    );
+  }
 
   const buildSummary = inspectDistBuild(distDir);
-  const tag = normalizedMode === 'staging' ? 'pack:hostinger:staging' : 'pack:hostinger';
   console.log(
     `[${tag}] Modo: ${normalizedMode} | Origem: ${buildSummary.canonicalOrigin} | Indexação: ${buildSummary.indexingAllowed} | Contato: ${buildSummary.contactEndpoint} | Turnstile no HTML: ${normalizedMode === 'staging' ? buildSummary.hasTurnstileSiteKey : buildSummary.turnstileEnabled}`
   );

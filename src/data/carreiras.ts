@@ -1,3 +1,5 @@
+import { NON_DEPLOYABLE_MARKER, isCiSeoSmokeModeEnabled } from '../utils/ci-seo-smoke.mjs';
+
 export interface CareerJob {
   id: string;
   title: string;
@@ -19,15 +21,31 @@ export interface CareerJob {
 }
 
 export const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA';
+export const NON_DEPLOYABLE_MARKER_FILENAME = NON_DEPLOYABLE_MARKER;
+export { isCiSeoSmokeModeEnabled };
 
 export function assertTurnstileForIndexingBuild(env: {
   PUBLIC_ALLOW_INDEXING?: string | undefined;
   PUBLIC_TURNSTILE_SITE_KEY?: string | undefined;
   PUBLIC_REQUIRE_TURNSTILE?: string | undefined;
+  AJN_CI_SEO_SMOKE?: string | undefined;
+  GITHUB_ACTIONS?: string | undefined;
+  [key: string]: string | undefined;
 }): string {
   const siteKey = (env.PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
   const allowIndexing = (env.PUBLIC_ALLOW_INDEXING ?? '').trim().toLowerCase() === 'true';
   const requireTurnstile = (env.PUBLIC_REQUIRE_TURNSTILE ?? 'true').trim().toLowerCase() !== 'false';
+  const ciSeoSmokeMode = isCiSeoSmokeModeEnabled(env);
+
+  if (ciSeoSmokeMode && allowIndexing) {
+    if (siteKey && siteKey !== TURNSTILE_TEST_SITE_KEY) {
+      throw new Error(
+        '[SECURITY GATE] Build bloqueado: no modo AJN_CI_SEO_SMOKE=1 só é permitida a sitekey de teste 1x00000000000000000000AA.'
+      );
+    }
+    return TURNSTILE_TEST_SITE_KEY;
+  }
+
   if (allowIndexing && requireTurnstile) {
     if (!siteKey || /^(1x|2x|3x)/i.test(siteKey)) {
       throw new Error(
@@ -61,12 +79,20 @@ const rawRequireTurnstile =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_REQUIRE_TURNSTILE) ||
   'true';
 
+const rawCiSeoSmoke =
+  (typeof process !== 'undefined' && process.env?.AJN_CI_SEO_SMOKE) || '';
+
+const rawGithubActions =
+  (typeof process !== 'undefined' && process.env?.GITHUB_ACTIONS) || '';
+
 // Turnstile é apenas o serviço antispam externo; API e dados ficam na Hostinger.
 // Nunca empacotar uma chave fictícia em produção. Falha fechada quando PUBLIC_ALLOW_INDEXING=true.
 export const TURNSTILE_SITE_KEY = assertTurnstileForIndexingBuild({
   PUBLIC_ALLOW_INDEXING: rawAllowIndexing,
   PUBLIC_TURNSTILE_SITE_KEY: rawTurnstileSiteKey,
   PUBLIC_REQUIRE_TURNSTILE: rawRequireTurnstile,
+  AJN_CI_SEO_SMOKE: rawCiSeoSmoke,
+  GITHUB_ACTIONS: rawGithubActions,
 });
 
 export const PUBLIC_TURNSTILE_SITE_KEY = TURNSTILE_SITE_KEY;
