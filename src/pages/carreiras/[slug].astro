@@ -159,7 +159,7 @@ const jsonLd = [
           <div class="carreiras-notice" data-notice role="alert"></div>
 
           <form action={`/api/applications/jobs/${job.slug}/apply`} method="POST" enctype="multipart/form-data" data-application-form>
-            <div class="sr-only" aria-hidden="true">
+            <div class="sr-only" aria-hidden="true" inert>
               <label>Não preencha este campo <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
             </div>
             <div class="carreiras-form-grid">

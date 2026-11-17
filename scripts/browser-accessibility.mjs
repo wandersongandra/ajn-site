@@ -43,10 +43,24 @@ async function load(context, route, label) {
 }
 
 async function countAriaHiddenTabStops(page) {
-	return page.evaluate(() => [...document.querySelectorAll('[aria-hidden="true"]')]
-		.flatMap((node) => [...node.querySelectorAll('a[href],button,input,select,textarea,[tabindex]')])
-		.filter((el) => el.tabIndex >= 0 && !el.hasAttribute('disabled') && !el.closest('[inert]'))
-		.length);
+	return page.evaluate(() => {
+		const previousFocus = document.activeElement;
+		const focusables = [...document.querySelectorAll('[aria-hidden="true"]')]
+			.flatMap((node) => [...node.querySelectorAll('a[href],button,input,select,textarea,[tabindex]')])
+			.filter((el) => {
+				if (el.hasAttribute('disabled') || el.closest('[inert]')) return false;
+				if (el.tabIndex >= 0) return true;
+				if (el instanceof HTMLElement) {
+					el.focus({ preventScroll: true });
+					return document.activeElement === el;
+				}
+				return false;
+			});
+		if (previousFocus instanceof HTMLElement && document.activeElement !== previousFocus) {
+			previousFocus.focus({ preventScroll: true });
+		}
+		return focusables.length;
+	});
 }
 
 try {
