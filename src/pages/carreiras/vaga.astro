@@ -1,0 +1,226 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { serializeJsonLd } from '../../utils/site';
+import { TURNSTILE_SITE_KEY } from '../../data/carreiras';
+import { absoluteCareersUrl, careersOrigin } from '../../utils/careers';
+import '../../styles/carreiras.css';
+
+const title = 'Oportunidade de Carreira | AJN Consultoria e Engenharia';
+const description = 'Conheça os requisitos e candidate-se para oportunidades técnicas em engenharia de segurança do trabalho e higiene ocupacional na AJN.';
+const canonicalPath = '/carreiras/';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ajnengenharia.com.br/' },
+      { '@type': 'ListItem', position: 2, name: 'Carreiras', item: absoluteCareersUrl('/carreiras/') },
+      { '@type': 'ListItem', position: 3, name: 'Oportunidade', item: absoluteCareersUrl('/carreiras/vaga/') },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  canonicalOrigin={careersOrigin}
+>
+  <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+  <div class="carreiras-page" data-dynamic-job-page>
+    <div class="site-shell">
+      <nav class="carreiras-nav-bar" aria-label="Navegação de retorno">
+        <a class="carreiras-nav-link" href="/carreiras/">← Voltar às vagas</a>
+        <a class="carreiras-nav-link" href="#candidatura">Ir ao formulário</a>
+      </nav>
+
+      <noscript>
+        <div class="carreiras-notice carreiras-notice--info" style="display: block;">
+          Para visualizar os detalhes atualizados desta vaga e enviar sua inscrição online, ative o suporte a JavaScript em seu navegador. Você também pode cadastrar seu currículo diretamente em nosso <a href="/carreiras/talentos/">Banco de Talentos</a>.
+        </div>
+      </noscript>
+
+      <p data-job-loading role="status" aria-live="polite">Consultando os dados da vaga…</p>
+
+      <!-- Exibido quando a consulta não confirma a vaga -->
+      <div id="job-closed-box" class="carreiras-job-closed" style="display: none;">
+        <h2 data-job-unavailable-title>
+          Vaga indisponível
+        </h2>
+        <p data-job-unavailable-message>
+          A vaga não está disponível para candidaturas no momento. Consulte outras vagas ou cadastre seu currículo no banco de talentos.
+        </p>
+        <div class="carreiras-job-closed__actions">
+          <a class="carreiras-button carreiras-button--primary" href="/carreiras/">
+            Ver vagas publicadas
+          </a>
+          <a class="carreiras-button carreiras-button--secondary" href="/carreiras/talentos/">
+            Cadastrar currículo
+          </a>
+        </div>
+      </div>
+
+      <!-- Detalhes apresentados somente após confirmação pela API -->
+      <div id="job-details-container" style="display: none;">
+        <header class="carreiras-header carreiras-header--left">
+          <div class="carreiras-card-badges">
+            <span class="carreiras-badge carreiras-badge--primary" data-job-department></span>
+            <span class="carreiras-badge" data-job-type></span>
+            <span class="carreiras-badge" data-job-level></span>
+            <span class="carreiras-badge" data-job-location></span>
+          </div>
+          <h1 class="carreiras-title" data-job-title></h1>
+          <p class="carreiras-job-salary" data-job-salary style="display: none;"></p>
+        </header>
+
+        <div class="carreiras-job-layout">
+          <div class="carreiras-job-card-detail">
+            <section class="carreiras-job-section">
+              <h2>
+                Sobre a vaga
+              </h2>
+              <p data-job-desc>
+                Descrição da vaga
+              </p>
+            </section>
+
+            <section class="carreiras-job-section">
+              <h2>
+                Requisitos
+              </h2>
+              <ul data-job-requirements>
+              </ul>
+            </section>
+
+            <section class="carreiras-job-section" data-job-differentials-box style="display: none;">
+              <h2>
+                Diferenciais
+              </h2>
+              <p data-job-differentials></p>
+            </section>
+
+            <section class="carreiras-job-section" data-job-benefits-box style="display: none;">
+              <h2>
+                Benefícios
+              </h2>
+              <p data-job-benefits></p>
+            </section>
+          </div>
+
+          <!-- Formulário de Inscrição Direta -->
+          <div class="carreiras-form-container carreiras-form-container--flush" id="candidatura">
+            <h2 class="carreiras-section-title">
+              Candidatar-se à vaga
+            </h2>
+            <p class="carreiras-section-lead">
+              Informe seus dados e anexe um currículo em PDF, DOC ou DOCX, com até 5 MB.
+            </p>
+
+            <div class="carreiras-notice" data-notice role="alert"></div>
+
+            <form action="/api/applications/talent-pool" method="POST" enctype="multipart/form-data" data-application-form>
+              <div class="sr-only" aria-hidden="true" inert>
+                <label>Não preencha este campo <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+              </div>
+              <fieldset class="carreiras-form-fields" data-job-application-fields disabled>
+              <div class="carreiras-form-grid">
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="apply-name">Nome Completo *</label>
+                  <input class="carreiras-input" id="apply-name" name="fullName" type="text" required minlength="3" placeholder="Seu nome completo" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-email">E-mail *</label>
+                  <input class="carreiras-input" id="apply-email" name="email" type="email" required placeholder="seu.email@exemplo.com" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-phone">Telefone / WhatsApp *</label>
+                  <input class="carreiras-input" id="apply-phone" name="phone" type="tel" required placeholder="(31) 99999-9999" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-cpf">CPF (apenas dígitos) *</label>
+                  <input class="carreiras-input" id="apply-cpf" name="cpf" type="text" required placeholder="000.000.000-00" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-city">Cidade *</label>
+                  <input class="carreiras-input" id="apply-city" name="city" type="text" required placeholder="Ex: Belo Horizonte" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-state">Estado (UF) *</label>
+                  <input class="carreiras-input carreiras-input--uf" id="apply-state" name="state" type="text" required maxlength="2" placeholder="MG" />
+                </div>
+
+                <div class="carreiras-field">
+                  <label class="carreiras-label" for="apply-title">Cargo / Formação Atual</label>
+                  <input class="carreiras-input" id="apply-title" name="currentTitle" type="text" placeholder="Ex: Engenheiro de Segurança" />
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="apply-linkedin">Perfil do LinkedIn (opcional)</label>
+                  <input class="carreiras-input" id="apply-linkedin" name="linkedinUrl" type="url" placeholder="https://linkedin.com/in/seuperfil" />
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label" for="apply-summary">Breve Resumo Profissional</label>
+                  <textarea class="carreiras-textarea" id="apply-summary" name="summary" rows="3" placeholder="Destaque suas principais experiências e projetos..."></textarea>
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <label class="carreiras-label">Currículo Atualizado (PDF, DOC ou DOCX até 5 MB) *</label>
+                  <div class="carreiras-file-drop">
+                    <label for="apply-resume">
+                      <span data-file-label>
+                        Clique para selecionar o currículo (PDF, DOC, DOCX até 5 MB)
+                      </span>
+                    </label>
+                    <input id="apply-resume" name="resume" type="file" required accept=".pdf,.doc,.docx" />
+                  </div>
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  <div class="carreiras-checkbox-group">
+                    <input id="apply-consent-terms" name="consentTerms" type="checkbox" value="true" required />
+                    <label class="carreiras-checkbox-label" for="apply-consent-terms">
+                      Concordo com o tratamento dos meus dados pessoais pela AJN Consultoria e Engenharia exclusivamente para fins de processos seletivos, nos termos da <a href="/politica-de-privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e da LGPD. *
+                    </label>
+                  </div>
+
+                  <div class="carreiras-checkbox-group">
+                    <input id="apply-consent-retention" name="consentRetention" type="checkbox" value="true" />
+                    <label class="carreiras-checkbox-label" for="apply-consent-retention">
+                      Autorizo a AJN a manter meu currículo no banco de talentos pelo período de até 2 anos para futuras oportunidades profissionais.
+                    </label>
+                  </div>
+                </div>
+
+                <div class="carreiras-field carreiras-form-full">
+                  {TURNSTILE_SITE_KEY ? (
+                    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="apply" data-theme="light"></div>
+                  ) : (
+                    <p class="carreiras-help" role="status">A verificação antispam será habilitada quando o ambiente for configurado.</p>
+                  )}
+                </div>
+
+                <div class="carreiras-form-full">
+                  <button class="carreiras-button carreiras-button--primary carreiras-button--block" type="submit">
+                    Enviar candidatura
+                  </button>
+                </div>
+              </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+  <script src="/scripts/carreiras.js?v=20261113-hardened" defer></script>
+</BaseLayout>

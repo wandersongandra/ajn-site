@@ -4,7 +4,7 @@ import type { BlogContentData } from '../types';
 export const blogInvestigacaoDeAcidentesEAprendizadoPreventivo = {
   slug: 'investigacao-de-acidentes-como-transformar-registros-em-prevencao',
   path: '/blog/investigacao-de-acidentes-como-transformar-registros-em-prevencao',
-  title: 'Investigação de acidentes: como transformar registros em prevenção | AJN',
+  title: 'Investigação de acidentes e medidas preventivas | AJN',
   description: 'Um roteiro de investigação que registra fatos, analisa condições de trabalho e transforma aprendizados em medidas preventivas.',
   heading: 'Investigação de acidentes: dos registros às medidas preventivas',
   pubDate: '2026-10-09',

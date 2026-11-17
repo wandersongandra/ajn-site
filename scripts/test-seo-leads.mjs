@@ -2,6 +2,16 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
+try {
+	if (!process.env.PUBLIC_ALLOW_INDEXING && typeof process.loadEnvFile === 'function') {
+		try { process.loadEnvFile('.env.production'); } catch {}
+		if (!process.env.PUBLIC_ALLOW_INDEXING) process.loadEnvFile('.env');
+	}
+} catch {}
+const expectedRobots = process.env.PUBLIC_ALLOW_INDEXING === 'false'
+	? /<meta name="robots" content="noindex,nofollow,noarchive"/
+	: /<meta name="robots" content="index,follow/;
+
 const paths = {
 	home: 'dist/index.html',
 	ppcip: 'dist/servicos/projetos-de-combate-a-incendio-e-panico-ppcip/index.html',
@@ -36,7 +46,7 @@ test('páginas comerciais usam intenção local sem oferecer serviços removidos
 	assert.notEqual(title(pages.ppcip), title(pages.regularizacao));
 	for (const key of ['ppcip', 'regularizacao', 'consultoria']) {
 		assert.match(pages[key], /<link rel="canonical" href="https:\/\/ajnengenharia\.com\.br\//);
-		assert.match(pages[key], /<meta name="robots" content="index,follow/);
+		assert.match(pages[key], expectedRobots);
 		assert.ok(metaDescription(pages[key]).length > 90, `${key}: descrição precisa informar a oferta`);
 	}
 });
@@ -67,7 +77,7 @@ test('PCMSO e PGR orientam a contratação sem repetição artificial de palavra
 	assert.match(title(pages.consultoriaPgr), /Consultoria em PGR em Belo Horizonte/);
 	for (const key of ['orcamentoPcmso', 'consultoriaPgr']) {
 		assert.match(pages[key], /<link rel="canonical" href="https:\/\/ajnengenharia\.com\.br\//);
-		assert.match(pages[key], /<meta name="robots" content="index,follow/);
+		assert.match(pages[key], expectedRobots);
 		assert.ok(metaDescription(pages[key]).length > 90, `${key}: descrição deve esclarecer o serviço`);
 		assert.match(pages[key], /href="\/contato\/"/);
 		assert.doesNotMatch(pages[key], /garantia de aprovação|sem burocracia|preço único garantido/i);

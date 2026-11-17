@@ -1,0 +1,15 @@
+title = "AJN Carreiras secret scan"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Placeholder histórico não secreto do exemplo privado de configuração"
+matchCondition = "AND"
+regexTarget = "line"
+paths = [
+  '''(^|/)hostinger/config\.example\.php$'''
+]
+regexes = [
+  '''^\s*'encryption_key'\s*=>\s*'SUBSTITUIR_POR_64_CARACTERES_HEXADECIMAIS',\s*$'''
+]

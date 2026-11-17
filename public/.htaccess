@@ -1,86 +1,211 @@
-# Runtime hardening for Apache-compatible static hosting.
-# Canonical domain: redirect www to HTTPS apex permanently after validating on production before merge.
+# ============================================================================
+# Apache/.htaccess baseline for Hostinger production
+# Canonical target: https://ajnengenharia.com.br
+# ============================================================================
+
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+
+AddDefaultCharset UTF-8
+AddType image/svg+xml .svg .svgz
+AddType image/webp .webp
+AddType image/avif .avif
+AddType font/woff2 .woff2
+AddType text/plain .txt
+
+<FilesMatch "(?i:(?:^composer\.(?:json|lock)$|^package(?:-lock)?\.json$|\.(?:sql|env|md|log|bak|zip|ini|sh|phar)))$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::[0-9]+)?$ [NC]
-    RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
+  RewriteEngine On
+
+  # Force canonical host (no-www) and HTTPS in a single hop for www requests
+  RewriteCond %{HTTP_HOST} ^www\.ajnengenharia\.com\.br(?::[0-9]+)?$ [NC]
+  RewriteRule ^ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
+
+  # Force HTTPS on canonical host
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+  RewriteRule ^(.*)$ https://ajnengenharia.com.br%{REQUEST_URI} [R=301,L,NE]
+
+  # Block hidden files and directories (.git, .env, etc.), except /.well-known/
+  RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+  # Block PHP execution anywhere except the single API entrypoint (api/index.php)
+  RewriteRule ^(?!api/index\.php$).*\.php$ - [F,L,NC]
+
+  # Route /api/*, maintenance /admin/*, and dynamic job slugs to the hardened PHP entrypoint
+  RewriteRule ^api/index\.php$ - [L]
+  RewriteCond %{DOCUMENT_ROOT}/../ajn-carreiras-private/maintenance.flag -f [OR]
+  RewriteCond %{DOCUMENT_ROOT}/../ajn-private/prod/maintenance.flag -f [OR]
+  RewriteCond %{DOCUMENT_ROOT}/../../../ajn-private/prod/maintenance.flag -f
+  RewriteRule ^(?:api|admin)(?:/.*)?$ api/index.php [QSA,L]
+  RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]
+  RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]
+
+  # Legacy WordPress permanent redirects (301)
+  RewriteRule ^index\.php$ / [R=301,L]
+  RewriteRule ^home/?$ / [R=301,L]
+  RewriteRule ^empresa/?$ /sobre/ [R=301,L]
+  RewriteRule ^quem-somos/?$ /sobre/ [R=301,L]
+  RewriteRule ^institucional/?$ /sobre/ [R=301,L]
+  RewriteRule ^atuacao/?$ /servicos/ [R=301,L]
+  RewriteRule ^areas-de-atuacao/?$ /servicos/ [R=301,L]
+  RewriteRule ^nossos-servicos/?$ /servicos/ [R=301,L]
+  RewriteRule ^obras/?$ /portfolio/ [R=301,L]
+  RewriteRule ^projetos/?$ /portfolio/ [R=301,L]
+  RewriteRule ^cases/?$ /portfolio/ [R=301,L]
+  RewriteRule ^fale-conosco/?$ /contato/ [R=301,L]
+  RewriteRule ^trabalhe-conosco/?$ /carreiras/ [R=301,L]
+  RewriteRule ^vagas/?$ /carreiras/ [R=301,L]
+  RewriteRule ^privacidade/?$ /politica-de-privacidade/ [R=301,L]
+  RewriteRule ^lgpd/?$ /politica-de-privacidade/ [R=301,L]
+  RewriteRule ^termos/?$ /termos-de-uso/ [R=301,L]
+
+  # Explicit gone responses for retired WordPress system paths
+  RewriteRule ^(?:wp-admin|wp-login\.php|xmlrpc\.php|wp-json)(?:/.*)?$ - [G,L,NC]
 </IfModule>
-# Redirecionamento permanente de Informações; ocorre no servidor antes do fallback Astro.
+
+ErrorDocument 404 /404.html
+
+# Redirecionamento permanente de Informações e URLs legadas; ocorre no servidor antes do fallback Astro.
 <IfModule mod_alias.c>
-    # Compatibilidade com o sitemap legado; enviar crawlers ao índice atual.
-    RedirectMatch 301 ^/sitemap\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml
-    RedirectMatch 301 ^/informacoes/?$ /mapa-site
+  # Compatibilidade com o sitemap legado; enviar crawlers ao índice atual.
+  RedirectMatch 301 ^/sitemap\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml
+  RedirectMatch 301 ^/informacoes/?$ /mapa-site
 
-    # URLs editoriais do WordPress ainda rastreadas no Search Console (nov/2026).
-    # Redirecionar apenas quando há conteúdo atual equivalente; páginas alheias
-    # à atuação da AJN e arquivos de plugins antigos continuam retornando 404.
-    RedirectMatch 301 ^/blog/avcb-o-que-voce-precisa-saber-sobre-o-auto-de-vistoria-do-corpo-de-bombeiros/?$ /blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/
-    RedirectMatch 301 ^/blog/ltcat-evento-esocial-o-que-voce-precisa-saber-para-estar-atualizado/?$ /ltcat-evento-esocial/
-    RedirectMatch 301 ^/blog/sistemas-contra-incendio-bh-o-que-voce-precisa-saber/?$ /sistemas-incendio-bh/
+  # URLs editoriais do WordPress ainda rastreadas no Search Console (nov/2026).
+  RedirectMatch 301 ^/blog/avcb-o-que-voce-precisa-saber-sobre-o-auto-de-vistoria-do-corpo-de-bombeiros/?$ /blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/
+  RedirectMatch 301 ^/blog/ltcat-evento-esocial-o-que-voce-precisa-saber-para-estar-atualizado/?$ /ltcat-evento-esocial/
+  RedirectMatch 301 ^/blog/sistemas-contra-incendio-bh-o-que-voce-precisa-saber/?$ /sistemas-incendio-bh/
 
-    # Endereços legados de regularização AVCB com serviço equivalente ativo.
-    RedirectMatch 301 ^/(regularizacao-avcb|avcb-auto-vistoria-do-corpo-bombeiros|renovacao-avcb-preco|renovacao-avcb|orcamento-avcb|avcb-custo|laudo-tecnico-avcb|avcb-orcamento|empresa-avcb)/?$ /servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/
+  # Endereços legados de regularização AVCB com serviço equivalente ativo.
+  RedirectMatch 301 ^/(regularizacao-avcb|avcb-auto-vistoria-do-corpo-bombeiros|renovacao-avcb-preco|renovacao-avcb|orcamento-avcb|avcb-custo|laudo-tecnico-avcb|avcb-orcamento|empresa-avcb)/?$ /servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros/
+
+  # Remoção 2026-10: elétrica, elevadores, SPDA e cabeamento
+  RedirectMatch 301 ^/analise-projetos-eletricos-bh/?$ /servicos
+  RedirectMatch 301 ^/elevacao-vertical/?$ /servicos
+  RedirectMatch 301 ^/elevador-bh/?$ /servicos
+  RedirectMatch 301 ^/empresa-elevador/?$ /servicos
+  RedirectMatch 301 ^/empresa-elevador-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/empresa-escada-rolante/?$ /servicos
+  RedirectMatch 301 ^/empresa-plataforma-elevatoria/?$ /servicos
+  RedirectMatch 301 ^/empresa-projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/empresa-projeto-eletrico-bh/?$ /servicos
+  RedirectMatch 301 ^/empresas-elevadores-bh/?$ /servicos
+  RedirectMatch 301 ^/empresas-manutencao-elevadores-bh/?$ /servicos
+  RedirectMatch 301 ^/escada-rolante/?$ /servicos
+  RedirectMatch 301 ^/escada-rolante-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/escada-rolante-bh/?$ /servicos
+  RedirectMatch 301 ^/instalacao-predial-eletrica/?$ /servicos
+  RedirectMatch 301 ^/instalacoes-eletricas-projeto/?$ /servicos
+  RedirectMatch 301 ^/manutencao-elevadores-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/manutencao-elevadores-bh/?$ /servicos
+  RedirectMatch 301 ^/orcamento-projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/plataforma-acessibilidade/?$ /servicos
+  RedirectMatch 301 ^/plataforma-acessibilidade-bh/?$ /servicos
+  RedirectMatch 301 ^/plataforma-acessibilidade-preco/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria-bh/?$ /servicos
+  RedirectMatch 301 ^/plataforma-elevatoria-preco/?$ /servicos
+  RedirectMatch 301 ^/preco-projetos-eletricos/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-bh/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-comercial/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-industrial/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-industrial-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-industrial-preco/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-preco/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial-belo-horizonte/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial-completo/?$ /servicos
+  RedirectMatch 301 ^/projeto-eletrico-residencial-orcamento/?$ /servicos
+  RedirectMatch 301 ^/projeto-instalacao-eletrica-residencial/?$ /servicos
+  RedirectMatch 301 ^/projeto-instalacoes-eletricas/?$ /servicos
+  RedirectMatch 301 ^/projetos-eletricos-orcamento/?$ /servicos
+  RedirectMatch 301 ^/projetos-eletricos-prediais/?$ /servicos
+  RedirectMatch 301 ^/projetos-engenharia-eletrica/?$ /servicos
+  RedirectMatch 301 ^/projetos-instalacoes-eletricas-prediais/?$ /servicos
+  RedirectMatch 301 ^/servico-projeto-eletrico/?$ /servicos
+  RedirectMatch 301 ^/projetos-spda/?$ /servicos
+  RedirectMatch 301 ^/projetos-cabeamento-estruturado/?$ /servicos
+  RedirectMatch 301 ^/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia/?$ /servicos
 </IfModule>
-# Keep this file in the published output; verify the headers on the real host.
+
+<IfModule mod_php.c>
+  php_value session.use_strict_mode 1
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value expose_php 0
+  php_value display_errors 0
+</IfModule>
+<IfModule mod_php8.c>
+  php_value session.use_strict_mode 1
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value expose_php 0
+  php_value display_errors 0
+</IfModule>
+<IfModule lsapi_module>
+  php_value session.use_strict_mode 1
+  php_value session.cookie_secure 1
+  php_value session.cookie_httponly 1
+  php_value expose_php 0
+  php_value display_errors 0
+</IfModule>
+
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "^/admin(/|$)" AJN_ADMIN_AREA=1
+  SetEnvIf Request_URI "^/api(/|$)" AJN_ADMIN_AREA=1
+</IfModule>
+
 <IfModule mod_headers.c>
-	Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https:; script-src 'self' https://www.googletagmanager.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.google-analytics.com https://region1.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://api.opengscgandra.tech; media-src 'self'; worker-src 'self'; manifest-src 'self'"
-	Header always set Content-Security-Policy-Report-Only "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.google-analytics.com https://region1.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://api.opengscgandra.tech; media-src 'self'; worker-src 'self'; manifest-src 'self'"
-	Header always set Strict-Transport-Security "max-age=300"
-	Header always set X-Content-Type-Options "nosniff"
-	Header always set X-Frame-Options "DENY"
-	Header always set Referrer-Policy "strict-origin-when-cross-origin"
-	Header always set Permissions-Policy "accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), geolocation=(), microphone=(), payment=(), usb=()"
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-hashes' 'sha256-biLFinpqYMtWHmXfkA1BPeCY0/fNt46SAZ+BBk5YUog=' 'sha256-g+7DfEM45lIZ1HGlbyScW3dbTG7+v9F0s6GYaSvtudU=' 'sha256-GL/uJNH5AaVbEYs5b9okOsUiadKbDPQFi2dzcBh8KR8=' 'sha256-lEny66nN2R1sEjBhtevb6aiODn0QjFx7I26Ki2w7LZk=' 'sha256-KBZ5OoZCfPdD4jnNjNBJTDpuOvvAYq0AEoU6lxvjzi0=' 'sha256-+B6Z/c3oTS7znl3mzWIDVTOjY9UsMi9UauwyYKg2DaY=' 'sha256-IvkWHlIh++yk1iKxW5n7nVTEX1T+ELdJ2HnNUglYris=' 'sha256-mnRyqew64Lcv5/Qgb/4HP8LfJi5MjjQCGLPt+/cJZis=' 'sha256-mfIVJkElSK5MQPwRz1n0gJGebVnCzLk8T7fq5sPdFAA=' 'sha256-JrptAByDqw24UY5ucaAo2fZtR6HhoDy9Sm6/kLYNaNg=' 'sha256-Oxqq8E6c5xX44u5mIYs3zH2/rDQePs8DtsblczPohiw=' 'sha256-eZZleEp2/rzBLGQ1BM/turBpXm0vaJai7eJq0CWJEUA=' 'sha256-2Zog2YBHV+cTXG5ZoDg0YTQFPfWT1iM9/ddZkJ9jKSk=' 'sha256-pD4WAdbyPG4V6t1okVCPU/dQ+wQaiincDog+zuaGE/Y=' 'sha256-5D79IwHvUNHBDTgYqdHo7dabIt3Q8wSD/RjPYVNHwAY=' 'sha256-PZ34nvhNd2GJWH0zTDBjQP3K/Kdp5AfPgEmhCOmjMgI=' 'sha256-gvwk5yHWGvUOV1kInG4Y0a0DP17g/KXJsMAyo2ZHtz0=' 'sha256-AC3CbEeLPJf2W6daVbkfUpWh5e6gLviBovIHzqhb7I4=' 'sha256-j16tsThERRpo633wjVny78/SZE7fmYOuQgMLsHOAeQU=' 'sha256-Ez67q4tdn2K8XnLTwfwnZagVlPmZSAKs/5W+FTQeHvk=' 'sha256-TvdlSExiJNN5fAeDtAH3GFBpcfRvKzcwX2fZEmu/Fkk=' 'sha256-4PL9lp7UJa6oIE366iGByvJoADzKhWHP6lt6XN4RfNk=' 'sha256-a73mk1p9mSkbrd39WGdIz7aYPj9OusyI0AAurWxQ42o=' 'sha256-OGw4ecMelVkvkuV9scK7ypZFCWY2/DYGG0cQKAOQqkY=' 'sha256-cDAOhirvlw2ij2jBStJHUmqLSorQLmDtYmW3rkZDwgA=' 'sha256-qX2ceMBNeqxuF3c6E7ugxLcCwRFe392d+/6n6bcbZaI=' 'sha256-qnVkQSG7pWu17hBhIw0kCpfEB3XGvt0mNRa6+uM6OUU=' 'sha256-x/RuHVALzb9/vCFr6ix5dnl9UqbBpG9jioCdfV6cszU=' 'sha256-ozoiTq7lyNvHcCpgpkruq1cm53rVubUx3k3P5SXC7tw=' 'sha256-ti4wxJ8HJ4LUKRhLt0PKW9/zoevG9tCNWwr546/FPOA=' 'sha256-HTQa36GmqjEpygOJX8KQJjLExKHq84Zsm9GzqV2Gbm8=' 'sha256-CZJfWJ1Q5myENaBuC7hA3b93qGtUQS/Ec4yGk8wfdtg=' 'sha256-hmFSkLXjlBIlFouqXZeMhygA6InndMD4pMuBbCeovDs=' 'sha256-tT6bfQE72ktZTXmuj0rEuxMNyQMio46qrAnIAZ5CY40=' 'sha256-NHNjlhtUsYnsAiZdWxb9Raw2s3sTVJ9GyPLXm6Oy+zg=' 'sha256-6uVeqQGN83H3UbNkCkXf1GZFlcttbe4rGnDGynS6+1o=' 'sha256-PYGQBI7NMg6qtgjQEp8MPFQrR3yJVL3isa2XwOcUDvc=' 'sha256-9sJLPqOQ/Itv6XgEpzR50+Aq6q3F9C09hGwv5d/24EU=' 'sha256-mjUy7dFc9gDb60NcMaH4/R0NQGqCh192/PlG/UkLyOI=' 'sha256-wi3Wrj7X/vMhubU05oJNSTtOneARVyr6+mqEbqJ/yxM=' 'sha256-aqNNdDLnnrDOnTNdkJpYlAxKVJtLt9CtFLklmInuUAE=' 'sha256-ZqhM5xQOj0Og/l+8qEbc5F5YYumTdWvc5mtn7dECFuE=' 'sha256-S1FFPktvQytsJfJq9ztwHnWIlG4Q6jlLsoErnsOP7DI='; font-src 'self' data:; img-src 'self' data:; connect-src 'self' https://api.opengscgandra.tech https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+
+  # Safe initial HSTS during cutover; PHP API/SSR emits 63072000; includeSubDomains; preload
+  Header always set Strict-Transport-Security "max-age=300" env=HTTPS
+
+  # Fingerprinted Astro bundles: immutable 1-year cache
+  <FilesMatch "\.(?:css|js|mjs|woff2|avif|webp|png|jpg|jpeg|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Stable Root-level identity files: 1-day cache
+  <FilesMatch "^(?:favicon\.svg|apple-touch-icon\.png|og-default\.svg|robots\.txt|sitemap.*\.xml|security\.txt)$">
+    Header set Cache-Control "public, max-age=86400, must-revalidate"
+  </FilesMatch>
+
+  # HTML documents: always revalidate on deploy
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Admin and API routes must never be cached by browser or shared proxies
+  Header always set Cache-Control "no-store, max-age=0" env=AJN_ADMIN_AREA
+  Header always set X-Robots-Tag "noindex, nofollow" env=AJN_ADMIN_AREA
 </IfModule>
 
-# Remoção 2026-10: elétrica, elevadores, SPDA e cabeamento
-<IfModule mod_alias.c>
-    RedirectMatch 301 ^/analise-projetos-eletricos-bh/?$ /servicos
-    RedirectMatch 301 ^/elevacao-vertical/?$ /servicos
-    RedirectMatch 301 ^/elevador-bh/?$ /servicos
-    RedirectMatch 301 ^/empresa-elevador/?$ /servicos
-    RedirectMatch 301 ^/empresa-elevador-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/empresa-escada-rolante/?$ /servicos
-    RedirectMatch 301 ^/empresa-plataforma-elevatoria/?$ /servicos
-    RedirectMatch 301 ^/empresa-projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/empresa-projeto-eletrico-bh/?$ /servicos
-    RedirectMatch 301 ^/empresas-elevadores-bh/?$ /servicos
-    RedirectMatch 301 ^/empresas-manutencao-elevadores-bh/?$ /servicos
-    RedirectMatch 301 ^/escada-rolante/?$ /servicos
-    RedirectMatch 301 ^/escada-rolante-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/escada-rolante-bh/?$ /servicos
-    RedirectMatch 301 ^/instalacao-predial-eletrica/?$ /servicos
-    RedirectMatch 301 ^/instalacoes-eletricas-projeto/?$ /servicos
-    RedirectMatch 301 ^/manutencao-elevadores-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/manutencao-elevadores-bh/?$ /servicos
-    RedirectMatch 301 ^/orcamento-projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/plataforma-acessibilidade/?$ /servicos
-    RedirectMatch 301 ^/plataforma-acessibilidade-bh/?$ /servicos
-    RedirectMatch 301 ^/plataforma-acessibilidade-preco/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria-bh/?$ /servicos
-    RedirectMatch 301 ^/plataforma-elevatoria-preco/?$ /servicos
-    RedirectMatch 301 ^/preco-projetos-eletricos/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-bh/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-comercial/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-industrial/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-industrial-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-industrial-preco/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-preco/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial-belo-horizonte/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial-completo/?$ /servicos
-    RedirectMatch 301 ^/projeto-eletrico-residencial-orcamento/?$ /servicos
-    RedirectMatch 301 ^/projeto-instalacao-eletrica-residencial/?$ /servicos
-    RedirectMatch 301 ^/projeto-instalacoes-eletricas/?$ /servicos
-    RedirectMatch 301 ^/projetos-eletricos-orcamento/?$ /servicos
-    RedirectMatch 301 ^/projetos-eletricos-prediais/?$ /servicos
-    RedirectMatch 301 ^/projetos-engenharia-eletrica/?$ /servicos
-    RedirectMatch 301 ^/projetos-instalacoes-eletricas-prediais/?$ /servicos
-    RedirectMatch 301 ^/servico-projeto-eletrico/?$ /servicos
-    RedirectMatch 301 ^/projetos-spda/?$ /servicos
-    RedirectMatch 301 ^/projetos-cabeamento-estruturado/?$ /servicos
-    RedirectMatch 301 ^/servicos/projetos-eletricos-residenciais-comerciais-e-prediais-com-foco-em-qualidade-prazo-e-economia/?$ /servicos
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript application/json image/svg+xml
 </IfModule>

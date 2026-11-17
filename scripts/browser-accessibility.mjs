@@ -34,12 +34,33 @@ async function load(context, route, label) {
 	const errors = [];
 	page.on('pageerror', (error) => errors.push(error.message));
 	const response = await page.goto(new URL(route, base).href, {
-		waitUntil: 'domcontentloaded', timeout: 45000,
+		waitUntil: 'load', timeout: 45000,
 	});
 	check(response?.ok(), `${label} ${route}: HTTP OK`);
 	await page.locator('main').waitFor({ timeout: 10000 });
 	check(errors.length === 0, `${label} ${route}: sem exceções JavaScript (${errors.join('; ')})`);
 	return page;
+}
+
+async function countAriaHiddenTabStops(page) {
+	return page.evaluate(() => {
+		const previousFocus = document.activeElement;
+		const focusables = [...document.querySelectorAll('[aria-hidden="true"]')]
+			.flatMap((node) => [...node.querySelectorAll('a[href],button,input,select,textarea,[tabindex]')])
+			.filter((el) => {
+				if (el.hasAttribute('disabled') || el.closest('[inert]')) return false;
+				if (el.tabIndex >= 0) return true;
+				if (el instanceof HTMLElement) {
+					el.focus({ preventScroll: true });
+					return document.activeElement === el;
+				}
+				return false;
+			});
+		if (previousFocus instanceof HTMLElement && document.activeElement !== previousFocus) {
+			previousFocus.focus({ preventScroll: true });
+		}
+		return focusables.length;
+	});
 }
 
 try {
@@ -67,11 +88,13 @@ try {
 					toggleVisible: toggle.getClientRects().length > 0,
 					serviceCards: document.querySelectorAll('[data-service-card]').length,
 					blogCards: document.querySelectorAll('[data-blog-card]').length,
-					contactAlternatives: document.querySelectorAll('.contact-page__alternate-actions a[href]').length,
+					contactAlternatives: (() => {
+						const visible = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+						const alternateLinks = [...document.querySelectorAll('.contact-page__alternate-actions a[href]')].filter(visible);
+						if (alternateLinks.length > 0) return alternateLinks.length;
+						return [...document.querySelectorAll('.contact-details a.contact-page__phone[href], .contact-details a.contact-page__email[href]')].filter(visible).length;
+					})(),
 					overflow: document.documentElement.scrollWidth > innerWidth + 3,
-					ariaHiddenTabStops: [...document.querySelectorAll('[aria-hidden="true"]')]
-						.flatMap((node) => [...node.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])')])
-						.length,
 				};
 			});
 			check(data.navigationVisible, `no-js-${width} ${route}: menu principal continua navegável`);
@@ -86,7 +109,7 @@ try {
 			if (route === '/blog/') check(data.blogCards >= 30, `no-js-${width} /blog/: artigos não dependem do JS`);
 			if (route === '/contato/') check(data.contactAlternatives === 2, `no-js-${width} /contato/: canais alternativos visíveis`);
 			check(!data.overflow, `no-js-${width} ${route}: sem overflow horizontal`);
-			check(data.ariaHiddenTabStops === 0, `no-js-${width} ${route}: foco dentro de aria-hidden`);
+			check((await countAriaHiddenTabStops(page)) === 0, `no-js-${width} ${route}: foco dentro de aria-hidden`);
 			await page.close();
 		}
 		await noJsContext.close();
@@ -144,13 +167,10 @@ try {
 	const desktopData = await keyboardPage.evaluate(() => ({
 		overflow: document.documentElement.scrollWidth > innerWidth + 3,
 		missingImageAlt: [...document.images].filter((image) => !image.hasAttribute('alt')).length,
-		ariaHiddenTabStops: [...document.querySelectorAll('[aria-hidden="true"]')]
-			.flatMap((node) => [...node.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])')])
-			.length,
 	}));
 	check(!desktopData.overflow, 'keyboard-desktop: sem overflow horizontal');
 	check(desktopData.missingImageAlt === 0, 'keyboard-desktop: todas as imagens declaram alt');
-	check(desktopData.ariaHiddenTabStops === 0, 'keyboard-desktop: foco não entra em aria-hidden');
+	check((await countAriaHiddenTabStops(keyboardPage)) === 0, 'keyboard-desktop: foco não entra em aria-hidden');
 	await keyboardPage.close();
 	await keyboardContext.close();
 } finally {

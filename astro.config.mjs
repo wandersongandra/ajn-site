@@ -1,6 +1,41 @@
 // @ts-check
+import { rmSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import { NON_DEPLOYABLE_MARKER, isCiSeoSmokeModeEnabled } from './src/utils/ci-seo-smoke.mjs';
+
+/** @returns {import('astro').AstroIntegration} */
+function ciSeoSmokeGuardIntegration() {
+	return {
+		name: 'ajn-ci-seo-smoke-guard',
+		hooks: {
+			'astro:build:start': () => {
+				isCiSeoSmokeModeEnabled(process.env);
+			},
+			'astro:build:done': ({ dir }) => {
+				const markerPath = fileURLToPath(new URL(NON_DEPLOYABLE_MARKER, dir));
+				if (isCiSeoSmokeModeEnabled(process.env)) {
+					writeFileSync(
+						markerPath,
+						JSON.stringify(
+							{
+								nonDeployable: true,
+								mode: 'AJN_CI_SEO_SMOKE=1',
+								reason: 'Build de smoke test de CI com sitekey de teste Turnstile; proibido empacotar ou publicar.',
+							},
+							null,
+							2
+						) + '\n',
+						'utf8'
+					);
+				} else {
+					rmSync(markerPath, { force: true });
+				}
+			},
+		},
+	};
+}
 
 const site = (process.env.PUBLIC_SITE_ORIGIN || 'https://ajnengenharia.com.br').replace(/\/+$/, '');
 
@@ -83,9 +118,12 @@ function isIndexableSitemapUrl(url) {
 // https://astro.build/config
 export default defineConfig({
 	site,
-	integrations: [sitemap({
-		filter: isIndexableSitemapUrl,
-	})],
+	integrations: [
+		sitemap({
+			filter: isIndexableSitemapUrl,
+		}),
+		ciSeoSmokeGuardIntegration(),
+	],
 	// Fallback estático do Astro; a hospedagem Apache aplica HTTP 301 via .htaccess.
 	redirects: {
 		'/informacoes': { destination: '/mapa-site', status: 301 },

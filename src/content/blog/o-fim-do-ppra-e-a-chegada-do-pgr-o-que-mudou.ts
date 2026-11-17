@@ -3,7 +3,7 @@ import image0 from '../../assets/blog/blog-o-fim-do-ppra-e-a-chegada-do-pgr-o-qu
 
 export const blogOFimDoPpraEAChegadaDoPgrOQueMudou = {
 	 slug: "o-fim-do-ppra-e-a-chegada-do-pgr-o-que-mudou", path: "/blog/o-fim-do-ppra-e-a-chegada-do-pgr-o-que-mudou",
-	 title: "O Fim do PPRA e a chegada do PGR: o que mudou?",
+	 title: "O Fim do PPRA e a chegada do PGR: o que mudou | AJN",
 	 description: "Entenda o que mudou com a substituição do PPRA pelo PGR e a adoção do gerenciamento de riscos ocupacionais a partir de 2022.",
 	 heading: "O Fim do PPRA e a chegada do PGR: o que mudou?",
 	 pubDate: "2025-01-24",

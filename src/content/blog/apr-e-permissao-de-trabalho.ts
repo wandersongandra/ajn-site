@@ -4,7 +4,7 @@ import type { BlogContentData } from '../types';
 export const blogAprEPermissaoDeTrabalho = {
   slug: 'apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco',
   path: '/blog/apr-e-permissao-de-trabalho-como-planejar-atividades-de-risco',
-  title: 'APR e Permissão de Trabalho: como planejar atividades de risco | AJN',
+  title: 'APR e Permissão de Trabalho: planejamento seguro | AJN',
   description: 'Veja como relacionar análise preliminar de risco e Permissão de Trabalho ao escopo, às condições reais e aos controles da atividade.',
   heading: 'APR e Permissão de Trabalho: como organizar o planejamento da atividade',
   pubDate: '2026-10-09',

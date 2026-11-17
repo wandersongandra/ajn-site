@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const config = await readFile('public/.htaccess', 'utf8');
+const configLines = config.split(/\r?\n/).map((line) => line.trim());
 const condition = config.match(/^\s*RewriteCond \%\{HTTP_HOST\} (.+)$/m)?.[1] ?? '';
 const rule = config.match(/^\s*RewriteRule \^ (.+)$/m)?.[1] ?? '';
 const hostPattern = new RegExp(condition.match(/^(.+?) \[NC\]$/)?.[1] ?? '(?!)', 'i');
@@ -43,4 +44,32 @@ test('keeps the fixed apex origin and does not pass through request host or port
 	assert.equal(redirectFor('https://www.ajnengenharia.com.br:8443/contato'), 'https://ajnengenharia.com.br/contato');
 	assert.equal(destination?.[1], 'https://ajnengenharia.com.br');
 	assert.match(rule, /\[R=301,L,NE\]$/);
+});
+
+test('keeps career routes on Hostinger PHP same-origin, no Worker redirect', () => {
+	const expectedRules = [
+		'RewriteRule ^api/index\\.php$ - [L]',
+		'RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]',
+		'RewriteRule ^carreiras/(?!talentos/?$|acompanhamento/?$|vaga/?$)([a-z0-9-]+)/?$ api/index.php [QSA,L]',
+	];
+	for (const expectedRule of expectedRules) {
+		assert.ok(configLines.some((line) => line === expectedRule), `Missing RewriteRule: ${expectedRule}`);
+	}
+	assert.equal(config.includes('carreiras.ajnengenharia.com.br'), false);
+});
+
+test('preserves mod_alias RedirectMatch rules for sitemap, informacoes, and retired electrical/elevator routes', async () => {
+	const astroConfig = await readFile('astro.config.mjs', 'utf8');
+	const servicosRedirects = [...astroConfig.matchAll(/'([^']+)':\s*\{\s*destination:\s*'\/servicos',\s*status:\s*301\s*\}/g)]
+		.map(([, path]) => path);
+	assert.equal(servicosRedirects.length, 49);
+	assert.ok(configLines.includes('RedirectMatch 301 ^/sitemap\\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml'));
+	assert.ok(configLines.includes('RedirectMatch 301 ^/informacoes/?$ /mapa-site'));
+	for (const route of servicosRedirects) {
+		const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		assert.ok(
+			configLines.includes(`RedirectMatch 301 ^${escaped}/?$ /servicos`),
+			`Missing RedirectMatch 301 for ${route}`
+		);
+	}
 });

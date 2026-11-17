@@ -8,8 +8,17 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/sync-csp-style-hashes.mjs && node scripts/sync-worker-assets.mjs",
     "check": "astro check",
     "preview": "astro preview",
+    "pack:hostinger": "node scripts/prepare-hostinger-deploy.mjs",
+    "pack:hostinger:staging": "node scripts/prepare-hostinger-deploy.mjs --staging",
+    "test:backend": "vitest run",
+    "test:carreiras-interactions": "node --test scripts/test-carreiras-interactions.mjs",
+    "test:php": "php -d extension=sodium hostinger/tests/smoke.php && php -d extension=sodium hostinger/tests/contract.php && php -d extension=sodium hostinger/tests/functional.php",
+    "test:browser-carreiras": "node scripts/browser-carreiras.mjs",
+    "test:homologation-remote": "node scripts/test-remote-carreiras.mjs",
+    "test:staging-origin": "node scripts/validate-staging-origin.mjs",
     "astro": "astro",
     "audit:seo": "node scripts/audit-seo.mjs",
     "audit:internal-links": "node scripts/audit-internal-links.mjs",
@@ -27,7 +36,7 @@
     "audit:about": "node scripts/audit-about.mjs",
     "audit:sitemap": "node scripts/audit-sitemap.mjs",
     "test:audits": "node scripts/test-audit-fragments.mjs",
-"validate": "npm run check && npm run build && npm run audit:performance && npm run audit:seo && npm run audit:internal-links && npm run audit:fragments && npm run audit:deploy && npm run audit:security && npm run test:security-links && npm run test:live-security && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run audit:home-services && npm run audit:footer && npm run audit:about && npm run audit:sitemap && npm run test:audits && npm run audit:editorial && npm run audit:legal && npm run test:privacy-notice && npm run test:contact-form && npm run audit:blog && npm run audit:sst-seo && npm run test:seo-leads && npm run audit:services-catalog && npm run audit:fase7-commercial && npm run audit:fase7-seo && npm run audit:dead-css && npm run audit:social && npm run audit:engineering && npm run audit:medicoes && npm run test:audit-workflows && npm run audit:workflows && npm run test:audit-governance && npm run audit:governance",
+    "validate": "npm run check && npm run build && npm run audit:performance && npm run audit:seo && npm run audit:internal-links && npm run audit:fragments && npm run audit:deploy && npm run audit:security && npm run test:security-links && npm run test:hosting-redirect && npm run test:gsc-legacy-redirects && npm run test:hosting-policy && npm run test:live-security && npm run audit:contact && npm run audit:sectors && npm run audit:workflow && npm run audit:hero && npm run audit:home-services && npm run audit:footer && npm run audit:about && npm run audit:sitemap && npm run test:audits && npm run audit:editorial && npm run audit:legal && npm run test:privacy-notice && npm run test:contact-form && npm run audit:blog && npm run audit:sst-seo && npm run test:seo-leads && npm run audit:services-catalog && npm run audit:fase7-commercial && npm run audit:fase7-seo && npm run audit:dead-css && npm run audit:social && npm run audit:engineering && npm run audit:medicoes && npm run test:audit-workflows && npm run audit:workflows && npm run test:audit-governance && npm run audit:governance",
     "audit:editorial": "node scripts/audit-editorial.mjs",
     "audit:sst-seo": "node scripts/audit-sst-seo.mjs",
     "test:seo-leads": "node --test scripts/test-seo-leads.mjs",
@@ -56,7 +65,9 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.4.7",
+    "astro": "^7.4.11",
+    "drizzle-orm": "^0.45.4",
+    "hono": "^4.13.17",
     "zod": "^4.6.5"
   },
   "allowScripts": {
@@ -64,7 +75,13 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@cloudflare/workers-types": "^5.20261109.1",
+    "@types/better-sqlite3": "^9.6.0",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-kit": "^0.31.11",
+    "playwright": "^1.56.1",
     "typescript": "^6.0.3",
+    "vitest": "^5.1.0",
     "yaml": "^2.9.1"
   }
 }
