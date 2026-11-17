@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -29,15 +29,23 @@ function walkHtmlFiles(dir) {
   return results.sort();
 }
 
+const STYLE_HTML_ENTITY_MAP = new Map([
+  ['&quot;', '"'],
+  ['&#34;', '"'],
+  ['&#39;', "'"],
+  ['&apos;', "'"],
+  ['&amp;', '&'],
+  ['&lt;', '<'],
+  ['&gt;', '>'],
+]);
+
+const STYLE_HTML_ENTITY_REGEX = /&(quot|#34|#39|apos|amp|lt|gt);/g;
+
 export function decodeHtmlEntitiesInStyle(raw) {
-  return raw
-    .replace(/&quot;/g, '"')
-    .replace(/&#34;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>');
+  return raw.replace(
+    STYLE_HTML_ENTITY_REGEX,
+    (entity) => STYLE_HTML_ENTITY_MAP.get(entity) ?? entity
+  );
 }
 
 export function extractInlineStyleAttributes(html) {
@@ -71,11 +79,20 @@ export function sha256CspToken(styleContent) {
   return `'sha256-${digest}'`;
 }
 
+function isEnoentError(error) {
+  return Boolean(error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT');
+}
+
 export function collectDistStyleHashes(distDir = resolve(process.cwd(), 'dist')) {
-  if (!existsSync(distDir)) {
-    throw new Error(`Diretório dist não encontrado em ${distDir}. Execute npm run build antes.`);
+  let htmlFiles;
+  try {
+    htmlFiles = walkHtmlFiles(distDir);
+  } catch (error) {
+    if (isEnoentError(error)) {
+      throw new Error(`Diretório dist não encontrado em ${distDir}. Execute npm run build antes.`);
+    }
+    throw error;
   }
-  const htmlFiles = walkHtmlFiles(distDir);
   const styleSet = new Set();
   const perFileStyles = new Map();
 
@@ -139,8 +156,13 @@ export function syncCspStyleHashes({
   }
 
   const updateHtaccess = (htaccessFile) => {
-    if (!existsSync(htaccessFile)) return false;
-    const current = readFileSync(htaccessFile, 'utf8');
+    let current;
+    try {
+      current = readFileSync(htaccessFile, 'utf8');
+    } catch (error) {
+      if (isEnoentError(error)) return false;
+      throw error;
+    }
     const cspLineRegex = /^(\s*Header always set Content-Security-Policy\s+)"[^"]*"/m;
     if (!cspLineRegex.test(current)) {
       throw new Error(`Diretiva Content-Security-Policy não encontrada em ${htaccessFile}`);
@@ -179,10 +201,15 @@ export function verifyCspStyleHashes({
   perFileStyles = null,
 } = {}) {
   const errors = [];
-  if (!existsSync(htaccessPath)) {
-    return { ok: false, errors: [`Arquivo .htaccess ausente: ${htaccessPath}`] };
+  let htaccessContent;
+  try {
+    htaccessContent = readFileSync(htaccessPath, 'utf8');
+  } catch (error) {
+    if (isEnoentError(error)) {
+      return { ok: false, errors: [`Arquivo .htaccess ausente: ${htaccessPath}`] };
+    }
+    throw error;
   }
-  const htaccessContent = readFileSync(htaccessPath, 'utf8');
   const match = htaccessContent.match(/^\s*Header always set Content-Security-Policy\s+"([^"]+)"/m);
   if (!match) {
     return { ok: false, errors: ['Header Content-Security-Policy não encontrado no .htaccess'] };
@@ -249,11 +276,17 @@ export function verifyHtaccessCspSync(htaccessPaths, { requireByteMatch = true }
   const entries = [];
 
   for (const htaccessPath of resolved) {
-    if (!existsSync(htaccessPath)) {
-      errors.push(`Arquivo .htaccess ausente para validação de sincronia: ${htaccessPath}`);
-      continue;
+    let extracted;
+    try {
+      extracted = extractCspHeaderFromHtaccess(htaccessPath);
+    } catch (error) {
+      if (isEnoentError(error)) {
+        errors.push(`Arquivo .htaccess ausente para validação de sincronia: ${htaccessPath}`);
+        continue;
+      }
+      throw error;
     }
-    const { content, cspHeaderValue } = extractCspHeaderFromHtaccess(htaccessPath);
+    const { content, cspHeaderValue } = extracted;
     if (!cspHeaderValue) {
       errors.push(`Header Content-Security-Policy ausente em ${htaccessPath}`);
       continue;

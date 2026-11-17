@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { cspSourcesEqual, cspSourceIsExact, isAllowedResourceUrl } from './hosting-policy.mjs';
 import { extractScriptElements, getHtmlAttributeValue, isJsonLdScript, hasExactHtmlAttribute, stripScriptElements } from './security-html.mjs';
-import { MAX_CSP_HEADER_BYTES, verifyCspStyleHashes, verifyHtaccessCspSync } from './sync-csp-style-hashes.mjs';
+import { MAX_CSP_HEADER_BYTES, decodeHtmlEntitiesInStyle, syncCspStyleHashes, verifyCspStyleHashes, verifyHtaccessCspSync } from './sync-csp-style-hashes.mjs';
 
 const origin = 'https://ajnengenharia.com.br';
 const policy = "style-src 'self'; font-src 'self'; script-src 'self'";
@@ -109,6 +109,45 @@ test('CSP de public/.htaccess cobre 100% dos atributos style das 182 páginas de
 		const syncFail = verifyHtaccessCspSync([htaccessPath, oversizedHtaccess]);
 		assert.equal(syncFail.ok, false);
 		assert.match(syncFail.errors.join(' '), /CSP divergiu/);
+	} finally {
+		rmSync(tmpDir, { recursive: true, force: true });
+	}
+});
+
+test('decodeHtmlEntitiesInStyle decodifica entidades em passada única sem dupla decodificação', () => {
+	assert.equal(decodeHtmlEntitiesInStyle('&amp;lt;'), '&lt;');
+	assert.equal(decodeHtmlEntitiesInStyle('&amp;gt;'), '&gt;');
+	assert.equal(decodeHtmlEntitiesInStyle('&amp;quot;a&amp;quot;'), '&quot;a&quot;');
+	assert.equal(decodeHtmlEntitiesInStyle('&amp;#39;x&#39;'), '&#39;x\'');
+	assert.equal(
+		decodeHtmlEntitiesInStyle('content: &quot;ok&quot;; border: &#34;1&#34;; font: &#39;a&#39; &apos;b&apos;; expr: &lt;x&gt; &amp;'),
+		'content: "ok"; border: "1"; font: \'a\' \'b\'; expr: <x> &'
+	);
+});
+
+test('syncCspStyleHashes e verifyCspStyleHashes tratam ENOENT sem race condition de existsSync', () => {
+	const tmpDir = mkdtempSync(join(tmpdir(), 'ajn-csp-enoent-'));
+	try {
+		const fakeDist = join(tmpDir, 'dist');
+		mkdirSync(fakeDist, { recursive: true });
+		writeFileSync(join(fakeDist, 'index.html'), '<p style="display: none;"></p>', 'utf8');
+		const publicHt = join(tmpDir, 'public', '.htaccess');
+		mkdirSync(join(tmpDir, 'public'), { recursive: true });
+		writeFileSync(publicHt, 'Header always set Content-Security-Policy "default-src \'self\'; style-src \'self\'"\n', 'utf8');
+		// dist/.htaccess não existe: syncCspStyleHashes deve ignorar ENOENT e atualizar public/.htaccess
+		const res = syncCspStyleHashes({
+			rootDir: tmpDir,
+			distDir: fakeDist,
+			publicHtaccessPath: publicHt,
+			distHtaccessPath: join(fakeDist, '.htaccess'),
+		});
+		assert.equal(res.htmlFileCount, 1);
+		const missingVerify = verifyCspStyleHashes({
+			distDir: fakeDist,
+			htaccessPath: join(tmpDir, 'nao-existe', '.htaccess'),
+		});
+		assert.equal(missingVerify.ok, false);
+		assert.match(missingVerify.errors[0], /ausente/);
 	} finally {
 		rmSync(tmpDir, { recursive: true, force: true });
 	}

@@ -66,7 +66,7 @@ test('preserves mod_alias RedirectMatch rules for sitemap, informacoes, and reti
 	assert.ok(configLines.includes('RedirectMatch 301 ^/sitemap\\.xml/?$ https://ajnengenharia.com.br/sitemap-index.xml'));
 	assert.ok(configLines.includes('RedirectMatch 301 ^/informacoes/?$ /mapa-site'));
 	for (const route of servicosRedirects) {
-		const escaped = route.replace(/\//g, '/');
+		const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		assert.ok(
 			configLines.includes(`RedirectMatch 301 ^${escaped}/?$ /servicos`),
 			`Missing RedirectMatch 301 for ${route}`
