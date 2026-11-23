@@ -99,6 +99,20 @@ function assertInternalLinksFixture() {
 }
 assertInternalLinksFixture();
 
+// Astro exports a static fallback for routes whose Apache response is HTTP 301.
+// These files are not editorial pages and must not affect titles or inbound links.
+function isAstroRedirectFallback(html) {
+	return /http-equiv=[\"']refresh[\"']/i.test(html) && /<title>\\s*Redirecting to:/i.test(html);
+}
+
+function assertRedirectFallbackFixture() {
+	const redirect = '<meta http-equiv=\"refresh\" content=\"0;url=/servicos/\"><title>Redirecting to: /servicos/</title>';
+	if (!isAstroRedirectFallback(redirect)) throw new Error('Astro 301 fallback was not identified.');
+	if (isAstroRedirectFallback('<title>Redirecting to: /servicos/</title>')) throw new Error('A title alone is not a redirect.');
+	if (isAstroRedirectFallback('<meta http-equiv=\"refresh\" content=\"30\"><title>Legitimate page</title>')) throw new Error('A refresh alone is not an Astro redirect.');
+}
+assertRedirectFallbackFixture();
+
 function routeFromHtmlFile(file) {
 	const relative = path.relative(distRoot, file).replaceAll('\\', '/');
 	if (!relative.endsWith('.html')) return null;
@@ -188,6 +202,7 @@ for (const file of htmlFiles) {
 	const route = routeFromHtmlFile(file);
 	if (!route || route === '/404') continue;
 	const html = await readFile(file, 'utf8');
+	if (isAstroRedirectFallback(html)) continue;
 	const title = firstMatch(html, /<title>([\s\S]*?)<\/title>/i);
 	const description = firstMatch(html, /<meta\s+name="description"\s+content="([^"]*)"/i);
 	const canonical = firstMatch(html, /<link\s+rel="canonical"\s+href="([^"]*)"/i);
@@ -254,6 +269,7 @@ for (const file of htmlFiles) {
 	const route = routeFromHtmlFile(file);
 	if (!route || route === '/404') continue;
 	const html = await readFile(file, 'utf8');
+	if (isAstroRedirectFallback(html)) continue;
 	for (const target of internalTargets(html)) {
 		if (routeSet.has(target)) inbound.set(target, (inbound.get(target) ?? 0) + 1);
 	}
