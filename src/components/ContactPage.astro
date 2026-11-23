@@ -115,10 +115,7 @@ const contactEndpoint = (() => {
 						<textarea id="contact-message" name="mensagem" rows="6" maxlength="4000" required></textarea>
 					</div>
 
-					<div class="contact-form__honeypot" aria-hidden="true">
-						<label for="contact-website">Website</label>
-						<input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
-					</div>
+					<input class="contact-form__honeypot" id="contact-website" name="website" type="text" hidden tabindex="-1" autocomplete="off" />
 	
 					<p class="contact-form__privacy">Ao enviar a mensagem, as informações informadas serão utilizadas para responder à solicitação. Consulte a <a href="/politica-de-privacidade/">Política de Privacidade</a> antes do envio.</p>
 					<button class="button" type="submit" disabled>Enviar mensagem</button>
@@ -135,12 +132,12 @@ const contactEndpoint = (() => {
 					<h2 id="contact-form-title">Entre em contato sem preencher formulário</h2>
 					<p>O envio pelo formulário não está disponível neste momento. Para pedir um orçamento ou esclarecer uma dúvida, fale diretamente com a AJN pelo WhatsApp ou e-mail.</p>
 				</div>
-				<div class="contact-page__alternate-actions">
-					<a class="button" href={site.phoneHref} target="_blank" rel="noopener noreferrer">Conversar pelo WhatsApp</a>
-					<a class="contact-page__email" href={`mailto:${site.email}`}>Enviar e-mail</a>
-				</div>
 			</section>
 		)}
+		<div class="contact-page__alternate-actions" aria-label="Canais alternativos de atendimento">
+			<a class="button" href={site.phoneHref} target="_blank" rel="noopener noreferrer">Conversar pelo WhatsApp</a>
+			<a class="contact-page__email" href={`mailto:${site.email}`}>Enviar e-mail</a>
+		</div>
 	</div>
 </PageShell>
 

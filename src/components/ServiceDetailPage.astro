@@ -11,6 +11,38 @@ interface Props {
 
 const { page } = Astro.props;
 const clusterLinks = getRelatedClusterLinks(page.path);
+const relatedTechnicalReading: Record<string, readonly { href: string; label: string }[]> = {
+	'/servicos/assessoria-e-consultoria-em-saude-ocupacional': [
+		{ href: '/blog/laudo-de-gerenciamento-de-riscos-essencial-para-garantir-a-seguranca-no-ambiente-de-trabalho/', label: 'PGR e gerenciamento de riscos ocupacionais' },
+	],
+	'/servicos/gestao-do-e-social': [
+		{ href: '/blog/esocial-sst-diferencas-entre-s2210-s2220-e-s2240/', label: 'Diferenças entre os eventos S-2210, S-2220 e S-2240' },
+		{ href: '/blog/ppp-facil-o-ue-e-como-consultar-e-sua-importancia/', label: 'PPP: consulta e informações importantes' },
+	],
+	'/servicos/pcmso-e-asos': [
+		{ href: '/blog/seguranca-do-trabalho-e-pcmso-gestao-da-saude-ocupacional/', label: 'PCMSO e gestão da saúde ocupacional' },
+	],
+	'/servicos/pericias-em-periculosidade-e-insalubridade': [
+		{ href: '/blog/higiene-ocupacional-como-planejar-avaliacoes-de-exposicao/', label: 'Como planejar avaliações de exposição ocupacional' },
+	],
+	'/servicos/projetos-de-combate-a-incendio-e-panico-ppcip': [
+		{ href: '/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/', label: 'Como organizar a regularização de PPCIP, AVCB e CLCB' },
+	],
+	'/servicos/regularizacao-de-imoveis-junto-ao-corpo-de-bombeiros': [
+		{ href: '/blog/ppcip-avcb-clcb-como-organizar-a-regularizacao-do-imovel/', label: 'Como organizar a regularização de PPCIP, AVCB e CLCB' },
+	],
+	'/servicos/treinamento-de-nrs': [
+		{ href: '/blog/nr-35-trabalho-em-altura-e-seguranca/', label: 'NR-35 e trabalho em altura' },
+		{ href: '/blog/nr-10-documentacao-capacitacao-e-transicao-regulatoria/', label: 'NR-10: documentação e capacitação' },
+	],
+	'/servicos/gestao-ambiental': [
+		{ href: '/blog/gestao-de-residuos-como-organizar-a-rotina-da-operacao/', label: 'Como organizar a gestão de resíduos' },
+	],
+	'/servicos/gestao-da-qualidade': [
+		{ href: '/blog/controle-de-qualidade-em-obras-registros-inspecoes-e-desvios/', label: 'Registros, inspeções e desvios na qualidade de obras' },
+	],
+};
+const technicalReading = relatedTechnicalReading[page.path] ?? [];
 interface ServiceJsonLd {
 	'@context': 'https://schema.org';
 	'@type': 'Service';
@@ -61,16 +93,28 @@ const sections = page.sections.map((section, index) => index === 0 && section.he
 		</div>
 		<div class="service-detail-wp__content">
 			<ContentSections sections={sections} formatHeading={normalizeKeywordTerms} />
-			{clusterLinks.length > 0 && (
+			{(clusterLinks.length > 0 || technicalReading.length > 0) && (
 				<nav class="content-sections" aria-label="Conteúdos e páginas relacionadas">
-					<section class="content-section">
-						<h2>Tópicos relacionados</h2>
-						<ul>
-							{clusterLinks.map((item) => (
-								<li><a href={item.href}>{item.label}</a></li>
-							))}
-						</ul>
-					</section>
+					{clusterLinks.length > 0 && (
+						<section class="content-section">
+							<h2>Tópicos relacionados</h2>
+							<ul>
+								{clusterLinks.map((item) => (
+									<li><a href={item.href}>{item.label}</a></li>
+								))}
+							</ul>
+						</section>
+					)}
+					{technicalReading.length > 0 && (
+						<section class="content-section">
+							<h2>Leituras técnicas relacionadas</h2>
+							<ul>
+								{technicalReading.map((item) => (
+									<li><a href={item.href}>{item.label}</a></li>
+								))}
+							</ul>
+						</section>
+					)}
 				</nav>
 			)}
 			<p class="page-cta"><a class="button" href="/contato/">Entre em contato</a></p>

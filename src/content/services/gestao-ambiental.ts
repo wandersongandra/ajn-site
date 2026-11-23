@@ -10,22 +10,33 @@ export const servicePage = {
 	"imageHeight": 500,
 	"sections": [
 		{
-			"heading": "Informações",
+			"heading": "Organização de rotinas de gestão de resíduos",
 			"paragraphs": [
-				"1 - Gestão ambiental - Segregação, armazenamento e destinação correta dos resíduos.",
-				"Segregação de Resíduos: A segregação envolve a separação dos resíduos na fonte geradora, classificando-os em categorias como recicláveis, orgânicos, perigosos e não recicláveis. Isso facilita o manejo adequado e a reciclagem, além de reduzir a contaminação cruzada.",
-				"Armazenamento de Resíduos: Após a segregação, os resíduos devem ser armazenados de forma segura e adequada. Isso inclui o uso de recipientes específicos para cada tipo de resíduo, com identificação clara e em locais apropriados para evitar vazamentos e contaminações.",
-				"Destinação Correta dos Resíduos: A destinação final dos resíduos deve seguir as normas ambientais e de saúde pública. Isso pode incluir reciclagem, compostagem, coprocessamento ou disposição em aterros licenciados, conforme as exigências dos órgãos ambientais.",
-				"2 - Treinamentos sobre Segregação, armazenamento e destinação correta dos resíduos."
+				"A gestão de resíduos começa pelo conhecimento das atividades, dos pontos de geração, dos tipos de materiais e dos procedimentos já adotados pela empresa. O escopo pode incluir orientação sobre segregação, identificação, armazenamento temporário e organização dos registros de coleta e destinação.",
+				"Os procedimentos e os destinos precisam ser definidos conforme a classificação dos resíduos, as características da operação e os requisitos aplicáveis. A contratação de terceiros não elimina as responsabilidades do gerador nos casos previstos em lei.",
+				{
+					"segments": [
+						"Consulte também a ",
+						{ "text": "Política Nacional de Resíduos Sólidos", "href": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2010/lei/l12305.htm" },
+						"."
+					]
+				}
+			],
+			"lists": [
+				{
+					"items": [
+						"Mapeamento dos pontos de geração e dos fluxos de resíduos existentes.",
+						"Orientação para separar, identificar e armazenar temporariamente os resíduos de acordo com os procedimentos definidos para a operação.",
+						"Organização de registros relacionados à coleta, ao transporte e à destinação, conforme a demanda e as exigências aplicáveis."
+					]
+				}
 			]
 		},
 		{
-			"heading": "Treinamentos e Conscientização em Meio Ambiente",
+			"heading": "Orientação das equipes e próximos passos",
 			"paragraphs": [
-				"Treinamentos: Realizamos treinamentos periódicos com as equipes operacionais para orientar a aplicação correta dos procedimentos ambientais no dia a dia. As capacitações abordam segregação de resíduos, redução de desperdício e atendimento a emergências ambientais.",
-				"Conscientização: Além dos treinamentos, campanhas internas apoiam a adoção de práticas de controle ambiental na organização, com orientações sobre descarte correto, contenção de vazamentos e uso racional de água e energia.",
-				"3 - Apoio operacional em gestão de resíduos: classificação, organização de baias de armazenamento temporário e controle documental de destinação.",
-				"4 - Importância: O controle ambiental nas operações industriais e em obras reduz riscos de contaminação, evita autuações e mantém a destinação de resíduos documentada."
+				"Quando previsto na proposta, as ações de orientação podem apoiar a aplicação dos procedimentos internos pelas equipes. O conteúdo depende dos resíduos gerados, dos locais de armazenamento e das rotinas da organização.",
+				"Para avaliar a demanda, informe a atividade da empresa, os tipos de resíduos conhecidos, os pontos de geração e armazenamento e os registros de coleta ou destinação que já utiliza."
 			]
 		}
 	]
