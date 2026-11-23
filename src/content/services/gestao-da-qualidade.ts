@@ -10,14 +10,33 @@ export const servicePage = {
 	"imageHeight": 500,
 	"sections": [
 		{
-			"heading": "Informações",
+			"heading": "Registros para acompanhamento da qualidade em obras",
 			"paragraphs": [
-				"1 - Plano de Qualidade de Obras: Este documento detalha os critérios de qualidade que devem ser seguidos durante a execução da obra. Inclui especificações técnicas, normas de segurança, procedimentos de inspeção e testes, além de responsabilidades e autoridades de cada membro da equipe.",
-				"2 - FVS - Ficha de Verificação de Serviços: As FVS são utilizadas para registrar e verificar a conformidade dos serviços executados com os requisitos de qualidade. Cada etapa do processo de construção é inspecionada e documentada, garantindo que todos os padrões sejam atendidos antes de prosseguir para a próxima fase.",
-				"3 - PT - Permissão de Trabalho ou Procedimentos de Trabalho: A PT é um documento que autoriza a execução de atividades específicas, garantindo que todos os riscos associados sejam identificados e controlados. Inclui procedimentos detalhados de segurança e qualidade que devem ser seguidos pelos trabalhadores.",
-				"4 - Controle de Material: O controle de material envolve a gestão de todos os insumos utilizados na obra, desde a recepção até o armazenamento e uso. Isso assegura que apenas materiais adequados sejam utilizados, evitando desperdícios e apoiando o atendimento às especificações do projeto.",
-				"5 - Acompanhamento In Loco: A presença de supervisores e engenheiros no local da obra permite monitorar o progresso e a qualidade dos trabalhos. O acompanhamento in loco apoia a identificação e a correção imediata de desvios para que o projeto siga conforme planejado.",
-				"Não atuamos como certificadoras de qualidade."
+				"O trabalho parte dos requisitos do projeto, do contrato e dos critérios definidos para cada etapa. O escopo pode combinar planejamento, registros de inspeção e acompanhamento, conforme a necessidade da obra ou do serviço."
+			],
+			"lists": [
+				{
+					"items": [
+						"Plano da qualidade: organiza critérios de verificação, registros e responsabilidades definidos para o escopo.",
+						"Fichas de Verificação de Serviços (FVS): registram os itens verificados, os critérios adotados e as observações de cada etapa.",
+						"Procedimentos de execução: descrevem etapas e controles do trabalho. Quando aplicável, a Permissão de Trabalho é tratada separadamente como autorização para uma atividade específica.",
+						"Controle de materiais: registra recebimento, identificação e verificações feitas em relação às especificações do projeto.",
+						"Acompanhamento em campo: pode registrar observações e desvios para análise e encaminhamento pelos responsáveis da obra."
+					]
+				}
+			]
+		},
+		{
+			"heading": "Limites do serviço",
+			"paragraphs": [
+				"A documentação e o acompanhamento apoiam o controle do escopo contratado, mas não substituem a responsabilidade dos executores, projetistas, fiscalização ou demais responsáveis definidos para a obra. A AJN não atua como certificadora de qualidade.",
+				{
+					"segments": [
+						"Para consultar os requisitos de segurança e saúde aplicáveis à construção, acesse o texto vigente da ",
+						{ "text": "NR-18 no Ministério do Trabalho e Emprego", "href": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-18-nr-18" },
+						"."
+					]
+				}
 			]
 		}
 	]
