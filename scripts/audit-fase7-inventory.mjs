@@ -102,7 +102,7 @@ assertInternalLinksFixture();
 // Astro exports a static fallback for routes whose Apache response is HTTP 301.
 // These files are not editorial pages and must not affect titles or inbound links.
 function isAstroRedirectFallback(html) {
-	return /http-equiv=[\"']refresh[\"']/i.test(html) && /<title>\\s*Redirecting to:/i.test(html);
+	return /http-equiv=[\"']refresh[\"']/i.test(html) && /<title>\s*Redirecting to:/i.test(html);
 }
 
 function assertRedirectFallbackFixture() {
