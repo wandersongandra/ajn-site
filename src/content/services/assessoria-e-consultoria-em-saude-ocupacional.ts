@@ -12,24 +12,23 @@ export const servicePage = {
 		{
 			"heading": "Informações",
 			"paragraphs": [
-				"Assessoria e Consultoria: Prestamos suporte técnico para identificar, avaliar e controlar riscos ocupacionais em diferentes setores. O atendimento inclui o levantamento das condições de trabalho, a elaboração de programas de prevenção, a emissão de laudos técnicos, treinamentos e a definição de medidas preventivas e corretivas exigidas pelas Normas Regulamentadoras (NRs).",
-				"Fornecimento de Mão de Obra Técnica: Além da consultoria, disponibilizamos profissionais habilitados, como técnicos e engenheiros de segurança do trabalho, para acompanhamento presencial e gestão de SST no empreendimento. Esses profissionais atuam na rotina da empresa cliente, conduzindo inspeções de segurança, acompanhando obras e áreas operacionais, ministrando treinamentos e verificando o cumprimento dos procedimentos internos."
+				"A assessoria começa pelo entendimento das atividades, dos ambientes, das funções e dos registros de SST existentes. O escopo de análise e os entregáveis são definidos conforme a necessidade apresentada e as condições observadas.",
+				"Quando a demanda exigir profissional alocado ou acompanhamento presencial, a disponibilidade, a função, o período, o local e as atribuições precisam ser confirmados e descritos na proposta, considerando as habilitações aplicáveis."
 			]
 		},
 		{
-			"heading": "O que compõe a assessoria em saúde e segurança ocupacional",
+			"heading": "Frentes de trabalho que podem se relacionar à assessoria",
 			"paragraphs": [
-				"A gestão de saúde e segurança ocupacional depende da relação direta entre os riscos identificados no ambiente de trabalho, os exames médicos previstos para cada função e a manutenção dos documentos exigidos pela fiscalização.",
-				"Na AJN Consultoria e Engenharia, o atendimento é definido conforme o grau de risco, o número de trabalhadores, as atividades executadas e os requisitos contratuais de cada empresa em Belo Horizonte e Minas Gerais."
+				"A proposta deve indicar quais atividades serão realizadas, por quem e em que período. Nem toda empresa precisa do mesmo conjunto de documentos ou acompanhamento."
 			],
 			"lists": [
 				{
 					"items": [
-						"Levantamento técnico de perigos e elaboração do inventário de riscos e plano de ação do PGR (NR-01);",
-						"Compatibilização entre os riscos ocupacionais levantados e o PCMSO (NR-07), com controle de ASOs;",
-						"Avaliações quantitativas de agentes físicos (ruído, calor e iluminamento) e emissão de LTCAT;",
-						"Inspeções técnicas em campo, análise preliminar de riscos (APR), permissões de trabalho (PT) e controle de EPIs;",
-						"Organização de documentos de SST para auditorias de clientes, mobilização de terceiros e envio ao eSocial."
+						"Identificação de perigos, avaliação de riscos e organização do inventário e do plano de ação do PGR, conforme o escopo contratado.",
+						"Análise da relação entre as informações de riscos ocupacionais e o planejamento médico do PCMSO, respeitando as atribuições dos profissionais responsáveis.",
+						"Planejamento de avaliações ambientais e de documentos técnicos conforme os agentes, os métodos e a finalidade definidos para cada demanda.",
+						"Inspeções de campo e organização de registros de SST, quando previstas na proposta.",
+						"Apoio à consistência das informações enviadas ao eSocial, sem substituir os documentos e registros que lhes dão origem."
 					]
 				}
 			]
