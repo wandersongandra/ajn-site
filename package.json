@@ -55,7 +55,7 @@
     "test:audit-governance": "node --test scripts/test-audit-governance.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/sitemap": "^3.7.6",
     "astro": "^7.4.7",
     "zod": "^4.6.5"
   },
