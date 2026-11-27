@@ -1,6 +1,13 @@
 # Contrato do endpoint de contato
 
-Status em 20/10/2026: **não configurado em produção**.
+Status verificado no repositório em 27/11/2026: **endpoint configurado no build de produção; recebimento real ainda não validado nesta auditoria**.
+
+A variável `PUBLIC_CONTACT_ENDPOINT` em `.env.production` aponta para
+`https://api.opengscgandra.tech/contact`. Isso confirma somente a configuração
+versionada. Não confirma que o serviço está operacional, que aceita os campos
+atuais, que encaminha mensagens ao destinatário correto ou que aplica a
+retenção prevista. Não enviar dados reais de clientes para validar a
+integração.
 
 O Astro só renderiza o formulário quando `PUBLIC_CONTACT_ENDPOINT` contém uma
 URL HTTPS sem usuário ou senha. Sem essa variável, `/contato` mantém os canais
@@ -52,10 +59,11 @@ fluxo que cria `submission_id` e envia `FormData` explicitamente.
 | `website` | não | honeypot; qualquer valor deve ser rejeitado ou descartado sem envio |
 | `submission_id` | sim | identificador opaco para deduplicação; não contém dados pessoais |
 
-## Critério de ativação
+## Critério de validação operacional
 
-Antes de configurar `PUBLIC_CONTACT_ENDPOINT` na Hostinger, executar um teste
-controlado no receptor real: validação de campos, anexo permitido e rejeitado,
-honeypot, limite de abuso, CORS, respostas `2xx/4xx/429/5xx`, destino da
-mensagem, retenção e remoção. Não usar uma caixa de e-mail ou webhook inventado
-como endpoint de produção.
+Antes de considerar o formulário operacional, executar em ambiente controlado
+no receptor real: validação de campos, anexo permitido e rejeitado, honeypot,
+limite de abuso, CORS, respostas `2xx/4xx/429/5xx`, destino da mensagem,
+retenção e remoção. Usar somente dados sintéticos e um destinatário de teste
+autorizado. Não testar com dados reais de clientes nem tratar mera configuração
+de endpoint como comprovação de entrega.
